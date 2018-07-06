@@ -1,0 +1,6 @@
+name: AuctionHouse
+version: ${project.version}
+main: com.shadebyte.auctionhouse.Core
+authors: [TheCrystalStar]
+description: A premium auction house plugin
+website: https://www.shadebyte.com
