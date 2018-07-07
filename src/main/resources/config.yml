@@ -1,0 +1,67 @@
+gui:
+  auction:
+    title: "&7Auction House"
+    items:
+      guide:
+        item: "BOOK:0"
+        name: "&e&lGuide"
+        lore:
+          - "&7This is the auction house, here you can"
+          - "&7list items for sale and purchase items"
+          - "&7that others have listed for sale."
+          - ""
+          - "&7The auction is also a great way to make"
+          - "&7money by selling farmable items other"
+          - "&7players may be interested in buying."
+          - ""
+          - "&7All sell listings last for a max of &e60 minutes"
+          - "&7unsold items are sent to your collection bin."
+          - ""
+          - "&7Each item is listed as a auction, so"
+          - "&7players can out bid each other, or simply"
+          - "&7purchase it right away with a set price."
+          - ""
+          - "&7For more help, use &e/ah help!"
+      howtosell:
+        item: "GOLD_INGOT:0"
+        name: "&e&lHow to Sell"
+        lore:
+          - "&7To list an item on the auction house, just hold"
+          - "&7the item in your hand and type the following command."
+          - "&e/ah sell <buyNowPrice> <startPrice> <bidIncrement>"
+      yourauctions:
+        item: "DIAMOND:0"
+        name: "&e&lYour Auctions"
+        lore:
+          - "&7Click here to view all of the items you"
+          - "&7are currently selling on the auction."
+          - ""
+          - "&e&l{active_player_auctions} Item(s)"
+      collectionbin:
+        item: "ENDER_CHEST:0"
+        name: "&e&lCollection Bin"
+        lore:
+          - "&7Click here to view and collect all of the"
+          - "&7items you have cancelled or have expired."
+          - ""
+          - "&e&l{expired_player_auctions} Item(s)"
+      previouspage:
+        item: "PAPER:0"
+        name: "&E&L<- Previous Page"
+        lore:
+          - "&7View the previous page of auctions."
+      nextpage:
+        item: "PAPER:0"
+        name: "&e&lNext Page ->"
+        lore:
+          - "&7View the next page of auctions."
+      refresh:
+        item: "CHEST:0"
+        name: "&6&lRefresh Auctions"
+        lore:
+          - "&7Click to refresh the currently"
+          - "&7available auction listings."
+
+
+
+

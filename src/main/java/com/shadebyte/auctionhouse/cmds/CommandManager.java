@@ -1,11 +1,15 @@
 package com.shadebyte.auctionhouse.cmds;
 
 import com.shadebyte.auctionhouse.Core;
+import com.shadebyte.auctionhouse.api.enums.Lang;
 import com.shadebyte.auctionhouse.api.enums.Permissions;
+import com.shadebyte.auctionhouse.cmds.subcmds.SellCommand;
+import com.shadebyte.auctionhouse.inventory.inventories.AuctionGUI;
 import com.shadebyte.auctionhouse.util.Debugger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,20 +39,24 @@ public class CommandManager implements CommandExecutor {
 
     public void initialize() {
         Core.getInstance().getCommand(main).setExecutor(this);
+        this.commands.add(new SellCommand());
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         if (!sender.hasPermission(Permissions.BASE.getNode())) {
-            //sender.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NO_PERMISSION.getNode()));
+            sender.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NO_PERMISSION.getNode()));
             return true;
         }
 
         //Main command text
         if (command.getName().equalsIgnoreCase(main)) {
             if (args.length == 0) {
-                //OPEN
+                if (sender instanceof Player) {
+                    Player p = (Player) sender;
+                    p.openInventory(AuctionGUI.getInstance(p).getInventory());
+                }
                 return true;
             }
 
@@ -56,7 +64,7 @@ public class CommandManager implements CommandExecutor {
             SubCommand target = this.getSubcommand(args[0]);
 
             if (target == null) {
-                //sender.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.INVALID_SUBCOMMAND.getNode()));
+                sender.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.INVALID_SUBCOMMAND.getNode()));
                 return true;
             }
 

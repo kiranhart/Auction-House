@@ -1,0 +1,7 @@
+prefix = "&8[eAuctionHouse&8]"
+
+cmd.invalid = "&cThat isn't a valid subcommand!"
+cmd.sell = "&e/ah sell <buyNowPrice> <startPrice> <bidIncrement>"
+
+nopermission = "&cYou do not have permission to do that!"
+playersonly = "&cOnly player's may use the command!"

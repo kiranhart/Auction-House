@@ -4,3 +4,8 @@ main: com.shadebyte.auctionhouse.Core
 authors: [TheCrystalStar]
 description: A premium auction house plugin
 website: https://www.shadebyte.com
+
+commands:
+  auctionhouse:
+    description: Main command for the plugin
+    aliases: [ah, auchouse]
