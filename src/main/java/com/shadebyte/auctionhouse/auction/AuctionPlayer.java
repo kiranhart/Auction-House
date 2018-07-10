@@ -2,6 +2,7 @@ package com.shadebyte.auctionhouse.auction;
 
 import com.shadebyte.auctionhouse.Core;
 import com.shadebyte.auctionhouse.api.enums.Permissions;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class AuctionPlayer {
     public int getTotalActiveAuctions() {
         int total = 0;
         for (AuctionItem item : Core.getInstance().auctionItems) {
-            if (item.getOwner().getUniqueId().equals(player.getUniqueId())) {
+            if (item.getOwner().equals(player.getUniqueId().toString())) {
                 total++;
             }
         }
@@ -34,12 +35,20 @@ public class AuctionPlayer {
     public List<AuctionItem> getAuctionItems() {
         List<AuctionItem> list = new ArrayList<>();
         for (AuctionItem item : Core.getInstance().auctionItems) {
-            if (item.getOwner().getUniqueId().equals(player.getUniqueId())) {
+            if (item.getOwner().equals(player.getUniqueId().toString())) {
                 list.add(item);
             }
         }
         return list;
     }
+
+    public int getTotalExpiredAuctions() {
+        int total;
+        ConfigurationSection section = Core.getInstance().getData().getConfig().getConfigurationSection("expired." + player.getUniqueId().toString());
+        total = (section != null) ? section.getKeys(false).size() : 0;
+        return total;
+    }
+
 
     public boolean hasMaximumAuctionsActive() {
         if (!player.hasPermission(Permissions.MAX_AUCTIONS.getNode() + "." + getTotalActiveAuctions())) {

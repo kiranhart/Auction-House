@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.shadebyte.auctionhouse.Core;
 import com.shadebyte.auctionhouse.api.AuctionAPI;
 import com.shadebyte.auctionhouse.auction.AuctionItem;
+import com.shadebyte.auctionhouse.auction.AuctionPlayer;
 import com.shadebyte.auctionhouse.inventory.AGUI;
 import com.shadebyte.auctionhouse.util.NBTEditor;
 import org.bukkit.Bukkit;
@@ -48,10 +49,12 @@ public class AuctionGUI implements AGUI {
         e.setCancelled(true);
         Player p = (Player) e.getWhoClicked();
 
-
-        if (page >= 1 && slot == 48) p.openInventory(this.setPage(this.getPage() - 1).getInventory());
-        if (page >= 1 && slot == 50) p.openInventory(this.setPage(this.getPage() + 1).getInventory());
-
+        try {
+            if (page >= 1 && slot == 48) p.openInventory(this.setPage(this.getPage() - 1).getInventory());
+            if (page >= 1 && slot == 50) p.openInventory(this.setPage(this.getPage() + 1).getInventory());
+        } catch (Exception ex) {
+            //Hide for now
+        }
 
         if (slot == 49) {
             p.closeInventory();
@@ -71,7 +74,19 @@ public class AuctionGUI implements AGUI {
                     if (auctionItem.getKey().equalsIgnoreCase(key)) item = auctionItem;
                 }
 
+                if (Core.getEconomy().getBalance(p) < item.getBidIncrement()) {
+                    e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createConfigItem("gui.auction.items.not-enough-money", 0, 0));
+                    Bukkit.getServer().getScheduler().runTaskLater(Core.getInstance(), () -> {
+                        p.closeInventory();
+                        p.openInventory(AuctionGUI.getInstance(p).getInventory());
+                    }, 1);
+
+                    // p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NOT_ENOUGH_MONEY.getNode()));
+                    return;
+                }
+
                 item.setCurrentPrice(item.getCurrentPrice() + item.getBidIncrement());
+                item.setHighestBidder(p.getUniqueId().toString());
                 p.closeInventory();
                 p.openInventory(AuctionGUI.getInstance(p).getInventory());
             }
@@ -82,12 +97,14 @@ public class AuctionGUI implements AGUI {
                     if (auctionItem.getKey().equalsIgnoreCase(key)) item = auctionItem;
                 }
 
-                p.getInventory().addItem(item.getItem());
-                item.setTime(0);
-                Core.getInstance().auctionItems.remove(item);
-
                 p.closeInventory();
-                p.openInventory(AuctionGUI.getInstance(p).getInventory());
+                p.openInventory(ConfirmationGUI.getInstance(item).getInventory());
+//                p.getInventory().addItem(item.getItem());
+//                item.setTime(0);
+//                Core.getInstance().auctionItems.remove(item);
+//
+//                p.closeInventory();
+//                p.openInventory(AuctionGUI.getInstance(p).getInventory());
             }
         }
     }
@@ -102,13 +119,13 @@ public class AuctionGUI implements AGUI {
         Inventory inventory = Bukkit.createInventory(this, 54, ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("gui.auction.title")));
 
         //Bottom Row
-        inventory.setItem(45, AuctionAPI.getInstance().createConfigItem("gui.auction.items.yourauctions"));
-        inventory.setItem(46, AuctionAPI.getInstance().createConfigItem("gui.auction.items.collectionbin"));
-        inventory.setItem(48, AuctionAPI.getInstance().createConfigItem("gui.auction.items.previouspage"));
-        inventory.setItem(49, AuctionAPI.getInstance().createConfigItem("gui.auction.items.refresh"));
-        inventory.setItem(50, AuctionAPI.getInstance().createConfigItem("gui.auction.items.nextpage"));
-        inventory.setItem(52, AuctionAPI.getInstance().createConfigItem("gui.auction.items.howtosell"));
-        inventory.setItem(53, AuctionAPI.getInstance().createConfigItem("gui.auction.items.guide"));
+        inventory.setItem(45, AuctionAPI.getInstance().createConfigItem("gui.auction.items.yourauctions", new AuctionPlayer(p).getTotalActiveAuctions(), 0));
+        inventory.setItem(46, AuctionAPI.getInstance().createConfigItem("gui.auction.items.collectionbin", 0, new AuctionPlayer(p).getTotalExpiredAuctions()));
+        inventory.setItem(48, AuctionAPI.getInstance().createConfigItem("gui.auction.items.previouspage", 0, 0));
+        inventory.setItem(49, AuctionAPI.getInstance().createConfigItem("gui.auction.items.refresh", 0, 0));
+        inventory.setItem(50, AuctionAPI.getInstance().createConfigItem("gui.auction.items.nextpage", 0, 0));
+        inventory.setItem(52, AuctionAPI.getInstance().createConfigItem("gui.auction.items.howtosell", 0, 0));
+        inventory.setItem(53, AuctionAPI.getInstance().createConfigItem("gui.auction.items.guide", 0, 0));
 
         //Pagination
         List<List<AuctionItem>> chunks = Lists.partition(Core.getInstance().auctionItems, 45);

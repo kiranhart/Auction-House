@@ -1,7 +1,31 @@
+settings:
+  default-auction-time: 3600 # 60 Minutes by default
+  max-auction-price: 2000000000
+
+
+
 gui:
+  confirm:
+    title: "&e&lConfirm Purchase"
+    items:
+      no:
+        item: "STAINED_GLASS_PANE:14"
+        name: "&C&LNo"
+        lore:
+          - "&7Do not purchase this item."
+      yes:
+        item: "STAINED_GLASS_PANE:5"
+        name: "&a&lYes"
+        lore:
+          - "&7Purchase for &a${price}"
   auction:
     title: "&7Auction House"
     items:
+      not-enough-money:
+        item: "STAINED_GLASS_PANE:14"
+        name: "&c&lError"
+        lore:
+          - "&cYou do not have enough money!"
       guide:
         item: "BOOK:0"
         name: "&e&lGuide"

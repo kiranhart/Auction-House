@@ -41,7 +41,7 @@ public class SellCommand extends SubCommand {
             int buyNow = Integer.parseInt(args[1]);
             int startPrice = Integer.parseInt(args[2]);
             int increment = Integer.parseInt(args[3]);
-            Core.getInstance().auctionItems.add(0, new AuctionItem(p, AuctionAPI.getItemInHand(p), 3600, startPrice, increment, buyNow));
+            Core.getInstance().auctionItems.add(0, new AuctionItem(p.getUniqueId().toString(), AuctionAPI.getItemInHand(p), 3600, startPrice, increment, buyNow));
         }
     }
 

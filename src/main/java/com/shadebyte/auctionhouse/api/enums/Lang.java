@@ -11,6 +11,13 @@ public enum Lang {
     PREFIX("prefix"),
     NO_PERMISSION("nopermission"),
     PLAYERS_ONLY("playersonly"),
+    NOT_A_NUMBER("notanumber"),
+    NOT_ENOUGH_MONEY("notenoughmoney"),
+
+    AUCTION_LISTED("auction.listed"),
+    AUCTION_BUY("auction.buy"),
+    AUCTION_MAX("auction.max"),
+    AUCTION_SOLD("auction.sold"),
 
     INVALID_SUBCOMMAND("cmd.invalid"),
     CMD_SELL("cmd.sell"),

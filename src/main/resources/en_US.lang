@@ -1,7 +1,14 @@
-prefix = "&8[eAuctionHouse&8]"
+prefix = "&8[&eAuctionHouse&8]"
 
 cmd.invalid = "&cThat isn't a valid subcommand!"
 cmd.sell = "&e/ah sell <buyNowPrice> <startPrice> <bidIncrement>"
 
 nopermission = "&cYou do not have permission to do that!"
 playersonly = "&cOnly player's may use the command!"
+notanumber = "&CThat isn't a valid number"
+notenoughmoney = "&CYou do not have enough money!"
+
+auction.listed = "&eYou listed &6{itemname} &efor &a${price}"
+auction.max = "&cYou cannot auction more items, please upgrade to do so."
+auction.buy = "&eYou purchased &6{itemname} &Efor &A${price}"
+auction.sold = "&6{player} &Ehas bought your listed item: &6{item} &efor &a${price}"
