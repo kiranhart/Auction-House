@@ -1,8 +1,22 @@
+#If this file (en_US.lang) is somehow missing it will load any other valid
+#.lang file. It's safer to translate the original file change the name and
+#have it in the same locale folder, just set new lang name here.
+#Lang name formats: https://www.science.co.il/language/Locale-codes.php
+lang: "en_US"
+
 settings:
   default-auction-time: 3600 # 60 Minutes by default
   max-auction-price: 2000000000
-
-
+  max-auction-start: 2000000000
+  max-auction-increment: 2000000000
+  min-auction-price: 25000
+  min-auction-start: 25000
+  min-auction-increment: 1
+  owner-can-purchase-own: false
+  owner-can-bid-own: false
+  bid:
+    increase-on-bid: true
+    increase-amount: 10 #10 Seconds by default
 
 gui:
   confirm:

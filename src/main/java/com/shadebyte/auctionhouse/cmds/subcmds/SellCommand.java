@@ -5,6 +5,7 @@ import com.shadebyte.auctionhouse.api.AuctionAPI;
 import com.shadebyte.auctionhouse.api.enums.Lang;
 import com.shadebyte.auctionhouse.api.enums.Permissions;
 import com.shadebyte.auctionhouse.auction.AuctionItem;
+import com.shadebyte.auctionhouse.auction.AuctionPlayer;
 import com.shadebyte.auctionhouse.cmds.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,11 +38,38 @@ public class SellCommand extends SubCommand {
             return;
         }
 
+        if (args.length == 2) {
+            if (AuctionAPI.getInstance().isNumeric(args[1])) {
+                p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.CMD_SELL.getNode()));
+            } else {
+                p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NOT_A_NUMBER.getNode()));
+            }
+        }
+
+        if (args.length == 3) {
+            if (AuctionAPI.getInstance().isNumeric(args[1]) && AuctionAPI.getInstance().isNumeric(args[2])) {
+                p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.CMD_SELL.getNode()));
+            } else {
+                p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NOT_A_NUMBER.getNode()));
+            }
+        }
+
         if (args.length == 4) {
-            int buyNow = Integer.parseInt(args[1]);
-            int startPrice = Integer.parseInt(args[2]);
-            int increment = Integer.parseInt(args[3]);
-            Core.getInstance().auctionItems.add(0, new AuctionItem(p.getUniqueId().toString(), AuctionAPI.getItemInHand(p), 3600, startPrice, increment, buyNow));
+            if (AuctionAPI.getInstance().isNumeric(args[1]) && AuctionAPI.getInstance().isNumeric(args[2]) && AuctionAPI.getInstance().isNumeric(args[3])) {
+                if (new AuctionPlayer(p).hasMaximumAuctionsActive()) {
+                    p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_MAX.getNode()));
+                    return;
+                }
+
+                int buyNow = Integer.parseInt(args[1]);
+                int startPrice = Integer.parseInt(args[2]);
+                int increment = Integer.parseInt(args[3]);
+                AuctionItem auctionItem = new AuctionItem(p.getUniqueId().toString(), AuctionAPI.getItemInHand(p), 3600, startPrice, increment, buyNow);
+                Core.getInstance().auctionItems.add(0, auctionItem);
+                p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_LISTED.getNode()).replace("{itemname}", auctionItem.getDisplayName()).replace("{price}", AuctionAPI.getInstance().friendlyNumber(startPrice)));
+            } else {
+                p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NOT_A_NUMBER.getNode()));
+            }
         }
     }
 

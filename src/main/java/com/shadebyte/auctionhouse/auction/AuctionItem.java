@@ -2,12 +2,11 @@ package com.shadebyte.auctionhouse.auction;
 
 import com.shadebyte.auctionhouse.api.AuctionAPI;
 import com.shadebyte.auctionhouse.util.NBTEditor;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +31,7 @@ public class AuctionItem {
     private int time;
     private String key;
 
-    public AuctionItem(String owner, ItemStack item, int startPrice, int bidIncrement, int buyNowPrice, int currentPrice, int time, String key) {
+    public AuctionItem(String owner, String highestBidder, ItemStack item, int startPrice, int bidIncrement, int buyNowPrice, int currentPrice, int time, String key) {
         this.owner = owner;
         this.item = item;
         this.startPrice = startPrice;
@@ -41,7 +40,7 @@ public class AuctionItem {
         this.time = time;
         this.currentPrice = currentPrice;
         this.key = key;
-        this.highestBidder = owner;
+        this.highestBidder = highestBidder;
     }
 
     public AuctionItem(String owner, ItemStack item, int time, int startPrice, int bidIncrement, int buyNowPrice) {
@@ -122,6 +121,19 @@ public class AuctionItem {
 
     public void setHighestBidder(String highestBidder) {
         this.highestBidder = highestBidder;
+    }
+
+    public String getDisplayName() {
+        String name = key;
+        if (item.hasItemMeta()) {
+            if (item.getItemMeta().hasDisplayName())
+                name = item.getItemMeta().getDisplayName();
+            else
+                name = StringUtils.capitalize(item.getType().name().toLowerCase().replace("_", " "));
+        } else {
+            name = StringUtils.capitalize(item.getType().name().toLowerCase().replace("_", " "));
+        }
+        return name;
     }
 
     public void updateTime(int removeAmount) {

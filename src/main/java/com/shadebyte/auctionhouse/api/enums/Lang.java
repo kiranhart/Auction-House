@@ -13,6 +13,8 @@ public enum Lang {
     PLAYERS_ONLY("playersonly"),
     NOT_A_NUMBER("notanumber"),
     NOT_ENOUGH_MONEY("notenoughmoney"),
+    CANNOT_BUY_OWN("cantbuyown"),
+    CANNOT_BID_OWN("cantbidonown"),
 
     AUCTION_LISTED("auction.listed"),
     AUCTION_BUY("auction.buy"),

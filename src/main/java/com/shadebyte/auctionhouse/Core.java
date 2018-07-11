@@ -1,6 +1,8 @@
 package com.shadebyte.auctionhouse;
 
 import com.massivestats.MassiveStats;
+import com.shadebyte.auctionhouse.api.AuctionAPI;
+import com.shadebyte.auctionhouse.api.enums.Lang;
 import com.shadebyte.auctionhouse.api.event.AuctionEndEvent;
 import com.shadebyte.auctionhouse.auction.AuctionItem;
 import com.shadebyte.auctionhouse.cmds.CommandManager;
@@ -10,7 +12,10 @@ import com.shadebyte.auctionhouse.util.Debugger;
 import com.shadebyte.auctionhouse.util.Locale;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -18,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class Core extends JavaPlugin {
@@ -43,21 +49,26 @@ public final class Core extends JavaPlugin {
     //Storage
     public List<AuctionItem> auctionItems;
 
+    //Timing
+    private Long startTime;
+
     @Override
     public void onEnable() {
         // Plugin startup logic
         instance = this;
 
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bStarted to load Auction Items from data file."));
+        startTime = System.currentTimeMillis();
+
         setupEconomy();
+        initDataFiles();
 
         //Locales
         Locale.init(this);
         Locale.saveDefaultLocale("en_US");
-        this.locale = Locale.getLocale(this.getConfig().getString("Locale", "en_US"));
+        this.locale = Locale.getLocale(this.getConfig().getString("Locale", getConfig().getString("lang")));
 
         settings = new Settings();
-
-        initDataFiles();
 
         commandManager = new CommandManager();
         commandManager.initialize();
@@ -73,10 +84,9 @@ public final class Core extends JavaPlugin {
         }
 
         try {
-
             ConfigurationSection section = data.getConfig().getConfigurationSection("active");
             if (section.getKeys(false).size() != 0) {
-
+                int size = section.getKeys(false).size();
                 Bukkit.getServer().getScheduler().runTaskAsynchronously(this, () -> {
                     for (String node : section.getKeys(false)) {
                         int xNode = Integer.parseInt(node);
@@ -88,17 +98,22 @@ public final class Core extends JavaPlugin {
                         int currentPrice = data.getConfig().getInt("active." + xNode + ".currentprice");
                         int time = data.getConfig().getInt("active." + xNode + ".time");
                         String key = data.getConfig().getString("active." + xNode + ".key");
+                        String highestBidder = data.getConfig().getString("active." + xNode + ".highestbidder");
 
-                        AuctionItem item = new AuctionItem(owner, stack, startPrice, bidIncrement, buyNowPrice, currentPrice, time, key);
+                        AuctionItem item = new AuctionItem(owner, highestBidder, stack, startPrice, bidIncrement, buyNowPrice, currentPrice, time, key);
                         auctionItems.add(item);
                         data.getConfig().set("active." + xNode, null);
+                        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&eLoaded Auction Item with key&f: &b" + item.getKey()));
                     }
                     data.saveConfig();
                 });
+                Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&eLoaded a total of &f: &b" + size + "&e items"));
             }
         } catch (Exception e) {
             Debugger.report(e);
         }
+
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bAuction House finished loading, took " + (System.currentTimeMillis() - startTime) + " ms"));
 
         try {
             Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
@@ -109,12 +124,34 @@ public final class Core extends JavaPlugin {
                             AuctionEndEvent auctionEndEvent = new AuctionEndEvent(auctionItem);
                             getServer().getPluginManager().callEvent(auctionEndEvent);
                             if (!auctionEndEvent.isCancelled()) {
-                                if (auctionItem.getHighestBidder().equalsIgnoreCase("")) {
+                                if (auctionItem.getHighestBidder().equalsIgnoreCase(auctionItem.getOwner())) {
                                     data.getConfig().set("expired." + auctionItem.getOwner() + "." + System.currentTimeMillis() + System.nanoTime(), auctionItem.getItem());
                                     data.saveConfig();
                                     auctionItems.remove(auctionItem);
                                 } else {
-                                    //TODO give highest bidder item
+                                    Player highestBidder = Bukkit.getPlayer(UUID.fromString(auctionItem.getHighestBidder()));
+                                    if (highestBidder != null) {
+                                        if (getEconomy().getBalance(highestBidder) < auctionItem.getCurrentPrice()) {
+                                            highestBidder.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NOT_ENOUGH_MONEY.getNode()));
+                                            data.getConfig().set("expired." + auctionItem.getOwner() + "." + System.currentTimeMillis() + System.nanoTime(), auctionItem.getItem());
+                                        } else {
+                                            highestBidder.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_BUY.getNode()).replace("{itemname}", auctionItem.getDisplayName()).replace("{price}", AuctionAPI.getInstance().friendlyNumber(auctionItem.getCurrentPrice())));
+                                            if (AuctionAPI.getInstance().availableSlots(highestBidder.getInventory()) < 1)
+                                                highestBidder.getWorld().dropItemNaturally(highestBidder.getLocation(), auctionItem.getItem());
+                                            else
+                                                highestBidder.getInventory().addItem(auctionItem.getItem());
+                                        }
+                                        data.saveConfig();
+                                        auctionItems.remove(auctionItem);
+                                    } else {
+                                        if (getEconomy().getBalance(highestBidder) < auctionItem.getCurrentPrice()) {
+                                            data.getConfig().set("expired." + auctionItem.getOwner() + "." + System.currentTimeMillis() + System.nanoTime(), auctionItem.getItem());
+                                        } else {
+                                            data.getConfig().set("expired." + auctionItem.getHighestBidder() + "." + System.currentTimeMillis() + System.nanoTime(), auctionItem.getItem());
+                                        }
+                                        data.saveConfig();
+                                        auctionItems.remove(auctionItem);
+                                    }
                                 }
                             }
                         }
@@ -134,6 +171,7 @@ public final class Core extends JavaPlugin {
         int node = 1;
         for (AuctionItem auctionItem : auctionItems) {
             data.getConfig().set("active." + node + ".owner", auctionItem.getOwner());
+            data.getConfig().set("active." + node + ".highestbidder", auctionItem.getHighestBidder());
             data.getConfig().set("active." + node + ".startprice", auctionItem.getStartPrice());
             data.getConfig().set("active." + node + ".bidincrement", auctionItem.getBidIncrement());
             data.getConfig().set("active." + node + ".currentprice", auctionItem.getCurrentPrice());
@@ -145,7 +183,6 @@ public final class Core extends JavaPlugin {
         }
 
         data.saveConfig();
-
     }
 
     private boolean setupEconomy() {

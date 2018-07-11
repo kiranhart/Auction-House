@@ -3,6 +3,7 @@ package com.shadebyte.auctionhouse.inventory.inventories;
 import com.google.common.collect.Lists;
 import com.shadebyte.auctionhouse.Core;
 import com.shadebyte.auctionhouse.api.AuctionAPI;
+import com.shadebyte.auctionhouse.api.enums.Lang;
 import com.shadebyte.auctionhouse.auction.AuctionItem;
 import com.shadebyte.auctionhouse.auction.AuctionPlayer;
 import com.shadebyte.auctionhouse.inventory.AGUI;
@@ -76,17 +77,28 @@ public class AuctionGUI implements AGUI {
 
                 if (Core.getEconomy().getBalance(p) < item.getBidIncrement()) {
                     e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createConfigItem("gui.auction.items.not-enough-money", 0, 0));
-                    Bukkit.getServer().getScheduler().runTaskLater(Core.getInstance(), () -> {
+                    Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(Core.getInstance(), () -> {
                         p.closeInventory();
                         p.openInventory(AuctionGUI.getInstance(p).getInventory());
-                    }, 1);
-
-                    // p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NOT_ENOUGH_MONEY.getNode()));
+                    }, 20);
                     return;
                 }
 
-                item.setCurrentPrice(item.getCurrentPrice() + item.getBidIncrement());
-                item.setHighestBidder(p.getUniqueId().toString());
+                if (item.getOwner().equalsIgnoreCase(p.getUniqueId().toString())) {
+                    if (Core.getInstance().getConfig().getBoolean("settings.owner-can-bid-own")) {
+                        item.setCurrentPrice(item.getCurrentPrice() + item.getBidIncrement());
+                        item.setHighestBidder(p.getUniqueId().toString());
+                    } else {
+                        p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.CANNOT_BID_OWN.getNode()));
+                    }
+                } else {
+                    item.setCurrentPrice(item.getCurrentPrice() + item.getBidIncrement());
+                    item.setHighestBidder(p.getUniqueId().toString());
+                }
+
+                if (Core.getInstance().getConfig().getBoolean("settings.bid.increase-on-bid"))
+                    item.setTime(item.getTime() + Core.getInstance().getConfig().getInt("settings.bid.increase-amount"));
+
                 p.closeInventory();
                 p.openInventory(AuctionGUI.getInstance(p).getInventory());
             }
@@ -97,14 +109,26 @@ public class AuctionGUI implements AGUI {
                     if (auctionItem.getKey().equalsIgnoreCase(key)) item = auctionItem;
                 }
 
-                p.closeInventory();
-                p.openInventory(ConfirmationGUI.getInstance(item).getInventory());
-//                p.getInventory().addItem(item.getItem());
-//                item.setTime(0);
-//                Core.getInstance().auctionItems.remove(item);
-//
-//                p.closeInventory();
-//                p.openInventory(AuctionGUI.getInstance(p).getInventory());
+                if (Core.getEconomy().getBalance(p) < item.getBuyNowPrice()) {
+                    e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createConfigItem("gui.auction.items.not-enough-money", 0, 0));
+                    Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(Core.getInstance(), () -> {
+                        p.closeInventory();
+                        p.openInventory(AuctionGUI.getInstance(p).getInventory());
+                    }, 20);
+                    return;
+                } else {
+                    if (item.getOwner().equalsIgnoreCase(p.getUniqueId().toString())) {
+                        if (Core.getInstance().getConfig().getBoolean("settings.owner-can-purchase-own")) {
+                            p.closeInventory();
+                            p.openInventory(ConfirmationGUI.getInstance(item).getInventory());
+                        } else {
+                            p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.CANNOT_BUY_OWN.getNode()));
+                        }
+                    } else {
+                        p.closeInventory();
+                        p.openInventory(ConfirmationGUI.getInstance(item).getInventory());
+                    }
+                }
             }
         }
     }

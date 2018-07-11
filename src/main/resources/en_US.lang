@@ -7,6 +7,8 @@ nopermission = "&cYou do not have permission to do that!"
 playersonly = "&cOnly player's may use the command!"
 notanumber = "&CThat isn't a valid number"
 notenoughmoney = "&CYou do not have enough money!"
+cantbidonown = "&cYou cannot bid on your own item!"
+cantbuyown = "&cYou cannot buy your own item!"
 
 auction.listed = "&eYou listed &6{itemname} &efor &a${price}"
 auction.max = "&cYou cannot auction more items, please upgrade to do so."

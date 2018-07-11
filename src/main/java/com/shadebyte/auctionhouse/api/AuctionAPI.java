@@ -63,7 +63,7 @@ public class AuctionAPI {
 
     public boolean isNumeric(String number) {
         try {
-            Double.parseDouble(number);
+            Integer.parseInt(number);
         } catch (NumberFormatException nfe) {
             Debugger.report(nfe);
             return false;
@@ -98,7 +98,7 @@ public class AuctionAPI {
 
     public String friendlyNumber(double value) {
         int power;
-        String suffix = " kmbt";
+        String suffix = " KMBT";
         String formattedNumber = "";
 
         NumberFormat formatter = new DecimalFormat("#,###.#");
