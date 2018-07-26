@@ -148,12 +148,7 @@ public class AuctionItem {
         ItemStack stack = item.clone();
         stack.setAmount((stack.getAmount() > 1) ? stack.getAmount() : 1);
         ItemMeta meta = stack.getItemMeta();
-        List<String> lore = null;
-        if (meta.hasLore()) {
-            lore = meta.getLore();
-        } else {
-            lore = new ArrayList<>();
-        }
+        List<String> lore = (meta.hasLore() ? meta.getLore() : new ArrayList<>());
         lore.add(translateAlternateColorCodes('&', "&7-------------------------"));
         if (owner == null)
             lore.add(translateAlternateColorCodes('&', "&eSeller&f: &bSample User"));
@@ -175,4 +170,21 @@ public class AuctionItem {
         return stack;
     }
 
+    public ItemStack listingStack() {
+        ItemStack stack = item.clone();
+        stack.setAmount((stack.getAmount() > 1) ? stack.getAmount() : 1);
+        ItemMeta meta = stack.getItemMeta();
+        List<String> lore = (meta.hasLore() ? meta.getLore() : new ArrayList<>());
+        lore.add(translateAlternateColorCodes('&', "&7-------------------------"));
+        lore.add(translateAlternateColorCodes('&', "&eBuy Now: &a$" + AuctionAPI.getInstance().friendlyNumber(buyNowPrice)));
+        lore.add(translateAlternateColorCodes('&', "&eCurrent Price: &a$" + AuctionAPI.getInstance().friendlyNumber(currentPrice)));
+        lore.add(translateAlternateColorCodes('&', "&eBid Increment: &a$" + AuctionAPI.getInstance().friendlyNumber(bidIncrement)));
+        lore.add(translateAlternateColorCodes('&', ""));
+        lore.add(translateAlternateColorCodes('&', "&eTime Left: &b" + AuctionAPI.getInstance().timeLeft(getTime())));
+        lore.add(translateAlternateColorCodes('&', "&7-------------------------"));
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
+        stack = NBTEditor.setItemTag(stack, getKey(), "AuctionItemKey");
+        return stack;
+    }
 }

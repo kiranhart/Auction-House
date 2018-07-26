@@ -28,18 +28,12 @@ import java.util.List;
  */
 public class AuctionGUI implements AGUI {
 
-    private static AuctionGUI instance;
     private Player p;
+    private List<List<AuctionItem>> chunks;
 
-    private AuctionGUI(Player p) {
+    public AuctionGUI(Player p) {
         this.p = p;
-    }
-
-    public static AuctionGUI getInstance(Player p) {
-        if (instance == null) {
-            instance = new AuctionGUI(p);
-        }
-        return instance;
+        chunks = Lists.partition(Core.getInstance().auctionItems, 45);
     }
 
     private int page = 1;
@@ -59,7 +53,17 @@ public class AuctionGUI implements AGUI {
 
         if (slot == 49) {
             p.closeInventory();
-            p.openInventory(AuctionGUI.getInstance(p).getInventory());
+            p.openInventory(new AuctionGUI(p).getInventory());
+        }
+
+        if (slot == 45) {
+            p.closeInventory();
+            p.openInventory(new ListingsGUI(p).getInventory());
+        }
+
+        if (slot == 46) {
+            p.closeInventory();
+            p.openInventory(new ExpiredGUI(p).getInventory());
         }
 
         if (slot >= 0 & slot <= 44) {
@@ -79,7 +83,7 @@ public class AuctionGUI implements AGUI {
                     e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createConfigItem("gui.auction.items.not-enough-money", 0, 0));
                     Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(Core.getInstance(), () -> {
                         p.closeInventory();
-                        p.openInventory(AuctionGUI.getInstance(p).getInventory());
+                        p.openInventory(new AuctionGUI(p).getInventory());
                     }, 20);
                     return;
                 }
@@ -100,7 +104,7 @@ public class AuctionGUI implements AGUI {
                     item.setTime(item.getTime() + Core.getInstance().getConfig().getInt("settings.bid.increase-amount"));
 
                 p.closeInventory();
-                p.openInventory(AuctionGUI.getInstance(p).getInventory());
+                p.openInventory(new AuctionGUI(p).getInventory());
             }
 
             if (e.getClick() == ClickType.RIGHT) {
@@ -113,20 +117,20 @@ public class AuctionGUI implements AGUI {
                     e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createConfigItem("gui.auction.items.not-enough-money", 0, 0));
                     Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(Core.getInstance(), () -> {
                         p.closeInventory();
-                        p.openInventory(AuctionGUI.getInstance(p).getInventory());
+                        p.openInventory(new AuctionGUI(p).getInventory());
                     }, 20);
                     return;
                 } else {
                     if (item.getOwner().equalsIgnoreCase(p.getUniqueId().toString())) {
                         if (Core.getInstance().getConfig().getBoolean("settings.owner-can-purchase-own")) {
                             p.closeInventory();
-                            p.openInventory(ConfirmationGUI.getInstance(item).getInventory());
+                            p.openInventory(new ConfirmationGUI(item).getInventory());
                         } else {
                             p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.CANNOT_BUY_OWN.getNode()));
                         }
                     } else {
                         p.closeInventory();
-                        p.openInventory(ConfirmationGUI.getInstance(item).getInventory());
+                        p.openInventory(new ConfirmationGUI(item).getInventory());
                     }
                 }
             }
@@ -152,11 +156,10 @@ public class AuctionGUI implements AGUI {
         inventory.setItem(53, AuctionAPI.getInstance().createConfigItem("gui.auction.items.guide", 0, 0));
 
         //Pagination
-        List<List<AuctionItem>> chunks = Lists.partition(Core.getInstance().auctionItems, 45);
+
 
         if (chunks.size() != 0)
             chunks.get(getPage() - 1).forEach(item -> inventory.setItem(inventory.firstEmpty(), item.auctionStack()));
-
         return inventory;
     }
 

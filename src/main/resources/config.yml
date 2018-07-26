@@ -5,12 +5,12 @@
 lang: "en_US"
 
 settings:
-  default-auction-time: 3600 # 60 Minutes by default
+  default-auction-time: 15 # 15 Minutes by default
   max-auction-price: 2000000000
   max-auction-start: 2000000000
   max-auction-increment: 2000000000
-  min-auction-price: 25000
-  min-auction-start: 25000
+  min-auction-price: 1
+  min-auction-start: 1
   min-auction-increment: 1
   owner-can-purchase-own: false
   owner-can-bid-own: false
@@ -18,20 +18,103 @@ settings:
     increase-on-bid: true
     increase-amount: 10 #10 Seconds by default
 
+#MySql stuff for databases if you want
+database:
+  enabled: true
+  host: 162.241.217.18
+  port: 3306
+  database: "kiranhar_auctionhouse"
+  username: "kiranhar_admin"
+  password: "TweetyHart1."
+
+discord:
+  enabled: true
+  webhook: "https://discordapp.com/api/webhooks/470085392901734410/_ls7Ps5GzlKqBJlHLaZt6GZgVTKkuwuIuWK1JU5j_pt-DwWhSYAITlI17ePiIuNTmdua"
+  title: "Auction House"
+  description: "A new item has been listed!"
+  description-complete: "A transaction has been completed!"
+  username: "Auction House"
+  profilepicture: "https://vignette.wikia.nocookie.net/minecraftuniverse/images/2/2c/Gold_Chest_%28M2%29.png/revision/latest?cb=20130121082341"
+
+receipt:
+  give-on-transaction: true
+  item: "PAPER:0"
+  name: "&E&LReceipt &7(Right-Click)"
+  lore:
+    - "&7Purchase proof of the purchased item."
+    - ""
+    - "&bSeller&f: &E{seller}"
+    - "&bPrice&f: &a${price}"
+    - "&ePurchased on&f: &a{date} &fat &A{time}"
+
 gui:
+  active:
+    title: "&7Your Current Listings"
+    items:
+      return:
+        item: "CHEST:0"
+        name: "&e&lReturn to Auction House"
+        lore:
+          - "&7Click here to return to the"
+          - "&7auction house main menu."
+      previouspage:
+        item: "PAPER:0"
+        name: "&e&l<- Previous Page"
+        lore:
+          - "&7Go back"
+      nextpage:
+        item: "PAPER:0"
+        name: "&e&lPrevious Page ->"
+        lore:
+          - "&7Next Page"
+      tutorial:
+        item: "BOOK:0"
+        name: "&e&lTutorial"
+        lore:
+          - "&7These are your current listings, all of"
+          - "&7the items you currently have listed on"
+          - "&7the auction house are displayed here."
+          - ""
+          - "&7You can cancel and view your listing's"
+          - "&7expire time here."
+  collection:
+    title: "&7Cancelled / Expired Listings"
+    items:
+      return:
+        item: "CHEST:0"
+        name: "&e&lReturn to Auction House"
+        lore:
+          - "&7Click here to return to the"
+          - "&7auction house main menu."
+      previouspage:
+        item: "PAPER:0"
+        name: "&e&l<- Previous Page"
+        lore:
+          - "&7Go back"
+      nextpage:
+        item: "PAPER:0"
+        name: "&e&lPrevious Page ->"
+        lore:
+          - "&7Next Page"
+      claimall:
+        item: "ENDER_CHEST:0"
+        name: "&e&lClaim All"
+        lore:
+          - "&7Click here to claim all"
+          - "&7your Collection Bin items."
+      tutorial:
+        item: "BOOK:0"
+        name: "&e&lTutorial"
+        lore:
+          - "&7This page houses all of your cancelled and"
+          - "&7expired items, when a listing is cancelled"
+          - "&7or expires you will be able to return that"
+          - "&7item back to you from this menu."
+          - ""
+          - "&7Just click on the item and if you have enough"
+          - "&7inventory space you will receive the item."
   confirm:
     title: "&e&lConfirm Purchase"
-    items:
-      no:
-        item: "STAINED_GLASS_PANE:14"
-        name: "&C&LNo"
-        lore:
-          - "&7Do not purchase this item."
-      yes:
-        item: "STAINED_GLASS_PANE:5"
-        name: "&a&lYes"
-        lore:
-          - "&7Purchase for &a${price}"
   auction:
     title: "&7Auction House"
     items:

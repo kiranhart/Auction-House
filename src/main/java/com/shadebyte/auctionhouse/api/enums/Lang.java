@@ -21,6 +21,14 @@ public enum Lang {
     AUCTION_MAX("auction.max"),
     AUCTION_SOLD("auction.sold"),
 
+    MAX_START_PRICE("price.max.start"),
+    MAX_AUCTION_PRICE("price.max.auction"),
+    MAX_INCREMENT_PRICE("price.max.increment"),
+
+    MIN_START_PRICE("price.min.start"),
+    MIN_AUCTION_PRICE("price.min.auction"),
+    MIN_INCREMENT_PRICE("price.min.increment"),
+
     INVALID_SUBCOMMAND("cmd.invalid"),
     CMD_SELL("cmd.sell"),
 

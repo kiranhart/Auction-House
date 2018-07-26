@@ -2,9 +2,13 @@ package com.shadebyte.auctionhouse.api;
 
 import com.shadebyte.auctionhouse.Core;
 import com.shadebyte.auctionhouse.api.enums.Version;
+import com.shadebyte.auctionhouse.auction.AuctionItem;
 import com.shadebyte.auctionhouse.util.Debugger;
+import com.shadebyte.auctionhouse.util.NBTEditor;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -12,8 +16,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * The current file has been created by Kiran Hart
@@ -24,6 +31,7 @@ import java.util.List;
 public class AuctionAPI {
 
     private static char[] c = new char[]{'k', 'm', 'b', 't'};
+    private final static TreeMap<Integer, String> map = new TreeMap<Integer, String>();
 
     private static AuctionAPI instance;
 
@@ -37,6 +45,50 @@ public class AuctionAPI {
         return instance;
     }
 
+    static {
+
+        map.put(1000, "M");
+        map.put(900, "CM");
+        map.put(500, "D");
+        map.put(400, "CD");
+        map.put(100, "C");
+        map.put(90, "XC");
+        map.put(50, "L");
+        map.put(40, "XL");
+        map.put(10, "X");
+        map.put(9, "IX");
+        map.put(5, "V");
+        map.put(4, "IV");
+        map.put(1, "I");
+
+    }
+
+    public String toRoman(int number) {
+        int l = map.floorKey(number);
+        if (number == l) {
+            return map.get(number);
+        }
+        return map.get(l) + toRoman(number - l);
+    }
+
+    public ItemStack expiredAuctionItem(AuctionItem stack) {
+        ItemStack item = stack.getItem();
+        item = NBTEditor.setItemTag(item, stack.getKey(), "ExpiredAuctionItem");
+        return item;
+    }
+
+    public List<ItemStack> getAllExpiredItems(Player p) {
+        List<ItemStack> items = new ArrayList<>();
+        if (Core.getInstance().getData().getConfig().getConfigurationSection("expired." + p.getUniqueId().toString()) != null) {
+            if (Core.getInstance().getData().getConfig().getConfigurationSection("expired." + p.getUniqueId().toString()).getKeys(false).size() >= 1) {
+                for (String s : Core.getInstance().getData().getConfig().getConfigurationSection("expired." + p.getUniqueId().toString()).getKeys(false)) {
+                    items.add(Core.getInstance().getData().getConfig().getItemStack("expired." + p.getUniqueId().toString() + "." + s + ".display"));
+                }
+            }
+        }
+        return items;
+    }
+
     public ItemStack createConfigItem(String node, int activeAuctions, int expiredAuctions) {
         String[] rawItem = Core.getInstance().getConfig().getString(node + ".item").split(":");
         ItemStack stack = new ItemStack(Material.valueOf(rawItem[0].toUpperCase()), 1, Short.parseShort(rawItem[1]));
@@ -44,8 +96,8 @@ public class AuctionAPI {
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString(node + ".name")));
         List<String> lore = new ArrayList<>();
         Core.getInstance().getConfig().getStringList(node + ".lore").forEach(s -> lore.add(ChatColor.translateAlternateColorCodes('&', s
-        .replace("{active_player_auctions}", String.valueOf(activeAuctions))
-        .replace("{expired_player_auctions}", String.valueOf(expiredAuctions)))));
+                .replace("{active_player_auctions}", String.valueOf(activeAuctions))
+                .replace("{expired_player_auctions}", String.valueOf(expiredAuctions)))));
         meta.setLore(lore);
         stack.setItemMeta(meta);
         return stack;
@@ -96,6 +148,12 @@ public class AuctionAPI {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
+    public String getDate(long milli) {
+        Date date = new Date(milli);
+        SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
+        return df2.format(date);
+    }
+
     public String friendlyNumber(double value) {
         int power;
         String suffix = " KMBT";
@@ -123,5 +181,50 @@ public class AuctionAPI {
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&6&l" + name));
         stack.setItemMeta(meta);
         return stack;
+    }
+
+    public String getSQLDisplayName(ItemStack item) {
+        String name;
+        if (item.hasItemMeta()) {
+            name = (item.getItemMeta().hasDisplayName()) ? item.getItemMeta().getDisplayName() : StringUtils.capitalize(item.getType().name().toLowerCase().replace("_", " "));
+        } else {
+            name = StringUtils.capitalize(item.getType().name().toLowerCase().replace("_", " "));
+        }
+        return name;
+    }
+
+    public String getSQLLore(ItemStack item) {
+        String lore = "";
+        if (item.hasItemMeta()) {
+            if (!item.getItemMeta().hasLore()) {
+                lore = "No Lore";
+            } else {
+                for (String s : item.getItemMeta().getLore()) {
+                    lore += ChatColor.stripColor(s) + ";";
+                }
+            }
+        } else {
+            lore = "No Lore";
+        }
+        return lore;
+    }
+
+    public String getSQLEnchantments(ItemStack item) {
+        String lore = "";
+        if (item.hasItemMeta()) {
+            if (!item.getItemMeta().hasEnchants()) {
+                lore = "No Enchantments";
+            } else {
+                for (Enchantment enchantment : item.getItemMeta().getEnchants().keySet()) {
+                    String name = enchantment.getName().replace("_", " ").toLowerCase();
+                    String level = toRoman(item.getItemMeta().getEnchantLevel(enchantment));
+                    String e = StringUtils.capitalize(name) + "," + level;
+                    lore += e + ";";
+                }
+            }
+        } else {
+            lore = "No Enchantments";
+        }
+        return lore;
     }
 }

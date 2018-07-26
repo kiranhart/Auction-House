@@ -4,24 +4,30 @@ import com.massivestats.MassiveStats;
 import com.shadebyte.auctionhouse.api.AuctionAPI;
 import com.shadebyte.auctionhouse.api.enums.Lang;
 import com.shadebyte.auctionhouse.api.event.AuctionEndEvent;
+import com.shadebyte.auctionhouse.api.event.AuctionStartEvent;
+import com.shadebyte.auctionhouse.api.event.TransactionCompleteEvent;
 import com.shadebyte.auctionhouse.auction.AuctionItem;
+import com.shadebyte.auctionhouse.auction.Transaction;
 import com.shadebyte.auctionhouse.cmds.CommandManager;
 import com.shadebyte.auctionhouse.events.AGUIListener;
-import com.shadebyte.auctionhouse.util.ConfigWrapper;
+import com.shadebyte.auctionhouse.events.TransactionListener;
 import com.shadebyte.auctionhouse.util.Debugger;
 import com.shadebyte.auctionhouse.util.Locale;
+import com.shadebyte.auctionhouse.util.storage.ConfigWrapper;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -42,12 +48,19 @@ public final class Core extends JavaPlugin {
 
     //Data config instance from the config wrapper
     private ConfigWrapper data;
+    private ConfigWrapper transactions;
 
     //Language system instance
     private Locale locale;
 
     //Storage
     public List<AuctionItem> auctionItems;
+
+    //Database
+    private Connection connection;
+    public String host, database, username, password;
+    public int port;
+    public boolean dbConnected;
 
     //Timing
     private Long startTime;
@@ -56,11 +69,17 @@ public final class Core extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         instance = this;
+        dbConnected = false;
 
         Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bStarted to load Auction Items from data file."));
         startTime = System.currentTimeMillis();
 
-        setupEconomy();
+        if (!setupEconomy()) {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cVault could not be loaded/was found. Disabling Auction House!"));
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         initDataFiles();
 
         //Locales
@@ -76,6 +95,8 @@ public final class Core extends JavaPlugin {
         initEvents();
         initStorage();
 
+        if (getConfig().getBoolean("database.enabled")) mysqlSetup();
+
         try {
             MassiveStats stats = new MassiveStats(this);
             stats.setListenerDisabled(false);
@@ -83,6 +104,54 @@ public final class Core extends JavaPlugin {
             Debugger.report(e);
         }
 
+        loadAuctions();
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bAuction House finished loading, took " + (System.currentTimeMillis() - startTime) + " ms"));
+        tickAuctions();
+    }
+
+    @Override
+    public void onDisable() {
+        saveAuctions();
+    }
+
+
+    private void mysqlSetup() {
+        host = this.getConfig().getString("database.host");
+        port = this.getConfig().getInt("database.port");
+        database = this.getConfig().getString("database.database");
+        username = this.getConfig().getString("database.username");
+        password = this.getConfig().getString("database.password");
+
+        try {
+
+            synchronized (this) {
+                if (getConnection() != null && !getConnection().isClosed()) {
+                    return;
+                }
+
+                Class.forName("com.mysql.jdbc.Driver");
+                setConnection(DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database, this.username, this.password));
+                Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&aSuccessfully Connected to MySQL"));
+                dbConnected = true;
+            }
+        } catch (SQLException e) {
+            Debugger.report(e);
+            Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cCould not connect to MySQL"));
+        } catch (ClassNotFoundException e) {
+            Debugger.report(e);
+            Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cCould not connect to MySQL"));
+        }
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    private void loadAuctions() {
         try {
             ConfigurationSection section = data.getConfig().getConfigurationSection("active");
             if (section.getKeys(false).size() != 0) {
@@ -103,6 +172,8 @@ public final class Core extends JavaPlugin {
                         AuctionItem item = new AuctionItem(owner, highestBidder, stack, startPrice, bidIncrement, buyNowPrice, currentPrice, time, key);
                         auctionItems.add(item);
                         data.getConfig().set("active." + xNode, null);
+                        AuctionStartEvent auctionStartEvent = new AuctionStartEvent(item);
+                        getServer().getPluginManager().callEvent(auctionStartEvent);
                         Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&eLoaded Auction Item with key&f: &b" + item.getKey()));
                     }
                     data.saveConfig();
@@ -112,9 +183,9 @@ public final class Core extends JavaPlugin {
         } catch (Exception e) {
             Debugger.report(e);
         }
+    }
 
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bAuction House finished loading, took " + (System.currentTimeMillis() - startTime) + " ms"));
-
+    private void tickAuctions() {
         try {
             Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
                 if (auctionItems.size() != 0) {
@@ -125,7 +196,8 @@ public final class Core extends JavaPlugin {
                             getServer().getPluginManager().callEvent(auctionEndEvent);
                             if (!auctionEndEvent.isCancelled()) {
                                 if (auctionItem.getHighestBidder().equalsIgnoreCase(auctionItem.getOwner())) {
-                                    data.getConfig().set("expired." + auctionItem.getOwner() + "." + System.currentTimeMillis() + System.nanoTime(), auctionItem.getItem());
+                                    data.getConfig().set("expired." + auctionItem.getOwner() + "." + auctionItem.getKey() + ".item", auctionItem.getItem());
+                                    data.getConfig().set("expired." + auctionItem.getOwner() + "." + auctionItem.getKey() + ".display", AuctionAPI.getInstance().expiredAuctionItem(auctionItem));
                                     data.saveConfig();
                                     auctionItems.remove(auctionItem);
                                 } else {
@@ -133,21 +205,30 @@ public final class Core extends JavaPlugin {
                                     if (highestBidder != null) {
                                         if (getEconomy().getBalance(highestBidder) < auctionItem.getCurrentPrice()) {
                                             highestBidder.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NOT_ENOUGH_MONEY.getNode()));
-                                            data.getConfig().set("expired." + auctionItem.getOwner() + "." + System.currentTimeMillis() + System.nanoTime(), auctionItem.getItem());
+                                            data.getConfig().set("expired." + auctionItem.getOwner() + "." + auctionItem.getKey() + ".item", auctionItem.getItem());
+                                            data.getConfig().set("expired." + auctionItem.getOwner() + "." + auctionItem.getKey() + ".display", AuctionAPI.getInstance().expiredAuctionItem(auctionItem));
                                         } else {
                                             highestBidder.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_BUY.getNode()).replace("{itemname}", auctionItem.getDisplayName()).replace("{price}", AuctionAPI.getInstance().friendlyNumber(auctionItem.getCurrentPrice())));
                                             if (AuctionAPI.getInstance().availableSlots(highestBidder.getInventory()) < 1)
                                                 highestBidder.getWorld().dropItemNaturally(highestBidder.getLocation(), auctionItem.getItem());
                                             else
                                                 highestBidder.getInventory().addItem(auctionItem.getItem());
+                                            Transaction transaction = new Transaction(Transaction.TransactionType.AUCTION_WON, auctionItem, highestBidder.getUniqueId().toString(), System.currentTimeMillis());
+                                            transaction.saveTransaction();
+                                            getServer().getPluginManager().callEvent(new TransactionCompleteEvent(transaction));
                                         }
                                         data.saveConfig();
                                         auctionItems.remove(auctionItem);
                                     } else {
                                         if (getEconomy().getBalance(highestBidder) < auctionItem.getCurrentPrice()) {
-                                            data.getConfig().set("expired." + auctionItem.getOwner() + "." + System.currentTimeMillis() + System.nanoTime(), auctionItem.getItem());
+                                            data.getConfig().set("expired." + auctionItem.getOwner() + "." + auctionItem.getKey() + ".item", auctionItem.getItem());
+                                            data.getConfig().set("expired." + auctionItem.getOwner() + "." + auctionItem.getKey() + ".display", AuctionAPI.getInstance().expiredAuctionItem(auctionItem));
                                         } else {
-                                            data.getConfig().set("expired." + auctionItem.getHighestBidder() + "." + System.currentTimeMillis() + System.nanoTime(), auctionItem.getItem());
+                                            data.getConfig().set("expired." + auctionItem.getHighestBidder() + "." + auctionItem.getKey() + ".item", auctionItem.getItem());
+                                            data.getConfig().set("expired." + auctionItem.getHighestBidder() + "." + auctionItem.getKey() + ".display", AuctionAPI.getInstance().expiredAuctionItem(auctionItem));
+                                            Transaction transaction = new Transaction(Transaction.TransactionType.AUCTION_WON, auctionItem, highestBidder.getUniqueId().toString(), System.currentTimeMillis());
+                                            transaction.saveTransaction();
+                                            getServer().getPluginManager().callEvent(new TransactionCompleteEvent(transaction));
                                         }
                                         data.saveConfig();
                                         auctionItems.remove(auctionItem);
@@ -159,14 +240,10 @@ public final class Core extends JavaPlugin {
                 }
             }, 0, 20 * 5);
         } catch (Exception e) {
-            //Debugger.report(e);
         }
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-
+    private void saveAuctions() {
         //Save Auctions to file.
         int node = 1;
         for (AuctionItem auctionItem : auctionItems) {
@@ -181,7 +258,6 @@ public final class Core extends JavaPlugin {
             data.getConfig().set("active." + node + ".item", auctionItem.getItem());
             node++;
         }
-
         data.saveConfig();
     }
 
@@ -201,15 +277,21 @@ public final class Core extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
         data = new ConfigWrapper(this, "", "data.yml");
+        transactions = new ConfigWrapper(this, "", "transactions.yml");
         if (!new File(this.getDataFolder(), "data.yml").exists()) {
             data.getConfig().createSection("active");
         }
+        if (!new File(this.getDataFolder(), "transactions.yml").exists()) {
+            transactions.getConfig().createSection("transactions");
+        }
         data.saveConfig();
+        transactions.saveConfig();
     }
 
     private void initEvents() {
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new AGUIListener(), this);
+        pm.registerEvents(new TransactionListener(), this);
     }
 
     private void initStorage() {
@@ -230,6 +312,10 @@ public final class Core extends JavaPlugin {
 
     public ConfigWrapper getData() {
         return data;
+    }
+
+    public ConfigWrapper getTransactions() {
+        return transactions;
     }
 
     public static Economy getEconomy() {

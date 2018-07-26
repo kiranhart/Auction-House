@@ -3,7 +3,9 @@ package com.shadebyte.auctionhouse.inventory.inventories;
 import com.shadebyte.auctionhouse.Core;
 import com.shadebyte.auctionhouse.api.AuctionAPI;
 import com.shadebyte.auctionhouse.api.enums.Lang;
+import com.shadebyte.auctionhouse.api.event.TransactionCompleteEvent;
 import com.shadebyte.auctionhouse.auction.AuctionItem;
+import com.shadebyte.auctionhouse.auction.Transaction;
 import com.shadebyte.auctionhouse.inventory.AGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,18 +25,10 @@ import java.util.UUID;
  */
 public class ConfirmationGUI implements AGUI {
 
-    private static ConfirmationGUI instance;
     private AuctionItem auctionItem;
 
-    private ConfirmationGUI(AuctionItem auctionItem) {
+    public ConfirmationGUI(AuctionItem auctionItem) {
         this.auctionItem = auctionItem;
-    }
-
-    public static ConfirmationGUI getInstance(AuctionItem auctionItem) {
-        if (instance == null) {
-            instance = new ConfirmationGUI(auctionItem);
-        }
-        return instance;
     }
 
     @Override
@@ -47,6 +41,7 @@ public class ConfirmationGUI implements AGUI {
                     p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NOT_ENOUGH_MONEY.getNode()));
                 } else {
                     Core.getEconomy().withdrawPlayer(p, auctionItem.getBuyNowPrice());
+                    Core.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(auctionItem.getOwner())), auctionItem.getBuyNowPrice());
                     p.getInventory().addItem(auctionItem.getItem());
                     p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_BUY.getNode()).replace("{itemname}", auctionItem.getDisplayName()).replace("{price}", AuctionAPI.getInstance().friendlyNumber(auctionItem.getBuyNowPrice())));
                     Player owner = Bukkit.getPlayer(UUID.fromString(auctionItem.getOwner()));
@@ -55,14 +50,20 @@ public class ConfirmationGUI implements AGUI {
                         owner.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_SOLD.getNode()).replace("{player}", p.getName()).replace("{item}", auctionItem.getDisplayName()).replace("{price}", AuctionAPI.getInstance().friendlyNumber(auctionItem.getBuyNowPrice())));
                     }
 
+                    long time = System.currentTimeMillis();
+                    Transaction transaction = new Transaction(Transaction.TransactionType.BOUGHT, auctionItem, p.getUniqueId().toString(), time);
+                    transaction.saveTransaction();
                     auctionItem.setTime(0);
                     Core.getInstance().auctionItems.remove(auctionItem);
                     p.closeInventory();
+                    TransactionCompleteEvent completeEvent = new TransactionCompleteEvent(transaction);
+                    Core.getInstance().getServer().getPluginManager().callEvent(completeEvent);
+                    p.openInventory(new AuctionGUI(p).getInventory());
                 }
             }
         } else if (clicked.isSimilar(AuctionAPI.getInstance().fill("&c&lNo", 14))) {
             p.closeInventory();
-            p.openInventory(AuctionGUI.getInstance(p).getInventory());
+            p.openInventory(new AuctionGUI(p).getInventory());
         }
     }
 

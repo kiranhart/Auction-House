@@ -1,4 +1,4 @@
-package com.shadebyte.auctionhouse.util;
+package com.shadebyte.auctionhouse.util.storage;
 
 /**
  * The current file has been created by Kiran Hart

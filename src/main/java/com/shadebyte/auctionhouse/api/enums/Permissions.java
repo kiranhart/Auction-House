@@ -9,6 +9,9 @@ package com.shadebyte.auctionhouse.api.enums;
 public enum Permissions {
 
     BASE("AuctionHouse"),
+    RELOAD_CMD(BASE.getNode() + ".cmd.reload"),
+    SELL_CMD(BASE.getNode() + ".cmd.sell"),
+    EXPIRED_CMD(BASE.getNode() + ".cmd.expired"),
     MAX_AUCTIONS(BASE.getNode() + ".maxauctions"),
     ;
 

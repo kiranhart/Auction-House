@@ -23,13 +23,7 @@ public class AuctionPlayer {
     }
 
     public int getTotalActiveAuctions() {
-        int total = 0;
-        for (AuctionItem item : Core.getInstance().auctionItems) {
-            if (item.getOwner().equals(player.getUniqueId().toString())) {
-                total++;
-            }
-        }
-        return total;
+        return getAuctionItems().size();
     }
 
     public List<AuctionItem> getAuctionItems() {
@@ -49,12 +43,17 @@ public class AuctionPlayer {
         return total;
     }
 
-
-    public boolean hasMaximumAuctionsActive() {
-        if (!player.hasPermission(Permissions.MAX_AUCTIONS.getNode() + "." + getTotalActiveAuctions())) {
-            return true;
+    public int getLimit() {
+        if (player.hasPermission(Permissions.MAX_AUCTIONS.getNode() + ".*")) {
+            return Integer.MAX_VALUE;
         }
-        return false;
+
+        for (int i = 1001; i > 0; i--) {
+            if (player.hasPermission(Permissions.MAX_AUCTIONS.getNode() + "." + i)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     public Player getPlayer() {

@@ -10,6 +10,13 @@ notenoughmoney = "&CYou do not have enough money!"
 cantbidonown = "&cYou cannot bid on your own item!"
 cantbuyown = "&cYou cannot buy your own item!"
 
+price.max.start = "&cPlease start auction with a lower price."
+price.max.auction = "&cPlease start with a lower bid price."
+price.max.increment = "&cPlease decrease the bid increment"
+price.min.start = "&cPlease start auction with a higher price."
+price.min.auction = "&cPlease start with a higher bid price."
+price.min.increment = "&cPlease increase the bid increment"
+
 auction.listed = "&eYou listed &6{itemname} &efor &a${price}"
 auction.max = "&cYou cannot auction more items, please upgrade to do so."
 auction.buy = "&eYou purchased &6{itemname} &Efor &A${price}"

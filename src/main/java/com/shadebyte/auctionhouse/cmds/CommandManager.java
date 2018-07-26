@@ -3,6 +3,7 @@ package com.shadebyte.auctionhouse.cmds;
 import com.shadebyte.auctionhouse.Core;
 import com.shadebyte.auctionhouse.api.enums.Lang;
 import com.shadebyte.auctionhouse.api.enums.Permissions;
+import com.shadebyte.auctionhouse.cmds.subcmds.ReloadCommand;
 import com.shadebyte.auctionhouse.cmds.subcmds.SellCommand;
 import com.shadebyte.auctionhouse.inventory.inventories.AuctionGUI;
 import com.shadebyte.auctionhouse.util.Debugger;
@@ -40,6 +41,7 @@ public class CommandManager implements CommandExecutor {
     public void initialize() {
         Core.getInstance().getCommand(main).setExecutor(this);
         this.commands.add(new SellCommand());
+        this.commands.add(new ReloadCommand());
     }
 
     @Override
@@ -55,7 +57,7 @@ public class CommandManager implements CommandExecutor {
             if (args.length == 0) {
                 if (sender instanceof Player) {
                     Player p = (Player) sender;
-                    p.openInventory(AuctionGUI.getInstance(p).getInventory());
+                    p.openInventory(new AuctionGUI(p).getInventory());
                 }
                 return true;
             }
