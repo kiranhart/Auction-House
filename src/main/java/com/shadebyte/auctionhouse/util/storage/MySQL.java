@@ -3,6 +3,7 @@ package com.shadebyte.auctionhouse.util.storage;
 import com.shadebyte.auctionhouse.Core;
 import com.shadebyte.auctionhouse.api.AuctionAPI;
 import com.shadebyte.auctionhouse.auction.Transaction;
+import com.shadebyte.auctionhouse.util.Debugger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -19,6 +20,10 @@ public class MySQL {
     public void logTransaction(Transaction transaction) {
         Bukkit.getServer().getScheduler().runTaskAsynchronously(Core.getInstance(), () -> {
             try {
+                if (Core.getInstance().getConnection().isClosed() || !Core.getInstance().dbConnected || Core.getInstance().getConnection() == null) {
+                    Core.getInstance().connect();
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cDatabase connection is close, attempting re-connect"));
+                }
                 PreparedStatement insert = Core.getInstance().getConnection().prepareStatement("INSERT INTO transactions (buyer, seller, auctiontype, startprice, buynowprice, increment, item, displayname, lore, enchantments, auctionid, timesold, finalprice) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 insert.setString(1, transaction.getBuyer());
                 insert.setString(2, transaction.getAuctionItem().getOwner());
@@ -38,7 +43,8 @@ public class MySQL {
                 insert.executeUpdate();
                 Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&aRecorded transaction id: &b" + transaction.getAuctionItem().getKey() + "&a to database."));
             } catch (Exception e) {
-                e.printStackTrace();
+                Debugger.report(e);
+                Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cCould not save the transaction to the database, saved to transactions.yml"));
             }
         });
     }

@@ -129,17 +129,26 @@ public final class Core extends JavaPlugin {
                     return;
                 }
 
-                Class.forName("com.mysql.jdbc.Driver");
-                setConnection(DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database, this.username, this.password));
+                connect();
                 Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&aSuccessfully Connected to MySQL"));
                 dbConnected = true;
             }
         } catch (SQLException e) {
             Debugger.report(e);
             Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cCould not connect to MySQL"));
+        }
+    }
+
+    public void connect() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            setConnection(DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database, this.username, this.password));
+        } catch (SQLException e) {
+            Debugger.report(e);
         } catch (ClassNotFoundException e) {
             Debugger.report(e);
             Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cCould not connect to MySQL"));
+
         }
     }
 
@@ -209,6 +218,8 @@ public final class Core extends JavaPlugin {
                                             data.getConfig().set("expired." + auctionItem.getOwner() + "." + auctionItem.getKey() + ".display", AuctionAPI.getInstance().expiredAuctionItem(auctionItem));
                                         } else {
                                             highestBidder.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_BUY.getNode()).replace("{itemname}", auctionItem.getDisplayName()).replace("{price}", AuctionAPI.getInstance().friendlyNumber(auctionItem.getCurrentPrice())));
+                                            getEconomy().withdrawPlayer(highestBidder, auctionItem.getCurrentPrice());
+                                            getEconomy().depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(auctionItem.getOwner())), auctionItem.getCurrentPrice());
                                             if (AuctionAPI.getInstance().availableSlots(highestBidder.getInventory()) < 1)
                                                 highestBidder.getWorld().dropItemNaturally(highestBidder.getLocation(), auctionItem.getItem());
                                             else
@@ -220,13 +231,15 @@ public final class Core extends JavaPlugin {
                                         data.saveConfig();
                                         auctionItems.remove(auctionItem);
                                     } else {
-                                        if (getEconomy().getBalance(highestBidder) < auctionItem.getCurrentPrice()) {
+                                        if (getEconomy().getBalance(Bukkit.getOfflinePlayer(UUID.fromString(auctionItem.getHighestBidder()))) < auctionItem.getCurrentPrice()) {
                                             data.getConfig().set("expired." + auctionItem.getOwner() + "." + auctionItem.getKey() + ".item", auctionItem.getItem());
                                             data.getConfig().set("expired." + auctionItem.getOwner() + "." + auctionItem.getKey() + ".display", AuctionAPI.getInstance().expiredAuctionItem(auctionItem));
                                         } else {
                                             data.getConfig().set("expired." + auctionItem.getHighestBidder() + "." + auctionItem.getKey() + ".item", auctionItem.getItem());
                                             data.getConfig().set("expired." + auctionItem.getHighestBidder() + "." + auctionItem.getKey() + ".display", AuctionAPI.getInstance().expiredAuctionItem(auctionItem));
-                                            Transaction transaction = new Transaction(Transaction.TransactionType.AUCTION_WON, auctionItem, highestBidder.getUniqueId().toString(), System.currentTimeMillis());
+                                            getEconomy().withdrawPlayer(Bukkit.getOfflinePlayer(UUID.fromString(auctionItem.getHighestBidder())), auctionItem.getCurrentPrice());
+                                            getEconomy().depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(auctionItem.getOwner())), auctionItem.getCurrentPrice());
+                                            Transaction transaction = new Transaction(Transaction.TransactionType.AUCTION_WON, auctionItem, auctionItem.getHighestBidder(), System.currentTimeMillis());
                                             transaction.saveTransaction();
                                             getServer().getPluginManager().callEvent(new TransactionCompleteEvent(transaction));
                                         }
