@@ -3,9 +3,12 @@ package com.shadebyte.auctionhouse.cmds;
 import com.shadebyte.auctionhouse.Core;
 import com.shadebyte.auctionhouse.api.enums.Lang;
 import com.shadebyte.auctionhouse.api.enums.Permissions;
+import com.shadebyte.auctionhouse.cmds.subcmds.ExpiredCommand;
+import com.shadebyte.auctionhouse.cmds.subcmds.ListedCommand;
 import com.shadebyte.auctionhouse.cmds.subcmds.ReloadCommand;
 import com.shadebyte.auctionhouse.cmds.subcmds.SellCommand;
 import com.shadebyte.auctionhouse.inventory.inventories.AuctionGUI;
+import com.shadebyte.auctionhouse.inventory.inventories.ListingsGUI;
 import com.shadebyte.auctionhouse.util.Debugger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -42,6 +45,8 @@ public class CommandManager implements CommandExecutor {
         Core.getInstance().getCommand(main).setExecutor(this);
         this.commands.add(new SellCommand());
         this.commands.add(new ReloadCommand());
+        this.commands.add(new ListedCommand());
+        this.commands.add(new ExpiredCommand());
     }
 
     @Override

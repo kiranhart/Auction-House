@@ -62,21 +62,6 @@ public class SellCommand extends SubCommand {
             }
         }
 
-        if (args.length == 5) {
-            int buyNow = ThreadLocalRandom.current().nextInt(2, 100000);
-            int startPrice = ThreadLocalRandom.current().nextInt(2, 10000);
-            int increment = ThreadLocalRandom.current().nextInt(2, 10000);
-
-            AuctionItem auctionItem = new AuctionItem(p.getUniqueId().toString(), AuctionAPI.getItemInHand(p), Core.getInstance().getConfig().getInt("settings.default-auction-time"), startPrice, increment, buyNow);
-            Core.getInstance().auctionItems.add(0, auctionItem);
-
-            if (AuctionAPI.getItemInHand(p).getAmount() >= 2) {
-                AuctionAPI.getItemInHand(p).setAmount(AuctionAPI.getItemInHand(p).getAmount() - 1);
-            } else {
-                AuctionAPI.setItemInHand(p, null);
-            }
-        }
-
         if (args.length == 4) {
             if (AuctionAPI.getInstance().isNumeric(args[1]) && AuctionAPI.getInstance().isNumeric(args[2]) && AuctionAPI.getInstance().isNumeric(args[3])) {
                 if (new AuctionPlayer(p).getLimit() - 1 < new AuctionPlayer(p).getTotalActiveAuctions()) {

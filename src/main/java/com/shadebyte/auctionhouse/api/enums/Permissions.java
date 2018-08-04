@@ -10,8 +10,10 @@ public enum Permissions {
 
     BASE("AuctionHouse"),
     RELOAD_CMD(BASE.getNode() + ".cmd.reload"),
+    HELP_CMD(BASE.getNode() + ".cmd.help"),
     SELL_CMD(BASE.getNode() + ".cmd.sell"),
     EXPIRED_CMD(BASE.getNode() + ".cmd.expired"),
+    LISTINGS_CMD(BASE.getNode() + ".cmd.listings"),
     MAX_AUCTIONS(BASE.getNode() + ".maxauctions"),
     ;
 

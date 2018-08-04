@@ -7,7 +7,9 @@ import com.shadebyte.auctionhouse.util.Debugger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * The current file has been created by Kiran Hart
@@ -18,13 +20,10 @@ import java.sql.PreparedStatement;
 public class MySQL {
 
     public void logTransaction(Transaction transaction) {
-        Bukkit.getServer().getScheduler().runTaskAsynchronously(Core.getInstance(), () -> {
-            try {
-                if (Core.getInstance().getConnection().isClosed() || !Core.getInstance().dbConnected || Core.getInstance().getConnection() == null) {
-                    Core.getInstance().connect();
-                    Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cDatabase connection is close, attempting re-connect"));
-                }
-                PreparedStatement insert = Core.getInstance().getConnection().prepareStatement("INSERT INTO transactions (buyer, seller, auctiontype, startprice, buynowprice, increment, item, displayname, lore, enchantments, auctionid, timesold, finalprice) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        Bukkit.getServer().getScheduler().runTaskAsynchronously(Core.getInstance(), ()->{
+            try (Connection connection = Core.getInstance().getHikari().getConnection();
+                 PreparedStatement insert = connection.prepareStatement("INSERT INTO transactions (buyer, seller, auctiontype, startprice, buynowprice, increment, item, displayname, lore, enchantments, auctionid, timesold, finalprice) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
                 insert.setString(1, transaction.getBuyer());
                 insert.setString(2, transaction.getAuctionItem().getOwner());
                 insert.setString(3, transaction.getTransactionType().getTransactionType());
@@ -42,7 +41,8 @@ public class MySQL {
                 insert.setInt(13, (transaction.getTransactionType() == Transaction.TransactionType.BOUGHT) ? transaction.getAuctionItem().getBuyNowPrice() : transaction.getAuctionItem().getCurrentPrice());
                 insert.executeUpdate();
                 Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&aRecorded transaction id: &b" + transaction.getAuctionItem().getKey() + "&a to database."));
-            } catch (Exception e) {
+
+            } catch (SQLException e) {
                 Debugger.report(e);
                 Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cCould not save the transaction to the database, saved to transactions.yml"));
             }

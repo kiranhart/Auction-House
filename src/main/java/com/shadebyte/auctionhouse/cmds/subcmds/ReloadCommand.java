@@ -28,13 +28,10 @@ public class ReloadCommand extends SubCommand {
         long start = System.currentTimeMillis();
 
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bReloading config.yml"));
-        Core.getInstance().saveConfig();
         Core.getInstance().reloadConfig();
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bReloading transactions.yml"));
-        Core.getInstance().getTransactions().saveConfig();
         Core.getInstance().getTransactions().reloadConfig();
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bReloading data.yml"));
-        Core.getInstance().getData().saveConfig();
         Core.getInstance().getData().reloadConfig();
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bReloading language file."));
         Core.getInstance().getLocale().reloadMessages();

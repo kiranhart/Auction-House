@@ -14,6 +14,7 @@ import com.shadebyte.auctionhouse.events.TransactionListener;
 import com.shadebyte.auctionhouse.util.Debugger;
 import com.shadebyte.auctionhouse.util.Locale;
 import com.shadebyte.auctionhouse.util.storage.ConfigWrapper;
+import com.zaxxer.hikari.HikariDataSource;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,9 +26,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -57,9 +55,7 @@ public final class Core extends JavaPlugin {
     public List<AuctionItem> auctionItems;
 
     //Database
-    private Connection connection;
-    public String host, database, username, password;
-    public int port;
+    private HikariDataSource hikari;
     public boolean dbConnected;
 
     //Timing
@@ -95,7 +91,19 @@ public final class Core extends JavaPlugin {
         initEvents();
         initStorage();
 
-        if (getConfig().getBoolean("database.enabled")) mysqlSetup();
+        if (getConfig().getBoolean("database.enabled")) {
+            hikari = new HikariDataSource();
+            hikari.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+            hikari.addDataSourceProperty("serverName", getConfig().getString("database.host"));
+            hikari.addDataSourceProperty("port", getConfig().getInt("database.port"));
+            hikari.addDataSourceProperty("databaseName", getConfig().getString("database.database"));
+            hikari.addDataSourceProperty("user", getConfig().getString("database.username"));
+            hikari.addDataSourceProperty("password", getConfig().getString("database.password"));
+            if(!hikari.isClosed()) {
+                dbConnected = true;
+                Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&aConnected to database"));
+            }
+        }
 
         try {
             MassiveStats stats = new MassiveStats(this);
@@ -112,52 +120,8 @@ public final class Core extends JavaPlugin {
     @Override
     public void onDisable() {
         saveAuctions();
-    }
-
-
-    private void mysqlSetup() {
-        host = this.getConfig().getString("database.host");
-        port = this.getConfig().getInt("database.port");
-        database = this.getConfig().getString("database.database");
-        username = this.getConfig().getString("database.username");
-        password = this.getConfig().getString("database.password");
-
-        try {
-
-            synchronized (this) {
-                if (getConnection() != null && !getConnection().isClosed()) {
-                    return;
-                }
-
-                connect();
-                Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&aSuccessfully Connected to MySQL"));
-                dbConnected = true;
-            }
-        } catch (SQLException e) {
-            Debugger.report(e);
-            Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cCould not connect to MySQL"));
-        }
-    }
-
-    public void connect() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            setConnection(DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database, this.username, this.password));
-        } catch (SQLException e) {
-            Debugger.report(e);
-        } catch (ClassNotFoundException e) {
-            Debugger.report(e);
-            Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cCould not connect to MySQL"));
-
-        }
-    }
-
-    public Connection getConnection() {
-        return connection;
-    }
-
-    public void setConnection(Connection connection) {
-        this.connection = connection;
+        if (hikari != null)
+            hikari.close();
     }
 
     private void loadAuctions() {
@@ -337,5 +301,9 @@ public final class Core extends JavaPlugin {
 
     public Settings getSettings() {
         return settings;
+    }
+
+    public HikariDataSource getHikari() {
+        return hikari;
     }
 }

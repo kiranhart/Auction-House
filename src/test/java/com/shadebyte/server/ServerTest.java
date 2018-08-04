@@ -13,6 +13,9 @@ public class ServerTest {
 
     public static void main(String[] args) {
 
-        System.out.println(new SimpleDateFormat("MMMM dd yyyy").format(new Date(System.currentTimeMillis())));
+        for (int i = 1; i <= 7; i++) {
+            System.out.println(i);
+        }
+
     }
 }
