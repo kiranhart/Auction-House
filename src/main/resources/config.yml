@@ -21,15 +21,15 @@ settings:
 #MySql stuff for databases if you want
 database:
   enabled: true
-  host:
-  port:
-  database: "kiranhar_auctionhouse"
-  username: "kiranhar_admin"
+  host: 162.241.217.18
+  port: 3306
+  database: ""
+  username: ""
   password: ""
 
 discord:
   enabled: true
-  webhook: ""
+  webhook: "https://discordapp.com/api/webhooks/470085392901734410/_ls7Ps5GzlKqBJlHLaZt6GZgVTKkuwuIuWK1JU5j_pt-DwWhSYAITlI17ePiIuNTmdua"
   title: "Auction House"
   description: "A new item has been listed!"
   description-complete: "A transaction has been completed!"
