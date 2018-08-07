@@ -3,10 +3,7 @@ package com.shadebyte.auctionhouse.cmds;
 import com.shadebyte.auctionhouse.Core;
 import com.shadebyte.auctionhouse.api.enums.Lang;
 import com.shadebyte.auctionhouse.api.enums.Permissions;
-import com.shadebyte.auctionhouse.cmds.subcmds.ExpiredCommand;
-import com.shadebyte.auctionhouse.cmds.subcmds.ListedCommand;
-import com.shadebyte.auctionhouse.cmds.subcmds.ReloadCommand;
-import com.shadebyte.auctionhouse.cmds.subcmds.SellCommand;
+import com.shadebyte.auctionhouse.cmds.subcmds.*;
 import com.shadebyte.auctionhouse.inventory.inventories.AuctionGUI;
 import com.shadebyte.auctionhouse.inventory.inventories.ListingsGUI;
 import com.shadebyte.auctionhouse.util.Debugger;
@@ -40,6 +37,7 @@ public class CommandManager implements CommandExecutor {
     public final String listed = "listed";
     public final String reload = "reload";
     public final String sell = "sell";
+    public final String transactions = "transactions";
 
     public void initialize() {
         Core.getInstance().getCommand(main).setExecutor(this);
@@ -47,6 +45,7 @@ public class CommandManager implements CommandExecutor {
         this.commands.add(new ReloadCommand());
         this.commands.add(new ListedCommand());
         this.commands.add(new ExpiredCommand());
+        this.commands.add(new TransactionsCommand());
     }
 
     @Override

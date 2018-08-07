@@ -13,6 +13,7 @@ public enum Permissions {
     HELP_CMD(BASE.getNode() + ".cmd.help"),
     SELL_CMD(BASE.getNode() + ".cmd.sell"),
     EXPIRED_CMD(BASE.getNode() + ".cmd.expired"),
+    TRANSACTIONS_CMD(BASE.getNode() + ".cmd.transactions"),
     LISTINGS_CMD(BASE.getNode() + ".cmd.listings"),
     MAX_AUCTIONS(BASE.getNode() + ".maxauctions"),
     ;

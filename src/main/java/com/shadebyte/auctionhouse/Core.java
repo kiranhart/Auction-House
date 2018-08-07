@@ -11,6 +11,7 @@ import com.shadebyte.auctionhouse.auction.Transaction;
 import com.shadebyte.auctionhouse.cmds.CommandManager;
 import com.shadebyte.auctionhouse.events.AGUIListener;
 import com.shadebyte.auctionhouse.events.TransactionListener;
+import com.shadebyte.auctionhouse.inventory.AGUI;
 import com.shadebyte.auctionhouse.util.Debugger;
 import com.shadebyte.auctionhouse.util.Locale;
 import com.shadebyte.auctionhouse.util.storage.ConfigWrapper;
@@ -113,12 +114,17 @@ public final class Core extends JavaPlugin {
         }
 
         loadAuctions();
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bFound a total of &6" + Transaction.getTotalTransactions() + " &brecorded transactions"));
         Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bAuction House finished loading, took " + (System.currentTimeMillis() - startTime) + " ms"));
         tickAuctions();
     }
 
     @Override
     public void onDisable() {
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            if(p.getOpenInventory().getTopInventory().getHolder() instanceof AGUI) p.closeInventory();
+        });
+
         saveAuctions();
         if (hikari != null)
             hikari.close();

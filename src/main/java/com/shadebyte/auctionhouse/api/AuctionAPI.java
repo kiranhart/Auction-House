@@ -149,9 +149,7 @@ public class AuctionAPI {
     }
 
     public String getDate(long milli) {
-        Date date = new Date(milli);
-        SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
-        return df2.format(date);
+        return new SimpleDateFormat("MMMM dd yyyy").format(new Date(milli));
     }
 
     public String friendlyNumber(double value) {

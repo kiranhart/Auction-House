@@ -23,9 +23,9 @@ database:
   enabled: true
   host: 162.241.217.18
   port: 3306
-  database: ""
-  username: ""
-  password: ""
+  database: "kiranhar_auctionhouse"
+  username: "kiranhar_admin"
+  password: "TweetyHart1."
 
 discord:
   enabled: true
@@ -47,7 +47,103 @@ receipt:
     - "&bPrice&f: &a${price}"
     - "&ePurchased on&f: &a{date} &fat &A{time}"
 
+transaction:
+  item: "PAPER:0"
+  name: "&b{transaction_id}"
+  lore:
+    - "&7Seller&f: &b{seller}"
+    - "&7Buyer&f: &b{buyer}"
+
 gui:
+  alltransactions:
+    title: "&E&lAll Transactions"
+    items:
+      previouspage:
+        item: "PAPER:0"
+        name: "&e&l<- Previous Page"
+        lore:
+          - "&7Go back"
+      close:
+        item: "NETHER_STAR:0"
+        name: "&e&lClose"
+        lore:
+          - "&7Click to exit this window"
+      nextpage:
+        item: "PAPER:0"
+        name: "&e&lNext Page ->"
+        lore:
+          - "&7Next Page"
+  playertransactions:
+      previouspage:
+        item: "PAPER:0"
+        name: "&e&l<- Previous Page"
+        lore:
+          - "&7Go back"
+      close:
+        item: "NETHER_STAR:0"
+        name: "&e&lClose"
+        lore:
+          - "&7Click to exit this window"
+      nextpage:
+        item: "PAPER:0"
+        name: "&e&lNext Page ->"
+        lore:
+          - "&7Next Page"
+  singletransaction:
+    title: "&6&lViewing Transaction"
+    items:
+      background:
+        item: "STAINED_GLASS_PANE:15"
+        name: "&0*"
+        lore:
+          - "&0*"
+      seller:
+        name: "&6&lSeller"
+        lore:
+          - "&7Name&f: &b{seller}"
+          - ""
+          - "&7Click to view all the"
+          - "&7transactions by this player."
+      buyer:
+        name: "&6&lBuyer"
+        lore:
+          - "&7Name&f: &b{seller}"
+          - ""
+          - "&7Click to view all the"
+          - "&7transactions by this player."
+      you:
+        item: "DOUBLE_PLANT:0"
+        name: "&6&lView Your Transactions"
+        lore:
+          - "&7Click to view all the"
+          - "&7transactions you've done."
+      back:
+        item: "NETHER_STAR:0"
+        name: "&6&LGo Back"
+        lore:
+          - "&7Go back to main transactions"
+          - "&7window selection menu."
+      auctionhouse:
+        item: "CHEST:0"
+        name: "&e&lReturn to Auction House"
+        lore:
+          - "&7Click here to return to the"
+          - "&7auction house main menu."
+      startprice:
+        item: "STAINED_GLASS_PANE:5"
+        name: "&6&lStart Price"
+        lore:
+          - "&7Auction started at &a${startprice}"
+      increment:
+        item: "STAINED_GLASS_PANE:5"
+        name: "&6&lBid Increment"
+        lore:
+          - "&7Bid increment set at &a${bidincrement}"
+      buynowprice:
+        item: "STAINED_GLASS_PANE:5"
+        name: "&6&lBuy Now Price"
+        lore:
+          - "&7Buy now price set at &a${buynowprice}"
   active:
     title: "&7Your Current Listings"
     items:
@@ -64,7 +160,7 @@ gui:
           - "&7Go back"
       nextpage:
         item: "PAPER:0"
-        name: "&e&lPrevious Page ->"
+        name: "&e&lNext Page ->"
         lore:
           - "&7Next Page"
       tutorial:
