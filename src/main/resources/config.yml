@@ -100,15 +100,11 @@ gui:
       seller:
         name: "&6&lSeller"
         lore:
-          - "&7Name&f: &b{seller}"
-          - ""
           - "&7Click to view all the"
           - "&7transactions by this player."
       buyer:
         name: "&6&lBuyer"
         lore:
-          - "&7Name&f: &b{seller}"
-          - ""
           - "&7Click to view all the"
           - "&7transactions by this player."
       you:

@@ -16,6 +16,7 @@ public enum Permissions {
     TRANSACTIONS_CMD(BASE.getNode() + ".cmd.transactions"),
     LISTINGS_CMD(BASE.getNode() + ".cmd.listings"),
     MAX_AUCTIONS(BASE.getNode() + ".maxauctions"),
+    USE_RECEIPT(BASE.getNode() + ".usereceipt"),
     ;
 
     private String node;

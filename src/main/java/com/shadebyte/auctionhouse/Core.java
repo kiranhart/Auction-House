@@ -10,6 +10,7 @@ import com.shadebyte.auctionhouse.auction.AuctionItem;
 import com.shadebyte.auctionhouse.auction.Transaction;
 import com.shadebyte.auctionhouse.cmds.CommandManager;
 import com.shadebyte.auctionhouse.events.AGUIListener;
+import com.shadebyte.auctionhouse.events.PlayerListener;
 import com.shadebyte.auctionhouse.events.TransactionListener;
 import com.shadebyte.auctionhouse.inventory.AGUI;
 import com.shadebyte.auctionhouse.util.Debugger;
@@ -27,6 +28,9 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -275,6 +279,7 @@ public final class Core extends JavaPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new AGUIListener(), this);
         pm.registerEvents(new TransactionListener(), this);
+        pm.registerEvents(new PlayerListener(), this);
     }
 
     private void initStorage() {

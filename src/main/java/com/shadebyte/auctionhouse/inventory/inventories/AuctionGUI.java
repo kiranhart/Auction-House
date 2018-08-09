@@ -156,10 +156,9 @@ public class AuctionGUI implements AGUI {
         inventory.setItem(53, AuctionAPI.getInstance().createConfigItem("gui.auction.items.guide", 0, 0));
 
         //Pagination
-
-
         if (chunks.size() != 0)
             chunks.get(getPage() - 1).forEach(item -> inventory.setItem(inventory.firstEmpty(), item.auctionStack()));
+
         return inventory;
     }
 

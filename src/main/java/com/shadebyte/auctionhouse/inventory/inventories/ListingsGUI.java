@@ -8,6 +8,7 @@ import com.shadebyte.auctionhouse.auction.AuctionPlayer;
 import com.shadebyte.auctionhouse.inventory.AGUI;
 import com.shadebyte.auctionhouse.util.NBTEditor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -81,7 +82,7 @@ public class ListingsGUI implements AGUI {
 
     @Override
     public Inventory getInventory() {
-        Inventory inventory = Bukkit.createInventory(this, 54, Core.getInstance().getConfig().getString("gui.active.title"));
+        Inventory inventory = Bukkit.createInventory(this, 54, ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("gui.active.title")));
         inventory.setItem(45, AuctionAPI.getInstance().createConfigItem("gui.active.items.return", 0, 0));
         inventory.setItem(48, AuctionAPI.getInstance().createConfigItem("gui.active.items.previouspage", 0, 0));
         inventory.setItem(50, AuctionAPI.getInstance().createConfigItem("gui.active.items.nextpage", 0, 0));

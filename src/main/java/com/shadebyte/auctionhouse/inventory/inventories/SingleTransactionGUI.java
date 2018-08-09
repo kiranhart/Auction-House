@@ -19,10 +19,10 @@ import org.bukkit.inventory.ItemStack;
  */
 public class SingleTransactionGUI implements AGUI {
 
-    private Transaction transaction;
+    private String transactionNode;
 
-    public SingleTransactionGUI(Transaction transaction) {
-        this.transaction = transaction;
+    public SingleTransactionGUI(String transactionNode) {
+        this.transactionNode = transactionNode;
     }
 
     @Override
@@ -41,10 +41,18 @@ public class SingleTransactionGUI implements AGUI {
         //Fill Inventory
         for (int i = 0; i < inventory.getSize(); i++) inventory.setItem(i, AuctionAPI.getInstance().createConfigItem("gui.singletransaction.items.background", 0, 0));
 
-        inventory.setItem(13, transaction.getAuctionItem().getItem());
-        inventory.setItem(48, AuctionAPI.getInstance().createConfigItem("gui.singletransaction.items.back", 0, 0));
-        inventory.setItem(49, AuctionAPI.getInstance().createConfigItem("gui.singletransaction.items.you", 0, 0));
-        inventory.setItem(50, AuctionAPI.getInstance().createConfigItem("gui.singletransaction.items.auctionhouse", 0, 0));
+        inventory.setItem(13, Core.getInstance().getTransactions().getConfig().getItemStack("transactions." + transactionNode + ".item"));
+        inventory.setItem(39, AuctionAPI.getInstance().createConfigItem("gui.singletransaction.items.back", 0, 0));
+        inventory.setItem(40, AuctionAPI.getInstance().createConfigItem("gui.singletransaction.items.you", 0, 0));
+        inventory.setItem(41, AuctionAPI.getInstance().createConfigItem("gui.singletransaction.items.auctionhouse", 0, 0));
+
+        inventory.setItem(30, AuctionAPI.getInstance().createUserHead("gui.singletransaction.items.seller", Core.getInstance().getTransactions().getConfig().getString("transactions." + transactionNode + ".seller"), "", 0));
+        inventory.setItem(31, Core.getInstance().getTransactions().getConfig().getItemStack("transactions." + transactionNode + ".receipt"));
+        inventory.setItem(32, AuctionAPI.getInstance().createUserHead("gui.singletransaction.items.buyer", "", Core.getInstance().getTransactions().getConfig().getString("transactions." + transactionNode + ".buyer"), 1));
+
+        inventory.setItem(48, AuctionAPI.getInstance().createTransactionConfigItem("gui.singletransaction.items.startprice", "", "", Core.getInstance().getTransactions().getConfig().getInt("transactions." + transactionNode + ".start-price"),0,0));
+        inventory.setItem(49, AuctionAPI.getInstance().createTransactionConfigItem("gui.singletransaction.items.increment", "", "", 0,Core.getInstance().getTransactions().getConfig().getInt("transactions." + transactionNode + ".bid-increment"),0));
+        inventory.setItem(50, AuctionAPI.getInstance().createTransactionConfigItem("gui.singletransaction.items.buynowprice", "", "", 0,0,Core.getInstance().getTransactions().getConfig().getInt("transactions." + transactionNode + ".buy-now-price")));
 
         return inventory;
     }

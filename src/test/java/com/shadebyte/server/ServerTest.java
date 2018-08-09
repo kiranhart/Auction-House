@@ -1,7 +1,12 @@
 package com.shadebyte.server;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.shadebyte.auctionhouse.Core;
+import com.zaxxer.hikari.HikariDataSource;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * The current file has been created by Kiran Hart
@@ -11,11 +16,30 @@ import java.util.Date;
  */
 public class ServerTest {
 
-    public static void main(String[] args) {
+    private HikariDataSource hikari;
 
-        for (int i = 1; i <= 7; i++) {
-            System.out.println(i);
+    public ServerTest() {
+        hikari = new HikariDataSource();
+        hikari.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        hikari.addDataSourceProperty("serverName", "localhost");
+        hikari.addDataSourceProperty("port", 3306);
+        hikari.addDataSourceProperty("databaseName", "auctionhouse");
+        hikari.addDataSourceProperty("user", "root");
+        hikari.addDataSourceProperty("password", "");
+        if (!hikari.isClosed()) {
+            System.out.println("Connected to the database");
         }
 
+        try {
+            Connection connection = hikari.getConnection();
+            PreparedStatement statement = connection.prepareStatement("");
+            statement.execute();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        new ServerTest();
     }
 }

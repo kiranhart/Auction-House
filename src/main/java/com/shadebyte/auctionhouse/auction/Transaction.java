@@ -1,6 +1,7 @@
 package com.shadebyte.auctionhouse.auction;
 
 import com.shadebyte.auctionhouse.Core;
+import com.shadebyte.auctionhouse.util.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -60,6 +61,7 @@ public class Transaction {
         Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".auction-id", auctionItem.getKey());
         Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".time-completed", timeCompleted);
         Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".item", auctionItem.getItem());
+        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".receipt", new Receipt(this).getReceipt());
         Core.getInstance().getTransactions().saveConfig();
     }
 
@@ -87,6 +89,7 @@ public class Transaction {
         Core.getInstance().getConfig().getStringList("transaction.lore").forEach(e-> lore.add(ChatColor.translateAlternateColorCodes('&', e.replace("{buyer}", Bukkit.getOfflinePlayer(UUID.fromString(Core.getInstance().getTransactions().getConfig().getString("transactions." + node + ".buyer"))).getName()).replace("{seller}", Bukkit.getOfflinePlayer(UUID.fromString(Core.getInstance().getTransactions().getConfig().getString("transactions." + node + ".seller"))).getName()))));
         meta.setLore(lore);
         item.setItemMeta(meta);
+        item = NBTEditor.setItemTag(item, node, "AuctionTransactionID");
         return item;
     }
 

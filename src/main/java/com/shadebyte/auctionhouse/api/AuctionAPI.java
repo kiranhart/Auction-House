@@ -6,6 +6,7 @@ import com.shadebyte.auctionhouse.auction.AuctionItem;
 import com.shadebyte.auctionhouse.util.Debugger;
 import com.shadebyte.auctionhouse.util.NBTEditor;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -13,14 +14,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * The current file has been created by Kiran Hart
@@ -98,6 +97,30 @@ public class AuctionAPI {
         Core.getInstance().getConfig().getStringList(node + ".lore").forEach(s -> lore.add(ChatColor.translateAlternateColorCodes('&', s
                 .replace("{active_player_auctions}", String.valueOf(activeAuctions))
                 .replace("{expired_player_auctions}", String.valueOf(expiredAuctions)))));
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
+    public ItemStack createTransactionConfigItem(String node, String buyer, String seller, int startPrice, int bidincrement, int buynowprice) {
+        String[] rawItem = Core.getInstance().getConfig().getString(node + ".item").split(":");
+        ItemStack stack = new ItemStack(Material.valueOf(rawItem[0].toUpperCase()), 1, Short.parseShort(rawItem[1]));
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString(node + ".name")));
+        List<String> lore = new ArrayList<>();
+        Core.getInstance().getConfig().getStringList(node + ".lore").forEach(s -> lore.add(ChatColor.translateAlternateColorCodes('&', s.replace("{seller}", seller).replace("{buyer}", buyer).replace("{startprice}", String.valueOf(startPrice)).replace("{bidincrement}", String.valueOf(bidincrement)).replace("{buynowprice}", String.valueOf(buynowprice)))));
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
+    public ItemStack createUserHead(String node, String seller, String buyer, int usr) {
+        ItemStack stack = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+        SkullMeta meta = (SkullMeta) stack.getItemMeta();
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString(node + ".name")));
+        meta.setOwner((usr == 0) ? Bukkit.getOfflinePlayer(UUID.fromString(seller)).getName() : Bukkit.getOfflinePlayer(UUID.fromString(buyer)).getName());
+        List<String> lore = new ArrayList<>();
+        Core.getInstance().getConfig().getStringList(node + ".lore").forEach(s -> lore.add(ChatColor.translateAlternateColorCodes('&', s)));
         meta.setLore(lore);
         stack.setItemMeta(meta);
         return stack;

@@ -21,7 +21,7 @@ public class TransactionsCommand extends SubCommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
 
-        if (!sender.hasPermission(Permissions.RELOAD_CMD.getNode())) {
+        if (!sender.hasPermission(Permissions.TRANSACTIONS_CMD.getNode())) {
             sender.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NO_PERMISSION.getNode()));
             return;
         }

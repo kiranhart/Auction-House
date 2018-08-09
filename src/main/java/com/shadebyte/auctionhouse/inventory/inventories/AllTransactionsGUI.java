@@ -3,7 +3,6 @@ package com.shadebyte.auctionhouse.inventory.inventories;
 import com.google.common.collect.Lists;
 import com.shadebyte.auctionhouse.Core;
 import com.shadebyte.auctionhouse.api.AuctionAPI;
-import com.shadebyte.auctionhouse.auction.AuctionPlayer;
 import com.shadebyte.auctionhouse.auction.Transaction;
 import com.shadebyte.auctionhouse.inventory.AGUI;
 import com.shadebyte.auctionhouse.util.NBTEditor;
@@ -11,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -50,8 +50,12 @@ public class AllTransactionsGUI implements AGUI {
                 return;
             }
 
+            if (e.getClick() == ClickType.LEFT) {
+                String key = (String) NBTEditor.getItemTag(clicked, "AuctionTransactionID");
+                p.closeInventory();
+                p.openInventory(new SingleTransactionGUI(key).getInventory());
+            }
         }
-
     }
 
     @Override
