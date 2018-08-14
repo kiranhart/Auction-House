@@ -45,7 +45,7 @@ public class PlayerTransactionsGUI implements AGUI {
         } catch (Exception e1) {
         }
 
-        if (slot == 49) p.closeInventory();
+        if (slot == 49) p.openInventory(new TransactionSelectGUI().getInventory());
 
         if (slot >= 0 & slot <= 44) {
             if (clicked == null || clicked.getType() == Material.AIR) {

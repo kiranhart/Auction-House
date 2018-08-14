@@ -1,6 +1,11 @@
 package com.shadebyte.auctionhouse.inventory.inventories;
 
+import com.shadebyte.auctionhouse.Core;
+import com.shadebyte.auctionhouse.api.AuctionAPI;
 import com.shadebyte.auctionhouse.inventory.AGUI;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -16,7 +21,10 @@ public class TransactionSelectGUI implements AGUI {
 
     @Override
     public void click(InventoryClickEvent e, ItemStack clicked, int slot) {
-
+        e.setCancelled(true);
+        Player p = (Player) e.getWhoClicked();
+        if (slot == 12) p.openInventory(new AllTransactionsGUI(p).getInventory());
+        if (slot == 14) p.openInventory(new PlayerTransactionsGUI(p).getInventory());
     }
 
     @Override
@@ -26,6 +34,13 @@ public class TransactionSelectGUI implements AGUI {
 
     @Override
     public Inventory getInventory() {
-        return null;
+        Inventory inventory = Bukkit.createInventory(this, 27, ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("gui.transactionselect.title")));
+        for (int i = 0; i < inventory.getSize(); i++) {
+            inventory.setItem(i, AuctionAPI.getInstance().createConfigItem("gui.transactionselect.items.background", 0, 0));
+        }
+
+        inventory.setItem(12, AuctionAPI.getInstance().createConfigItem("gui.transactionselect.items.all", 0, 0));
+        inventory.setItem(14, AuctionAPI.getInstance().createConfigItem("gui.transactionselect.items.you", 0, 0));
+        return inventory;
     }
 }

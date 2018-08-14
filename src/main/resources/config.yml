@@ -55,6 +55,26 @@ transaction:
     - "&7Buyer&f: &b{buyer}"
 
 gui:
+  transactionselect:
+    title: "&e&lSelect an option"
+    items:
+      background:
+        item: "STAINED_GLASS_PANE:15"
+        name: "&7Select an option"
+        lore:
+          - "&7Select an option"
+      all:
+        item: "PAPER:0"
+        name: "&e&lView all transactions"
+        lore:
+          - "&7Click to view all the recorded"
+          - "&7transactions made by players."
+      you:
+        item: "NETHER_STAR:0"
+        name: "&e&lView your transactions"
+        lore:
+          - "&7Click to view all the recorded"
+          - "&7transactions made by you."
   transaction:
     title: "&E&lSelect an Option"
     items:

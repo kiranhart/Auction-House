@@ -33,7 +33,7 @@ public class SingleTransactionGUI implements AGUI {
         e.setCancelled(true);
         Player p = (Player) e.getWhoClicked();
 
-        if (slot == 39) ;
+        if (slot == 39) p.openInventory(new TransactionSelectGUI().getInventory());
         if (slot == 40) p.openInventory(new PlayerTransactionsGUI(p).getInventory());
         if (slot == 41) p.openInventory(new AuctionGUI(p).getInventory());
 
