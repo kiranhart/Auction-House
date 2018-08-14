@@ -24,15 +24,15 @@ import java.util.List;
  * Time Created: 11:56 AM
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise.
  */
-public class AllTransactionsGUI implements AGUI {
+public class PlayerTransactionsGUI implements AGUI {
 
     private Player p;
     private List<List<ItemStack>> chunks;
     private int page = 1;
 
-    public AllTransactionsGUI(Player p) {
+    public PlayerTransactionsGUI(Player p) {
         this.p = p;
-        chunks = Lists.partition(Transaction.getAllRecordedTransactions(), 45);
+        chunks = Lists.partition(Transaction.getAllRecordedTransactionsByPlayer(p), 45);
     }
 
     @Override
@@ -44,6 +44,8 @@ public class AllTransactionsGUI implements AGUI {
             if (page >= 1 && slot == 50) p.openInventory(this.setPage(this.getPage() + 1).getInventory());
         } catch (Exception e1) {
         }
+
+        if (slot == 49) p.closeInventory();
 
         if (slot >= 0 & slot <= 44) {
             if (clicked == null || clicked.getType() == Material.AIR) {
@@ -65,12 +67,12 @@ public class AllTransactionsGUI implements AGUI {
 
     @Override
     public Inventory getInventory() {
-        Inventory inventory = Bukkit.createInventory(this, 54, ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("gui.alltransactions.title")));
+        Inventory inventory = Bukkit.createInventory(this, 54, ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("gui.playertransactions.title").replace("{player}", p.getName())));
 
         //Bottom Row
-        inventory.setItem(48, AuctionAPI.getInstance().createConfigItem("gui.alltransactions.items.previouspage", 0, 0));
-        inventory.setItem(49, AuctionAPI.getInstance().createConfigItem("gui.alltransactions.items.close", 0, 0));
-        inventory.setItem(50, AuctionAPI.getInstance().createConfigItem("gui.alltransactions.items.nextpage", 0, 0));
+        inventory.setItem(48, AuctionAPI.getInstance().createConfigItem("gui.playertransactions.items.previouspage", 0, 0));
+        inventory.setItem(49, AuctionAPI.getInstance().createConfigItem("gui.playertransactions.items.close", 0, 0));
+        inventory.setItem(50, AuctionAPI.getInstance().createConfigItem("gui.playertransactions.items.nextpage", 0, 0));
 
         if (Transaction.getTotalTransactions() == 0) {
             return inventory;
@@ -82,7 +84,7 @@ public class AllTransactionsGUI implements AGUI {
         return inventory;
     }
 
-    public AllTransactionsGUI setPage(int page) {
+    public PlayerTransactionsGUI setPage(int page) {
         if (page <= 0)
             this.page = 1;
         else

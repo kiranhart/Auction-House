@@ -55,6 +55,21 @@ transaction:
     - "&7Buyer&f: &b{buyer}"
 
 gui:
+  transaction:
+    title: "&E&lSelect an Option"
+    items:
+      alltransactions:
+        item: "BOOK:0"
+        name: "&e&lAll Transactions"
+        lore:
+          - "&7View all the recorded"
+          - "&7transactions by everyone."
+      playertransactions:
+        item: "NETHER_STAR:0"
+        name: "&e&lYour Transactions"
+        lore:
+          - "&7View all the recorded"
+          - "&7transactions you've made."
   alltransactions:
     title: "&E&lAll Transactions"
     items:
@@ -74,6 +89,8 @@ gui:
         lore:
           - "&7Next Page"
   playertransactions:
+    title: "&E&l{player} Transactions"
+    items:
       previouspage:
         item: "PAPER:0"
         name: "&e&l<- Previous Page"

@@ -86,7 +86,7 @@ public class Transaction {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("transaction.name").replace("{transaction_id}", Core.getInstance().getTransactions().getConfig().getString("transactions." + node + ".auction-id"))));
         List<String> lore = new ArrayList<>();
-        Core.getInstance().getConfig().getStringList("transaction.lore").forEach(e-> lore.add(ChatColor.translateAlternateColorCodes('&', e.replace("{buyer}", Bukkit.getOfflinePlayer(UUID.fromString(Core.getInstance().getTransactions().getConfig().getString("transactions." + node + ".buyer"))).getName()).replace("{seller}", Bukkit.getOfflinePlayer(UUID.fromString(Core.getInstance().getTransactions().getConfig().getString("transactions." + node + ".seller"))).getName()))));
+        Core.getInstance().getConfig().getStringList("transaction.lore").forEach(e -> lore.add(ChatColor.translateAlternateColorCodes('&', e.replace("{buyer}", Bukkit.getOfflinePlayer(UUID.fromString(Core.getInstance().getTransactions().getConfig().getString("transactions." + node + ".buyer"))).getName()).replace("{seller}", Bukkit.getOfflinePlayer(UUID.fromString(Core.getInstance().getTransactions().getConfig().getString("transactions." + node + ".seller"))).getName()))));
         meta.setLore(lore);
         item.setItemMeta(meta);
         item = NBTEditor.setItemTag(item, node, "AuctionTransactionID");
@@ -97,6 +97,18 @@ public class Transaction {
         List<ItemStack> items = new ArrayList<>();
         if (getTotalTransactions() == 0) return items;
         Core.getInstance().getTransactions().getConfig().getConfigurationSection("transactions").getKeys(false).forEach(node -> items.add(getTransactionItem(node)));
+        return items;
+    }
+
+    public static List<ItemStack> getAllRecordedTransactionsByPlayer(Player p) {
+        List<ItemStack> items = new ArrayList<>();
+        if (getTotalTransactions() == 0) return items;
+        if (getTotalTransactionsByPlayer(p) == 0) return items;
+        for (String node : Core.getInstance().getTransactions().getConfig().getConfigurationSection("transactions").getKeys(false)) {
+            if (Core.getInstance().getTransactions().getConfig().getString("transactions." + node + ".seller").equalsIgnoreCase(p.getUniqueId().toString()) || Core.getInstance().getTransactions().getConfig().getString("transactions." + node + ".buyer").equalsIgnoreCase(p.getUniqueId().toString())) {
+                items.add(getTransactionItem(node));
+            }
+        }
         return items;
     }
 

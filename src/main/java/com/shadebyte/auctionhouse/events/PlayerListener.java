@@ -25,7 +25,7 @@ public class PlayerListener implements Listener {
     public void onReceiptRightClick(PlayerInteractEvent e) {
         Player p = e.getPlayer();
 
-        if (e.getAction() != Action.RIGHT_CLICK_AIR || e.getAction() != Action.RIGHT_CLICK_BLOCK) {
+        if (e.getAction() != Action.RIGHT_CLICK_AIR) {
             return;
         }
 

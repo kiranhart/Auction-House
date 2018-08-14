@@ -123,6 +123,7 @@ public class AuctionAPI {
         Core.getInstance().getConfig().getStringList(node + ".lore").forEach(s -> lore.add(ChatColor.translateAlternateColorCodes('&', s)));
         meta.setLore(lore);
         stack.setItemMeta(meta);
+        stack = (usr == 0) ? NBTEditor.setItemTag(stack, seller, "AuctionSellerHead") : NBTEditor.setItemTag(stack, buyer, "AuctionBuyerHead");
         return stack;
     }
 
