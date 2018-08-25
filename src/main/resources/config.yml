@@ -20,21 +20,21 @@ settings:
 
 #MySql stuff for databases if you want
 database:
-  enabled: true
-  host: 162.241.217.18
+  enabled: false
+  host: ""
   port: 3306
-  database: "kiranhar_auctionhouse"
-  username: "kiranhar_admin"
-  password: "TweetyHart1."
+  database: ""
+  username: ""
+  password: ""
 
 discord:
-  enabled: true
-  webhook: "https://discordapp.com/api/webhooks/470085392901734410/_ls7Ps5GzlKqBJlHLaZt6GZgVTKkuwuIuWK1JU5j_pt-DwWhSYAITlI17ePiIuNTmdua"
+  enabled: false
+  webhook: ""
   title: "Auction House"
   description: "A new item has been listed!"
   description-complete: "A transaction has been completed!"
   username: "Auction House"
-  profilepicture: "https://vignette.wikia.nocookie.net/minecraftuniverse/images/2/2c/Gold_Chest_%28M2%29.png/revision/latest?cb=20130121082341"
+  profilepicture: ""
 
 receipt:
   give-on-transaction: true

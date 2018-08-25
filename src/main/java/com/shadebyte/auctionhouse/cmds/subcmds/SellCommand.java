@@ -16,7 +16,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The current file has been created by Kiran Hart
@@ -133,11 +132,7 @@ public class SellCommand extends SubCommand {
                         discordHook.send(dm);
                     }
 
-                    if (AuctionAPI.getItemInHand(p).getAmount() >= 2) {
-                        AuctionAPI.getItemInHand(p).setAmount(AuctionAPI.getItemInHand(p).getAmount() - 1);
-                    } else {
-                        AuctionAPI.setItemInHand(p, null);
-                    }
+                    AuctionAPI.setItemInHand(p, null);
                 }
             } else {
                 p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.NOT_A_NUMBER.getNode()));
