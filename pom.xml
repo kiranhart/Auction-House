@@ -6,7 +6,7 @@
 
     <groupId>com.shadebyte</groupId>
     <artifactId>auctionhouse</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>AuctionHouse</name>

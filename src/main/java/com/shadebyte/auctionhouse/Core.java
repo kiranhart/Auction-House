@@ -13,6 +13,7 @@ import com.shadebyte.auctionhouse.events.AGUIListener;
 import com.shadebyte.auctionhouse.events.PlayerListener;
 import com.shadebyte.auctionhouse.events.TransactionListener;
 import com.shadebyte.auctionhouse.inventory.AGUI;
+import com.shadebyte.auctionhouse.inventory.inventories.AuctionGUI;
 import com.shadebyte.auctionhouse.util.Debugger;
 import com.shadebyte.auctionhouse.util.Locale;
 import com.shadebyte.auctionhouse.util.storage.ConfigWrapper;
@@ -28,9 +29,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -104,7 +102,7 @@ public final class Core extends JavaPlugin {
             hikari.addDataSourceProperty("databaseName", getConfig().getString("database.database"));
             hikari.addDataSourceProperty("user", getConfig().getString("database.username"));
             hikari.addDataSourceProperty("password", getConfig().getString("database.password"));
-            if(!hikari.isClosed()) {
+            if (!hikari.isClosed()) {
                 dbConnected = true;
                 Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&aConnected to database"));
             }
@@ -126,7 +124,7 @@ public final class Core extends JavaPlugin {
     @Override
     public void onDisable() {
         Bukkit.getOnlinePlayers().forEach(p -> {
-            if(p.getOpenInventory().getTopInventory().getHolder() instanceof AGUI) p.closeInventory();
+            if (p.getOpenInventory().getTopInventory().getHolder() instanceof AGUI) p.closeInventory();
         });
 
         saveAuctions();
@@ -223,6 +221,14 @@ public final class Core extends JavaPlugin {
                                 }
                             }
                         }
+                    }
+                    if (getConfig().getBoolean("settings.auto-refresh-auction-page")) {
+                        Bukkit.getOnlinePlayers().forEach(p -> {
+                            if (p.getOpenInventory().getTopInventory().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("gui.auction.title")))) {
+                                p.closeInventory();
+                                p.openInventory(new AuctionGUI(p).getInventory());
+                            }
+                        });
                     }
                 }
             }, 0, 20 * 5);

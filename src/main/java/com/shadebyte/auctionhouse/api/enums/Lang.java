@@ -15,6 +15,7 @@ public enum Lang {
     NOT_ENOUGH_MONEY("notenoughmoney"),
     CANNOT_BUY_OWN("cantbuyown"),
     CANNOT_BID_OWN("cantbidonown"),
+    AIR("air"),
 
     AUCTION_LISTED("auction.listed"),
     AUCTION_BUY("auction.buy"),

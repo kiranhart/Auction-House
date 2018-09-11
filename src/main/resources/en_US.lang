@@ -18,6 +18,7 @@ notanumber = "&CThat isn't a valid number"
 notenoughmoney = "&CYou do not have enough money!"
 cantbidonown = "&cYou cannot bid on your own item!"
 cantbuyown = "&cYou cannot buy your own item!"
+air = "&CCome on, really tryna auction air?"
 
 price.max.start = "&cPlease start auction with a lower price."
 price.max.auction = "&cPlease start with a lower bid price."

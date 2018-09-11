@@ -5,7 +5,6 @@ import com.shadebyte.auctionhouse.api.enums.Lang;
 import com.shadebyte.auctionhouse.api.enums.Permissions;
 import com.shadebyte.auctionhouse.cmds.subcmds.*;
 import com.shadebyte.auctionhouse.inventory.inventories.AuctionGUI;
-import com.shadebyte.auctionhouse.inventory.inventories.ListingsGUI;
 import com.shadebyte.auctionhouse.util.Debugger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -46,6 +45,7 @@ public class CommandManager implements CommandExecutor {
         this.commands.add(new ListedCommand());
         this.commands.add(new ExpiredCommand());
         this.commands.add(new TransactionsCommand());
+        this.commands.add(new HelpCommand());
     }
 
     @Override

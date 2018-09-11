@@ -67,6 +67,7 @@ public class AuctionGUI implements AGUI {
         }
 
         if (slot >= 0 & slot <= 44) {
+
             if (clicked == null || clicked.getType() == Material.AIR) {
                 return;
             }
@@ -74,6 +75,11 @@ public class AuctionGUI implements AGUI {
             AuctionItem item = null;
 
             if (e.getClick() == ClickType.LEFT) {
+
+                if (!Core.getInstance().getConfig().getBoolean("settings.use-bid-system")) {
+                    return;
+                }
+
                 String key = (String) NBTEditor.getItemTag(clicked, "AuctionItemKey");
                 for (AuctionItem auctionItem : Core.getInstance().auctionItems) {
                     if (auctionItem.getKey().equalsIgnoreCase(key)) item = auctionItem;

@@ -1,5 +1,6 @@
 package com.shadebyte.auctionhouse.auction;
 
+import com.shadebyte.auctionhouse.Core;
 import com.shadebyte.auctionhouse.api.AuctionAPI;
 import com.shadebyte.auctionhouse.util.NBTEditor;
 import org.apache.commons.lang.StringUtils;
@@ -156,12 +157,15 @@ public class AuctionItem {
             lore.add(translateAlternateColorCodes('&', "&eSeller&f: &b" + Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()));
         lore.add(translateAlternateColorCodes('&', ""));
         lore.add(translateAlternateColorCodes('&', "&eBuy Now: &a$" + AuctionAPI.getInstance().friendlyNumber(buyNowPrice)));
-        lore.add(translateAlternateColorCodes('&', "&eCurrent Price: &a$" + AuctionAPI.getInstance().friendlyNumber(currentPrice)));
-        lore.add(translateAlternateColorCodes('&', "&eBid Increment: &a$" + AuctionAPI.getInstance().friendlyNumber(bidIncrement)));
+        if (Core.getInstance().getConfig().getBoolean("settings.use-bid-system")) {
+            lore.add(translateAlternateColorCodes('&', "&eCurrent Price: &a$" + AuctionAPI.getInstance().friendlyNumber(currentPrice)));
+            lore.add(translateAlternateColorCodes('&', "&eBid Increment: &a$" + AuctionAPI.getInstance().friendlyNumber(bidIncrement)));
+        }
         lore.add(translateAlternateColorCodes('&', ""));
         lore.add(translateAlternateColorCodes('&', "&eTime Left: &b" + AuctionAPI.getInstance().timeLeft(getTime())));
         lore.add(translateAlternateColorCodes('&', "&7-------------------------"));
-        lore.add(translateAlternateColorCodes('&', "&eLeft-Click&f: &bBid"));
+        if (Core.getInstance().getConfig().getBoolean("settings.use-bid-system"))
+            lore.add(translateAlternateColorCodes('&', "&eLeft-Click&f: &bBid"));
         lore.add(translateAlternateColorCodes('&', "&eRight-Click&f: &bBuy Now"));
         lore.add(translateAlternateColorCodes('&', "&7-------------------------"));
         meta.setLore(lore);
@@ -177,8 +181,10 @@ public class AuctionItem {
         List<String> lore = (meta.hasLore() ? meta.getLore() : new ArrayList<>());
         lore.add(translateAlternateColorCodes('&', "&7-------------------------"));
         lore.add(translateAlternateColorCodes('&', "&eBuy Now: &a$" + AuctionAPI.getInstance().friendlyNumber(buyNowPrice)));
-        lore.add(translateAlternateColorCodes('&', "&eCurrent Price: &a$" + AuctionAPI.getInstance().friendlyNumber(currentPrice)));
-        lore.add(translateAlternateColorCodes('&', "&eBid Increment: &a$" + AuctionAPI.getInstance().friendlyNumber(bidIncrement)));
+        if (Core.getInstance().getConfig().getBoolean("settings.use-bid-system")) {
+            lore.add(translateAlternateColorCodes('&', "&eCurrent Price: &a$" + AuctionAPI.getInstance().friendlyNumber(currentPrice)));
+            lore.add(translateAlternateColorCodes('&', "&eBid Increment: &a$" + AuctionAPI.getInstance().friendlyNumber(bidIncrement)));
+        }
         lore.add(translateAlternateColorCodes('&', ""));
         lore.add(translateAlternateColorCodes('&', "&eTime Left: &b" + AuctionAPI.getInstance().timeLeft(getTime())));
         lore.add(translateAlternateColorCodes('&', "&7-------------------------"));

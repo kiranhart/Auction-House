@@ -5,7 +5,7 @@
 lang: "en_US"
 
 settings:
-  default-auction-time: 15 # 15 Minutes by default
+  default-auction-time: 150 # 15 Minutes by default
   max-auction-price: 2000000000
   max-auction-start: 2000000000
   max-auction-increment: 2000000000
@@ -14,6 +14,8 @@ settings:
   min-auction-increment: 1
   owner-can-purchase-own: false
   owner-can-bid-own: false
+  use-bid-system: true
+  auto-refresh-auction-page: true
   bid:
     increase-on-bid: true
     increase-amount: 10 #10 Seconds by default
@@ -21,10 +23,10 @@ settings:
 #MySql stuff for databases if you want
 database:
   enabled: false
-  host: ""
+  host: "localhost"
   port: 3306
-  database: ""
-  username: ""
+  database: "auctionhouse"
+  username: "root"
   password: ""
 
 discord:
