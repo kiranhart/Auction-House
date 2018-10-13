@@ -43,6 +43,12 @@ public class PlayerListener implements Listener {
         }
 
         String node = (String) NBTEditor.getItemTag(AuctionAPI.getItemInHand(p), "AuctionReceipt");
+
+        if (!Core.getInstance().getTransactions().getConfig().contains("transactions." + node)) {
+            p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.INVALID_TRANSACTION.getNode()));
+            return;
+        }
+
         p.openInventory(new SingleTransactionGUI(node).getInventory());
     }
 }

@@ -33,10 +33,38 @@ discord:
   enabled: false
   webhook: ""
   title: "Auction House"
-  description: "A new item has been listed!"
-  description-complete: "A transaction has been completed!"
-  username: "Auction House"
   profilepicture: ""
+  username: "Auction House"
+  add:
+    description:
+      inline: false
+      data: "A new item has been listed!"
+    seller:
+      inline: false
+      data: "{seller}"
+    bid_start:
+      inline: false
+      data: "{bid_start}"
+    bid_increment:
+      inline: false
+      data: "{bid_increment}"
+    buy_now:
+      inline: false
+      data: "{buy_now}"
+    item_type:
+      inline: false
+      data: "{item_type}"
+    item_name:
+      inline: false
+      data: "{item_name}"
+    item_enchants:
+      inline: false
+      data: "{item_enchants}"
+    item_lore:
+      inline: false
+      data: "{item_lore}"
+
+
 
 receipt:
   give-on-transaction: true

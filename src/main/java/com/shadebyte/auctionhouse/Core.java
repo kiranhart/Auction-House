@@ -1,5 +1,6 @@
 package com.shadebyte.auctionhouse;
 
+import com.google.common.collect.Lists;
 import com.massivestats.MassiveStats;
 import com.shadebyte.auctionhouse.api.AuctionAPI;
 import com.shadebyte.auctionhouse.api.enums.Lang;
@@ -7,13 +8,13 @@ import com.shadebyte.auctionhouse.api.event.AuctionEndEvent;
 import com.shadebyte.auctionhouse.api.event.AuctionStartEvent;
 import com.shadebyte.auctionhouse.api.event.TransactionCompleteEvent;
 import com.shadebyte.auctionhouse.auction.AuctionItem;
+import com.shadebyte.auctionhouse.auction.AuctionPlayer;
 import com.shadebyte.auctionhouse.auction.Transaction;
 import com.shadebyte.auctionhouse.cmds.CommandManager;
 import com.shadebyte.auctionhouse.events.AGUIListener;
 import com.shadebyte.auctionhouse.events.PlayerListener;
 import com.shadebyte.auctionhouse.events.TransactionListener;
 import com.shadebyte.auctionhouse.inventory.AGUI;
-import com.shadebyte.auctionhouse.inventory.inventories.AuctionGUI;
 import com.shadebyte.auctionhouse.util.Debugger;
 import com.shadebyte.auctionhouse.util.Locale;
 import com.shadebyte.auctionhouse.util.storage.ConfigWrapper;
@@ -225,8 +226,17 @@ public final class Core extends JavaPlugin {
                     if (getConfig().getBoolean("settings.auto-refresh-auction-page")) {
                         Bukkit.getOnlinePlayers().forEach(p -> {
                             if (p.getOpenInventory().getTopInventory().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("gui.auction.title")))) {
-                                p.closeInventory();
-                                p.openInventory(new AuctionGUI(p).getInventory());
+                                p.getOpenInventory().getTopInventory().clear();
+                                p.getOpenInventory().getTopInventory().setItem(45, AuctionAPI.getInstance().createConfigItem("gui.auction.items.yourauctions", new AuctionPlayer(p).getTotalActiveAuctions(), 0));
+                                p.getOpenInventory().getTopInventory().setItem(46, AuctionAPI.getInstance().createConfigItem("gui.auction.items.collectionbin", 0, new AuctionPlayer(p).getTotalExpiredAuctions()));
+                                p.getOpenInventory().getTopInventory().setItem(48, AuctionAPI.getInstance().createConfigItem("gui.auction.items.previouspage", 0, 0));
+                                p.getOpenInventory().getTopInventory().setItem(49, AuctionAPI.getInstance().createConfigItem("gui.auction.items.refresh", 0, 0));
+                                p.getOpenInventory().getTopInventory().setItem(50, AuctionAPI.getInstance().createConfigItem("gui.auction.items.nextpage", 0, 0));
+                                p.getOpenInventory().getTopInventory().setItem(52, AuctionAPI.getInstance().createConfigItem("gui.auction.items.howtosell", 0, 0));
+                                p.getOpenInventory().getTopInventory().setItem(53, AuctionAPI.getInstance().createConfigItem("gui.auction.items.guide", 0, 0));
+
+                                List<List<AuctionItem>> chunks = Lists.partition(Core.getInstance().auctionItems, 45);
+                                chunks.get(0).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.auctionStack()));
                             }
                         });
                     }

@@ -11,12 +11,15 @@ import com.shadebyte.auctionhouse.api.enums.Permissions;
 import com.shadebyte.auctionhouse.api.event.AuctionStartEvent;
 import com.shadebyte.auctionhouse.auction.AuctionItem;
 import com.shadebyte.auctionhouse.auction.AuctionPlayer;
+import com.shadebyte.auctionhouse.auction.DiscordMessageWrapper;
 import com.shadebyte.auctionhouse.cmds.SubCommand;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * The current file has been created by Kiran Hart
@@ -65,6 +68,11 @@ public class SellCommand extends SubCommand {
                         return;
                     }
 
+                    if (AuctionAPI.getItemInHand(p) == null || AuctionAPI.getItemInHand(p).getType() == Material.AIR) {
+                        p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AIR.getNode()));
+                        return;
+                    }
+
                     AuctionItem auctionItem = new AuctionItem(p.getUniqueId().toString(), AuctionAPI.getItemInHand(p), Core.getInstance().getConfig().getInt("settings.default-auction-time"), buyNow, 0, buyNow);
                     AuctionStartEvent auctionStartEvent = new AuctionStartEvent(auctionItem);
                     Core.getInstance().getServer().getPluginManager().callEvent(auctionStartEvent);
@@ -73,25 +81,32 @@ public class SellCommand extends SubCommand {
                         Core.getInstance().auctionItems.add(0, auctionItem);
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_LISTED.getNode()).replace("{itemname}", auctionItem.getDisplayName()).replace("{price}", AuctionAPI.getInstance().friendlyNumber(buyNow)));
 
+                        AuctionAPI.setItemInHand(p, null);
+                        p.updateInventory();
+
                         //Discord Hook
                         if (Core.getInstance().getConfig().getBoolean("discord.enabled")) {
-                            DiscordHook discordHook = new DiscordHook(Core.getInstance().getConfig().getString("discord.webhook"));
-                            DiscordEmbed de = DiscordEmbed.builder()
-                                    .title(Core.getInstance().getConfig().getString("discord.title"))
-                                    .description(Core.getInstance().getConfig().getString("discord.description"))
-                                    .color(1)
-                                    .fields(Arrays.asList(
-                                            FieldEmbed.builder().name("Seller").value(p.getName()).inline(true).build(),
-                                            FieldEmbed.builder().name("Buy Now").value(AuctionAPI.getInstance().friendlyNumber(buyNow)).build(),
-                                            FieldEmbed.builder().name("Item").value(auctionItem.getItem().getType().name() + ":" + auctionItem.getItem().getDurability()).build()
-                                    ))
-                                    .build();
 
-                            DiscordMessage dm = DiscordMessage.builder().username(Core.getInstance().getConfig().getString("discord.username")).content("").avatarUrl(Core.getInstance().getConfig().getString("discord.profilepicture")).embeds(Arrays.asList(de)).build();
-                            discordHook.send(dm);
+                            //Discord Hook
+                            if (Core.getInstance().getConfig().getBoolean("discord.enabled")) {
+                                DiscordHook discordHook = new DiscordHook(Core.getInstance().getConfig().getString("discord.webhook"));
+
+
+                                List<FieldEmbed> embeds = new ArrayList<>();
+                                for (String s : Core.getInstance().getConfig().getConfigurationSection("discord.add").getKeys(false)) {
+                                    embeds.add(new DiscordMessageWrapper("discord.add." + s, auctionItem).getFieldEmbed());
+                                }
+
+                                DiscordEmbed de = DiscordEmbed.builder()
+                                        .title(Core.getInstance().getConfig().getString("discord.title"))
+                                        .color(1)
+                                        .fields(embeds)
+                                        .build();
+
+                                DiscordMessage dm = DiscordMessage.builder().username(Core.getInstance().getConfig().getString("discord.username")).content("").avatarUrl(Core.getInstance().getConfig().getString("discord.profilepicture")).embeds(Arrays.asList(de)).build();
+                                discordHook.send(dm);
+                            }
                         }
-
-                        AuctionAPI.setItemInHand(p, null);
                     }
                 }
             } else {
@@ -168,22 +183,26 @@ public class SellCommand extends SubCommand {
 
                         //Discord Hook
                         if (Core.getInstance().getConfig().getBoolean("discord.enabled")) {
-                            DiscordHook discordHook = new DiscordHook(Core.getInstance().getConfig().getString("discord.webhook"));
-                            DiscordEmbed de = DiscordEmbed.builder()
-                                    .title(Core.getInstance().getConfig().getString("discord.title"))
-                                    .description(Core.getInstance().getConfig().getString("discord.description"))
-                                    .color(1)
-                                    .fields(Arrays.asList(
-                                            FieldEmbed.builder().name("Seller").value(p.getName()).inline(true).build(),
-                                            FieldEmbed.builder().name("Start Price").value(AuctionAPI.getInstance().friendlyNumber(startPrice)).build(),
-                                            FieldEmbed.builder().name("Increment").value(AuctionAPI.getInstance().friendlyNumber(increment)).build(),
-                                            FieldEmbed.builder().name("Buy Now").value(AuctionAPI.getInstance().friendlyNumber(buyNow)).build(),
-                                            FieldEmbed.builder().name("Item").value(auctionItem.getItem().getType().name() + ":" + auctionItem.getItem().getDurability()).build()
-                                    ))
-                                    .build();
 
-                            DiscordMessage dm = DiscordMessage.builder().username(Core.getInstance().getConfig().getString("discord.username")).content("").avatarUrl(Core.getInstance().getConfig().getString("discord.profilepicture")).embeds(Arrays.asList(de)).build();
-                            discordHook.send(dm);
+                            //Discord Hook
+                            if (Core.getInstance().getConfig().getBoolean("discord.enabled")) {
+                                DiscordHook discordHook = new DiscordHook(Core.getInstance().getConfig().getString("discord.webhook"));
+
+
+                                List<FieldEmbed> embeds = new ArrayList<>();
+                                for (String s : Core.getInstance().getConfig().getConfigurationSection("discord.add").getKeys(false)) {
+                                    embeds.add(new DiscordMessageWrapper("discord.add." + s, auctionItem).getFieldEmbed());
+                                }
+
+                                DiscordEmbed de = DiscordEmbed.builder()
+                                        .title(Core.getInstance().getConfig().getString("discord.title"))
+                                        .color(1)
+                                        .fields(embeds)
+                                        .build();
+
+                                DiscordMessage dm = DiscordMessage.builder().username(Core.getInstance().getConfig().getString("discord.username")).content("").avatarUrl(Core.getInstance().getConfig().getString("discord.profilepicture")).embeds(Arrays.asList(de)).build();
+                                discordHook.send(dm);
+                            }
                         }
 
                         AuctionAPI.setItemInHand(p, null);
