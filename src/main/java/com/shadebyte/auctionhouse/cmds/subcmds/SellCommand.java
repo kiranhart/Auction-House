@@ -55,15 +55,20 @@ public class SellCommand extends SubCommand {
                     p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.CMD_SELL.getNode()));
                 } else {
 
+                    if (new AuctionPlayer(p).getLimit() - 1 < new AuctionPlayer(p).getTotalActiveAuctions()) {
+                        p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_MAX.getNode()));
+                        return;
+                    }
+                    
                     int buyNow = Integer.parseInt(args[1]);
 
                     //Max Prices
-                    if (buyNow > Core.getInstance().getConfig().getInt("settings.max-auction-price")) {
+                    if (buyNow > Core.getInstance().getConfig().getLong("settings.max-auction-price")) {
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.MAX_AUCTION_PRICE.getNode()));
                         return;
                     }
 
-                    if (buyNow < Core.getInstance().getConfig().getInt("settings.min-auction-price")) {
+                    if (buyNow < Core.getInstance().getConfig().getLong("settings.min-auction-price")) {
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.MIN_AUCTION_PRICE.getNode()));
                         return;
                     }
@@ -142,33 +147,33 @@ public class SellCommand extends SubCommand {
                     }
 
                     //Max Prices
-                    if (buyNow > Core.getInstance().getConfig().getInt("settings.max-auction-price")) {
+                    if (buyNow > Core.getInstance().getConfig().getLong("settings.max-auction-price")) {
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.MAX_AUCTION_PRICE.getNode()));
                         return;
                     }
 
-                    if (startPrice > Core.getInstance().getConfig().getInt("settings.max-auction-start")) {
+                    if (startPrice > Core.getInstance().getConfig().getLong("settings.max-auction-start")) {
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.MAX_START_PRICE.getNode()));
                         return;
                     }
 
-                    if (increment > Core.getInstance().getConfig().getInt("settings.max-auction-increment")) {
+                    if (increment > Core.getInstance().getConfig().getLong("settings.max-auction-increment")) {
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.MAX_INCREMENT_PRICE.getNode()));
                         return;
                     }
 
                     //Min Prices
-                    if (buyNow < Core.getInstance().getConfig().getInt("settings.min-auction-price")) {
+                    if (buyNow < Core.getInstance().getConfig().getLong("settings.min-auction-price")) {
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.MIN_AUCTION_PRICE.getNode()));
                         return;
                     }
 
-                    if (startPrice < Core.getInstance().getConfig().getInt("settings.min-auction-start")) {
+                    if (startPrice < Core.getInstance().getConfig().getLong("settings.min-auction-start")) {
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.MIN_START_PRICE.getNode()));
                         return;
                     }
 
-                    if (increment < Core.getInstance().getConfig().getInt("settings.min-auction-increment")) {
+                    if (increment < Core.getInstance().getConfig().getLong("settings.min-auction-increment")) {
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.MIN_INCREMENT_PRICE.getNode()));
                         return;
                     }

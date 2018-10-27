@@ -25,14 +25,14 @@ public class AuctionItem {
     private String owner;
     private String highestBidder;
     private ItemStack item;
-    private int startPrice;
-    private int bidIncrement;
-    private int buyNowPrice;
-    private int currentPrice;
+    private long startPrice;
+    private long bidIncrement;
+    private long buyNowPrice;
+    private long currentPrice;
     private int time;
     private String key;
 
-    public AuctionItem(String owner, String highestBidder, ItemStack item, int startPrice, int bidIncrement, int buyNowPrice, int currentPrice, int time, String key) {
+    public AuctionItem(String owner, String highestBidder, ItemStack item, long startPrice, long bidIncrement, long buyNowPrice, long currentPrice, int time, String key) {
         this.owner = owner;
         this.item = item;
         this.startPrice = startPrice;
@@ -44,7 +44,7 @@ public class AuctionItem {
         this.highestBidder = highestBidder;
     }
 
-    public AuctionItem(String owner, ItemStack item, int time, int startPrice, int bidIncrement, int buyNowPrice) {
+    public AuctionItem(String owner, ItemStack item, int time, long startPrice, long bidIncrement, long buyNowPrice) {
         this.owner = owner;
         this.item = item.clone();
         this.startPrice = startPrice;
@@ -72,7 +72,7 @@ public class AuctionItem {
         this.item = item;
     }
 
-    public int getStartPrice() {
+    public long getStartPrice() {
         return startPrice;
     }
 
@@ -80,7 +80,7 @@ public class AuctionItem {
         this.startPrice = startPrice;
     }
 
-    public int getBidIncrement() {
+    public long getBidIncrement() {
         return bidIncrement;
     }
 
@@ -88,19 +88,19 @@ public class AuctionItem {
         this.bidIncrement = bidIncrement;
     }
 
-    public int getBuyNowPrice() {
+    public long getBuyNowPrice() {
         return buyNowPrice;
     }
 
-    public void setBuyNowPrice(int buyNowPrice) {
+    public void setBuyNowPrice(long buyNowPrice) {
         this.buyNowPrice = buyNowPrice;
     }
 
-    public int getCurrentPrice() {
+    public long getCurrentPrice() {
         return currentPrice;
     }
 
-    public void setCurrentPrice(int currentPrice) {
+    public void setCurrentPrice(long currentPrice) {
         this.currentPrice = currentPrice;
     }
 

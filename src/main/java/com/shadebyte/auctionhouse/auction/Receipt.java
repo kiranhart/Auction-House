@@ -8,10 +8,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import javax.swing.text.NumberFormatter;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public class Receipt {
 
-    private int total;
+    private long total;
     private String seller, buyer, date, time;
     private Transaction transaction;
 
@@ -50,7 +48,7 @@ public class Receipt {
         return stack;
     }
 
-    public int getTotal() {
+    public long getTotal() {
         return total;
     }
 

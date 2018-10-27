@@ -27,9 +27,9 @@ public class MySQL {
                 insert.setString(1, transaction.getBuyer());
                 insert.setString(2, transaction.getAuctionItem().getOwner());
                 insert.setString(3, transaction.getTransactionType().getTransactionType());
-                insert.setInt(4, transaction.getAuctionItem().getStartPrice());
-                insert.setInt(5, transaction.getAuctionItem().getBuyNowPrice());
-                insert.setInt(6, transaction.getAuctionItem().getBidIncrement());
+                insert.setLong(4, transaction.getAuctionItem().getStartPrice());
+                insert.setLong(5, transaction.getAuctionItem().getBuyNowPrice());
+                insert.setLong(6, transaction.getAuctionItem().getBidIncrement());
                 insert.setString(7, transaction.getAuctionItem().getItem().getTypeId() + "-" + transaction.getAuctionItem().getItem().getDurability());
 
                 insert.setString(8, AuctionAPI.getInstance().getSQLDisplayName(transaction.getAuctionItem().getItem()));
@@ -38,7 +38,7 @@ public class MySQL {
 
                 insert.setString(11, transaction.getAuctionItem().getKey());
                 insert.setString(12, AuctionAPI.getInstance().getDate(System.currentTimeMillis()));
-                insert.setInt(13, (transaction.getTransactionType() == Transaction.TransactionType.BOUGHT) ? transaction.getAuctionItem().getBuyNowPrice() : transaction.getAuctionItem().getCurrentPrice());
+                insert.setLong(13, (transaction.getTransactionType() == Transaction.TransactionType.BOUGHT) ? transaction.getAuctionItem().getBuyNowPrice() : transaction.getAuctionItem().getCurrentPrice());
                 insert.executeUpdate();
                 Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&aRecorded transaction id: &b" + transaction.getAuctionItem().getKey() + "&a to database."));
 
