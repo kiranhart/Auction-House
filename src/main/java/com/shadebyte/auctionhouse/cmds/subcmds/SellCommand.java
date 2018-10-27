@@ -59,8 +59,8 @@ public class SellCommand extends SubCommand {
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_MAX.getNode()));
                         return;
                     }
-                    
-                    int buyNow = Integer.parseInt(args[1]);
+
+                    long buyNow = Long.parseLong(args[1]);
 
                     //Max Prices
                     if (buyNow > Core.getInstance().getConfig().getLong("settings.max-auction-price")) {
@@ -137,9 +137,9 @@ public class SellCommand extends SubCommand {
                         return;
                     }
 
-                    int buyNow = Integer.parseInt(args[1]);
-                    int startPrice = Integer.parseInt(args[2]);
-                    int increment = Integer.parseInt(args[3]);
+                    long buyNow = Long.parseLong(args[1]);
+                    long startPrice = Long.parseLong(args[2]);
+                    long increment = Long.parseLong(args[3]);
 
                     if (AuctionAPI.getItemInHand(p) == null || AuctionAPI.getItemInHand(p).getType() == Material.AIR) {
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AIR.getNode()));
