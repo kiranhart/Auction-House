@@ -4,7 +4,7 @@
   <groupId>com.shadebyte</groupId>
   <artifactId>auctionhouse</artifactId>
   <name>AuctionHouse</name>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
   <description>A premium auction house plugin</description>
   <url>https://www.shadebyte.com</url>
   <build>
