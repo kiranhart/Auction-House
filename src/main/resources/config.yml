@@ -14,7 +14,7 @@ settings:
   min-auction-increment: 1
   owner-can-purchase-own: false
   owner-can-bid-own: false
-  use-bid-system: true
+  use-bid-system: false
   auto-refresh-auction-page: true
   bid:
     increase-on-bid: true
@@ -64,7 +64,30 @@ discord:
       inline: false
       data: "{item_lore}"
 
-
+auction-items:
+  use-short-form-number: true
+  auction-stack:
+  - "&7-------------------------"
+  - "&eSeller&f: &b{seller}"
+  - ""
+  - "&eBuy Now: &a${buynowprice}"
+  #- "&eCurrent Price: &a${currentprice}"
+  #- "&eBid Increment: &a${bidincrement}"
+  #- "&eHighest Bidder: &a${highestbidder}"
+  - ""
+  - "&eTime Left: &b{timeleft}"
+  - "&7-------------------------"
+  #- "&eLeft-Click&f: &bBid"
+  - "&eRight-Click&f: &bBuy Now"
+  - "&7-------------------------"
+  listing-stack:
+  - "&7-------------------------"
+  - "&eBuy Now: &a${buynowprice}"
+  #- "&eCurrent Price: &a${currentprice}"
+  #- "&eBid Increment: &a${bidincrement}"
+  #- "&eHighest Bidder: &a${highestbidder}"
+  - "&eTime Left: &b{timeleft}"
+  - "&7-------------------------"
 
 receipt:
   give-on-transaction: true
@@ -302,6 +325,11 @@ gui:
           - "&7purchase it right away with a set price."
           - ""
           - "&7For more help, use &e/ah help!"
+      transactions:
+        item: "PAPER:0"
+        name: "&e&lTransactions"
+        lore:
+        - "&7Click to view transaction history"
       howtosell:
         item: "GOLD_INGOT:0"
         name: "&e&lHow to Sell"

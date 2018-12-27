@@ -8,11 +8,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
 /**
  * The current file has been created by Kiran Hart
@@ -150,24 +149,21 @@ public class AuctionItem {
         stack.setAmount((stack.getAmount() > 1) ? stack.getAmount() : 1);
         ItemMeta meta = stack.getItemMeta();
         List<String> lore = (meta.hasLore() ? meta.getLore() : new ArrayList<>());
-        lore.add(translateAlternateColorCodes('&', "&7-------------------------"));
-        if (owner == null)
-            lore.add(translateAlternateColorCodes('&', "&eSeller&f: &bSample User"));
-        else
-            lore.add(translateAlternateColorCodes('&', "&eSeller&f: &b" + Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName()));
-        lore.add(translateAlternateColorCodes('&', ""));
-        lore.add(translateAlternateColorCodes('&', "&eBuy Now: &a$" + AuctionAPI.getInstance().friendlyNumber(buyNowPrice)));
-        if (Core.getInstance().getConfig().getBoolean("settings.use-bid-system")) {
-            lore.add(translateAlternateColorCodes('&', "&eCurrent Price: &a$" + AuctionAPI.getInstance().friendlyNumber(currentPrice)));
-            lore.add(translateAlternateColorCodes('&', "&eBid Increment: &a$" + AuctionAPI.getInstance().friendlyNumber(bidIncrement)));
+
+        String theOwner = (owner == null) ? "&eSeller&f: &bSample User" : Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName();
+        String buyNowNumber = (Core.getInstance().getConfig().getBoolean("auction-items.use-short-form-number")) ? AuctionAPI.getInstance().friendlyNumber(buyNowPrice) : String.valueOf(NumberFormat.getInstance().format(buyNowPrice));
+        String currentPriceNumber = (Core.getInstance().getConfig().getBoolean("settings.use-bid-system")) ? (Core.getInstance().getConfig().getBoolean("auction-items.use-short-form-number")) ? AuctionAPI.getInstance().friendlyNumber(currentPrice) : String.valueOf(NumberFormat.getInstance().format(currentPrice)) : "&cDisabled";
+        String bidIncrementNumber = (Core.getInstance().getConfig().getBoolean("settings.use-bid-system")) ? (Core.getInstance().getConfig().getBoolean("auction-items.use-short-form-number")) ? AuctionAPI.getInstance().friendlyNumber(bidIncrement) : String.valueOf(NumberFormat.getInstance().format(bidIncrement)) : "&cDisabled";
+        String timeLeft = AuctionAPI.getInstance().timeLeft(getTime());
+
+        for (String lores : Core.getInstance().getConfig().getStringList("auction-items.auction-stack")) {
+            lores.replace("{buynowprice}", buyNowNumber)
+                    .replace("{seller", theOwner)
+                    .replace("{currentprice}", currentPriceNumber)
+                    .replace("{bidincrement}", bidIncrementNumber)
+                    .replace("{timeleft}", timeLeft);
         }
-        lore.add(translateAlternateColorCodes('&', ""));
-        lore.add(translateAlternateColorCodes('&', "&eTime Left: &b" + AuctionAPI.getInstance().timeLeft(getTime())));
-        lore.add(translateAlternateColorCodes('&', "&7-------------------------"));
-        if (Core.getInstance().getConfig().getBoolean("settings.use-bid-system"))
-            lore.add(translateAlternateColorCodes('&', "&eLeft-Click&f: &bBid"));
-        lore.add(translateAlternateColorCodes('&', "&eRight-Click&f: &bBuy Now"));
-        lore.add(translateAlternateColorCodes('&', "&7-------------------------"));
+
         meta.setLore(lore);
         stack.setItemMeta(meta);
         stack = NBTEditor.setItemTag(stack, getKey(), "AuctionItemKey");
@@ -179,15 +175,21 @@ public class AuctionItem {
         stack.setAmount((stack.getAmount() > 1) ? stack.getAmount() : 1);
         ItemMeta meta = stack.getItemMeta();
         List<String> lore = (meta.hasLore() ? meta.getLore() : new ArrayList<>());
-        lore.add(translateAlternateColorCodes('&', "&7-------------------------"));
-        lore.add(translateAlternateColorCodes('&', "&eBuy Now: &a$" + AuctionAPI.getInstance().friendlyNumber(buyNowPrice)));
-        if (Core.getInstance().getConfig().getBoolean("settings.use-bid-system")) {
-            lore.add(translateAlternateColorCodes('&', "&eCurrent Price: &a$" + AuctionAPI.getInstance().friendlyNumber(currentPrice)));
-            lore.add(translateAlternateColorCodes('&', "&eBid Increment: &a$" + AuctionAPI.getInstance().friendlyNumber(bidIncrement)));
+
+        String theOwner = (owner == null) ? "&eSeller&f: &bSample User" : Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName();
+        String buyNowNumber = (Core.getInstance().getConfig().getBoolean("auction-items.use-short-form-number")) ? AuctionAPI.getInstance().friendlyNumber(buyNowPrice) : String.valueOf(NumberFormat.getInstance().format(buyNowPrice));
+        String currentPriceNumber = (Core.getInstance().getConfig().getBoolean("settings.use-bid-system")) ? (Core.getInstance().getConfig().getBoolean("auction-items.use-short-form-number")) ? AuctionAPI.getInstance().friendlyNumber(currentPrice) : String.valueOf(NumberFormat.getInstance().format(currentPrice)) : "&cDisabled";
+        String bidIncrementNumber = (Core.getInstance().getConfig().getBoolean("settings.use-bid-system")) ? (Core.getInstance().getConfig().getBoolean("auction-items.use-short-form-number")) ? AuctionAPI.getInstance().friendlyNumber(bidIncrement) : String.valueOf(NumberFormat.getInstance().format(bidIncrement)) : "&cDisabled";
+        String timeLeft = AuctionAPI.getInstance().timeLeft(getTime());
+
+        for (String lores : Core.getInstance().getConfig().getStringList("auction-items.auction-stack")) {
+            lores.replace("{buynowprice}", buyNowNumber)
+                    .replace("{seller", theOwner)
+                    .replace("{currentprice}", currentPriceNumber)
+                    .replace("{bidincrement}", bidIncrementNumber)
+                    .replace("{timeleft}", timeLeft);
         }
-        lore.add(translateAlternateColorCodes('&', ""));
-        lore.add(translateAlternateColorCodes('&', "&eTime Left: &b" + AuctionAPI.getInstance().timeLeft(getTime())));
-        lore.add(translateAlternateColorCodes('&', "&7-------------------------"));
+
         meta.setLore(lore);
         stack.setItemMeta(meta);
         stack = NBTEditor.setItemTag(stack, getKey(), "AuctionItemKey");

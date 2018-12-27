@@ -19,6 +19,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -97,12 +98,18 @@ public class AuctionGUI implements AGUI {
                 if (item.getOwner().equalsIgnoreCase(p.getUniqueId().toString())) {
                     if (Core.getInstance().getConfig().getBoolean("settings.owner-can-bid-own")) {
                         item.setCurrentPrice(item.getCurrentPrice() + item.getBidIncrement());
+                        if (!item.getHighestBidder().equalsIgnoreCase(p.getUniqueId().toString())) {
+                            Bukkit.getOfflinePlayer(UUID.fromString(item.getHighestBidder())).getPlayer().sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.GOT_OUT_BID.getNode()).replace("{user}", Bukkit.getOfflinePlayer(UUID.fromString(item.getHighestBidder())).getName()));
+                        }
                         item.setHighestBidder(p.getUniqueId().toString());
                     } else {
                         p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.CANNOT_BID_OWN.getNode()));
                     }
                 } else {
                     item.setCurrentPrice(item.getCurrentPrice() + item.getBidIncrement());
+                    if (!item.getHighestBidder().equalsIgnoreCase(p.getUniqueId().toString())) {
+                        Bukkit.getOfflinePlayer(UUID.fromString(item.getHighestBidder())).getPlayer().sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.GOT_OUT_BID.getNode()).replace("{user}", Bukkit.getOfflinePlayer(UUID.fromString(item.getHighestBidder())).getName()));
+                    }
                     item.setHighestBidder(p.getUniqueId().toString());
                 }
 
@@ -158,6 +165,7 @@ public class AuctionGUI implements AGUI {
         inventory.setItem(48, AuctionAPI.getInstance().createConfigItem("gui.auction.items.previouspage", 0, 0));
         inventory.setItem(49, AuctionAPI.getInstance().createConfigItem("gui.auction.items.refresh", 0, 0));
         inventory.setItem(50, AuctionAPI.getInstance().createConfigItem("gui.auction.items.nextpage", 0, 0));
+        inventory.setItem(51, AuctionAPI.getInstance().createConfigItem("gui.auction.items.transactions", 0, 0));
         inventory.setItem(52, AuctionAPI.getInstance().createConfigItem("gui.auction.items.howtosell", 0, 0));
         inventory.setItem(53, AuctionAPI.getInstance().createConfigItem("gui.auction.items.guide", 0, 0));
 

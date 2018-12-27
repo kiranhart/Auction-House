@@ -22,6 +22,7 @@ public enum Lang {
     AUCTION_BUY("auction.buy"),
     AUCTION_MAX("auction.max"),
     AUCTION_SOLD("auction.sold"),
+    GOT_OUT_BID("outbid"),
 
     MAX_START_PRICE("price.max.start"),
     MAX_AUCTION_PRICE("price.max.auction"),
