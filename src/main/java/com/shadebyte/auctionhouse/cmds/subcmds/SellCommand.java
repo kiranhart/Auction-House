@@ -17,9 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * The current file has been created by Kiran Hart
@@ -43,6 +41,27 @@ public class SellCommand extends SubCommand {
         }
 
         Player p = (Player) sender;
+
+        for (String bitems : Core.getInstance().getConfig().getStringList("blocked-items")) {
+            String[] item = bitems.split(":");
+            if (AuctionAPI.getItemInHand(p) != null || AuctionAPI.getItemInHand(p).getType() != Material.AIR) {
+                if (AuctionAPI.getItemInHand(p).getType() == Material.valueOf(item[0].toUpperCase()) && AuctionAPI.getItemInHand(p).getDurability() == Short.parseShort(item[1])) {
+                    p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.BLOCKED_ITEM.getNode()));
+                    return;
+                }
+            }
+        }
+
+        int timeLimit;
+        List<Integer> times = new ArrayList<>();
+
+        for (String nodes : Core.getInstance().getConfig().getStringList("time-limits")) {
+            if (p.hasPermission(nodes)) {
+                times.add(Core.getInstance().getConfig().getInt("time-limits." + nodes));
+            }
+        }
+
+        timeLimit = (times.size() <= 0) ? Core.getInstance().getConfig().getInt("settings.default-auction-time") : Collections.max(times);
 
         if (args.length == 1) {
             p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.CMD_SELL.getNode()));
@@ -78,7 +97,7 @@ public class SellCommand extends SubCommand {
                         return;
                     }
 
-                    AuctionItem auctionItem = new AuctionItem(p.getUniqueId().toString(), AuctionAPI.getItemInHand(p), Core.getInstance().getConfig().getInt("settings.default-auction-time"), buyNow, 0, buyNow);
+                    AuctionItem auctionItem = new AuctionItem(p.getUniqueId().toString(), AuctionAPI.getItemInHand(p), timeLimit, buyNow, 0, buyNow);
                     AuctionStartEvent auctionStartEvent = new AuctionStartEvent(auctionItem);
                     Core.getInstance().getServer().getPluginManager().callEvent(auctionStartEvent);
 
@@ -178,7 +197,7 @@ public class SellCommand extends SubCommand {
                         return;
                     }
 
-                    AuctionItem auctionItem = new AuctionItem(p.getUniqueId().toString(), AuctionAPI.getItemInHand(p), Core.getInstance().getConfig().getInt("settings.default-auction-time"), startPrice, increment, buyNow);
+                    AuctionItem auctionItem = new AuctionItem(p.getUniqueId().toString(), AuctionAPI.getItemInHand(p), timeLimit, startPrice, increment, buyNow);
                     AuctionStartEvent auctionStartEvent = new AuctionStartEvent(auctionItem);
                     Core.getInstance().getServer().getPluginManager().callEvent(auctionStartEvent);
 

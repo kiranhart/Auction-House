@@ -67,6 +67,11 @@ public class AuctionGUI implements AGUI {
             p.openInventory(new ExpiredGUI(p).getInventory());
         }
 
+        if (slot == 51) {
+            p.closeInventory();
+            p.openInventory(new TransactionSelectGUI().getInventory());
+        }
+
         if (slot >= 0 & slot <= 44) {
 
             if (clicked == null || clicked.getType() == Material.AIR) {

@@ -3,6 +3,7 @@
 #have it in the same locale folder, just set new lang name here.
 #Lang name formats: https://www.science.co.il/language/Locale-codes.php
 lang: "en_US"
+debugger: true
 
 settings:
   default-auction-time: 150 # 15 Minutes by default
@@ -63,6 +64,17 @@ discord:
     item_lore:
       inline: false
       data: "{item_lore}"
+
+#add permissions to allow more auction time.
+time-limits:
+  auctionhouse.times.default: 600
+  auctionhouse.times.rank1: 1200
+
+#Blocked items that cannot be listed on the auction house
+#You must include the type data (the number of : ) usually it's 0
+#unless you're targeting glass or a changable item on 1.12 or lower (most cases)
+blocked-items:
+  - "ENDER_CHEST:0"
 
 auction-items:
   use-short-form-number: true

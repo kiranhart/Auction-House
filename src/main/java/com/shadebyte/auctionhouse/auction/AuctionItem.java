@@ -5,6 +5,7 @@ import com.shadebyte.auctionhouse.api.AuctionAPI;
 import com.shadebyte.auctionhouse.util.NBTEditor;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -157,11 +158,11 @@ public class AuctionItem {
         String timeLeft = AuctionAPI.getInstance().timeLeft(getTime());
 
         for (String lores : Core.getInstance().getConfig().getStringList("auction-items.auction-stack")) {
-            lores.replace("{buynowprice}", buyNowNumber)
-                    .replace("{seller", theOwner)
+            lore.add(ChatColor.translateAlternateColorCodes('&', lores.replace("{buynowprice}", buyNowNumber)
+                    .replace("{seller}", theOwner)
                     .replace("{currentprice}", currentPriceNumber)
                     .replace("{bidincrement}", bidIncrementNumber)
-                    .replace("{timeleft}", timeLeft);
+                    .replace("{timeleft}", timeLeft)));
         }
 
         meta.setLore(lore);
@@ -183,11 +184,11 @@ public class AuctionItem {
         String timeLeft = AuctionAPI.getInstance().timeLeft(getTime());
 
         for (String lores : Core.getInstance().getConfig().getStringList("auction-items.auction-stack")) {
-            lores.replace("{buynowprice}", buyNowNumber)
-                    .replace("{seller", theOwner)
+            lore.add(ChatColor.translateAlternateColorCodes('&', lores.replace("{buynowprice}", buyNowNumber)
+                    .replace("{seller}", theOwner)
                     .replace("{currentprice}", currentPriceNumber)
                     .replace("{bidincrement}", bidIncrementNumber)
-                    .replace("{timeleft}", timeLeft);
+                    .replace("{timeleft}", timeLeft)));
         }
 
         meta.setLore(lore);

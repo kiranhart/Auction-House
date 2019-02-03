@@ -21,6 +21,7 @@ cantbuyown = "&cYou cannot buy your own item!"
 air = "&CCome on, really tryna auction air?"
 invalidtransaction = "&cThat transaction ID could not be found."
 outbid = "&cYou got outbid by &6{player}"
+blockeditem = "&cYou're not allowed to auction that item."
 
 price.max.start = "&cPlease start auction with a lower price."
 price.max.auction = "&cPlease start with a lower bid price."

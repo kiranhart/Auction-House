@@ -17,6 +17,7 @@ public enum Lang {
     CANNOT_BID_OWN("cantbidonown"),
     AIR("air"),
     INVALID_TRANSACTION("invalidtransaction"),
+    BLOCKED_ITEM("blockeditem"),
 
     AUCTION_LISTED("auction.listed"),
     AUCTION_BUY("auction.buy"),
