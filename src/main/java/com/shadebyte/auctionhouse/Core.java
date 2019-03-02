@@ -232,6 +232,7 @@ public final class Core extends JavaPlugin {
                                 p.getOpenInventory().getTopInventory().setItem(48, AuctionAPI.getInstance().createConfigItem("gui.auction.items.previouspage", 0, 0));
                                 p.getOpenInventory().getTopInventory().setItem(49, AuctionAPI.getInstance().createConfigItem("gui.auction.items.refresh", 0, 0));
                                 p.getOpenInventory().getTopInventory().setItem(50, AuctionAPI.getInstance().createConfigItem("gui.auction.items.nextpage", 0, 0));
+                                p.getOpenInventory().getTopInventory().setItem(51, AuctionAPI.getInstance().createConfigItem("gui.auction.items.transactions", 0, 0));
                                 p.getOpenInventory().getTopInventory().setItem(52, AuctionAPI.getInstance().createConfigItem("gui.auction.items.howtosell", 0, 0));
                                 p.getOpenInventory().getTopInventory().setItem(53, AuctionAPI.getInstance().createConfigItem("gui.auction.items.guide", 0, 0));
 
