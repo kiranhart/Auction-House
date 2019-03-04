@@ -15,7 +15,7 @@ settings:
   min-auction-increment: 1
   owner-can-purchase-own: false
   owner-can-bid-own: false
-  use-bid-system: false
+  use-bid-system: false #WARNING : CHANGING THIS WHILE ITEMS ARE IN THE AUCTION HOUSE WILL CAUSE THEM TO BE LOST, END ALL AUCTIONS BEFORE CHANGING AND RESTARTING THE SERVER.
   auto-refresh-auction-page: true
   bid:
     increase-on-bid: true
@@ -66,9 +66,9 @@ discord:
       data: "{item_lore}"
 
 #add permissions to allow more auction time.
-time-limits:
-  auctionhouse.times.default: 600
-  auctionhouse.times.rank1: 1200
+auctiontime:
+  default: 600
+  rank1: 1200
 
 #Blocked items that cannot be listed on the auction house
 #You must include the type data (the number of : ) usually it's 0

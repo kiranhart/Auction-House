@@ -17,7 +17,10 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The current file has been created by Kiran Hart
@@ -55,11 +58,11 @@ public class SellCommand extends SubCommand {
         int timeLimit;
         List<Integer> times = new ArrayList<>();
 
-        for (String nodes : Core.getInstance().getConfig().getStringList("time-limits")) {
-            if (p.hasPermission(nodes)) {
-                times.add(Core.getInstance().getConfig().getInt("time-limits." + nodes));
+        Core.getInstance().getConfig().getConfigurationSection("auctiontime").getKeys(false).forEach(perm -> {
+            if (p.hasPermission("auctiontime." + String.valueOf(perm))) {
+                times.add(Core.getInstance().getConfig().getInt("auctiontime." + perm));
             }
-        }
+        });
 
         timeLimit = (times.size() <= 0) ? Core.getInstance().getConfig().getInt("settings.default-auction-time") : Collections.max(times);
 
