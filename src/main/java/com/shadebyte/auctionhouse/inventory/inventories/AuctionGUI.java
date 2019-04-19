@@ -91,7 +91,7 @@ public class AuctionGUI implements AGUI {
                     if (auctionItem.getKey().equalsIgnoreCase(key)) item = auctionItem;
                 }
 
-                if (Core.getEconomy().getBalance(p) < item.getBidIncrement()) {
+                if (Core.getEconomy().getBalance(p) < item.getBidIncrement() + item.getCurrentPrice()) {
                     e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createConfigItem("gui.auction.items.not-enough-money", 0, 0));
                     Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(Core.getInstance(), () -> {
                         p.closeInventory();

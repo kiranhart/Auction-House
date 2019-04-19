@@ -42,7 +42,13 @@ public class ConfirmationGUI implements AGUI {
                 } else {
                     Core.getEconomy().withdrawPlayer(p, auctionItem.getBuyNowPrice());
                     Core.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(auctionItem.getOwner())), auctionItem.getBuyNowPrice());
-                    p.getInventory().addItem(auctionItem.getItem());
+
+                    if (AuctionAPI.getInstance().availableSlots(p.getInventory()) == 0) {
+                        Core.getInstance().getData().getConfig().set("expired." + p.getUniqueId().toString() + "." + auctionItem.getKey() + ".item", auctionItem.getItem());
+                        Core.getInstance().getData().getConfig().set("expired." + p.getUniqueId().toString() + "." + auctionItem.getKey() + ".display", AuctionAPI.getInstance().expiredAuctionItem(auctionItem));
+                    } else
+                        p.getInventory().addItem(auctionItem.getItem());
+
                     p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_BUY.getNode()).replace("{itemname}", auctionItem.getDisplayName()).replace("{price}", AuctionAPI.getInstance().friendlyNumber(auctionItem.getBuyNowPrice())));
                     Player owner = Bukkit.getPlayer(UUID.fromString(auctionItem.getOwner()));
 
@@ -60,6 +66,9 @@ public class ConfirmationGUI implements AGUI {
                     Core.getInstance().getServer().getPluginManager().callEvent(completeEvent);
                     p.openInventory(new AuctionGUI(p).getInventory());
                 }
+            } else {
+                p.closeInventory();
+                p.openInventory(new AuctionGUI(p).getInventory());
             }
         } else if (clicked.isSimilar(AuctionAPI.getInstance().fill("&c&lNo", 14))) {
             p.closeInventory();

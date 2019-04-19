@@ -109,17 +109,20 @@ public final class Core extends JavaPlugin {
             }
         }
 
-        try {
-            MassiveStats stats = new MassiveStats(this);
-            stats.setListenerDisabled(false);
-        } catch (Exception e) {
-            Debugger.report(e);
+        if (getConfig().getBoolean("send-report-data")) {
+            try {
+                MassiveStats stats = new MassiveStats(this);
+                stats.setListenerDisabled(false);
+            } catch (Exception e) {
+                Debugger.report(e);
+            }
         }
 
         loadAuctions();
         Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bFound a total of &6" + Transaction.getTotalTransactions() + " &brecorded transactions"));
         Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&bAuction House finished loading, took " + (System.currentTimeMillis() - startTime) + " ms"));
         tickAuctions();
+        Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(this, () -> saveAllAuctions(), 0, 20 * getConfig().getInt("auto-save-increment"));
     }
 
     @Override
@@ -131,6 +134,45 @@ public final class Core extends JavaPlugin {
         saveAuctions();
         if (hikari != null)
             hikari.close();
+    }
+
+    private void saveAllAuctions() {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b============================"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&aGETTING READY TO PERFORM SAVE"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&b============================"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
+        long autoSaveStart = System.currentTimeMillis();
+        clearAuctionDataFolder();
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&e---------------------------"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cFinished clearing data.yml"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&e---------------------------"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
+        saveAuctions();
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&e-------------------------------"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&cFinished saving active auctions"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&e-------------------------------"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&eAuction Saving took: " + (System.currentTimeMillis() - autoSaveStart) + "ms"));
+    }
+
+    private void clearAuctionDataFolder() {
+        try {
+            ConfigurationSection section = data.getConfig().getConfigurationSection("active");
+            if (section.getKeys(false).size() != 0) {
+                Bukkit.getServer().getScheduler().runTaskAsynchronously(this, () -> {
+                    for (String node : section.getKeys(false)) {
+                        int xNode = Integer.parseInt(node);
+                        data.getConfig().set("active." + xNode, null);
+                    }
+                    data.saveConfig();
+                });
+            }
+        } catch (Exception e) {
+            Debugger.report(e);
+        }
     }
 
     private void loadAuctions() {
@@ -193,10 +235,13 @@ public final class Core extends JavaPlugin {
                                             highestBidder.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.AUCTION_BUY.getNode()).replace("{itemname}", auctionItem.getDisplayName()).replace("{price}", AuctionAPI.getInstance().friendlyNumber(auctionItem.getCurrentPrice())));
                                             getEconomy().withdrawPlayer(highestBidder, auctionItem.getCurrentPrice());
                                             getEconomy().depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(auctionItem.getOwner())), auctionItem.getCurrentPrice());
-                                            if (AuctionAPI.getInstance().availableSlots(highestBidder.getInventory()) < 1)
-                                                highestBidder.getWorld().dropItemNaturally(highestBidder.getLocation(), auctionItem.getItem());
-                                            else
+
+                                            if (AuctionAPI.getInstance().availableSlots(highestBidder.getInventory()) == 0) {
+                                                data.getConfig().set("expired." + auctionItem.getHighestBidder() + "." + auctionItem.getKey() + ".item", auctionItem.getItem());
+                                                data.getConfig().set("expired." + auctionItem.getHighestBidder() + "." + auctionItem.getKey() + ".display", AuctionAPI.getInstance().expiredAuctionItem(auctionItem));
+                                            } else
                                                 highestBidder.getInventory().addItem(auctionItem.getItem());
+
                                             Transaction transaction = new Transaction(Transaction.TransactionType.AUCTION_WON, auctionItem, highestBidder.getUniqueId().toString(), System.currentTimeMillis());
                                             transaction.saveTransaction();
                                             getServer().getPluginManager().callEvent(new TransactionCompleteEvent(transaction));

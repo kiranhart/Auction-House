@@ -4,9 +4,11 @@
 #Lang name formats: https://www.science.co.il/language/Locale-codes.php
 lang: "en_US"
 debugger: true
+auto-save-increment: 600 #Auto save active auctions every 10 minutes
+send-report-data: true #This will send hardware information to MassiveStats
 
 settings:
-  default-auction-time: 150 # 15 Minutes by default
+  default-auction-time: 900 # 15 Minutes by default
   max-auction-price: 2000000000
   max-auction-start: 2000000000
   max-auction-increment: 2000000000
