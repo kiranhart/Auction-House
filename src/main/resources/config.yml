@@ -1,0 +1,79 @@
+lang: "en_US"
+debugger: true
+
+settings:
+  default-auction-time: 900
+  max-auction-price: 1000000
+  max-auction-start: 1000000
+  max-auction-increment: 1000000
+  min-auction-price: 1
+  min-auction-start: 1
+  min-auction-increment: 1
+  owner-can-purchase-own: false
+  owner-can-bid-on-own: false
+  use-bidding-system: false
+  auto-refresh-auction-pages: true
+  use-short-numbers-on-items: false
+  increase-time-on-bid: true
+  time-to-increase-by-bid: 10
+
+#MySql stuff for databases if you want
+database:
+  enabled: false
+  host: "localhost"
+  port: 3306
+  database: "auctionhouse"
+  username: "root"
+  password: ""
+
+#add permissions to allow more auction time.
+auctiontime:
+  default: 600
+  rank1: 1200
+
+#Blocked items that cannot be listed on the auction house
+#You must include the type data (the number of : ) usually it's 0
+#unless you're targeting glass or a changable item on 1.12 or lower (most cases)
+blocked-items:
+  - "ENDER_CHEST:0"
+
+auction-items:
+  auction-stack:
+    - "&7-------------------------"
+    - "&eSeller&f: &b{seller}"
+    - ""
+    - "&eBuy Now: &a${buynowprice}"
+    #- "&eCurrent Price: &a${currentprice}"
+    #- "&eBid Increment: &a${bidincrement}"
+    #- "&eHighest Bidder: &a${highestbidder}"
+    - ""
+    - "&eTime Left: &b{timeleft}"
+    - "&7-------------------------"
+    #- "&eLeft-Click&f: &bBid"
+    - "&eRight-Click&f: &bBuy Now"
+    - "&7-------------------------"
+  listing-stack:
+    - "&7-------------------------"
+    - "&eBuy Now: &a${buynowprice}"
+    #- "&eCurrent Price: &a${currentprice}"
+    #- "&eBid Increment: &a${bidincrement}"
+    #- "&eHighest Bidder: &a${highestbidder}"
+    - "&eTime Left: &b{timeleft}"
+    - "&7-------------------------"
+
+receipt:
+  item: "PAPER:0"
+  name: "&E&LReceipt &7(Right-Click)"
+  lore:
+    - "&7Purchase proof of the purchased item."
+    - ""
+    - "&bSeller&f: &E{seller}"
+    - "&bPrice&f: &a${price}"
+    - "&ePurchased on&f: &a{date} &fat &A{time}"
+
+transaction:
+  item: "PAPER:0"
+  name: "&b{transaction_id}"
+  lore:
+    - "&7Seller&f: &b{seller}"
+    - "&7Buyer&f: &b{buyer}"

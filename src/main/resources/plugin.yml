@@ -1,0 +1,12 @@
+name: AuctionHouse
+version: ${project.version}
+api-version: 1.13
+main: com.kiranhart.auctionhouse.Core
+authors: [Kiran Hart]
+description: The ultimate auction house plugin
+website: https://www.kiranhart.com
+
+commands:
+  auctionhouse:
+    description: Main command for the Auction House plugin
+    aliases: [ah, auction]
