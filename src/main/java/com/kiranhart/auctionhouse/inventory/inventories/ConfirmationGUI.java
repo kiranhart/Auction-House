@@ -7,5 +7,26 @@ package com.kiranhart.auctionhouse.inventory.inventories;
     Code within this class is not to be redistributed without proper permission.
 */
 
-public class ConfirmationGUI {
+import com.kiranhart.auctionhouse.inventory.AGUI;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+
+public class ConfirmationGUI implements AGUI {
+
+    @Override
+    public void click(InventoryClickEvent e, ItemStack clicked, int slot) {
+
+    }
+
+    @Override
+    public void close(InventoryCloseEvent e) {
+
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return null;
+    }
 }

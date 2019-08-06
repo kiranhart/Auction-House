@@ -4,12 +4,15 @@ import com.kiranhart.auctionhouse.api.statics.AuctionSettings;
 import com.kiranhart.auctionhouse.api.version.ServerVersion;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
 import com.kiranhart.auctionhouse.cmds.CommandManager;
+import com.kiranhart.auctionhouse.util.economy.Economy;
+import com.kiranhart.auctionhouse.util.economy.VaultEconomy;
 import com.kiranhart.auctionhouse.util.locale.Locale;
 import com.kiranhart.auctionhouse.util.storage.ConfigWrapper;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -24,6 +27,7 @@ public final class Core extends JavaPlugin {
 
     private CommandManager commandManager;
     private Locale locale;
+    private Economy economy;
     private AuctionSettings auctionSettings;
 
     private CopyOnWriteArrayList<AuctionItem> auctionItems;
@@ -35,6 +39,7 @@ public final class Core extends JavaPlugin {
     public void onEnable() {
 
         long start = System.currentTimeMillis();
+        PluginManager pm = Bukkit.getPluginManager();
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bLoading Auction House 1.10 - Multiversion"));
@@ -61,6 +66,11 @@ public final class Core extends JavaPlugin {
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Initializing language system"));
         new Locale(this, "en_US");
         this.locale = Locale.getLocale(getConfig().getString("lang"));
+
+        //Economy
+        if (pm.isPluginEnabled("Vault")) {
+            this.economy = new VaultEconomy();
+        }
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Loading data files"));
         initDataFiles();
@@ -126,6 +136,10 @@ public final class Core extends JavaPlugin {
 
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public Economy getEconomy() {
+        return economy;
     }
 
     public ServerVersion getServerVersion() {

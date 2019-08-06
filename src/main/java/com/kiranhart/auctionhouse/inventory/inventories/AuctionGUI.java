@@ -9,12 +9,14 @@ package com.kiranhart.auctionhouse.inventory.inventories;
 
 import com.google.common.collect.Lists;
 import com.kiranhart.auctionhouse.Core;
+import com.kiranhart.auctionhouse.api.statics.AuctionLang;
 import com.kiranhart.auctionhouse.api.statics.AuctionSettings;
 import com.kiranhart.auctionhouse.api.version.NBTEditor;
 import com.kiranhart.auctionhouse.api.version.XMaterial;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
 import com.kiranhart.auctionhouse.inventory.AGUI;
 import com.kiranhart.auctionhouse.util.Debugger;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -86,13 +88,9 @@ public class AuctionGUI implements AGUI {
         AuctionItem possibleAuctionItem = null;
 
         /*
-        Perform the proper steps if the user left-clicks (not using bid system)
+        Perform the proper steps if the user left-clicks (using bid system)
          */
-        if (e.getClick() == ClickType.LEFT) {
-            //Check if the bid system is set to false
-            if (!AuctionSettings.USE_BIDDING_SYSTEM) {
-                return;
-            }
+        if (e.getClick() == ClickType.LEFT && AuctionSettings.USE_BIDDING_SYSTEM) {
 
             //Get the key of the auction item
             String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
@@ -100,10 +98,80 @@ public class AuctionGUI implements AGUI {
                 if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
             }
 
+            //Check if player has enough money to bid
+            if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getCurrentPrice() + possibleAuctionItem.getBidIncrement())) {
+                //Check if the person who clicked is the owner
+                if (possibleAuctionItem.getOwner().equals(p.getUniqueId())) {
+                    //can the owner bid on their own item?
+                    if (AuctionSettings.OWNER_CAN_BID_ON_OWN) {
+                        //Update the price
+                        possibleAuctionItem.setCurrentPrice(possibleAuctionItem.getCurrentPrice() + possibleAuctionItem.getBidIncrement());
+                        //Alert the previous bidder someone has a higher bid than them
+                        if (!possibleAuctionItem.getHighestBidder().equals(p.getUniqueId())) {
+                            Core.getInstance().getLocale().getMessage(AuctionLang.OUT_BIDDED).processPlaceholder("player", p.getName()).sendPrefixedMessage(Bukkit.getOfflinePlayer(possibleAuctionItem.getHighestBidder()).getPlayer());
+                        }
+                        //Set the highest bidder
+                        possibleAuctionItem.setHighestBidder(p.getUniqueId());
+                    } else {
+                        //Owner cannot bid on own item.
+                        Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BID_ON_OWN).sendPrefixedMessage(p);
+                    }
+                } else {
+                    //Clicked user is not the original owner
+                    //Update the price
+                    possibleAuctionItem.setCurrentPrice(possibleAuctionItem.getCurrentPrice() + possibleAuctionItem.getBidIncrement());
+                    //Alert the previous bidder someone has a higher bid than them
+                    if (!possibleAuctionItem.getHighestBidder().equals(p.getUniqueId())) {
+                        Core.getInstance().getLocale().getMessage(AuctionLang.OUT_BIDDED).processPlaceholder("player", p.getName()).sendPrefixedMessage(Bukkit.getOfflinePlayer(possibleAuctionItem.getHighestBidder()).getPlayer());
+                    }
+                    //Set the highest bidder
+                    possibleAuctionItem.setHighestBidder(p.getUniqueId());
+                }
 
+                //Increase time on bid?
+                if (AuctionSettings.INCREASE_AUCTION_TIME_ON_BID) {
+                    possibleAuctionItem.setTime(possibleAuctionItem.getTime() + AuctionSettings.TIME_TO_INCREASE_BY_BID);
+                }
 
+            } else {
+                //Not enough money to bid
+            }
+
+            p.closeInventory();
+            p.openInventory(new AuctionGUI(p).getInventory());
             return;
         }
+
+        /*
+        Perform the proper steps if the user right-clicks (using bid system)
+         */
+        if (e.getClick() == ClickType.RIGHT && AuctionSettings.USE_BIDDING_SYSTEM) {
+
+            //Get the key of the auction item
+            String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
+            for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
+                if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
+            }
+
+            if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getBuyNowPrice())) {
+                if (AuctionSettings.OWNER_CAN_PURCHASE_OWN) {
+                    p.closeInventory();
+                    p.openInventory(new ConfirmationGUI().getInventory());
+                } else {
+                    Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BUY_OWN).sendPrefixedMessage(p);
+                }
+            } else {
+                //Not enough money to purchase
+            }
+
+            p.closeInventory();
+            p.openInventory(new AuctionGUI(p).getInventory());
+            return;
+        }
+
+        /*
+        Perform the proper steps if the user left clicks (Without the bid system)
+         */
     }
 
     @Override
