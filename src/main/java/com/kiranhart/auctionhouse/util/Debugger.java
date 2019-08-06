@@ -27,4 +27,8 @@ public class Debugger {
             Bukkit.getConsoleSender().sendMessage(translateAlternateColorCodes('&', "&b================================================================"));
         }
     }
+
+    public static void report(Exception e, boolean show) {
+        if (show) report(e);
+    }
 }
