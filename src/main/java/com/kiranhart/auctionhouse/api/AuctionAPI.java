@@ -9,12 +9,17 @@ package com.kiranhart.auctionhouse.api;
 
 import com.kiranhart.auctionhouse.Core;
 import com.kiranhart.auctionhouse.api.version.ServerVersion;
+import com.kiranhart.auctionhouse.api.version.XMaterial;
 import com.kiranhart.auctionhouse.util.Debugger;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AuctionAPI {
 
@@ -90,5 +95,53 @@ public class AuctionAPI {
         } else {
             return p.getItemInHand();
         }
+    }
+
+    /**
+     * @return the item shown when the player clicks and auction item
+     * but does not have enough money to bid or purchase it.
+     */
+    public ItemStack createNotEnoughMoneyIcon() {
+        String[] item = Core.getInstance().getConfig().getString("guis.auctionhouse.items.not-enough-money.item").split(":");
+        ItemStack stack = XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).parseItem();
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("guis.auctionhouse.items.not-enough-money.name")));
+        List<String> lore = new ArrayList<>();
+        Core.getInstance().getConfig().getStringList("guis.auctionhouse.items.not-enough-money.name").forEach(line -> lore.add(ChatColor.translateAlternateColorCodes('&', line)));
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
+    /**
+     * @param node            the path to the item within the config.yml
+     * @param activeAuctions  update the lore on the total active auctions?
+     * @param expiredAuctions update the lore on the total expired auctions?
+     * @return the generated configuration item based on params
+     */
+    public ItemStack createConfigurationItem(String node, int activeAuctions, int expiredAuctions) {
+        String[] item = Core.getInstance().getConfig().getString(node + ".item").split(":");
+        ItemStack stack = XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).parseItem();
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString(node + ".name")));
+        List<String> lore = new ArrayList<>();
+        Core.getInstance().getConfig().getStringList(node + ".lore").forEach(s -> lore.add(ChatColor.translateAlternateColorCodes('&', s.replace("{active_player_auctions}", String.valueOf(activeAuctions)).replace("{expired_player_auctions}", String.valueOf(expiredAuctions)))));
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
+    /**
+     * @param p, the player of which you wish to get all the expired items if any
+     * @return a list of all of the expired items
+     */
+    public List<ItemStack> getAllExpiredItems(Player p) {
+        List<ItemStack> items = new ArrayList<>();
+        if (Core.getInstance().getData().getConfig().getConfigurationSection("expired." + p.getUniqueId().toString()) != null) {
+            if (Core.getInstance().getData().getConfig().getConfigurationSection("expired." + p.getUniqueId().toString()).getKeys(false).size() >= 1) {
+                Core.getInstance().getData().getConfig().getConfigurationSection("expired." + p.getUniqueId().toString()).getKeys(false).forEach(s -> items.add(Core.getInstance().getData().getConfig().getItemStack("expired." + p.getUniqueId().toString() + "." + s + ".display")));
+            }
+        }
+        return items;
     }
 }

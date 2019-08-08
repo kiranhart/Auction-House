@@ -10,9 +10,9 @@ package com.kiranhart.auctionhouse.auction;
 import com.kiranhart.auctionhouse.Core;
 import com.kiranhart.auctionhouse.api.version.NBTEditor;
 import com.kiranhart.auctionhouse.api.version.XMaterial;
+import com.kiranhart.auctionhouse.util.tasks.SaveTransactionTask;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -52,19 +52,25 @@ public class Transaction {
     }
 
     public void saveTransaction() {
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".transaction-type", transactionType.name());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".seller", auctionItem.getOwner());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".buyer", buyer);
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".start-price", auctionItem.getStartPrice());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".bid-increment", auctionItem.getBidIncrement());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".current-price", auctionItem.getCurrentPrice());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".buy-now-price", auctionItem.getBuyNowPrice());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".time-left", auctionItem.getTime());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".auction-id", auctionItem.getKey());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".time-completed", timeCompleted);
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".item", auctionItem.getItem());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".receipt", new Receipt(this).getReceipt());
-        Core.getInstance().getTransactions().saveConfig();
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".transaction-type", transactionType.name());
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".seller", auctionItem.getOwner());
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".buyer", buyer);
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".start-price", auctionItem.getStartPrice());
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".bid-increment", auctionItem.getBidIncrement());
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".current-price", auctionItem.getCurrentPrice());
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".buy-now-price", auctionItem.getBuyNowPrice());
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".time-left", auctionItem.getTime());
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".auction-id", auctionItem.getKey());
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".time-completed", timeCompleted);
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".item", auctionItem.getItem());
+//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".receipt", getReceipt());
+//        Core.getInstance().getTransactions().saveConfig();
+
+        SaveTransactionTask.startTask(Core.getInstance(), this);
+    }
+
+    public ItemStack getReceipt() {
+        return new Receipt(this).getReceipt();
     }
 
     public static int getTotalTransactions() {

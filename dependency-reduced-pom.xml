@@ -4,7 +4,7 @@
   <groupId>com.kiranhart</groupId>
   <artifactId>AuctionHouse</artifactId>
   <name>AuctionHouse</name>
-  <version>Multiversion</version>
+    <version>1.10</version>
   <description>The ultimate auction house plugin</description>
   <url>https://www.kiranhart.com</url>
   <build>

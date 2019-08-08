@@ -60,7 +60,7 @@ public class AuctionItem {
         key = UUID.randomUUID().toString();
     }
 
-    enum AuctionItemType {
+    public enum AuctionItemType {
         MAIN("auction-items.auction-stack"),
         LIST("auction-items.listing-stack");
 

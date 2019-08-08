@@ -7,6 +7,7 @@ import com.kiranhart.auctionhouse.api.events.AuctionStartEvent;
 import com.kiranhart.auctionhouse.api.statics.AuctionLang;
 import com.kiranhart.auctionhouse.api.statics.AuctionPermissions;
 import com.kiranhart.auctionhouse.api.statics.AuctionSettings;
+import com.kiranhart.auctionhouse.api.version.XMaterial;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
 import com.kiranhart.auctionhouse.auction.AuctionPlayer;
 import com.kiranhart.auctionhouse.cmds.SubCommand;
@@ -41,16 +42,15 @@ public class SellCommand extends SubCommand {
 
         Player p = (Player) sender;
 
-        //TODO FINISH BLOCKED ITEMS ON SELL COMMAND
-//        for (String bitems : Core.getInstance().getConfig().getStringList("blocked-items")) {
-//            String[] item = bitems.split(":");
-//            if (AuctionAPI.getItemInHand(p) != null || AuctionAPI.getItemInHand(p).getType() != Material.AIR) {
-//                if (AuctionAPI.getItemInHand(p).getType() == Material.valueOf(item[0].toUpperCase()) && AuctionAPI.getItemInHand(p).getDurability() == Short.parseShort(item[1])) {
-//                    p.sendMessage(Core.getInstance().getSettings().getPrefix() + Core.getInstance().getLocale().getMessage(Lang.BLOCKED_ITEM.getNode()));
-//                    return;
-//                }
-//            }
-//        }
+        Core.getInstance().getConfig().getStringList("blocked-items").forEach(blockedItem -> {
+            String[] item = blockedItem.split(":");
+            if (AuctionAPI.getInstance().getItemInHand(p) != null || AuctionAPI.getInstance().getItemInHand(p).getType() != XMaterial.AIR.parseMaterial()) {
+                if (AuctionAPI.getInstance().getItemInHand(p).getType() == XMaterial.parseMaterial(item[0].toUpperCase(), Byte.parseByte(item[1]))) {
+                    Core.getInstance().getLocale().getMessage(AuctionLang.BLOCKED_ITEM).processPlaceholder("item", AuctionAPI.getInstance().getItemInHand(p).getType().name()).sendPrefixedMessage(p);
+                    return;
+                }
+            }
+        });
 
         int timeLimit;
         List<Integer> times = new ArrayList<>();
@@ -113,7 +113,7 @@ public class SellCommand extends SubCommand {
                         p.updateInventory();
 
                         //Discord Hook //TODO FINISH DISCORD WEB HOOK
-                        if (Core.getInstance().getConfig().getBoolean("discord.enabled")) {
+//                        if (Core.getInstance().getConfig().getBoolean("discord.enabled")) {
 
                             //Discord Hook
 //                            if (Core.getInstance().getConfig().getBoolean("discord.enabled")) {
@@ -134,7 +134,7 @@ public class SellCommand extends SubCommand {
 //                                DiscordMessage dm = DiscordMessage.builder().username(Core.getInstance().getConfig().getString("discord.username")).content("").avatarUrl(Core.getInstance().getConfig().getString("discord.profilepicture")).embeds(Arrays.asList(de)).build();
 //                                discordHook.send(dm);
 //                            }
-                        }
+//                        }
                     }
                 }
             } else {

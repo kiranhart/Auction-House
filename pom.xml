@@ -6,7 +6,7 @@
 
     <groupId>com.kiranhart</groupId>
     <artifactId>AuctionHouse</artifactId>
-    <version>Multiversion</version>
+    <version>1.10</version>
     <packaging>jar</packaging>
 
     <name>AuctionHouse</name>

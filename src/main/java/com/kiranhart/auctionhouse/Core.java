@@ -4,10 +4,13 @@ import com.kiranhart.auctionhouse.api.statics.AuctionSettings;
 import com.kiranhart.auctionhouse.api.version.ServerVersion;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
 import com.kiranhart.auctionhouse.cmds.CommandManager;
+import com.kiranhart.auctionhouse.inventory.AGUI;
+import com.kiranhart.auctionhouse.listeners.AGUIListener;
 import com.kiranhart.auctionhouse.util.economy.Economy;
 import com.kiranhart.auctionhouse.util.economy.VaultEconomy;
 import com.kiranhart.auctionhouse.util.locale.Locale;
 import com.kiranhart.auctionhouse.util.storage.ConfigWrapper;
+import com.kiranhart.auctionhouse.util.tasks.LoadAuctionsTask;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -69,6 +72,7 @@ public final class Core extends JavaPlugin {
 
         //Economy
         if (pm.isPluginEnabled("Vault")) {
+            console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Initializing Vault Economy"));
             this.economy = new VaultEconomy();
         }
 
@@ -83,6 +87,12 @@ public final class Core extends JavaPlugin {
         commandManager = new CommandManager();
         commandManager.initialize();
 
+        //Listeners
+        pm.registerEvents(new AGUIListener(), this);
+
+        //Load the auctions
+        LoadAuctionsTask.startTask(this);
+
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bLoaded Auction House 1.10 - Multiversion"));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
@@ -92,7 +102,26 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        //Close auction inventories (AGUI) for every online player
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            if (p.getOpenInventory().getTopInventory().getHolder() instanceof AGUI) p.closeInventory();
+        });
+
+        //Save all of the auctions
+        int index = 1;
+        for (AuctionItem auctionItem : getAuctionItems()) {
+            getData().getConfig().set("active." + index + ".owner", auctionItem.getOwner().toString());
+            getData().getConfig().set("active." + index + ".highestbidder", auctionItem.getHighestBidder().toString());
+            getData().getConfig().set("active." + index + ".startprice", auctionItem.getStartPrice());
+            getData().getConfig().set("active." + index + ".bidincrement", auctionItem.getBidIncrement());
+            getData().getConfig().set("active." + index + ".currentprice", auctionItem.getCurrentPrice());
+            getData().getConfig().set("active." + index + ".buynowprice", auctionItem.getBuyNowPrice());
+            getData().getConfig().set("active." + index + ".key", auctionItem.getKey());
+            getData().getConfig().set("active." + index + ".time", auctionItem.getTime());
+            getData().getConfig().set("active." + index + ".item", auctionItem.getItem());
+            index++;
+        }
+        getData().saveConfig();
     }
 
     private void initDataFiles() {

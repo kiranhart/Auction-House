@@ -4,6 +4,7 @@ import com.kiranhart.auctionhouse.Core;
 import com.kiranhart.auctionhouse.api.statics.AuctionLang;
 import com.kiranhart.auctionhouse.api.statics.AuctionPermissions;
 import com.kiranhart.auctionhouse.cmds.subcommands.*;
+import com.kiranhart.auctionhouse.inventory.inventories.AuctionGUI;
 import com.kiranhart.auctionhouse.util.Debugger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -39,7 +40,7 @@ public class CommandManager implements CommandExecutor {
 
     public void initialize() {
         Core.getInstance().getCommand(main).setExecutor(this);
-        // this.commands.add(new SellCommand());
+        this.commands.add(new SellCommand());
         this.commands.add(new ReloadCommand());
         this.commands.add(new ListedCommand());
         this.commands.add(new ExpiredCommand());
@@ -60,7 +61,7 @@ public class CommandManager implements CommandExecutor {
             if (args.length == 0) {
                 if (sender instanceof Player) {
                     Player p = (Player) sender;
-                    // p.openInventory(new AuctionGUI(p).getInventory());
+                    p.openInventory(new AuctionGUI(p).getInventory());
                 }
                 return true;
             }

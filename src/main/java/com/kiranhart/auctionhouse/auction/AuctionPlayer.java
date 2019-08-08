@@ -9,6 +9,7 @@ package com.kiranhart.auctionhouse.auction;
 
 import com.kiranhart.auctionhouse.Core;
 import com.kiranhart.auctionhouse.api.statics.AuctionPermissions;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -34,6 +35,13 @@ public class AuctionPlayer {
             }
         }
         return list;
+    }
+
+    public int getTotalExpiredAuctions() {
+        int total;
+        ConfigurationSection section = Core.getInstance().getData().getConfig().getConfigurationSection("expired." + player.getUniqueId().toString());
+        total = (section != null) ? section.getKeys(false).size() : 0;
+        return total;
     }
 
     public int getLimit() {

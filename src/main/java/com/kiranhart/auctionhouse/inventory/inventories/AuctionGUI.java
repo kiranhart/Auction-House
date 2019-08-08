@@ -9,14 +9,17 @@ package com.kiranhart.auctionhouse.inventory.inventories;
 
 import com.google.common.collect.Lists;
 import com.kiranhart.auctionhouse.Core;
+import com.kiranhart.auctionhouse.api.AuctionAPI;
 import com.kiranhart.auctionhouse.api.statics.AuctionLang;
 import com.kiranhart.auctionhouse.api.statics.AuctionSettings;
 import com.kiranhart.auctionhouse.api.version.NBTEditor;
 import com.kiranhart.auctionhouse.api.version.XMaterial;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
+import com.kiranhart.auctionhouse.auction.AuctionPlayer;
 import com.kiranhart.auctionhouse.inventory.AGUI;
 import com.kiranhart.auctionhouse.util.Debugger;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -135,6 +138,11 @@ public class AuctionGUI implements AGUI {
 
             } else {
                 //Not enough money to bid
+                e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createNotEnoughMoneyIcon());
+                Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(Core.getInstance(), () -> {
+                    p.closeInventory();
+                    p.openInventory(new AuctionGUI(p).getInventory());
+                }, 20);
             }
 
             p.closeInventory();
@@ -162,6 +170,11 @@ public class AuctionGUI implements AGUI {
                 }
             } else {
                 //Not enough money to purchase
+                e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createNotEnoughMoneyIcon());
+                Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(Core.getInstance(), () -> {
+                    p.closeInventory();
+                    p.openInventory(new AuctionGUI(p).getInventory());
+                }, 20);
             }
 
             p.closeInventory();
@@ -172,11 +185,54 @@ public class AuctionGUI implements AGUI {
         /*
         Perform the proper steps if the user left clicks (Without the bid system)
          */
+        if (e.getClick() == ClickType.LEFT && !AuctionSettings.USE_BIDDING_SYSTEM) {
+
+            //Get the key of the auction item
+            String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
+            for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
+                if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
+            }
+
+            if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getBuyNowPrice())) {
+                if (AuctionSettings.OWNER_CAN_PURCHASE_OWN) {
+                    p.closeInventory();
+                    p.openInventory(new ConfirmationGUI().getInventory());
+                } else {
+                    Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BUY_OWN).sendPrefixedMessage(p);
+                }
+            } else {
+                //Not enough money to purchase
+                e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createNotEnoughMoneyIcon());
+                Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(Core.getInstance(), () -> {
+                    p.closeInventory();
+                    p.openInventory(new AuctionGUI(p).getInventory());
+                }, 20);
+            }
+
+            p.closeInventory();
+            p.openInventory(new AuctionGUI(p).getInventory());
+            return;
+        }
     }
 
     @Override
     public Inventory getInventory() {
-        return null;
+        Inventory inventory = Bukkit.createInventory(this, 54, ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("guis.auctionhouse.title")));
+
+        inventory.setItem(45, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.yourauctions", new AuctionPlayer(p).getTotalActiveAuctions(), 0));
+        inventory.setItem(46, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.collectionbin", 0, new AuctionPlayer(p).getTotalExpiredAuctions()));
+        inventory.setItem(48, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.previouspage", 0, 0));
+        inventory.setItem(49, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.refresh", 0, 0));
+        inventory.setItem(50, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.nextpage", 0, 0));
+        inventory.setItem(51, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.transactions", 0, 0));
+        inventory.setItem(52, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.howtosell", 0, 0));
+        inventory.setItem(53, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.guide", 0, 0));
+
+        //Pagination
+        if (chunks.size() != 0) {
+            chunks.get(getPage() - 1).forEach(item -> inventory.setItem(inventory.firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
+        }
+        return inventory;
     }
 
     @Override

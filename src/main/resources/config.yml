@@ -26,6 +26,280 @@ database:
   username: "root"
   password: ""
 
+guis:
+  auctionhouse:
+    title: "&7Auction House"
+    items:
+      not-enough-money:
+        item: "STAINED_GLASS_PANE:14"
+        name: "&c&lError"
+        lore:
+        - "&cYou do not have enough money!"
+      guide:
+        item: "BOOK:0"
+        name: "&e&lGuide"
+        lore:
+        - "&7This is the auction house, here you can"
+        - "&7list items for sale and purchase items"
+        - "&7that others have listed for sale."
+        - ""
+        - "&7The auction is also a great way to make"
+        - "&7money by selling farmable items other"
+        - "&7players may be interested in buying."
+        - ""
+        - "&7All sell listings last for a max of &e60 minutes"
+        - "&7unsold items are sent to your collection bin."
+        - ""
+        - "&7Each item is listed as a auction, so"
+        - "&7players can out bid each other, or simply"
+        - "&7purchase it right away with a set price."
+        - ""
+        - "&7For more help, use &e/ah help!"
+      transactions:
+        item: "PAPER:0"
+        name: "&e&lTransactions"
+        lore:
+        - "&7Click to view transaction history"
+      howtosell:
+        item: "GOLD_INGOT:0"
+        name: "&e&lHow to Sell"
+        lore:
+        - "&7To list an item on the auction house, just hold"
+        - "&7the item in your hand and type the following command."
+        - "&e/ah sell <buyNowPrice> <startPrice> <bidIncrement>"
+      yourauctions:
+        item: "DIAMOND:0"
+        name: "&e&lYour Auctions"
+        lore:
+        - "&7Click here to view all of the items you"
+        - "&7are currently selling on the auction."
+        - ""
+        - "&e&l{active_player_auctions} Item(s)"
+      collectionbin:
+        item: "ENDER_CHEST:0"
+        name: "&e&lCollection Bin"
+        lore:
+        - "&7Click here to view and collect all of the"
+        - "&7items you have cancelled or have expired."
+        - ""
+        - "&e&l{expired_player_auctions} Item(s)"
+      previouspage:
+        item: "PAPER:0"
+        name: "&E&L<- Previous Page"
+        lore:
+        - "&7View the previous page of auctions."
+      nextpage:
+        item: "PAPER:0"
+        name: "&e&lNext Page ->"
+        lore:
+        - "&7View the next page of auctions."
+      refresh:
+        item: "CHEST:0"
+        name: "&6&lRefresh Auctions"
+        lore:
+        - "&7Click to refresh the currently"
+        - "&7available auction listings."
+  confirm:
+    title: "&e&lConfirm Purchase"
+    items:
+      confirm:
+        item: "STAINED_GLASS_PANE:5"
+        name: "&a&lYes"
+        lore:
+        - "&7Click to confirm the purchase of this item"
+      decline:
+        item: "STAINED_GLASS_PANE:14"
+        name: "&c&lNo"
+        lore:
+        - "&7Click to decline the purchase of this item"
+  collection:
+    title: "&7Cancelled / Expired Listings"
+    items:
+      return:
+        item: "CHEST:0"
+        name: "&e&lReturn to Auction House"
+        lore:
+        - "&7Click here to return to the"
+        - "&7auction house main menu."
+      previouspage:
+        item: "PAPER:0"
+        name: "&e&l<- Previous Page"
+        lore:
+        - "&7Go back"
+      nextpage:
+        item: "PAPER:0"
+        name: "&e&lPrevious Page ->"
+        lore:
+        - "&7Next Page"
+      claimall:
+        item: "ENDER_CHEST:0"
+        name: "&e&lClaim All"
+        lore:
+        - "&7Click here to claim all"
+        - "&7your Collection Bin items."
+      tutorial:
+        item: "BOOK:0"
+        name: "&e&lTutorial"
+        lore:
+        - "&7This page houses all of your cancelled and"
+        - "&7expired items, when a listing is cancelled"
+        - "&7or expires you will be able to return that"
+        - "&7item back to you from this menu."
+        - ""
+        - "&7Just click on the item and if you have enough"
+        - "&7inventory space you will receive the item."
+  active:
+    title: "&7Your Current Listings"
+    items:
+      return:
+        item: "CHEST:0"
+        name: "&e&lReturn to Auction House"
+        lore:
+        - "&7Click here to return to the"
+        - "&7auction house main menu."
+      previouspage:
+        item: "PAPER:0"
+        name: "&e&l<- Previous Page"
+        lore:
+        - "&7Go back"
+      nextpage:
+        item: "PAPER:0"
+        name: "&e&lNext Page ->"
+        lore:
+        - "&7Next Page"
+      tutorial:
+        item: "BOOK:0"
+        name: "&e&lTutorial"
+        lore:
+        - "&7These are your current listings, all of"
+        - "&7the items you currently have listed on"
+        - "&7the auction house are displayed here."
+        - ""
+        - "&7You can cancel and view your listing's"
+        - "&7expire time here."
+  transactionselect:
+    title: "&e&lSelect an option"
+    items:
+      background:
+        item: "STAINED_GLASS_PANE:15"
+        name: "&7Select an option"
+        lore:
+        - "&7Select an option"
+      all:
+        item: "PAPER:0"
+        name: "&e&lView all transactions"
+        lore:
+        - "&7Click to view all the recorded"
+        - "&7transactions made by players."
+      you:
+        item: "NETHER_STAR:0"
+        name: "&e&lView your transactions"
+        lore:
+        - "&7Click to view all the recorded"
+        - "&7transactions made by you."
+  alltransactions:
+    title: "&E&lAll Transactions"
+    items:
+      previouspage:
+        item: "PAPER:0"
+        name: "&e&l<- Previous Page"
+        lore:
+        - "&7Go back"
+      close:
+        item: "NETHER_STAR:0"
+        name: "&e&lClose"
+        lore:
+        - "&7Click to exit this window"
+      nextpage:
+        item: "PAPER:0"
+        name: "&e&lNext Page ->"
+        lore:
+        - "&7Next Page"
+  playertransaction:
+    title: "&E&l{player} Transactions"
+    items:
+      previouspage:
+        item: "PAPER:0"
+        name: "&e&l<- Previous Page"
+        lore:
+        - "&7Go back"
+      close:
+        item: "NETHER_STAR:0"
+        name: "&e&lClose"
+        lore:
+        - "&7Click to exit this window"
+      nextpage:
+        item: "PAPER:0"
+        name: "&e&lNext Page ->"
+        lore:
+        - "&7Next Page"
+  singletransaction:
+    title: "&6&lViewing Transaction"
+    items:
+      background:
+        item: "STAINED_GLASS_PANE:15"
+        name: "&0*"
+        lore:
+        - "&0*"
+      seller:
+        name: "&6&lSeller"
+        lore:
+        - "&7Click to view all the"
+        - "&7transactions by this player."
+      buyer:
+        name: "&6&lBuyer"
+        lore:
+        - "&7Click to view all the"
+        - "&7transactions by this player."
+      you:
+        item: "DOUBLE_PLANT:0"
+        name: "&6&lView Your Transactions"
+        lore:
+        - "&7Click to view all the"
+        - "&7transactions you've done."
+      back:
+        item: "NETHER_STAR:0"
+        name: "&6&LGo Back"
+        lore:
+        - "&7Go back to main transactions"
+        - "&7window selection menu."
+      auctionhouse:
+        item: "CHEST:0"
+        name: "&e&lReturn to Auction House"
+        lore:
+        - "&7Click here to return to the"
+        - "&7auction house main menu."
+      startprice:
+        item: "STAINED_GLASS_PANE:5"
+        name: "&6&lStart Price"
+        lore:
+        - "&7Auction started at &a${startprice}"
+      increment:
+        item: "STAINED_GLASS_PANE:5"
+        name: "&6&lBid Increment"
+        lore:
+        - "&7Bid increment set at &a${bidincrement}"
+      buynowprice:
+        item: "STAINED_GLASS_PANE:5"
+        name: "&6&lBuy Now Price"
+        lore:
+        - "&7Buy now price set at &a${buynowprice}"
+  transaction:
+    title: "&E&lSelect an Option"
+    items:
+      alltransactions:
+        item: "BOOK:0"
+        name: "&e&lAll Transactions"
+        lore:
+        - "&7View all the recorded"
+        - "&7transactions by everyone."
+      playertransactions:
+        item: "NETHER_STAR:0"
+        name: "&e&lYour Transactions"
+        lore:
+        - "&7View all the recorded"
+        - "&7transactions you've made."
+
 #add permissions to allow more auction time.
 auctiontime:
   default: 600
@@ -33,7 +307,6 @@ auctiontime:
 
 #Blocked items that cannot be listed on the auction house
 #You must include the type data (the number of : ) usually it's 0
-#unless you're targeting glass or a changable item on 1.12 or lower (most cases)
 blocked-items:
   - "ENDER_CHEST:0"
 
