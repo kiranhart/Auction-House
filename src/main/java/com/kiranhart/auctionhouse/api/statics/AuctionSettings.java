@@ -28,7 +28,8 @@ public class AuctionSettings {
     public static boolean USE_SHORT_NUMBERS_ON_ITEMS = false;
 
     public static int TIME_TO_INCREASE_BY_BID = 10;
-
+    public static int DECREASE_SECONDS_BY_TICK = 5;
+    public static int UPDATE_EVERY_TICK = 5;
     
 
 
@@ -49,5 +50,7 @@ public class AuctionSettings {
         USE_SHORT_NUMBERS_ON_ITEMS = Core.getInstance().getConfig().getBoolean("settings.use-short-numbers-on-items");
 
         TIME_TO_INCREASE_BY_BID = Core.getInstance().getConfig().getInt("settings.time-to-increase-by-bid");
+        DECREASE_SECONDS_BY_TICK = Core.getInstance().getConfig().getInt("settings.decrease-seconds-by-tick");
+        UPDATE_EVERY_TICK = Core.getInstance().getConfig().getInt("settings.update-every-tick");
     }
 }

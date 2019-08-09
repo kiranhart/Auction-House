@@ -8,12 +8,15 @@ package com.kiranhart.auctionhouse.api;
 */
 
 import com.kiranhart.auctionhouse.Core;
+import com.kiranhart.auctionhouse.api.version.NBTEditor;
 import com.kiranhart.auctionhouse.api.version.ServerVersion;
 import com.kiranhart.auctionhouse.api.version.XMaterial;
+import com.kiranhart.auctionhouse.auction.AuctionItem;
 import com.kiranhart.auctionhouse.util.Debugger;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.DecimalFormat;
@@ -143,5 +146,29 @@ public class AuctionAPI {
             }
         }
         return items;
+    }
+
+    /*
+     * @param stack is the auction item to be converted
+     * @return the new expired item.
+     */
+    public ItemStack expiredAuctionItem(AuctionItem stack) {
+        ItemStack item = stack.getItem();
+        item = NBTEditor.set(item, stack.getKey(), "ExpiredAuctionItem");
+        return item;
+    }
+
+    /**
+     * @param inventory, the inventory that wil be slot checked
+     * @return if there is an available slot for the item
+     */
+    public int availableSlots(PlayerInventory inventory) {
+        int count = 0;
+        for (ItemStack i : inventory) {
+            if (i == null) {
+                count++;
+            }
+        }
+        return count;
     }
 }

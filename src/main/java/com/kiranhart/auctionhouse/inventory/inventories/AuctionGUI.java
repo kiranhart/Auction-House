@@ -60,7 +60,7 @@ public class AuctionGUI implements AGUI {
         //Different auction inventories
         //Refresh Auction GUI
         if (slot == 49) {
-
+            p.openInventory(new AuctionGUI(p).getInventory());
             return;
         }
 
@@ -164,7 +164,7 @@ public class AuctionGUI implements AGUI {
             if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getBuyNowPrice())) {
                 if (AuctionSettings.OWNER_CAN_PURCHASE_OWN) {
                     p.closeInventory();
-                    p.openInventory(new ConfirmationGUI().getInventory());
+                    p.openInventory(new ConfirmationGUI(possibleAuctionItem).getInventory());
                 } else {
                     Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BUY_OWN).sendPrefixedMessage(p);
                 }
@@ -196,7 +196,7 @@ public class AuctionGUI implements AGUI {
             if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getBuyNowPrice())) {
                 if (AuctionSettings.OWNER_CAN_PURCHASE_OWN) {
                     p.closeInventory();
-                    p.openInventory(new ConfirmationGUI().getInventory());
+                    p.openInventory(new ConfirmationGUI(possibleAuctionItem).getInventory());
                 } else {
                     Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BUY_OWN).sendPrefixedMessage(p);
                 }

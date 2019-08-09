@@ -16,6 +16,10 @@ settings:
   use-short-numbers-on-items: false
   increase-time-on-bid: true
   time-to-increase-by-bid: 10
+  decrease-seconds-by-tick: 5
+  update-every-tick: 5
+
+
 
 #MySql stuff for databases if you want
 database:

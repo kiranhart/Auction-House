@@ -11,6 +11,7 @@ import com.kiranhart.auctionhouse.util.economy.VaultEconomy;
 import com.kiranhart.auctionhouse.util.locale.Locale;
 import com.kiranhart.auctionhouse.util.storage.ConfigWrapper;
 import com.kiranhart.auctionhouse.util.tasks.LoadAuctionsTask;
+import com.kiranhart.auctionhouse.util.tasks.TickAuctionsTask;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,6 +27,7 @@ public final class Core extends JavaPlugin {
     private static Core instance;
 
     private ConsoleCommandSender console = Bukkit.getConsoleSender();
+    private PluginManager pm;
     private ServerVersion serverVersion;
 
     private CommandManager commandManager;
@@ -42,7 +44,7 @@ public final class Core extends JavaPlugin {
     public void onEnable() {
 
         long start = System.currentTimeMillis();
-        PluginManager pm = Bukkit.getPluginManager();
+        pm = Bukkit.getPluginManager();
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bLoading Auction House 1.10 - Multiversion"));
@@ -98,6 +100,9 @@ public final class Core extends JavaPlugin {
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aLoaded successfully in " + (System.currentTimeMillis() - start) + "ms"));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
+
+        //Begin Auction Tick
+        TickAuctionsTask.startTask(this);
     }
 
     @Override
@@ -141,6 +146,10 @@ public final class Core extends JavaPlugin {
 
     public static Core getInstance() {
         return instance;
+    }
+
+    public PluginManager getPm() {
+        return pm;
     }
 
     public Locale getLocale() {

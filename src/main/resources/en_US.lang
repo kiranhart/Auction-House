@@ -27,7 +27,7 @@ auction.listed = "&eYou listed &6%itemname% &efor &a$%price%"
 auction.listedwithbid = "&eYou listed &6%itemname% &ewith a starting bid of &a$%price%"
 auction.max = "&cYou cannot auction more items, please upgrade to do so."
 auction.buy = "&eYou purchased &6%itemname% &Efor &A$%price%"
-auction.sold = "&6%player% &Ehas bought your listed item: &6%item% &efor &a$%price%"
+auction.sold = "&6%player% &Ehas bought your listed item: &6%itemname% &efor &a$%price%"
 
 #Command Messages
 cmd.invalid = "&cThat isn't a valid subcommand!"
