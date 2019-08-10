@@ -13,16 +13,19 @@ import com.kiranhart.auctionhouse.api.version.ServerVersion;
 import com.kiranhart.auctionhouse.api.version.XMaterial;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
 import com.kiranhart.auctionhouse.util.Debugger;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AuctionAPI {
 
@@ -35,6 +38,10 @@ public class AuctionAPI {
             instance = new AuctionAPI();
         }
         return instance;
+    }
+
+    public enum AuctionHeadType {
+        BUYER, SELLER
     }
 
     /**
@@ -131,6 +138,45 @@ public class AuctionAPI {
         Core.getInstance().getConfig().getStringList(node + ".lore").forEach(s -> lore.add(ChatColor.translateAlternateColorCodes('&', s.replace("{active_player_auctions}", String.valueOf(activeAuctions)).replace("{expired_player_auctions}", String.valueOf(expiredAuctions)))));
         meta.setLore(lore);
         stack.setItemMeta(meta);
+        return stack;
+    }
+
+    /**
+     * @param node,         the node of the item stack
+     * @param buyer,        buyer uuid
+     * @param seller,       seller uuid
+     * @param startPrice,   what is the start price
+     * @param bidincrement, what is the bid increment
+     * @param buynowprice,  what is the buy now price
+     * @return
+     */
+    public ItemStack createTransactionConfigItem(String node, String buyer, String seller, int startPrice, int bidincrement, int buynowprice) {
+        String[] rawItem = Core.getInstance().getConfig().getString(node + ".item").split(":");
+        ItemStack stack = XMaterial.matchXMaterial(rawItem[0].toUpperCase(), Byte.parseByte(rawItem[1])).parseItem();
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString(node + ".name")));
+        List<String> lore = new ArrayList<>();
+        Core.getInstance().getConfig().getStringList(node + ".lore").forEach(s -> lore.add(ChatColor.translateAlternateColorCodes('&', s.replace("{seller}", seller).replace("{buyer}", buyer).replace("{startprice}", String.valueOf(startPrice)).replace("{bidincrement}", String.valueOf(bidincrement)).replace("{buynowprice}", String.valueOf(buynowprice)))));
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
+    /**
+     * @param type        what type of auction head is it?
+     * @param transaction the transaction required for special data
+     * @return the skull item, hopefully
+     */
+    public ItemStack createUserHead(AuctionHeadType type, String transaction) {
+        ItemStack stack = XMaterial.PLAYER_HEAD.parseItem();
+        SkullMeta meta = (SkullMeta) stack.getItemMeta();
+        meta.setOwner((type == AuctionHeadType.BUYER) ? Bukkit.getOfflinePlayer(UUID.fromString(Core.getInstance().getTransactions().getConfig().getString("transactions." + transaction + ".buyer"))).getName() : Bukkit.getOfflinePlayer(UUID.fromString(Core.getInstance().getTransactions().getConfig().getString("transactions." + transaction + ".seller"))).getName());
+        meta.setDisplayName((type == AuctionHeadType.BUYER) ? ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("guis.singletransaction.items.buyer.name")) : ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("guis.singletransaction.items.seller.name")));
+        List<String> lore = new ArrayList<>();
+        Core.getInstance().getConfig().getStringList((type == AuctionHeadType.BUYER) ? "guis.singletransaction.items.buyer" : "guis.singletransaction.items.seller").forEach(s -> lore.add(ChatColor.translateAlternateColorCodes('&', s)));
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
+        stack = (type == AuctionHeadType.SELLER) ? NBTEditor.set(stack, Core.getInstance().getTransactions().getConfig().getString("transactions." + transaction + ".seller"), "AuctionSellerHead") : NBTEditor.set(stack, Core.getInstance().getTransactions().getConfig().getString("transactions." + transaction + ".buyer"), "AuctionBuyerHead");
         return stack;
     }
 

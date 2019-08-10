@@ -27,18 +27,18 @@ public final class Core extends JavaPlugin {
     private static Core instance;
 
     private ConsoleCommandSender console = Bukkit.getConsoleSender();
-    private PluginManager pm;
     private ServerVersion serverVersion;
+    private PluginManager pm;
 
-    private CommandManager commandManager;
-    private Locale locale;
-    private Economy economy;
     private AuctionSettings auctionSettings;
+    private CommandManager commandManager;
+    private Economy economy;
+    private Locale locale;
 
     private CopyOnWriteArrayList<AuctionItem> auctionItems;
 
-    private ConfigWrapper data;
     private ConfigWrapper transactions;
+    private ConfigWrapper data;
 
     @Override
     public void onEnable() {

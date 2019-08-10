@@ -66,19 +66,19 @@ public class AuctionGUI implements AGUI {
 
         //Open Listings GUI
         if (slot == 45) {
-
+            p.openInventory(new ListingsGUI(p).getInventory());
             return;
         }
 
         //Open Expired GUI
         if (slot == 46) {
-
+            p.openInventory(new ExpiredGUI(p).getInventory());
             return;
         }
 
         //Open Transaction Selection GUI
         if (slot == 51) {
-
+            p.openInventory(new TransactionSelectGUI().getInventory());
             return;
         }
 
