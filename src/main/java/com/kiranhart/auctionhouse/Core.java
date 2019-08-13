@@ -12,6 +12,7 @@ import com.kiranhart.auctionhouse.util.locale.Locale;
 import com.kiranhart.auctionhouse.util.storage.ConfigWrapper;
 import com.kiranhart.auctionhouse.util.tasks.LoadAuctionsTask;
 import com.kiranhart.auctionhouse.util.tasks.TickAuctionsTask;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -40,6 +41,9 @@ public final class Core extends JavaPlugin {
     private ConfigWrapper transactions;
     private ConfigWrapper data;
 
+    private HikariDataSource hikari;
+    private boolean dbConnected;
+
     @Override
     public void onEnable() {
 
@@ -55,6 +59,7 @@ public final class Core extends JavaPlugin {
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Initializing instance"));
         instance = this;
+        dbConnected = false;
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Checking server version"));
         serverVersion = ServerVersion.fromPackageName(Bukkit.getServer().getClass().getPackage().getName());
 
@@ -89,6 +94,22 @@ public final class Core extends JavaPlugin {
         commandManager = new CommandManager();
         commandManager.initialize();
 
+        //Database
+        if (AuctionSettings.DB_ENABLED) {
+            hikari = new HikariDataSource();
+            hikari.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+            hikari.addDataSourceProperty("serverName", AuctionSettings.DB_HOST);
+            hikari.addDataSourceProperty("port", AuctionSettings.DB_PORT);
+            hikari.addDataSourceProperty("databaseName", AuctionSettings.DB_NAME);
+            hikari.addDataSourceProperty("user", AuctionSettings.DB_USERNAME);
+            hikari.addDataSourceProperty("password", AuctionSettings.DB_PASSWORD);
+
+            if (!hikari.isClosed()) {
+                dbConnected = true;
+                console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Connected to database!"));
+            }
+        }
+
         //Listeners
         pm.registerEvents(new AGUIListener(), this);
 
@@ -100,6 +121,8 @@ public final class Core extends JavaPlugin {
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aLoaded successfully in " + (System.currentTimeMillis() - start) + "ms"));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
+
+        //Database.getInstance().performTableCreation(Database.Tables.TRANSACTIONS);
 
         //Begin Auction Tick
         TickAuctionsTask.startTask(this);
@@ -127,6 +150,9 @@ public final class Core extends JavaPlugin {
             index++;
         }
         getData().saveConfig();
+
+        if (hikari != null)
+            hikari.close();
     }
 
     private void initDataFiles() {
@@ -170,6 +196,10 @@ public final class Core extends JavaPlugin {
 
     public ConfigWrapper getTransactions() {
         return transactions;
+    }
+
+    public HikariDataSource getHikari() {
+        return hikari;
     }
 
     public CommandManager getCommandManager() {

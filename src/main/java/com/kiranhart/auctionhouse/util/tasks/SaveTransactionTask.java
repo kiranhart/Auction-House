@@ -35,8 +35,8 @@ public class SaveTransactionTask extends BukkitRunnable {
     @Override
     public void run() {
         Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".transaction-type", transaction.getTransactionType().getTransactionType());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".seller", transaction.getAuctionItem().getOwner());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".buyer", transaction.getBuyer());
+        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".seller", transaction.getAuctionItem().getOwner().toString());
+        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".buyer", transaction.getBuyer().toString());
         Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".start-price", transaction.getAuctionItem().getStartPrice());
         Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".bid-increment", transaction.getAuctionItem().getBidIncrement());
         Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".current-price", transaction.getAuctionItem().getCurrentPrice());

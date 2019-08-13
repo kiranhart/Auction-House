@@ -30,7 +30,7 @@ public class ListedCommand extends SubCommand {
         }
 
         Player p = (Player) sender;
-        //p.openInventory(new ListingsGUI(p).getInventory());
+        p.openInventory(new ListingsGUI(p).getInventory());
     }
 
     @Override

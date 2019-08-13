@@ -30,7 +30,7 @@ public class TransactionsCommand extends SubCommand {
         }
 
         Player p = (Player) sender;
-        //p.openInventory(new AllTransactionsGUI(p).getInventory());
+        p.openInventory(new AllTransactionsGUI(p).getInventory());
     }
 
     @Override

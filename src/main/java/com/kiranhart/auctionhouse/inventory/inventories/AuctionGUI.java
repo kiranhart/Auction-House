@@ -139,14 +139,14 @@ public class AuctionGUI implements AGUI {
             } else {
                 //Not enough money to bid
                 e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createNotEnoughMoneyIcon());
-                Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(Core.getInstance(), () -> {
+                Bukkit.getServer().getScheduler().runTaskLater(Core.getInstance(), () -> {
                     p.closeInventory();
                     p.openInventory(new AuctionGUI(p).getInventory());
                 }, 20);
             }
 
-            p.closeInventory();
-            p.openInventory(new AuctionGUI(p).getInventory());
+//            p.closeInventory();
+//            p.openInventory(new AuctionGUI(p).getInventory());
             return;
         }
 
@@ -171,14 +171,14 @@ public class AuctionGUI implements AGUI {
             } else {
                 //Not enough money to purchase
                 e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createNotEnoughMoneyIcon());
-                Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(Core.getInstance(), () -> {
+                Bukkit.getServer().getScheduler().runTaskLater(Core.getInstance(), () -> {
                     p.closeInventory();
                     p.openInventory(new AuctionGUI(p).getInventory());
                 }, 20);
             }
 
-            p.closeInventory();
-            p.openInventory(new AuctionGUI(p).getInventory());
+//            p.closeInventory();
+//            p.openInventory(new AuctionGUI(p).getInventory());
             return;
         }
 
@@ -203,14 +203,14 @@ public class AuctionGUI implements AGUI {
             } else {
                 //Not enough money to purchase
                 e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createNotEnoughMoneyIcon());
-                Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(Core.getInstance(), () -> {
+                Bukkit.getServer().getScheduler().runTaskLater(Core.getInstance(), () -> {
                     p.closeInventory();
                     p.openInventory(new AuctionGUI(p).getInventory());
                 }, 20);
             }
 
-            p.closeInventory();
-            p.openInventory(new AuctionGUI(p).getInventory());
+//            p.closeInventory();
+//            p.openInventory(new AuctionGUI(p).getInventory());
             return;
         }
     }

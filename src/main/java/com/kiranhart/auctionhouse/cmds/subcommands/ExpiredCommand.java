@@ -4,6 +4,7 @@ import com.kiranhart.auctionhouse.Core;
 import com.kiranhart.auctionhouse.api.statics.AuctionLang;
 import com.kiranhart.auctionhouse.api.statics.AuctionPermissions;
 import com.kiranhart.auctionhouse.cmds.SubCommand;
+import com.kiranhart.auctionhouse.inventory.inventories.ExpiredGUI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,7 +30,7 @@ public class ExpiredCommand extends SubCommand {
         }
 
         Player p = (Player) sender;
-        //  p.openInventory(new ExpiredGUI(p).getInventory());
+        p.openInventory(new ExpiredGUI(p).getInventory());
     }
 
     @Override

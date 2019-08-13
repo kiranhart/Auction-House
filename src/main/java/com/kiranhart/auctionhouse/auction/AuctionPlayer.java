@@ -30,7 +30,7 @@ public class AuctionPlayer {
     public List<AuctionItem> getAuctionItems() {
         List<AuctionItem> list = new ArrayList<>();
         for (AuctionItem item : Core.getInstance().getAuctionItems()) {
-            if (item.getOwner().equals(player.getUniqueId().toString())) {
+            if (item.getOwner().equals(player.getUniqueId())) {
                 list.add(item);
             }
         }

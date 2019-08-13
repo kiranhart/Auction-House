@@ -38,7 +38,7 @@ public class TickAuctionsTask extends BukkitRunnable {
         plugin = core;
         if (instance == null) {
             instance = new TickAuctionsTask(plugin);
-            instance.runTaskTimerAsynchronously(plugin, 0, 20 * 5);
+            instance.runTaskTimerAsynchronously(plugin, 0, 20 * AuctionSettings.UPDATE_EVERY_TICK);
         }
         return instance;
     }
@@ -138,14 +138,14 @@ public class TickAuctionsTask extends BukkitRunnable {
                     Bukkit.getOnlinePlayers().forEach(p -> {
                         if (p.getOpenInventory().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("guis.auctionhouse.title")))) {
                             p.getOpenInventory().getTopInventory().clear();
-                            p.getOpenInventory().getTopInventory().setItem(45, AuctionAPI.getInstance().createConfigurationItem("gui.auction.items.yourauctions", new AuctionPlayer(p).getTotalActiveAuctions(), 0));
-                            p.getOpenInventory().getTopInventory().setItem(46, AuctionAPI.getInstance().createConfigurationItem("gui.auction.items.collectionbin", 0, new AuctionPlayer(p).getTotalExpiredAuctions()));
-                            p.getOpenInventory().getTopInventory().setItem(48, AuctionAPI.getInstance().createConfigurationItem("gui.auction.items.previouspage", 0, 0));
-                            p.getOpenInventory().getTopInventory().setItem(49, AuctionAPI.getInstance().createConfigurationItem("gui.auction.items.refresh", 0, 0));
-                            p.getOpenInventory().getTopInventory().setItem(50, AuctionAPI.getInstance().createConfigurationItem("gui.auction.items.nextpage", 0, 0));
-                            p.getOpenInventory().getTopInventory().setItem(51, AuctionAPI.getInstance().createConfigurationItem("gui.auction.items.transactions", 0, 0));
-                            p.getOpenInventory().getTopInventory().setItem(52, AuctionAPI.getInstance().createConfigurationItem("gui.auction.items.howtosell", 0, 0));
-                            p.getOpenInventory().getTopInventory().setItem(53, AuctionAPI.getInstance().createConfigurationItem("gui.auction.items.guide", 0, 0));
+                            p.getOpenInventory().getTopInventory().setItem(45, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.yourauctions", new AuctionPlayer(p).getTotalActiveAuctions(), 0));
+                            p.getOpenInventory().getTopInventory().setItem(46, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.collectionbin", 0, new AuctionPlayer(p).getTotalExpiredAuctions()));
+                            p.getOpenInventory().getTopInventory().setItem(48, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.previouspage", 0, 0));
+                            p.getOpenInventory().getTopInventory().setItem(49, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.refresh", 0, 0));
+                            p.getOpenInventory().getTopInventory().setItem(50, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.nextpage", 0, 0));
+                            p.getOpenInventory().getTopInventory().setItem(51, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.transactions", 0, 0));
+                            p.getOpenInventory().getTopInventory().setItem(52, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.howtosell", 0, 0));
+                            p.getOpenInventory().getTopInventory().setItem(53, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.guide", 0, 0));
 
                             List<List<AuctionItem>> chunks = Lists.partition(Core.getInstance().getAuctionItems(), 45);
                             chunks.get(0).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
@@ -157,5 +157,7 @@ public class TickAuctionsTask extends BukkitRunnable {
         } catch (Exception e) {
             Debugger.report(e);
         }
+
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Ran Auction Tick at rate of " + AuctionSettings.UPDATE_EVERY_TICK + "s"));
     }
 }

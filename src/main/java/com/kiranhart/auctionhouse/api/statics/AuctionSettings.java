@@ -30,8 +30,13 @@ public class AuctionSettings {
     public static int TIME_TO_INCREASE_BY_BID = 10;
     public static int DECREASE_SECONDS_BY_TICK = 5;
     public static int UPDATE_EVERY_TICK = 5;
-    
 
+    public static boolean DB_ENABLED = false;
+    public static String DB_HOST = "localhost";
+    public static int DB_PORT = 3306;
+    public static String DB_NAME = "auctionhouse";
+    public static String DB_USERNAME = "root";
+    public static String DB_PASSWORD = "";
 
     public AuctionSettings () {
         DEFAULT_AUCTION_TIME = Core.getInstance().getConfig().getInt("settings.default-auction-time");
@@ -52,5 +57,12 @@ public class AuctionSettings {
         TIME_TO_INCREASE_BY_BID = Core.getInstance().getConfig().getInt("settings.time-to-increase-by-bid");
         DECREASE_SECONDS_BY_TICK = Core.getInstance().getConfig().getInt("settings.decrease-seconds-by-tick");
         UPDATE_EVERY_TICK = Core.getInstance().getConfig().getInt("settings.update-every-tick");
+
+        DB_ENABLED = Core.getInstance().getConfig().getBoolean("database.enabled");
+        DB_HOST = Core.getInstance().getConfig().getString("database.host");
+        DB_PORT = Core.getInstance().getConfig().getInt("database.port");
+        DB_NAME = Core.getInstance().getConfig().getString("database.name");
+        DB_USERNAME = Core.getInstance().getConfig().getString("database.username");
+        DB_PASSWORD = Core.getInstance().getConfig().getString("database.password");
     }
 }
