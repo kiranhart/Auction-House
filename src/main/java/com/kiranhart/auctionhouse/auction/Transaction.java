@@ -51,21 +51,8 @@ public class Transaction {
         this.timeCompleted = timeCompleted;
     }
 
-    public void saveTransaction() {
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".transaction-type", transactionType.name());
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".seller", auctionItem.getOwner());
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".buyer", buyer);
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".start-price", auctionItem.getStartPrice());
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".bid-increment", auctionItem.getBidIncrement());
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".current-price", auctionItem.getCurrentPrice());
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".buy-now-price", auctionItem.getBuyNowPrice());
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".time-left", auctionItem.getTime());
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".auction-id", auctionItem.getKey());
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".time-completed", timeCompleted);
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".item", auctionItem.getItem());
-//        Core.getInstance().getTransactions().getConfig().set("transactions." + timeCompleted + auctionItem.getKey() + ".receipt", getReceipt());
-//        Core.getInstance().getTransactions().saveConfig();
 
+    public void saveTransaction() {
         SaveTransactionTask.startTask(Core.getInstance(), this);
     }
 

@@ -9,8 +9,8 @@ settings:
   min-auction-price: 1
   min-auction-start: 1
   min-auction-increment: 1
-  owner-can-purchase-own: false
-  owner-can-bid-on-own: false
+  owner-can-purchase-own: true
+  owner-can-bid-on-own: true
   use-bidding-system: false
   auto-refresh-auction-pages: true
   use-short-numbers-on-items: false
@@ -23,11 +23,11 @@ settings:
 
 #MySql stuff for databases if you want
 database:
-  enabled: true
-  host: "localhost"
+  enabled: false
+  host: ""
   port: 3306
-  name: "auctionhouse"
-  username: "root"
+  name: ""
+  username: ""
   password: ""
 
 guis:

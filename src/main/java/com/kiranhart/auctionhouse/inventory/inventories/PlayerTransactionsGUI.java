@@ -63,12 +63,12 @@ public class PlayerTransactionsGUI implements AGUI {
 
     @Override
     public Inventory getInventory() {
-        Inventory inventory = Bukkit.createInventory(this, 54, ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("guis.playertransactions.title").replace("{player}", p.getName())));
+        Inventory inventory = Bukkit.createInventory(this, 54, ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("guis.playertransaction.title").replace("{player}", p.getName())));
 
         //Bottom Row
-        inventory.setItem(48, AuctionAPI.getInstance().createConfigurationItem("guis.playertransactions.items.previouspage", 0, 0));
-        inventory.setItem(49, AuctionAPI.getInstance().createConfigurationItem("guis.playertransactions.items.close", 0, 0));
-        inventory.setItem(50, AuctionAPI.getInstance().createConfigurationItem("guis.playertransactions.items.nextpage", 0, 0));
+        inventory.setItem(48, AuctionAPI.getInstance().createConfigurationItem("guis.playertransaction.items.previouspage", 0, 0));
+        inventory.setItem(49, AuctionAPI.getInstance().createConfigurationItem("guis.playertransaction.items.close", 0, 0));
+        inventory.setItem(50, AuctionAPI.getInstance().createConfigurationItem("guis.playertransaction.items.nextpage", 0, 0));
 
         if (Transaction.getTotalTransactions() == 0) {
             return inventory;

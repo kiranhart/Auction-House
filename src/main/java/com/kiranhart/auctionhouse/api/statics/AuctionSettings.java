@@ -32,6 +32,7 @@ public class AuctionSettings {
     public static int UPDATE_EVERY_TICK = 5;
 
     public static boolean DB_ENABLED = false;
+    // public static boolean ATTEMPT_TO_CREATE_DB_TABLES_ON_START = true;
     public static String DB_HOST = "localhost";
     public static int DB_PORT = 3306;
     public static String DB_NAME = "auctionhouse";
@@ -59,6 +60,7 @@ public class AuctionSettings {
         UPDATE_EVERY_TICK = Core.getInstance().getConfig().getInt("settings.update-every-tick");
 
         DB_ENABLED = Core.getInstance().getConfig().getBoolean("database.enabled");
+        //  ATTEMPT_TO_CREATE_DB_TABLES_ON_START = Core.getInstance().getConfig().getBoolean("database.attempt-table-creation-on-start");
         DB_HOST = Core.getInstance().getConfig().getString("database.host");
         DB_PORT = Core.getInstance().getConfig().getInt("database.port");
         DB_NAME = Core.getInstance().getConfig().getString("database.name");

@@ -37,6 +37,7 @@ public class CommandManager implements CommandExecutor {
     public final String reload = "reload";
     public final String sell = "sell";
     public final String transactions = "transactions";
+    public final String uploadtransactions = "uploadtransactions";
 
     public void initialize() {
         Core.getInstance().getCommand(main).setExecutor(this);
@@ -46,6 +47,7 @@ public class CommandManager implements CommandExecutor {
         this.commands.add(new ExpiredCommand());
         this.commands.add(new TransactionsCommand());
         this.commands.add(new HelpCommand());
+        this.commands.add(new UploadTransactionsCommand());
     }
 
     @Override

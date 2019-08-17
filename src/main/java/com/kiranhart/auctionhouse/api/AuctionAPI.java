@@ -12,9 +12,12 @@ import com.kiranhart.auctionhouse.api.version.NBTEditor;
 import com.kiranhart.auctionhouse.api.version.ServerVersion;
 import com.kiranhart.auctionhouse.api.version.XMaterial;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
+import com.kiranhart.auctionhouse.auction.Transaction;
 import com.kiranhart.auctionhouse.util.Debugger;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -25,13 +28,15 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.UUID;
 
 public class AuctionAPI {
 
     private static AuctionAPI instance;
 
-    private AuctionAPI() {}
+    private AuctionAPI() {
+    }
 
     public static AuctionAPI getInstance() {
         if (instance == null) {
@@ -44,8 +49,37 @@ public class AuctionAPI {
         BUYER, SELLER
     }
 
+    private static final TreeMap<Integer, String> romanSuffix = new TreeMap();
+
+    static {
+        romanSuffix.put(1000, "M");
+        romanSuffix.put(900, "CM");
+        romanSuffix.put(500, "D");
+        romanSuffix.put(400, "CD");
+        romanSuffix.put(100, "C");
+        romanSuffix.put(90, "XC");
+        romanSuffix.put(50, "L");
+        romanSuffix.put(40, "XL");
+        romanSuffix.put(10, "X");
+        romanSuffix.put(9, "IX");
+        romanSuffix.put(5, "V");
+        romanSuffix.put(4, "IV");
+        romanSuffix.put(1, "I");
+    }
+
     /**
-     *
+     * @param number, convert given number to roman numerals
+     * @return the provided number in roman numerals
+     */
+    public String toRoman(int number) {
+        int l = romanSuffix.floorKey(number);
+        if (number == l) {
+            return romanSuffix.get(number);
+        }
+        return romanSuffix.get(l) + toRoman(number - l);
+    }
+
+    /**
      * @param value a long number to be converted into a easily readable text
      * @return a user friendly number to read
      */
@@ -63,7 +97,6 @@ public class AuctionAPI {
     }
 
     /**
-     *
      * @param totalSecs take seconds and convert to proper date time
      * @return total time left in a string
      */
@@ -75,7 +108,6 @@ public class AuctionAPI {
     }
 
     /**
-     *
      * @param number is this string a number?
      * @return whether or not the provided string is numeric
      */
@@ -216,5 +248,70 @@ public class AuctionAPI {
             }
         }
         return count;
+    }
+
+    /**
+     * @param stack is the item stack you will get the lore from
+     * @return the found lore of the given item
+     */
+    public String getMySQLLore(ItemStack stack) {
+        String lore = "";
+        if (!stack.hasItemMeta()) return lore = "No Lore";
+        if (!stack.getItemMeta().hasLore()) return lore = "No Lore";
+        for (String s : stack.getItemMeta().getLore()) {
+            lore += ChatColor.stripColor(s) + ";";
+        }
+        return lore;
+    }
+
+    /**
+     * @param stack is the item stack you will get the enchants from
+     * @return the enchantments that were found in a string
+     */
+    public String getMySQLEnchantments(ItemStack stack) {
+        String enchants = "";
+        if (!stack.hasItemMeta()) return enchants = "None";
+        if (!stack.getItemMeta().hasEnchants()) return enchants = "None";
+        for (Enchantment enchantment : stack.getItemMeta().getEnchants().keySet()) {
+            String name = enchantment.getName().replace("_", " ").toLowerCase();
+            String level = toRoman(stack.getItemMeta().getEnchantLevel(enchantment));
+            String comp = StringUtils.capitalize(name) + "," + level;
+            enchants += comp + ";";
+        }
+        return enchants;
+    }
+
+    /**
+     * @return a list of every transaction that was recorded on the flat file 'transactions.yml'
+     */
+    public List<Transaction> requestEveryFlatFileTransaction() {
+        List<Transaction> collection = new ArrayList<>();
+
+        if (Core.getInstance().getTransactions().getConfig().getConfigurationSection("transactions") == null || Core.getInstance().getTransactions().getConfig().getConfigurationSection("transactions").getKeys(false).size() == 0) {
+            return collection;
+        }
+
+        Core.getInstance().getTransactions().getConfig().getConfigurationSection("transactions").getKeys(false).forEach(transaction -> {
+
+            Transaction.TransactionType transactionType = (Core.getInstance().getTransactions().getConfig().getString("transactions." + transaction + ".transaction-type").equalsIgnoreCase("Won Auction")) ? Transaction.TransactionType.AUCTION_WON : Transaction.TransactionType.BOUGHT;
+
+            UUID seller = UUID.fromString(Core.getInstance().getTransactions().getConfig().getString("transactions." + transaction + ".seller"));
+            UUID buyer = UUID.fromString(Core.getInstance().getTransactions().getConfig().getString("transactions." + transaction + ".buyer"));
+
+            long timeCompleted = Core.getInstance().getTransactions().getConfig().getLong("transactions." + transaction + ".time-completed");
+            long startPrice = Core.getInstance().getTransactions().getConfig().getLong("transactions." + transaction + ".start-price");
+            long bidIncrement = Core.getInstance().getTransactions().getConfig().getLong("transactions." + transaction + ".bid-increment");
+            long currentPrice = Core.getInstance().getTransactions().getConfig().getLong("transactions." + transaction + ".current-price");
+            long buyNowPrice = Core.getInstance().getTransactions().getConfig().getLong("transactions." + transaction + ".buy-now-price");
+
+            int timeLeft = Core.getInstance().getTransactions().getConfig().getInt("transactions." + transaction + ".time-left");
+            String auctionID = Core.getInstance().getTransactions().getConfig().getString("transactions." + transaction + ".auction-id");
+
+            ItemStack item = Core.getInstance().getTransactions().getConfig().getItemStack("transactions." + transaction + ".item");
+            ItemStack receipt = Core.getInstance().getTransactions().getConfig().getItemStack("transactions." + transaction + ".receipt");
+
+            collection.add(new Transaction(transactionType, new AuctionItem(seller, buyer, item, startPrice, bidIncrement, buyNowPrice, currentPrice, timeLeft, auctionID), buyer, timeCompleted));
+        });
+        return collection;
     }
 }

@@ -107,6 +107,8 @@ public final class Core extends JavaPlugin {
             if (!hikari.isClosed()) {
                 dbConnected = true;
                 console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Connected to database!"));
+            } else {
+                console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&c Failed to connect to database!"));
             }
         }
 
@@ -121,8 +123,6 @@ public final class Core extends JavaPlugin {
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aLoaded successfully in " + (System.currentTimeMillis() - start) + "ms"));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
-
-        //Database.getInstance().performTableCreation(Database.Tables.TRANSACTIONS);
 
         //Begin Auction Tick
         TickAuctionsTask.startTask(this);
@@ -226,5 +226,8 @@ public final class Core extends JavaPlugin {
         return serverVersion.ordinal() >= version.ordinal();
     }
 
+    public boolean isDbConnected() {
+        return dbConnected;
+    }
 }
 

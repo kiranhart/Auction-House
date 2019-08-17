@@ -20,6 +20,7 @@ public class AuctionPermissions {
     public static String SELL_COMMAND = BASE + ".cmd.sell";
     public static String EXPIRED_COMMAND = BASE + ".cmd.expired";
     public static String TRANSACTIONS_COMMAND = BASE + ".cmd.transactions";
+    public static String UPLOAD_TRANSACTIONS_COMMAND = BASE + ".cmd.uploadtransactions";
     public static String LISTINGS_COMMAND = BASE + ".cmd.listings";
 
     //Misc
