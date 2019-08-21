@@ -19,7 +19,7 @@ public class ReloadCommand extends SubCommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
 
-        if (!sender.hasPermission(AuctionPermissions.RELOAD_COMMAND)) {
+        if (!sender.hasPermission(AuctionPermissions.RELOAD_COMMAND) || !sender.hasPermission(AuctionPermissions.ADMIN)) {
             Core.getInstance().getLocale().getMessage(AuctionLang.NO_PERMISSION).sendPrefixedMessage(sender);
             return;
         }

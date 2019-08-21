@@ -18,8 +18,17 @@ settings:
   time-to-increase-by-bid: 10
   decrease-seconds-by-tick: 5
   update-every-tick: 5
+  auto-save-every: 1800
 
-
+help-msg:
+- "&6======== &eAuction House&6 ========"
+- ""
+- "&e/ah expired"
+- "&e/ah listed"
+- "&e/ah sell"
+- "&e/ah transactions"
+- ""
+- "&6==================================="
 
 #MySql stuff for databases if you want
 database:

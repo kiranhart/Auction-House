@@ -10,6 +10,7 @@ import com.kiranhart.auctionhouse.util.economy.Economy;
 import com.kiranhart.auctionhouse.util.economy.VaultEconomy;
 import com.kiranhart.auctionhouse.util.locale.Locale;
 import com.kiranhart.auctionhouse.util.storage.ConfigWrapper;
+import com.kiranhart.auctionhouse.util.tasks.AutoSaveTask;
 import com.kiranhart.auctionhouse.util.tasks.LoadAuctionsTask;
 import com.kiranhart.auctionhouse.util.tasks.TickAuctionsTask;
 import com.zaxxer.hikari.HikariDataSource;
@@ -33,6 +34,7 @@ public final class Core extends JavaPlugin {
 
     private AuctionSettings auctionSettings;
     private CommandManager commandManager;
+
     private Economy economy;
     private Locale locale;
 
@@ -43,6 +45,8 @@ public final class Core extends JavaPlugin {
 
     private HikariDataSource hikari;
     private boolean dbConnected;
+
+    private boolean locked = false;
 
     @Override
     public void onEnable() {
@@ -78,9 +82,8 @@ public final class Core extends JavaPlugin {
         this.locale = Locale.getLocale(getConfig().getString("lang"));
 
         //Economy
-        if (pm.isPluginEnabled("Vault")) {
-            console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Initializing Vault Economy"));
-            this.economy = new VaultEconomy();
+        if (getServer().getPluginManager().getPlugin("Vault") != null) {
+            economy = new VaultEconomy();
         }
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Loading data files"));
@@ -119,13 +122,16 @@ public final class Core extends JavaPlugin {
         LoadAuctionsTask.startTask(this);
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
-        console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bLoaded Auction House 1.10 - Multiversion"));
+        console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bLoaded Auction House " + getDescription().getVersion() + " - Multiversion"));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aLoaded successfully in " + (System.currentTimeMillis() - start) + "ms"));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
 
         //Begin Auction Tick
         TickAuctionsTask.startTask(this);
+
+        //Begin Auction Auto Save
+        AutoSaveTask.startTask(this);
     }
 
     @Override
@@ -228,6 +234,14 @@ public final class Core extends JavaPlugin {
 
     public boolean isDbConnected() {
         return dbConnected;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 }
 

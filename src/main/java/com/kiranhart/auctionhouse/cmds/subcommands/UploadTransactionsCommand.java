@@ -22,7 +22,7 @@ public class UploadTransactionsCommand extends SubCommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
 
-        if (!sender.hasPermission(AuctionPermissions.UPLOAD_TRANSACTIONS_COMMAND)) {
+        if (!sender.hasPermission(AuctionPermissions.UPLOAD_TRANSACTIONS_COMMAND) || !sender.hasPermission(AuctionPermissions.ADMIN)) {
             Core.getInstance().getLocale().getMessage(AuctionLang.NO_PERMISSION).sendPrefixedMessage(sender);
             return;
         }

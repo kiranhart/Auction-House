@@ -8,6 +8,7 @@ package com.kiranhart.auctionhouse.api;
 */
 
 import com.kiranhart.auctionhouse.Core;
+import com.kiranhart.auctionhouse.api.statics.AuctionPermissions;
 import com.kiranhart.auctionhouse.api.version.NBTEditor;
 import com.kiranhart.auctionhouse.api.version.ServerVersion;
 import com.kiranhart.auctionhouse.api.version.XMaterial;
@@ -17,6 +18,7 @@ import com.kiranhart.auctionhouse.util.Debugger;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -77,6 +79,20 @@ public class AuctionAPI {
             return romanSuffix.get(number);
         }
         return romanSuffix.get(l) + toRoman(number - l);
+    }
+
+    /**
+     * @param sender is the cmd sender being checked for admin permissions
+     * @return whether they have it or not
+     */
+    public boolean senderHasHigherPermissions(CommandSender sender) {
+        if (sender.isOp()) return true;
+        if (sender.hasPermission(AuctionPermissions.ADMIN)) return true;
+        if (sender.hasPermission(AuctionPermissions.UPLOAD_TRANSACTIONS_COMMAND)) return true;
+        if (sender.hasPermission(AuctionPermissions.RELOAD_COMMAND)) return true;
+        if (sender.hasPermission(AuctionPermissions.LOCK_COMMAND)) return true;
+        if (sender.hasPermission(AuctionPermissions.ENDALL_COMMAND)) return true;
+        return false;
     }
 
     /**

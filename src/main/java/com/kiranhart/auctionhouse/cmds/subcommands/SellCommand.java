@@ -42,6 +42,11 @@ public class SellCommand extends SubCommand {
 
         Player p = (Player) sender;
 
+        if (!AuctionAPI.getInstance().senderHasHigherPermissions(p) && Core.getInstance().isLocked()) {
+            Core.getInstance().getLocale().getMessage(AuctionLang.LOCKED).sendPrefixedMessage(p);
+            return;
+        }
+
         Core.getInstance().getConfig().getStringList("blocked-items").forEach(blockedItem -> {
             String[] item = blockedItem.split(":");
             if (AuctionAPI.getInstance().getItemInHand(p) != null || AuctionAPI.getInstance().getItemInHand(p).getType() != XMaterial.AIR.parseMaterial()) {

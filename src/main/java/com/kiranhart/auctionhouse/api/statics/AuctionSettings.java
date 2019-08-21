@@ -30,6 +30,7 @@ public class AuctionSettings {
     public static int TIME_TO_INCREASE_BY_BID = 10;
     public static int DECREASE_SECONDS_BY_TICK = 5;
     public static int UPDATE_EVERY_TICK = 5;
+    public static int AUTO_SAVE_EVERY = 1800;
 
     public static boolean DB_ENABLED = false;
     // public static boolean ATTEMPT_TO_CREATE_DB_TABLES_ON_START = true;
@@ -58,6 +59,7 @@ public class AuctionSettings {
         TIME_TO_INCREASE_BY_BID = Core.getInstance().getConfig().getInt("settings.time-to-increase-by-bid");
         DECREASE_SECONDS_BY_TICK = Core.getInstance().getConfig().getInt("settings.decrease-seconds-by-tick");
         UPDATE_EVERY_TICK = Core.getInstance().getConfig().getInt("settings.update-every-tick");
+        AUTO_SAVE_EVERY = Core.getInstance().getConfig().getInt("settings.auto-save-every");
 
         DB_ENABLED = Core.getInstance().getConfig().getBoolean("database.enabled");
         //  ATTEMPT_TO_CREATE_DB_TABLES_ON_START = Core.getInstance().getConfig().getBoolean("database.attempt-table-creation-on-start");

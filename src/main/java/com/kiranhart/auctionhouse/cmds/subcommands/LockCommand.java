@@ -1,11 +1,9 @@
 package com.kiranhart.auctionhouse.cmds.subcommands;
 
 import com.kiranhart.auctionhouse.Core;
-import com.kiranhart.auctionhouse.api.AuctionAPI;
 import com.kiranhart.auctionhouse.api.statics.AuctionLang;
 import com.kiranhart.auctionhouse.api.statics.AuctionPermissions;
 import com.kiranhart.auctionhouse.cmds.SubCommand;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -14,31 +12,28 @@ import org.bukkit.command.CommandSender;
  * Time Created: 11:51 AM
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise.
  */
-public class HelpCommand extends SubCommand {
+public class LockCommand extends SubCommand {
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
 
-        if (!sender.hasPermission(AuctionPermissions.HELP_COMMNAD)) {
+        if (!sender.hasPermission(AuctionPermissions.LOCK_COMMAND) || !sender.hasPermission(AuctionPermissions.ADMIN)) {
             Core.getInstance().getLocale().getMessage(AuctionLang.NO_PERMISSION).sendPrefixedMessage(sender);
             return;
         }
 
-        Core.getInstance().getConfig().getStringList("help-msg").forEach(line -> {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', line));
-        });
-
-        if (AuctionAPI.getInstance().senderHasHigherPermissions(sender)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c/ah reload"));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c/ah lock"));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c/ah endall"));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c/ah uploadtransactions"));
+        if (Core.getInstance().isLocked()) {
+            Core.getInstance().setLocked(false);
+            Core.getInstance().getLocale().getMessage(AuctionLang.UNLOCKED).sendPrefixedMessage(sender);
+        } else {
+            Core.getInstance().setLocked(true);
+            Core.getInstance().getLocale().getMessage(AuctionLang.LOCKED).sendPrefixedMessage(sender);
         }
     }
 
     @Override
     public String name() {
-        return Core.getInstance().getCommandManager().help;
+        return Core.getInstance().getCommandManager().lock;
     }
 
     @Override

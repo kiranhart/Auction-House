@@ -12,6 +12,7 @@ public class AuctionPermissions {
     //Base
 
     public static String BASE = "AuctionHouse";
+    public static String ADMIN = BASE + ".admin";
 
     //Commands
 
@@ -22,6 +23,8 @@ public class AuctionPermissions {
     public static String TRANSACTIONS_COMMAND = BASE + ".cmd.transactions";
     public static String UPLOAD_TRANSACTIONS_COMMAND = BASE + ".cmd.uploadtransactions";
     public static String LISTINGS_COMMAND = BASE + ".cmd.listings";
+    public static String LOCK_COMMAND = BASE + ".cmd.lock";
+    public static String ENDALL_COMMAND = BASE + ".cmd.endall";
 
     //Misc
 

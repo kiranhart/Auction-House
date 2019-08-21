@@ -14,6 +14,10 @@ public class AuctionLang {
     public static final String PREFIX = "general.prefix";
     public static final String NOT_A_NUMBER = "general.notanumber";
     public static final String NO_PERMISSION = "general.nopermission";
+    public static final String LOCKED = "general.locked";
+    public static final String UNLOCKED = "general.unlocked";
+    public static final String END_ALL = "general.endall";
+    public static final String MUST_BE_LOCKED = "general.mustbelocked";
     public static final String PLAYERS_ONLY = "general.playersonly";
     public static final String NOT_ENOUGH_MONEY = "general.notenoughmoney";
     public static final String CANT_BID_ON_OWN = "general.cantbidonown";

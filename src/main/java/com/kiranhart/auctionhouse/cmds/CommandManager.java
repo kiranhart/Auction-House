@@ -38,6 +38,8 @@ public class CommandManager implements CommandExecutor {
     public final String sell = "sell";
     public final String transactions = "transactions";
     public final String uploadtransactions = "uploadtransactions";
+    public final String lock = "lock";
+    public final String endall = "endall";
 
     public void initialize() {
         Core.getInstance().getCommand(main).setExecutor(this);
@@ -48,6 +50,8 @@ public class CommandManager implements CommandExecutor {
         this.commands.add(new TransactionsCommand());
         this.commands.add(new HelpCommand());
         this.commands.add(new UploadTransactionsCommand());
+        this.commands.add(new LockCommand());
+        this.commands.add(new EndAllCommand());
     }
 
     @Override
