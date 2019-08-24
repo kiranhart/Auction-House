@@ -38,7 +38,7 @@ public class TickAuctionsTask extends BukkitRunnable {
         plugin = core;
         if (instance == null) {
             instance = new TickAuctionsTask(plugin);
-            instance.runTaskTimerAsynchronously(plugin, 0, 20 * AuctionSettings.UPDATE_EVERY_TICK);
+            instance.runTaskTimer(plugin, 0, 20 * AuctionSettings.UPDATE_EVERY_TICK);
         }
         return instance;
     }
@@ -148,7 +148,12 @@ public class TickAuctionsTask extends BukkitRunnable {
                             p.getOpenInventory().getTopInventory().setItem(53, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.guide", 0, 0));
 
                             List<List<AuctionItem>> chunks = Lists.partition(Core.getInstance().getAuctionItems(), 45);
-                            chunks.get(0).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
+                            //chunks.get(0).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
+
+                            //Pagination
+                            if (chunks.size() != 0) {
+                                chunks.get(Core.getInstance().getCurrentAuctionPage().get(p) - 1).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
+                            }
                         }
                     });
                 }

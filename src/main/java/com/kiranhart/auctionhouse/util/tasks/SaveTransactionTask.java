@@ -48,7 +48,7 @@ public class SaveTransactionTask extends BukkitRunnable {
         Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".receipt", transaction.getReceipt());
         Core.getInstance().getTransactions().saveConfig();
 
-        if (Core.getInstance().isDbConnected() && AuctionSettings.DB_ENABLED) {
+        if (!Core.getInstance().getHikari().isClosed() && AuctionSettings.DB_ENABLED) {
             Database.getInstance().performTransactionUpload(transaction);
         }
     }

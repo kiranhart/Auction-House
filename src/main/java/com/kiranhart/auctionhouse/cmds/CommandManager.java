@@ -68,6 +68,11 @@ public class CommandManager implements CommandExecutor {
                 if (sender instanceof Player) {
                     Player p = (Player) sender;
                     p.openInventory(new AuctionGUI(p).getInventory());
+                    if (Core.getInstance().getCurrentAuctionPage().containsKey(p)) {
+                        Core.getInstance().getCurrentAuctionPage().remove(p);
+                    }
+
+                    Core.getInstance().getCurrentAuctionPage().put(p, 1);
                 }
                 return true;
             }

@@ -18,10 +18,13 @@ import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class Core extends JavaPlugin {
@@ -39,6 +42,7 @@ public final class Core extends JavaPlugin {
     private Locale locale;
 
     private CopyOnWriteArrayList<AuctionItem> auctionItems;
+    private Map<Player, Integer> currentAuctionPage;
 
     private ConfigWrapper transactions;
     private ConfigWrapper data;
@@ -120,6 +124,7 @@ public final class Core extends JavaPlugin {
 
         //Load the auctions
         LoadAuctionsTask.startTask(this);
+        currentAuctionPage = new HashMap<>();
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bLoaded Auction House " + getDescription().getVersion() + " - Multiversion"));
@@ -242,6 +247,10 @@ public final class Core extends JavaPlugin {
 
     public void setLocked(boolean locked) {
         this.locked = locked;
+    }
+
+    public Map<Player, Integer> getCurrentAuctionPage() {
+        return currentAuctionPage;
     }
 }
 

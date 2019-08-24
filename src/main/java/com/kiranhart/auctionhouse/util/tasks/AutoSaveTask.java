@@ -61,13 +61,13 @@ public class AutoSaveTask extends BukkitRunnable {
         //Save Auctions to file.
         int node = 1;
         for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
-            Core.getInstance().getData().getConfig().set("active." + node + ".owner", auctionItem.getOwner());
-            Core.getInstance().getData().getConfig().set("active." + node + ".highestbidder", auctionItem.getHighestBidder());
+            Core.getInstance().getData().getConfig().set("active." + node + ".owner", auctionItem.getOwner().toString());
+            Core.getInstance().getData().getConfig().set("active." + node + ".highestbidder", auctionItem.getHighestBidder().toString());
             Core.getInstance().getData().getConfig().set("active." + node + ".startprice", auctionItem.getStartPrice());
             Core.getInstance().getData().getConfig().set("active." + node + ".bidincrement", auctionItem.getBidIncrement());
             Core.getInstance().getData().getConfig().set("active." + node + ".currentprice", auctionItem.getCurrentPrice());
             Core.getInstance().getData().getConfig().set("active." + node + ".buynowprice", auctionItem.getBuyNowPrice());
-            Core.getInstance().getData().getConfig().set("active." + node + ".key", auctionItem.getKey());
+            Core.getInstance().getData().getConfig().set("active." + node + ".key", auctionItem.getKey().toString());
             Core.getInstance().getData().getConfig().set("active." + node + ".time", auctionItem.getTime());
             Core.getInstance().getData().getConfig().set("active." + node + ".item", auctionItem.getItem());
             node++;

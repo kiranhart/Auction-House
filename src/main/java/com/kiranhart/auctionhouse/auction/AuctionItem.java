@@ -177,9 +177,10 @@ public class AuctionItem {
         ItemStack stack = item.clone();
         stack.setAmount((stack.getAmount() > 1) ? stack.getAmount() : 1);
         ItemMeta meta = stack.getItemMeta();
-        List<String> lore = (meta.hasLore() ? meta.getLore() : new ArrayList<>());
+        List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
 
         String theOwner = (owner == null) ? "&eSeller&f: &bSample User" : Bukkit.getOfflinePlayer(owner).getName();
+        String theHighestBidder = (owner.equals(highestBidder)) ? Bukkit.getOfflinePlayer(owner).getName() : (Bukkit.getOfflinePlayer(highestBidder).isOnline()) ? Bukkit.getOfflinePlayer(highestBidder).getPlayer().getName() : "Offline";
         String buyNowNumber = (AuctionSettings.USE_SHORT_NUMBERS_ON_ITEMS) ? AuctionAPI.getInstance().getFriendlyNumber(buyNowPrice) : String.valueOf(NumberFormat.getInstance().format(buyNowPrice));
         String currentPriceNumber = (AuctionSettings.USE_BIDDING_SYSTEM) ? (AuctionSettings.USE_SHORT_NUMBERS_ON_ITEMS) ? AuctionAPI.getInstance().getFriendlyNumber(currentPrice) : String.valueOf(NumberFormat.getInstance().format(currentPrice)) : "&cDisabled";
         String bidIncrementNumber = (AuctionSettings.USE_BIDDING_SYSTEM) ? (AuctionSettings.USE_SHORT_NUMBERS_ON_ITEMS) ? AuctionAPI.getInstance().getFriendlyNumber(bidIncrement) : String.valueOf(NumberFormat.getInstance().format(bidIncrement)) : "&cDisabled";
@@ -190,7 +191,7 @@ public class AuctionItem {
                     .replace("{seller}", theOwner)
                     .replace("{currentprice}", currentPriceNumber)
                     .replace("{bidincrement}", bidIncrementNumber)
-                    .replace("{highestbidder}", Bukkit.getOfflinePlayer(highestBidder).getPlayer().getName())
+                    .replace("{highestbidder}", (theHighestBidder == null) ? "&ePlayer Offline" : theHighestBidder)
                     .replace("{timeleft}", timeLeft)));
         }
 
