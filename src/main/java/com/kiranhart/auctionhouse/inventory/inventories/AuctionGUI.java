@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.kiranhart.auctionhouse.Core;
 import com.kiranhart.auctionhouse.api.AuctionAPI;
 import com.kiranhart.auctionhouse.api.statics.AuctionLang;
+import com.kiranhart.auctionhouse.api.statics.AuctionPermissions;
 import com.kiranhart.auctionhouse.api.statics.AuctionSettings;
 import com.kiranhart.auctionhouse.api.version.NBTEditor;
 import com.kiranhart.auctionhouse.api.version.XMaterial;
@@ -104,9 +105,9 @@ public class AuctionGUI implements AGUI {
 
             AuctionItem possibleAuctionItem = null;
 
-        /*
-        Perform the proper steps if the user left-clicks (using bid system)
-         */
+            /*
+            Perform the proper steps if the user left-clicks (using bid system)
+             */
             if (e.getClick() == ClickType.LEFT && AuctionSettings.USE_BIDDING_SYSTEM) {
 
                 //Get the key of the auction item
@@ -152,23 +153,16 @@ public class AuctionGUI implements AGUI {
 
                 } else {
                     //Not enough money to bid
-                    e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createNotEnoughMoneyIcon());
-//                    Bukkit.getServer().getScheduler().runTaskLater(Core.getInstance(), () -> {
-//                        p.closeInventory();
-//                        p.openInventory(new AuctionGUI(p).getInventory());
-//                    }, 20);
                     p.closeInventory();
                     p.openInventory(new AuctionGUI(p).getInventory());
                 }
 
-//            p.closeInventory();
-//            p.openInventory(new AuctionGUI(p).getInventory());
                 return;
             }
 
-        /*
-        Perform the proper steps if the user right-clicks (using bid system)
-         */
+            /*
+            Perform the proper steps if the user right-clicks (using bid system)
+             */
             if (e.getClick() == ClickType.RIGHT && AuctionSettings.USE_BIDDING_SYSTEM) {
 
                 //Get the key of the auction item
@@ -193,23 +187,15 @@ public class AuctionGUI implements AGUI {
                     }
                 } else {
                     //Not enough money to purchase
-                    e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createNotEnoughMoneyIcon());
-//                    Bukkit.getServer().getScheduler().runTaskLater(Core.getInstance(), () -> {
-//                        p.closeInventory();
-//                        p.openInventory(new AuctionGUI(p).getInventory());
-//                    }, 20);
                     p.closeInventory();
                     p.openInventory(new AuctionGUI(p).getInventory());
                 }
-
-//            p.closeInventory();
-//            p.openInventory(new AuctionGUI(p).getInventory());
                 return;
             }
 
-        /*
-        Perform the proper steps if the user left clicks (Without the bid system)
-         */
+            /*
+            Perform the proper steps if the user left clicks (Without the bid system)
+             */
             if (e.getClick() == ClickType.LEFT && !AuctionSettings.USE_BIDDING_SYSTEM) {
 
                 //Get the key of the auction item
@@ -219,26 +205,44 @@ public class AuctionGUI implements AGUI {
                 }
 
                 if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getBuyNowPrice())) {
-                    if (AuctionSettings.OWNER_CAN_PURCHASE_OWN) {
+                    //Check if the person who clicked is the owner
+                    if (possibleAuctionItem.getOwner().equals(p.getUniqueId())) {
+                        if (AuctionSettings.OWNER_CAN_PURCHASE_OWN) {
+                            p.closeInventory();
+                            p.openInventory(new ConfirmationGUI(possibleAuctionItem).getInventory());
+                        } else {
+                            Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BUY_OWN).sendPrefixedMessage(p);
+                        }
+                    } else {
                         p.closeInventory();
                         p.openInventory(new ConfirmationGUI(possibleAuctionItem).getInventory());
-                    } else {
-                        Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BUY_OWN).sendPrefixedMessage(p);
                     }
                 } else {
                     //Not enough money to purchase
-//                    e.getClickedInventory().setItem(slot, AuctionAPI.getInstance().createNotEnoughMoneyIcon());
-//                    Bukkit.getServer().getScheduler().runTaskLater(Core.getInstance(), () -> {
-//                        p.closeInventory();
-//                        p.openInventory(new AuctionGUI(p).getInventory());
-//                    }, 20);
                     p.closeInventory();
                     p.openInventory(new AuctionGUI(p).getInventory());
                 }
 
-//            p.closeInventory();
-//            p.openInventory(new AuctionGUI(p).getInventory());
                 return;
+            }
+
+            /*
+            Admin remove item from auction house
+             */
+            if (e.getClick() == ClickType.MIDDLE && p.hasPermission(AuctionPermissions.ADMIN) || p.isOp()) {
+                //Get the key of the auction item
+                String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
+                for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
+                    if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
+                }
+
+                if (AuctionAPI.getInstance().availableSlots(p.getInventory()) == 0) {
+                    p.getWorld().dropItem(p.getLocation(), possibleAuctionItem.getItem());
+                } else {
+                    p.getInventory().addItem(possibleAuctionItem.getItem());
+                }
+
+                Core.getInstance().getAuctionItems().remove(possibleAuctionItem);
             }
         }
     }

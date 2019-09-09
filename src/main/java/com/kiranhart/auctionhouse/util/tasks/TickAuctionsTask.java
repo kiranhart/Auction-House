@@ -163,6 +163,6 @@ public class TickAuctionsTask extends BukkitRunnable {
             Debugger.report(e);
         }
 
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Ran Auction Tick at rate of " + AuctionSettings.UPDATE_EVERY_TICK + "s"));
+        //  Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Ran Auction Tick at rate of " + AuctionSettings.UPDATE_EVERY_TICK + "s"));
     }
 }

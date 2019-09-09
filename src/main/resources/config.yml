@@ -9,8 +9,8 @@ settings:
   min-auction-price: 1
   min-auction-start: 1
   min-auction-increment: 1
-  owner-can-purchase-own: true
-  owner-can-bid-on-own: true
+  owner-can-purchase-own: false
+  owner-can-bid-on-own: false
   use-bidding-system: false
   auto-refresh-auction-pages: true
   use-short-numbers-on-items: false
