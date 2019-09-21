@@ -8,7 +8,6 @@ package com.kiranhart.auctionhouse.util.tasks;
 */
 
 import com.kiranhart.auctionhouse.Core;
-import com.kiranhart.auctionhouse.api.statics.AuctionSettings;
 import com.kiranhart.auctionhouse.auction.Transaction;
 import com.kiranhart.auctionhouse.util.storage.Database;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -48,7 +47,7 @@ public class SaveTransactionTask extends BukkitRunnable {
         Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".receipt", transaction.getReceipt());
         Core.getInstance().getTransactions().saveConfig();
 
-        if (!Core.getInstance().getHikari().isClosed() && AuctionSettings.DB_ENABLED) {
+        if (!Core.getInstance().getHikari().isClosed() && Core.getInstance().getHikari().isRunning()) {
             Database.getInstance().performTransactionUpload(transaction);
         }
     }

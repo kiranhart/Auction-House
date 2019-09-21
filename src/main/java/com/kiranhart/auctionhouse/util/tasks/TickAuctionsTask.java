@@ -152,7 +152,8 @@ public class TickAuctionsTask extends BukkitRunnable {
 
                             //Pagination
                             if (chunks.size() != 0) {
-                                chunks.get(Core.getInstance().getCurrentAuctionPage().get(p) - 1).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
+                                //chunks.get(Core.getInstance().getCurrentAuctionPage().get(p) - 1).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
+                                AuctionAPI.getInstance().sortBasedOnPlayer(chunks.get(Core.getInstance().getCurrentAuctionPage().get(p) - 1), p).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
                             }
                         }
                     });

@@ -6,11 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Auction House - Multiversion" />
+        <module name="AuctionHouse" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="Auction House - Multiversion" target="1.8" />
+      <module name="AuctionHouse" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

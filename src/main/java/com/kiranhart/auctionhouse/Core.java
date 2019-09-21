@@ -3,6 +3,7 @@ package com.kiranhart.auctionhouse;
 import com.kiranhart.auctionhouse.api.statics.AuctionSettings;
 import com.kiranhart.auctionhouse.api.version.ServerVersion;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
+import com.kiranhart.auctionhouse.auction.AuctionSortMethod;
 import com.kiranhart.auctionhouse.cmds.CommandManager;
 import com.kiranhart.auctionhouse.inventory.AGUI;
 import com.kiranhart.auctionhouse.listeners.AGUIListener;
@@ -23,9 +24,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class Core extends JavaPlugin {
 
@@ -41,8 +42,9 @@ public final class Core extends JavaPlugin {
     private Economy economy;
     private Locale locale;
 
-    private CopyOnWriteArrayList<AuctionItem> auctionItems;
+    private ArrayList<AuctionItem> auctionItems;
     private Map<Player, Integer> currentAuctionPage;
+    private Map<Player, AuctionSortMethod> sortMethod;
 
     private ConfigWrapper transactions;
     private ConfigWrapper data;
@@ -95,7 +97,7 @@ public final class Core extends JavaPlugin {
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Loading Settings"));
         auctionSettings = new AuctionSettings();
-        auctionItems = new CopyOnWriteArrayList<>();
+        auctionItems = new ArrayList<>();
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Setting up command system"));
         commandManager = new CommandManager();
@@ -125,6 +127,7 @@ public final class Core extends JavaPlugin {
         //Load the auctions
         LoadAuctionsTask.startTask(this);
         currentAuctionPage = new HashMap<>();
+        sortMethod = new HashMap<>();
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bLoaded Auction House " + getDescription().getVersion() + " - Multiversion"));
@@ -197,7 +200,7 @@ public final class Core extends JavaPlugin {
         return auctionSettings;
     }
 
-    public CopyOnWriteArrayList<AuctionItem> getAuctionItems() {
+    public ArrayList<AuctionItem> getAuctionItems() {
         return auctionItems;
     }
 
@@ -251,6 +254,10 @@ public final class Core extends JavaPlugin {
 
     public Map<Player, Integer> getCurrentAuctionPage() {
         return currentAuctionPage;
+    }
+
+    public Map<Player, AuctionSortMethod> getSortMethod() {
+        return sortMethod;
     }
 }
 

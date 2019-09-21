@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Auction House - Multiversion.iml" filepath="$PROJECT_DIR$/Auction House - Multiversion.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AuctionHouse.iml" filepath="$PROJECT_DIR$/AuctionHouse.iml" />
     </modules>
   </component>
 </project>

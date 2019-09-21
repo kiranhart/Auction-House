@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="JAVA_MODULE" version="4">
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="minecraft" name="Minecraft">
       <configuration>
@@ -28,7 +28,8 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.yaml:snakeyaml:1.23" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.bukkit:craftbukkit:1.14.3-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.10" level="project" />
-    <orderEntry type="library" name="Maven: com.github.MilkBowl:VaultAPI:1.7" level="project" />
-    <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:3.3.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.MilkBowl:VaultAPI:1.7" level="project" />
+    <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:3.4.1" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
   </component>
 </module>

@@ -112,6 +112,12 @@ guis:
         lore:
         - "&7Click to refresh the currently"
         - "&7available auction listings."
+      filter:
+        item: "SNOW_BALL:0"
+        name: "&e&lFilter Items"
+        lore:
+          - "&7Click to filter items by category"
+          - "&eDefault, Armor, Tools, Blocks, Food"
   confirm:
     title: "&e&lConfirm Purchase"
     items:
