@@ -8,7 +8,9 @@ package com.kiranhart.auctionhouse.util.tasks;
 */
 
 import com.kiranhart.auctionhouse.Core;
+import com.kiranhart.auctionhouse.api.statics.AuctionSettings;
 import com.kiranhart.auctionhouse.auction.Transaction;
+import com.kiranhart.auctionhouse.util.Debugger;
 import com.kiranhart.auctionhouse.util.storage.Database;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -33,22 +35,27 @@ public class SaveTransactionTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".transaction-type", transaction.getTransactionType().getTransactionType());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".seller", transaction.getAuctionItem().getOwner().toString());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".buyer", transaction.getBuyer().toString());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".start-price", transaction.getAuctionItem().getStartPrice());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".bid-increment", transaction.getAuctionItem().getBidIncrement());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".current-price", transaction.getAuctionItem().getCurrentPrice());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".buy-now-price", transaction.getAuctionItem().getBuyNowPrice());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".time-left", transaction.getAuctionItem().getTime());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".auction-id", transaction.getAuctionItem().getKey());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".time-completed", transaction.getTimeCompleted());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".item", transaction.getAuctionItem().getItem());
-        Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".receipt", transaction.getReceipt());
-        Core.getInstance().getTransactions().saveConfig();
+        try {
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".transaction-type", transaction.getTransactionType().getTransactionType());
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".seller", transaction.getAuctionItem().getOwner().toString());
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".buyer", transaction.getBuyer().toString());
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".start-price", transaction.getAuctionItem().getStartPrice());
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".bid-increment", transaction.getAuctionItem().getBidIncrement());
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".current-price", transaction.getAuctionItem().getCurrentPrice());
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".buy-now-price", transaction.getAuctionItem().getBuyNowPrice());
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".time-left", transaction.getAuctionItem().getTime());
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".auction-id", transaction.getAuctionItem().getKey());
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".time-completed", transaction.getTimeCompleted());
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".item", transaction.getAuctionItem().getItem());
+            Core.getInstance().getTransactions().getConfig().set("transactions." + transaction.getTimeCompleted() + transaction.getAuctionItem().getKey() + ".receipt", transaction.getReceipt());
+            Core.getInstance().getTransactions().saveConfig();
 
-        if (!Core.getInstance().getHikari().isClosed() && Core.getInstance().getHikari().isRunning()) {
-            Database.getInstance().performTransactionUpload(transaction);
+            if (AuctionSettings.DB_ENABLED) {
+                if(!Core.getInstance().getHikari().isClosed() && Core.getInstance().getHikari().isRunning())
+                    Database.getInstance().performTransactionUpload(transaction);
+            }
+        } catch (Exception e) {
+            Debugger.report(e, false);
         }
     }
 }

@@ -44,7 +44,7 @@ public class Receipt {
 
     public ItemStack getReceipt() {
         String[] item = Core.getInstance().getConfig().getString("receipt.item").split(":");
-        ItemStack stack = XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).parseItem();
+        ItemStack stack = XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).get().parseItem();
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("receipt.name")));
         List<String> lore = Core.getInstance().getConfig().getStringList("receipt.lore").stream().map(node -> ChatColor.translateAlternateColorCodes('&', node.replace("{time}", time).replace("{date}", date).replace("{price}", NumberFormat.getInstance().format(total)).replace("{seller}", Bukkit.getOfflinePlayer(seller).getName()))).collect(Collectors.toList());

@@ -21,6 +21,7 @@ import com.kiranhart.auctionhouse.util.Debugger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
@@ -135,7 +136,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 
                 //Refresh auction page is enabled
                 if (AuctionSettings.AUTO_REFRESH_AUCTION_PAGES) {
-                    Bukkit.getOnlinePlayers().forEach(p -> {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
                         if (p.getOpenInventory().getTitle().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("guis.auctionhouse.title")))) {
                             p.getOpenInventory().getTopInventory().clear();
                             p.getOpenInventory().getTopInventory().setItem(45, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.yourauctions", new AuctionPlayer(p).getTotalActiveAuctions(), 0));
@@ -152,16 +153,15 @@ public class TickAuctionsTask extends BukkitRunnable {
 
                             //Pagination
                             if (chunks.size() != 0) {
-                                //chunks.get(Core.getInstance().getCurrentAuctionPage().get(p) - 1).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
-                                AuctionAPI.getInstance().sortBasedOnPlayer(chunks.get(Core.getInstance().getCurrentAuctionPage().get(p) - 1), p).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
+                                chunks.get(Core.getInstance().getCurrentAuctionPage().get(p) - 1).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
                             }
                         }
-                    });
+                    }
                 }
             }
 
         } catch (Exception e) {
-            Debugger.report(e);
+            Debugger.report(e, false);
         }
 
         //  Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Ran Auction Tick at rate of " + AuctionSettings.UPDATE_EVERY_TICK + "s"));

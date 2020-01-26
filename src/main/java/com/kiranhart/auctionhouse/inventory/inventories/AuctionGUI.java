@@ -17,7 +17,6 @@ import com.kiranhart.auctionhouse.api.version.NBTEditor;
 import com.kiranhart.auctionhouse.api.version.XMaterial;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
 import com.kiranhart.auctionhouse.auction.AuctionPlayer;
-import com.kiranhart.auctionhouse.auction.AuctionSortMethod;
 import com.kiranhart.auctionhouse.inventory.AGUI;
 import com.kiranhart.auctionhouse.util.Debugger;
 import org.bukkit.Bukkit;
@@ -88,44 +87,6 @@ public class AuctionGUI implements AGUI {
         //Open Expired GUI
         if (slot == 46) {
             p.openInventory(new ExpiredGUI(p).getInventory());
-            return;
-        }
-
-        //Filter
-        if (slot == 47) {
-            if (Core.getInstance().getSortMethod().containsKey(p)) {
-                switch (Core.getInstance().getSortMethod().get(p)) {
-                    case ARMOR:
-                        Core.getInstance().getSortMethod().put(p, AuctionSortMethod.TOOLS);
-                        updatePage();
-                        p.openInventory(new AuctionGUI(p).getInventory());
-                        break;
-                    case TOOLS:
-                        Core.getInstance().getSortMethod().put(p, AuctionSortMethod.BLOCKS);
-                        updatePage();
-                        p.openInventory(new AuctionGUI(p).getInventory());
-                        break;
-                    case BLOCKS:
-                        Core.getInstance().getSortMethod().put(p, AuctionSortMethod.FOOD);
-                        updatePage();
-                        p.openInventory(new AuctionGUI(p).getInventory());
-                        break;
-                    case FOOD:
-                        Core.getInstance().getSortMethod().put(p, AuctionSortMethod.DEFAULT);
-                        updatePage();
-                        p.openInventory(new AuctionGUI(p).getInventory());
-                        break;
-                    case DEFAULT:
-                        Core.getInstance().getSortMethod().put(p, AuctionSortMethod.ARMOR);
-                        updatePage();
-                        p.openInventory(new AuctionGUI(p).getInventory());
-                        break;
-                }
-            } else {
-                Core.getInstance().getSortMethod().put(p, AuctionSortMethod.ARMOR);
-                updatePage();
-                p.openInventory(new AuctionGUI(p).getInventory());
-            }
             return;
         }
 
@@ -292,7 +253,6 @@ public class AuctionGUI implements AGUI {
 
         inventory.setItem(45, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.yourauctions", new AuctionPlayer(p).getTotalActiveAuctions(), 0));
         inventory.setItem(46, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.collectionbin", 0, new AuctionPlayer(p).getTotalExpiredAuctions()));
-        inventory.setItem(47, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.filter", 0, 0));
         inventory.setItem(48, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.previouspage", 0, 0));
         inventory.setItem(49, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.refresh", 0, 0));
         inventory.setItem(50, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.nextpage", 0, 0));
@@ -302,11 +262,8 @@ public class AuctionGUI implements AGUI {
 
         //Pagination
         if (chunks.size() != 0) {
-
             List<AuctionItem> sorted = chunks.get(getPage() - 1);
-            //chunks.get(getPage() - 1).forEach(item -> inventory.setItem(inventory.firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
-            AuctionAPI.getInstance().sortBasedOnPlayer(chunks.get(Core.getInstance().getCurrentAuctionPage().get(p) - 1), p).forEach(item -> p.getOpenInventory().getTopInventory().setItem(p.getOpenInventory().getTopInventory().firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
-
+            chunks.get(getPage() - 1).forEach(item -> inventory.setItem(inventory.firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
         }
         return inventory;
     }

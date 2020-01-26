@@ -1,5 +1,7 @@
 lang: "en_US"
 debugger: true
+update-checker: false #this is a new feature, disable if it causes issues
+update-delay: 60 #in seconds
 
 settings:
   default-auction-time: 900
@@ -112,12 +114,6 @@ guis:
         lore:
         - "&7Click to refresh the currently"
         - "&7available auction listings."
-      filter:
-        item: "SNOW_BALL:0"
-        name: "&e&lFilter Items"
-        lore:
-          - "&7Click to filter items by category"
-          - "&eDefault, Armor, Tools, Blocks, Food"
   confirm:
     title: "&e&lConfirm Purchase"
     items:

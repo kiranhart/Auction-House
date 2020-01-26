@@ -50,7 +50,7 @@ public class SellCommand extends SubCommand {
         Core.getInstance().getConfig().getStringList("blocked-items").forEach(blockedItem -> {
             String[] item = blockedItem.split(":");
             if (AuctionAPI.getInstance().getItemInHand(p) != null || AuctionAPI.getInstance().getItemInHand(p).getType() != XMaterial.AIR.parseMaterial()) {
-                if (AuctionAPI.getInstance().getItemInHand(p).getType() == XMaterial.parseMaterial(item[0].toUpperCase(), Byte.parseByte(item[1]))) {
+                if (AuctionAPI.getInstance().getItemInHand(p).getType() == XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).get().parseMaterial()) {
                     Core.getInstance().getLocale().getMessage(AuctionLang.BLOCKED_ITEM).processPlaceholder("item", AuctionAPI.getInstance().getItemInHand(p).getType().name()).sendPrefixedMessage(p);
                     return;
                 }

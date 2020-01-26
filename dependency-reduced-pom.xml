@@ -4,11 +4,11 @@
   <groupId>com.kiranhart</groupId>
   <artifactId>AuctionHouse</artifactId>
   <name>AuctionHouse</name>
-    <version>1.10.2</version>
+  <version>1.11</version>
   <description>The ultimate auction house plugin</description>
   <url>https://www.kiranhart.com</url>
   <build>
-    <defaultGoal>clean package</defaultGoal>
+    <defaultGoal>mvn clean install</defaultGoal>
     <resources>
       <resource>
         <filtering>true</filtering>
@@ -44,7 +44,7 @@
   <repositories>
     <repository>
       <id>spigotmc-repo</id>
-      <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
     <repository>
       <id>jitpack.io</id>
@@ -53,9 +53,15 @@
   </repositories>
   <dependencies>
     <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot</artifactId>
+      <version>1.15.1-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.14.4-R0.1-SNAPSHOT</version>
+      <version>1.15.1-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -67,20 +73,10 @@
           <groupId>com.google.guava</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>gson</artifactId>
-          <groupId>com.google.code.gson</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>snakeyaml</artifactId>
           <groupId>org.yaml</groupId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>1.14.3-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.github.MilkBowl</groupId>

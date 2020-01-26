@@ -13,7 +13,6 @@ import com.kiranhart.auctionhouse.api.version.NBTEditor;
 import com.kiranhart.auctionhouse.api.version.ServerVersion;
 import com.kiranhart.auctionhouse.api.version.XMaterial;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
-import com.kiranhart.auctionhouse.auction.AuctionSortMethod;
 import com.kiranhart.auctionhouse.auction.Transaction;
 import com.kiranhart.auctionhouse.util.Debugger;
 import org.apache.commons.lang.StringUtils;
@@ -162,7 +161,7 @@ public class AuctionAPI {
      */
     public ItemStack createNotEnoughMoneyIcon() {
         String[] item = Core.getInstance().getConfig().getString("guis.auctionhouse.items.not-enough-money.item").split(":");
-        ItemStack stack = XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).parseItem();
+        ItemStack stack = XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).get().parseItem();
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("guis.auctionhouse.items.not-enough-money.name")));
         List<String> lore = new ArrayList<>();
@@ -180,7 +179,7 @@ public class AuctionAPI {
      */
     public ItemStack createConfigurationItem(String node, int activeAuctions, int expiredAuctions) {
         String[] item = Core.getInstance().getConfig().getString(node + ".item").split(":");
-        ItemStack stack = XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).parseItem();
+        ItemStack stack = XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).get().parseItem();
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString(node + ".name")));
         List<String> lore = new ArrayList<>();
@@ -201,7 +200,7 @@ public class AuctionAPI {
      */
     public ItemStack createTransactionConfigItem(String node, String buyer, String seller, int startPrice, int bidincrement, int buynowprice) {
         String[] rawItem = Core.getInstance().getConfig().getString(node + ".item").split(":");
-        ItemStack stack = XMaterial.matchXMaterial(rawItem[0].toUpperCase(), Byte.parseByte(rawItem[1])).parseItem();
+        ItemStack stack = XMaterial.matchXMaterial(rawItem[0].toUpperCase(), Byte.parseByte(rawItem[1])).get().parseItem();
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString(node + ".name")));
         List<String> lore = new ArrayList<>();
@@ -330,51 +329,5 @@ public class AuctionAPI {
             collection.add(new Transaction(transactionType, new AuctionItem(seller, buyer, item, startPrice, bidIncrement, buyNowPrice, currentPrice, timeLeft, auctionID), buyer, timeCompleted));
         });
         return collection;
-    }
-
-    public List<AuctionItem> sortBasedOnPlayer(List<AuctionItem> list, Player p) {
-        List<AuctionItem> sorted = list;
-
-        if (!Core.getInstance().getSortMethod().containsKey(p)) {
-            Core.getInstance().getSortMethod().put(p, AuctionSortMethod.DEFAULT);
-            return sorted;
-        }
-
-        //Armor
-        if (Core.getInstance().getSortMethod().get(p) == AuctionSortMethod.ARMOR) {
-            sorted.forEach(item -> {
-                if (!item.getItem().getType().name().endsWith("_HELMET") || !item.getItem().getType().name().endsWith("_CHESTPLATE") || !item.getItem().getType().name().endsWith("_LEGGINGS") || !item.getItem().getType().name().endsWith("_BOOTS")) {
-                    sorted.remove(item);
-                }
-            });
-        }
-
-        //Blocks
-        if (Core.getInstance().getSortMethod().get(p) == AuctionSortMethod.BLOCKS) {
-            sorted.forEach(item -> {
-                if (!item.getItem().getType().isBlock()) {
-                    sorted.remove(item);
-                }
-            });
-        }
-
-        //Tools
-        if (Core.getInstance().getSortMethod().get(p) == AuctionSortMethod.TOOLS) {
-            sorted.forEach(item -> {
-                if (!item.getItem().getType().name().endsWith("_SWORD") || !item.getItem().getType().name().endsWith("_AXE") || !item.getItem().getType().name().endsWith("_HOE") || !item.getItem().getType().name().endsWith("_SHOVEL") || item.getItem().getType() != XMaterial.BOW.parseMaterial()) {
-                    sorted.remove(item);
-                }
-            });
-        }
-
-        //Food
-        if (Core.getInstance().getSortMethod().get(p) == AuctionSortMethod.FOOD) {
-            sorted.forEach(item -> {
-                if (!item.getItem().getType().isEdible()) {
-                    sorted.remove(item);
-                }
-            });
-        }
-        return sorted;
     }
 }

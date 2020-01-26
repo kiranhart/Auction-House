@@ -1,9 +1,9 @@
 package com.kiranhart.auctionhouse;
 
 import com.kiranhart.auctionhouse.api.statics.AuctionSettings;
+import com.kiranhart.auctionhouse.api.version.HartUpdater;
 import com.kiranhart.auctionhouse.api.version.ServerVersion;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
-import com.kiranhart.auctionhouse.auction.AuctionSortMethod;
 import com.kiranhart.auctionhouse.cmds.CommandManager;
 import com.kiranhart.auctionhouse.inventory.AGUI;
 import com.kiranhart.auctionhouse.listeners.AGUIListener;
@@ -44,7 +44,6 @@ public final class Core extends JavaPlugin {
 
     private ArrayList<AuctionItem> auctionItems;
     private Map<Player, Integer> currentAuctionPage;
-    private Map<Player, AuctionSortMethod> sortMethod;
 
     private ConfigWrapper transactions;
     private ConfigWrapper data;
@@ -53,6 +52,7 @@ public final class Core extends JavaPlugin {
     private boolean dbConnected;
 
     private boolean locked = false;
+    private HartUpdater updater;
 
     @Override
     public void onEnable() {
@@ -61,7 +61,7 @@ public final class Core extends JavaPlugin {
         pm = Bukkit.getPluginManager();
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
-        console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bLoading Auction House 1.10 - Multiversion"));
+        console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bLoading Auction House 1.11 - Multiversion"));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&fThis plugin was designed by Kiran Hart any"));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&fproblems should be reported directly to him."));
@@ -75,7 +75,7 @@ public final class Core extends JavaPlugin {
 
         if (isServerVersion(ServerVersion.NOT_SUPPORTED, ServerVersion.V1_7)) {
             console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6==========================================="));
-            console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bDisabling Auction House 1.10 - Multiversion"));
+            console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bDisabling Auction House 1.11 - Multiversion"));
             console.sendMessage(ChatColor.translateAlternateColorCodes('&', " "));
             console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&fServer Version is not supported!"));
             console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
@@ -90,6 +90,9 @@ public final class Core extends JavaPlugin {
         //Economy
         if (getServer().getPluginManager().getPlugin("Vault") != null) {
             economy = new VaultEconomy();
+        } else {
+            console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&c COULD NOT FIND VAULT, DISABLING PLUGIN"));
+            getServer().getPluginManager().disablePlugin(this);
         }
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Loading data files"));
@@ -127,7 +130,6 @@ public final class Core extends JavaPlugin {
         //Load the auctions
         LoadAuctionsTask.startTask(this);
         currentAuctionPage = new HashMap<>();
-        sortMethod = new HashMap<>();
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6========================================="));
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bLoaded Auction House " + getDescription().getVersion() + " - Multiversion"));
@@ -140,6 +142,13 @@ public final class Core extends JavaPlugin {
 
         //Begin Auction Auto Save
         AutoSaveTask.startTask(this);
+
+        //Begin the update checker
+        if (getConfig().getBoolean("update-checker")) {
+            getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
+                updater = new HartUpdater();
+            }, 0, 20 * getConfig().getInt("update-delay"));
+        }
     }
 
     @Override
@@ -254,10 +263,6 @@ public final class Core extends JavaPlugin {
 
     public Map<Player, Integer> getCurrentAuctionPage() {
         return currentAuctionPage;
-    }
-
-    public Map<Player, AuctionSortMethod> getSortMethod() {
-        return sortMethod;
     }
 }
 

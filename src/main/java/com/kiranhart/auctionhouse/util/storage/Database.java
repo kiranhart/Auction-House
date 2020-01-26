@@ -90,7 +90,7 @@ public class Database {
                 insert.setInt(8, transaction.getAuctionItem().getTime());
                 insert.setString(9, String.valueOf(transaction.getAuctionItem().getKey()));
                 insert.setString(10, String.valueOf(transaction.getTimeCompleted()));
-                insert.setString(11, (XMaterial.matchXMaterial(transaction.getAuctionItem().getItem()) == null) ? transaction.getAuctionItem().getDisplayName() : XMaterial.matchXMaterial(transaction.getAuctionItem().getItem()).toWord() + "===" + transaction.getAuctionItem().getItem().getType().name() + ":" + transaction.getAuctionItem().getItem().getDurability());
+                insert.setString(11, (XMaterial.matchXMaterial(transaction.getAuctionItem().getItem()) == null) ? transaction.getAuctionItem().getDisplayName() : XMaterial.matchXMaterial(transaction.getAuctionItem().getItem()).toString() + "===" + transaction.getAuctionItem().getItem().getType().name() + ":" + transaction.getAuctionItem().getItem().getDurability());
                 insert.setString(12, ChatColor.stripColor(transaction.getAuctionItem().getDisplayName()));
                 insert.setString(13, AuctionAPI.getInstance().getMySQLLore(transaction.getAuctionItem().getItem()));
                 insert.setString(14, AuctionAPI.getInstance().getMySQLEnchantments(transaction.getAuctionItem().getItem()));
