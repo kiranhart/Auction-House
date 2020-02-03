@@ -21,11 +21,11 @@ import static org.bukkit.ChatColor.translateAlternateColorCodes;
  */
 public class HartUpdater {
 
-    private String VERSION = "1.11";
+    private String VERSION = "1.12";
 
     public HartUpdater() {
         try {
-            URL url = new URL("http://www.kiranhart.com/api/plugins/1");
+            URL url = new URL("https://api.spigotmc.org/legacy/update.php?resource=60325");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();

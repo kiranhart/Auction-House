@@ -4,7 +4,7 @@
   <groupId>com.kiranhart</groupId>
   <artifactId>AuctionHouse</artifactId>
   <name>AuctionHouse</name>
-  <version>1.11</version>
+  <version>1.12</version>
   <description>The ultimate auction house plugin</description>
   <url>https://www.kiranhart.com</url>
   <build>
@@ -55,13 +55,13 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot</artifactId>
-      <version>1.15.1-R0.1-SNAPSHOT</version>
+        <version>1.15.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.15.1-R0.1-SNAPSHOT</version>
+        <version>1.15.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>

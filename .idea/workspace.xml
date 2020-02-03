@@ -2,37 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0969fd6c-557b-481f-aa73-48fb4fa145ea" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_gson_gson_2_8_6.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_codec_commons_codec_1_13.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_bukkit_bukkit_1_15_1_R0_1_SNAPSHOT.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_json_json_20190722.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_spigotmc_spigot_1_15_1_R0_1_SNAPSHOT.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_yaml_snakeyaml_1_25.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/version/HartUpdater.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_zaxxer_HikariCP_3_4_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_zaxxer_HikariCP_3_4_2.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_bukkit_bukkit_1_14_4_R0_1_SNAPSHOT.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_bukkit_bukkit_1_14_4_R0_1_SNAPSHOT.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Auction House - Multiversion.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Auction House - Multiversion.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_bukkit_bukkit_1_15_1_R0_1_SNAPSHOT.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_spigotmc_spigot_1_15_1_R0_1_SNAPSHOT.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/AuctionHouse.iml" beforeDir="false" afterPath="$PROJECT_DIR$/AuctionHouse.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dependency-reduced-pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/dependency-reduced-pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/Core.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/Core.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/AuctionAPI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/AuctionAPI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/version/NBTEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/version/NBTEditor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/version/ServerVersion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/version/ServerVersion.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/version/XMaterial.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/version/XMaterial.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/version/XSound.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/auction/AuctionSortMethod.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/auction/Receipt.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/auction/Receipt.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/auction/Transaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/auction/Transaction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/cmds/subcommands/SellCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/cmds/subcommands/SellCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/inventory/inventories/AuctionGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/inventory/inventories/AuctionGUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/util/storage/Database.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/util/storage/Database.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/util/tasks/SaveTransactionTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/util/tasks/SaveTransactionTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/util/tasks/TickAuctionsTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/util/tasks/TickAuctionsTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/version/HartUpdater.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/kiranhart/auctionhouse/api/version/HartUpdater.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -182,6 +157,7 @@
       <workItem from="1579561325965" duration="1008000" />
       <workItem from="1579564495543" duration="91000" />
       <workItem from="1579564969544" duration="43000" />
+      <workItem from="1580693846063" duration="266000" />
     </task>
     <task id="LOCAL-00001" summary="refresh">
       <created>1565054245917</created>
@@ -317,22 +293,22 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="690" y="268" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1579288162839" />
-    <state width="1877" height="185" key="GridCell.Tab.0.bottom" timestamp="1579461606282">
+    <state width="1877" height="185" key="GridCell.Tab.0.bottom" timestamp="1580694096917">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="185" key="GridCell.Tab.0.bottom/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1579461606282" />
-    <state width="1877" height="185" key="GridCell.Tab.0.center" timestamp="1579461606282">
+    <state width="1877" height="185" key="GridCell.Tab.0.bottom/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1580694096917" />
+    <state width="1877" height="185" key="GridCell.Tab.0.center" timestamp="1580694096917">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="185" key="GridCell.Tab.0.center/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1579461606282" />
-    <state width="1877" height="185" key="GridCell.Tab.0.left" timestamp="1579461606282">
+    <state width="1877" height="185" key="GridCell.Tab.0.center/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1580694096917" />
+    <state width="1877" height="185" key="GridCell.Tab.0.left" timestamp="1580694096917">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="185" key="GridCell.Tab.0.left/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1579461606282" />
-    <state width="1877" height="185" key="GridCell.Tab.0.right" timestamp="1579461606282">
+    <state width="1877" height="185" key="GridCell.Tab.0.left/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1580694096917" />
+    <state width="1877" height="185" key="GridCell.Tab.0.right" timestamp="1580694096917">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="185" key="GridCell.Tab.0.right/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1579461606282" />
+    <state width="1877" height="185" key="GridCell.Tab.0.right/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1580694096917" />
     <state x="655" y="345" key="com.intellij.ide.util.TipDialog" timestamp="1579461879291">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
