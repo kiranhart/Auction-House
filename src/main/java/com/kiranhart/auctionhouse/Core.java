@@ -7,6 +7,7 @@ import com.kiranhart.auctionhouse.auction.AuctionItem;
 import com.kiranhart.auctionhouse.cmds.CommandManager;
 import com.kiranhart.auctionhouse.inventory.AGUI;
 import com.kiranhart.auctionhouse.listeners.AGUIListener;
+import com.kiranhart.auctionhouse.util.Metrics;
 import com.kiranhart.auctionhouse.util.economy.Economy;
 import com.kiranhart.auctionhouse.util.economy.VaultEconomy;
 import com.kiranhart.auctionhouse.util.locale.Locale;
@@ -53,6 +54,7 @@ public final class Core extends JavaPlugin {
 
     private boolean locked = false;
     private HartUpdater updater;
+    private Metrics metrics;
 
     @Override
     public void onEnable() {
@@ -146,8 +148,13 @@ public final class Core extends JavaPlugin {
         //Begin the update checker
         if (getConfig().getBoolean("update-checker")) {
             getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
-                updater = new HartUpdater();
+                updater = new HartUpdater(this, getDescription().getVersion());
             }, 0, 20 * getConfig().getInt("update-delay"));
+        }
+
+        //Start Metrics
+        if (getConfig().getBoolean("metrics")) {
+            metrics = new Metrics(this, 6806);
         }
     }
 

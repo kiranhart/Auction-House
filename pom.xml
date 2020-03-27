@@ -6,7 +6,7 @@
 
     <groupId>com.kiranhart</groupId>
     <artifactId>AuctionHouse</artifactId>
-    <version>1.12</version>
+    <version>1.12.3</version>
     <packaging>jar</packaging>
 
     <name>AuctionHouse</name>
@@ -93,12 +93,6 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>LATEST</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.6</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

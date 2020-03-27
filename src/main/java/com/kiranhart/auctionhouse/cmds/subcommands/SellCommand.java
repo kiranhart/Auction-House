@@ -14,10 +14,12 @@ import com.kiranhart.auctionhouse.cmds.SubCommand;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The current file has been created by Kiran Hart
@@ -46,16 +48,6 @@ public class SellCommand extends SubCommand {
             Core.getInstance().getLocale().getMessage(AuctionLang.LOCKED).sendPrefixedMessage(p);
             return;
         }
-
-        Core.getInstance().getConfig().getStringList("blocked-items").forEach(blockedItem -> {
-            String[] item = blockedItem.split(":");
-            if (AuctionAPI.getInstance().getItemInHand(p) != null || AuctionAPI.getInstance().getItemInHand(p).getType() != XMaterial.AIR.parseMaterial()) {
-                if (AuctionAPI.getInstance().getItemInHand(p).getType() == XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).get().parseMaterial()) {
-                    Core.getInstance().getLocale().getMessage(AuctionLang.BLOCKED_ITEM).processPlaceholder("item", AuctionAPI.getInstance().getItemInHand(p).getType().name()).sendPrefixedMessage(p);
-                    return;
-                }
-            }
-        });
 
         int timeLimit;
         List<Integer> times = new ArrayList<>();
@@ -106,9 +98,14 @@ public class SellCommand extends SubCommand {
                         return;
                     }
 
+
                     AuctionItem auctionItem = new AuctionItem(p.getUniqueId(), AuctionAPI.getInstance().getItemInHand(p), timeLimit, buyNow, 0, buyNow);
                     AuctionStartEvent auctionStartEvent = new AuctionStartEvent(auctionItem);
                     Core.getInstance().getServer().getPluginManager().callEvent(auctionStartEvent);
+
+                    if (checkBlockedItem(p)) {
+                        auctionStartEvent.setCancelled(true);
+                    }
 
                     if (!auctionStartEvent.isCancelled()) {
                         Core.getInstance().getAuctionItems().add(0, auctionItem);
@@ -117,29 +114,6 @@ public class SellCommand extends SubCommand {
                         AuctionAPI.getInstance().setItemInHand(p, null);
                         p.updateInventory();
 
-                        //Discord Hook //TODO FINISH DISCORD WEB HOOK
-//                        if (Core.getInstance().getConfig().getBoolean("discord.enabled")) {
-
-                            //Discord Hook
-//                            if (Core.getInstance().getConfig().getBoolean("discord.enabled")) {
-//                                DiscordHook discordHook = new DiscordHook(Core.getInstance().getConfig().getString("discord.webhook"));
-//
-//
-//                                List<FieldEmbed> embeds = new ArrayList<>();
-//                                for (String s : Core.getInstance().getConfig().getConfigurationSection("discord.add").getKeys(false)) {
-//                                    embeds.add(new DiscordMessageWrapper("discord.add." + s, auctionItem).getFieldEmbed());
-//                                }
-//
-//                                DiscordEmbed de = DiscordEmbed.builder()
-//                                        .title(Core.getInstance().getConfig().getString("discord.title"))
-//                                        .color(1)
-//                                        .fields(embeds)
-//                                        .build();
-//
-//                                DiscordMessage dm = DiscordMessage.builder().username(Core.getInstance().getConfig().getString("discord.username")).content("").avatarUrl(Core.getInstance().getConfig().getString("discord.profilepicture")).embeds(Arrays.asList(de)).build();
-//                                discordHook.send(dm);
-//                            }
-//                        }
                     }
                 }
             } else {
@@ -210,34 +184,13 @@ public class SellCommand extends SubCommand {
                     AuctionStartEvent auctionStartEvent = new AuctionStartEvent(auctionItem);
                     Core.getInstance().getServer().getPluginManager().callEvent(auctionStartEvent);
 
+                    if (checkBlockedItem(p)) {
+                        auctionStartEvent.setCancelled(true);
+                    }
+
                     if (!auctionStartEvent.isCancelled()) {
                         Core.getInstance().getAuctionItems().add(0, auctionItem);
                         Core.getInstance().getLocale().getMessage(AuctionLang.AUCTION_LISTED_WITH_BID).processPlaceholder("itemname", auctionItem.getDisplayName()).processPlaceholder("price", AuctionAPI.getInstance().getFriendlyNumber(buyNow)).sendPrefixedMessage(p);
-
-                        //Discord Hook //TODO FINISH BID DISCORD HOOK
-//                        if (Core.getInstance().getConfig().getBoolean("discord.enabled")) {
-//
-//                            //Discord Hook
-//                            if (Core.getInstance().getConfig().getBoolean("discord.enabled")) {
-//                                DiscordHook discordHook = new DiscordHook(Core.getInstance().getConfig().getString("discord.webhook"));
-//
-//
-//                                List<FieldEmbed> embeds = new ArrayList<>();
-//                                for (String s : Core.getInstance().getConfig().getConfigurationSection("discord.add").getKeys(false)) {
-//                                    embeds.add(new DiscordMessageWrapper("discord.add." + s, auctionItem).getFieldEmbed());
-//                                }
-//
-//                                DiscordEmbed de = DiscordEmbed.builder()
-//                                        .title(Core.getInstance().getConfig().getString("discord.title"))
-//                                        .color(1)
-//                                        .fields(embeds)
-//                                        .build();
-//
-//                                DiscordMessage dm = DiscordMessage.builder().username(Core.getInstance().getConfig().getString("discord.username")).content("").avatarUrl(Core.getInstance().getConfig().getString("discord.profilepicture")).embeds(Arrays.asList(de)).build();
-//                                discordHook.send(dm);
-//                            }
-//                        }
-
                         AuctionAPI.getInstance().setItemInHand(p, null);
                     }
                 } else {
@@ -245,6 +198,21 @@ public class SellCommand extends SubCommand {
                 }
             }
         }
+    }
+
+
+    private boolean checkBlockedItem(Player p) {
+        AtomicBoolean isBlocked = new AtomicBoolean(false);
+        Core.getInstance().getConfig().getStringList("blocked-items").forEach(blockedItem -> {
+            if (AuctionAPI.getInstance().getItemInHand(p) != null || AuctionAPI.getInstance().getItemInHand(p).getType() != XMaterial.AIR.parseMaterial()) {
+                ItemStack blocked = XMaterial.matchXMaterial(blockedItem).get().parseItem();
+                if (AuctionAPI.getInstance().getItemInHand(p).getType() == blocked.getType() && AuctionAPI.getInstance().getItemInHand(p).getDurability() == blocked.getDurability()) {
+                    Core.getInstance().getLocale().getMessage(AuctionLang.BLOCKED_ITEM).processPlaceholder("item", AuctionAPI.getInstance().getItemInHand(p).getType().name()).sendPrefixedMessage(p);
+                    isBlocked.set(true);
+                }
+            }
+        });
+        return isBlocked.get();
     }
 
     @Override

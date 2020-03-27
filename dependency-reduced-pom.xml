@@ -4,7 +4,7 @@
   <groupId>com.kiranhart</groupId>
   <artifactId>AuctionHouse</artifactId>
   <name>AuctionHouse</name>
-  <version>1.12</version>
+  <version>1.12.3</version>
   <description>The ultimate auction house plugin</description>
   <url>https://www.kiranhart.com</url>
   <build>
@@ -63,20 +63,24 @@
       <artifactId>bukkit</artifactId>
         <version>1.15.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>commons-lang</artifactId>
-          <groupId>commons-lang</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>guava</artifactId>
-          <groupId>com.google.guava</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>snakeyaml</artifactId>
-          <groupId>org.yaml</groupId>
-        </exclusion>
-      </exclusions>
+        <exclusions>
+            <exclusion>
+                <artifactId>commons-lang</artifactId>
+                <groupId>commons-lang</groupId>
+            </exclusion>
+            <exclusion>
+                <artifactId>guava</artifactId>
+                <groupId>com.google.guava</groupId>
+            </exclusion>
+            <exclusion>
+                <artifactId>gson</artifactId>
+                <groupId>com.google.code.gson</groupId>
+            </exclusion>
+            <exclusion>
+                <artifactId>snakeyaml</artifactId>
+                <groupId>org.yaml</groupId>
+            </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
       <groupId>com.github.MilkBowl</groupId>

@@ -2,9 +2,10 @@ lang: "en_US"
 debugger: true
 update-checker: false #this is a new feature, disable if it causes issues
 update-delay: 60 #in seconds
+metrics: true
 
 settings:
-  default-auction-time: 900
+  default-auction-time: 900600
   max-auction-price: 1000000
   max-auction-start: 1000000
   max-auction-increment: 1000000
