@@ -93,7 +93,10 @@ public class TickAuctionsTask extends BukkitRunnable {
 
                                         //Perform the transaction
                                         Transaction transaction = new Transaction(Transaction.TransactionType.AUCTION_WON, auctionItem, highestBidder.getPlayer().getUniqueId(), System.currentTimeMillis());
-                                        transaction.saveTransaction();
+                                        if (AuctionSettings.SAVE_TRANSACTIONS) {
+                                            transaction.saveTransaction();
+                                        }
+
                                         Core.getInstance().getPm().callEvent(new TransactionCompleteEvent(transaction));
                                     } else {
                                         //Doesn't have enough money
@@ -116,7 +119,10 @@ public class TickAuctionsTask extends BukkitRunnable {
 
                                         //Perform the transaction
                                         Transaction transaction = new Transaction(Transaction.TransactionType.AUCTION_WON, auctionItem, auctionItem.getHighestBidder(), System.currentTimeMillis());
-                                        transaction.saveTransaction();
+                                        if (AuctionSettings.SAVE_TRANSACTIONS) {
+                                            transaction.saveTransaction();
+                                        }
+
                                         Core.getInstance().getPm().callEvent(new TransactionCompleteEvent(transaction));
                                     } else {
                                         //Doesn't have enough money

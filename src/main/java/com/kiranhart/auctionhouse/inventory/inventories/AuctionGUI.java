@@ -37,7 +37,6 @@ public class AuctionGUI implements AGUI {
 
     public AuctionGUI(Player p) {
         this.p = p;
-        chunks = Lists.partition(Core.getInstance().getAuctionItems(), 45);
     }
 
     private int page = 1;
@@ -106,22 +105,62 @@ public class AuctionGUI implements AGUI {
             AuctionItem possibleAuctionItem = null;
 
             /*
-            Perform the proper steps if the user left-clicks (using bid system)
+            Perform the proper steps if the user left clicks (Without the bid system)
              */
-            if (e.getClick() == ClickType.LEFT && AuctionSettings.USE_BIDDING_SYSTEM) {
+            if (e.getClick() == ClickType.LEFT) {
+                if (!AuctionSettings.USE_BIDDING_SYSTEM) {
+                    //Get the key of the auction item
+                    String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
+                    for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
+                        if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
+                    }
 
-                //Get the key of the auction item
-                String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
-                for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
-                    if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
-                }
+                    if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getBuyNowPrice())) {
+                        //Check if the person who clicked is the owner
+                        if (possibleAuctionItem.getOwner().equals(p.getUniqueId())) {
+                            if (AuctionSettings.OWNER_CAN_PURCHASE_OWN) {
+                                p.closeInventory();
+                                p.openInventory(new ConfirmationGUI(possibleAuctionItem).getInventory());
+                            } else {
+                                Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BUY_OWN).sendPrefixedMessage(p);
+                            }
+                        } else {
+                            p.closeInventory();
+                            p.openInventory(new ConfirmationGUI(possibleAuctionItem).getInventory());
+                        }
+                    } else {
+                        //Not enough money to purchase
+                        p.closeInventory();
+                        p.openInventory(new AuctionGUI(p).getInventory());
+                    }
+                } else {
+                    //Get the key of the auction item
+                    String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
+                    for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
+                        if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
+                    }
 
-                //Check if player has enough money to bid
-                if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getCurrentPrice() + possibleAuctionItem.getBidIncrement())) {
-                    //Check if the person who clicked is the owner
-                    if (possibleAuctionItem.getOwner().equals(p.getUniqueId())) {
-                        //can the owner bid on their own item?
-                        if (AuctionSettings.OWNER_CAN_BID_ON_OWN) {
+                    //Check if player has enough money to bid
+                    if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getCurrentPrice() + possibleAuctionItem.getBidIncrement())) {
+                        //Check if the person who clicked is the owner
+                        if (possibleAuctionItem.getOwner().equals(p.getUniqueId())) {
+                            //can the owner bid on their own item?
+                            if (AuctionSettings.OWNER_CAN_BID_ON_OWN) {
+                                //Update the price
+                                possibleAuctionItem.setCurrentPrice(possibleAuctionItem.getCurrentPrice() + possibleAuctionItem.getBidIncrement());
+                                //Alert the previous bidder someone has a higher bid than them
+                                if (!possibleAuctionItem.getHighestBidder().equals(p.getUniqueId())) {
+                                    Core.getInstance().getLocale().getMessage(AuctionLang.OUT_BIDDED).processPlaceholder("player", p.getName()).sendPrefixedMessage(Bukkit.getOfflinePlayer(possibleAuctionItem.getHighestBidder()).getPlayer());
+                                }
+                                //Set the highest bidder
+                                possibleAuctionItem.setHighestBidder(p.getUniqueId());
+                                p.openInventory(new AuctionGUI(p).getInventory());
+                            } else {
+                                //Owner cannot bid on own item.
+                                Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BID_ON_OWN).sendPrefixedMessage(p);
+                            }
+                        } else {
+                            //Clicked user is not the original owner
                             //Update the price
                             possibleAuctionItem.setCurrentPrice(possibleAuctionItem.getCurrentPrice() + possibleAuctionItem.getBidIncrement());
                             //Alert the previous bidder someone has a higher bid than them
@@ -130,119 +169,64 @@ public class AuctionGUI implements AGUI {
                             }
                             //Set the highest bidder
                             possibleAuctionItem.setHighestBidder(p.getUniqueId());
-                        } else {
-                            //Owner cannot bid on own item.
-                            Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BID_ON_OWN).sendPrefixedMessage(p);
+                            p.openInventory(new AuctionGUI(p).getInventory());
                         }
+
+                        //Increase time on bid?
+                        if (AuctionSettings.INCREASE_AUCTION_TIME_ON_BID) {
+                            possibleAuctionItem.setTime(possibleAuctionItem.getTime() + AuctionSettings.TIME_TO_INCREASE_BY_BID);
+                        }
+
                     } else {
-                        //Clicked user is not the original owner
-                        //Update the price
-                        possibleAuctionItem.setCurrentPrice(possibleAuctionItem.getCurrentPrice() + possibleAuctionItem.getBidIncrement());
-                        //Alert the previous bidder someone has a higher bid than them
-                        if (!possibleAuctionItem.getHighestBidder().equals(p.getUniqueId())) {
-                            Core.getInstance().getLocale().getMessage(AuctionLang.OUT_BIDDED).processPlaceholder("player", p.getName()).sendPrefixedMessage(Bukkit.getOfflinePlayer(possibleAuctionItem.getHighestBidder()).getPlayer());
-                        }
-                        //Set the highest bidder
-                        possibleAuctionItem.setHighestBidder(p.getUniqueId());
+                        //Not enough money to bid
+                        p.closeInventory();
+                        p.openInventory(new AuctionGUI(p).getInventory());
+                    }
+                }
+            } else if (e.getClick() == ClickType.RIGHT) {
+                if (AuctionSettings.USE_BIDDING_SYSTEM) {
+                    //Get the key of the auction item
+                    String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
+                    for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
+                        if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
                     }
 
-                    //Increase time on bid?
-                    if (AuctionSettings.INCREASE_AUCTION_TIME_ON_BID) {
-                        possibleAuctionItem.setTime(possibleAuctionItem.getTime() + AuctionSettings.TIME_TO_INCREASE_BY_BID);
-                    }
+                    if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getBuyNowPrice())) {
 
-                } else {
-                    //Not enough money to bid
-                    p.closeInventory();
-                    p.openInventory(new AuctionGUI(p).getInventory());
-                }
-
-                return;
-            }
-
-            /*
-            Perform the proper steps if the user right-clicks (using bid system)
-             */
-            if (e.getClick() == ClickType.RIGHT && AuctionSettings.USE_BIDDING_SYSTEM) {
-
-                //Get the key of the auction item
-                String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
-                for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
-                    if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
-                }
-
-                if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getBuyNowPrice())) {
-
-                    //Check if the person who clicked is the owner
-                    if (possibleAuctionItem.getOwner().equals(p.getUniqueId())) {
-                        if (AuctionSettings.OWNER_CAN_PURCHASE_OWN) {
+                        //Check if the person who clicked is the owner
+                        if (possibleAuctionItem.getOwner().equals(p.getUniqueId())) {
+                            if (AuctionSettings.OWNER_CAN_PURCHASE_OWN) {
+                                p.closeInventory();
+                                p.openInventory(new ConfirmationGUI(possibleAuctionItem).getInventory());
+                            } else {
+                                Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BUY_OWN).sendPrefixedMessage(p);
+                            }
+                        } else {
                             p.closeInventory();
                             p.openInventory(new ConfirmationGUI(possibleAuctionItem).getInventory());
-                        } else {
-                            Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BUY_OWN).sendPrefixedMessage(p);
                         }
                     } else {
+                        //Not enough money to purchase
                         p.closeInventory();
-                        p.openInventory(new ConfirmationGUI(possibleAuctionItem).getInventory());
+                        p.openInventory(new AuctionGUI(p).getInventory());
                     }
-                } else {
-                    //Not enough money to purchase
-                    p.closeInventory();
-                    p.openInventory(new AuctionGUI(p).getInventory());
                 }
-                return;
-            }
+            } else if (e.getClick() == ClickType.MIDDLE) {
+                if (p.hasPermission(AuctionPermissions.ADMIN) || p.isOp()) {
+                    //Get the key of the auction item
+                    String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
+                    for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
+                        if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
+                    }
 
-            /*
-            Perform the proper steps if the user left clicks (Without the bid system)
-             */
-            if (e.getClick() == ClickType.LEFT && !AuctionSettings.USE_BIDDING_SYSTEM) {
-
-                //Get the key of the auction item
-                String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
-                for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
-                    if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
-                }
-
-                if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getBuyNowPrice())) {
-                    //Check if the person who clicked is the owner
-                    if (possibleAuctionItem.getOwner().equals(p.getUniqueId())) {
-                        if (AuctionSettings.OWNER_CAN_PURCHASE_OWN) {
-                            p.closeInventory();
-                            p.openInventory(new ConfirmationGUI(possibleAuctionItem).getInventory());
-                        } else {
-                            Core.getInstance().getLocale().getMessage(AuctionLang.CANT_BUY_OWN).sendPrefixedMessage(p);
-                        }
+                    if (AuctionAPI.getInstance().availableSlots(p.getInventory()) == 0) {
+                        p.getWorld().dropItem(p.getLocation(), possibleAuctionItem.getItem());
                     } else {
-                        p.closeInventory();
-                        p.openInventory(new ConfirmationGUI(possibleAuctionItem).getInventory());
+                        p.getInventory().addItem(possibleAuctionItem.getItem());
                     }
-                } else {
-                    //Not enough money to purchase
-                    p.closeInventory();
-                    p.openInventory(new AuctionGUI(p).getInventory());
+
+                    Core.getInstance().getAuctionItems().remove(possibleAuctionItem);
                 }
-
-                return;
-            }
-
-            /*
-            Admin remove item from auction house
-             */
-            if (e.getClick() == ClickType.MIDDLE && p.hasPermission(AuctionPermissions.ADMIN) || p.isOp()) {
-                //Get the key of the auction item
-                String auctionItemKey = NBTEditor.getString(clicked, "AuctionItemKey");
-                for (AuctionItem auctionItem : Core.getInstance().getAuctionItems()) {
-                    if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
-                }
-
-                if (AuctionAPI.getInstance().availableSlots(p.getInventory()) == 0) {
-                    p.getWorld().dropItem(p.getLocation(), possibleAuctionItem.getItem());
-                } else {
-                    p.getInventory().addItem(possibleAuctionItem.getItem());
-                }
-
-                Core.getInstance().getAuctionItems().remove(possibleAuctionItem);
             }
         }
     }
@@ -251,20 +235,25 @@ public class AuctionGUI implements AGUI {
     public Inventory getInventory() {
         Inventory inventory = Bukkit.createInventory(this, 54, ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("guis.auctionhouse.title")));
 
-        inventory.setItem(45, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.yourauctions", new AuctionPlayer(p).getTotalActiveAuctions(), 0));
-        inventory.setItem(46, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.collectionbin", 0, new AuctionPlayer(p).getTotalExpiredAuctions()));
-        inventory.setItem(48, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.previouspage", 0, 0));
-        inventory.setItem(49, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.refresh", 0, 0));
-        inventory.setItem(50, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.nextpage", 0, 0));
-        inventory.setItem(51, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.transactions", 0, 0));
-        inventory.setItem(52, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.howtosell", 0, 0));
-        inventory.setItem(53, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.guide", 0, 0));
+        Bukkit.getServer().getScheduler().runTaskAsynchronously(Core.getInstance(), () -> {
+            chunks = Lists.partition(Core.getInstance().getAuctionItems(), 45);
 
-        //Pagination
-        if (chunks.size() != 0) {
-            List<AuctionItem> sorted = chunks.get(getPage() - 1);
-            chunks.get(getPage() - 1).forEach(item -> inventory.setItem(inventory.firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
-        }
+            //Pagination
+            if (chunks.size() != 0) {
+                List<AuctionItem> sorted = chunks.get(getPage() - 1);
+                chunks.get(getPage() - 1).forEach(item -> inventory.setItem(inventory.firstEmpty(), item.getAuctionStack(AuctionItem.AuctionItemType.MAIN)));
+            }
+
+            inventory.setItem(45, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.yourauctions", new AuctionPlayer(p).getTotalActiveAuctions(), 0));
+            inventory.setItem(46, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.collectionbin", 0, new AuctionPlayer(p).getTotalExpiredAuctions()));
+            inventory.setItem(48, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.previouspage", 0, 0));
+            inventory.setItem(49, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.refresh", 0, 0));
+            inventory.setItem(50, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.nextpage", 0, 0));
+            inventory.setItem(51, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.transactions", 0, 0));
+            inventory.setItem(52, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.howtosell", 0, 0));
+            inventory.setItem(53, AuctionAPI.getInstance().createConfigurationItem("guis.auctionhouse.items.guide", 0, 0));
+        });
+
         return inventory;
     }
 

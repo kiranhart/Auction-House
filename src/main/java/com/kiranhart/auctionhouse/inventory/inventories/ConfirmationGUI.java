@@ -11,6 +11,7 @@ import com.kiranhart.auctionhouse.Core;
 import com.kiranhart.auctionhouse.api.AuctionAPI;
 import com.kiranhart.auctionhouse.api.events.TransactionCompleteEvent;
 import com.kiranhart.auctionhouse.api.statics.AuctionLang;
+import com.kiranhart.auctionhouse.api.statics.AuctionSettings;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
 import com.kiranhart.auctionhouse.auction.Transaction;
 import com.kiranhart.auctionhouse.inventory.AGUI;
@@ -75,7 +76,11 @@ public class ConfirmationGUI implements AGUI {
 
                     //Perform the transaction
                     Transaction transaction = new Transaction(Transaction.TransactionType.BOUGHT, auctionItem, p.getUniqueId(), System.currentTimeMillis());
-                    transaction.saveTransaction();
+
+                    if (AuctionSettings.SAVE_TRANSACTIONS) {
+                        transaction.saveTransaction();
+                    }
+
                     auctionItem.setTime(0);
                     Core.getInstance().getAuctionItems().remove(auctionItem);
                     p.closeInventory();

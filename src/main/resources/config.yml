@@ -22,6 +22,7 @@ settings:
   decrease-seconds-by-tick: 5
   update-every-tick: 5
   auto-save-every: 1800
+  save-transactions: true
 
 help-msg:
 - "&6======== &eAuction House&6 ========"

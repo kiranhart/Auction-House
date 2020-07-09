@@ -12,7 +12,6 @@ import com.kiranhart.auctionhouse.api.version.NBTEditor;
 import com.kiranhart.auctionhouse.api.version.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -43,8 +42,7 @@ public class Receipt {
     }
 
     public ItemStack getReceipt() {
-        String[] item = Core.getInstance().getConfig().getString("receipt.item").split(":");
-        ItemStack stack = XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).get().parseItem();
+        ItemStack stack = XMaterial.matchXMaterial(Core.getInstance().getConfig().getString("receipt.item")).get().parseItem();
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("receipt.name")));
         List<String> lore = Core.getInstance().getConfig().getStringList("receipt.lore").stream().map(node -> ChatColor.translateAlternateColorCodes('&', node.replace("{time}", time).replace("{date}", date).replace("{price}", NumberFormat.getInstance().format(total)).replace("{seller}", Bukkit.getOfflinePlayer(seller).getName()))).collect(Collectors.toList());

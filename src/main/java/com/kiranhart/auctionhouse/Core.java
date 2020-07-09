@@ -25,8 +25,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public final class Core extends JavaPlugin {
@@ -43,7 +43,7 @@ public final class Core extends JavaPlugin {
     private Economy economy;
     private Locale locale;
 
-    private ArrayList<AuctionItem> auctionItems;
+    private LinkedList<AuctionItem> auctionItems;
     private Map<Player, Integer> currentAuctionPage;
 
     private ConfigWrapper transactions;
@@ -102,7 +102,7 @@ public final class Core extends JavaPlugin {
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Loading Settings"));
         auctionSettings = new AuctionSettings();
-        auctionItems = new ArrayList<>();
+        auctionItems = new LinkedList<>();
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Setting up command system"));
         commandManager = new CommandManager();
@@ -216,7 +216,7 @@ public final class Core extends JavaPlugin {
         return auctionSettings;
     }
 
-    public ArrayList<AuctionItem> getAuctionItems() {
+    public LinkedList<AuctionItem> getAuctionItems() {
         return auctionItems;
     }
 

@@ -10,6 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,12 +68,17 @@ public class CommandManager implements CommandExecutor {
             if (args.length == 0) {
                 if (sender instanceof Player) {
                     Player p = (Player) sender;
-                    p.openInventory(new AuctionGUI(p).getInventory());
+
                     if (Core.getInstance().getCurrentAuctionPage().containsKey(p)) {
                         Core.getInstance().getCurrentAuctionPage().remove(p);
                     }
 
                     Core.getInstance().getCurrentAuctionPage().put(p, 1);
+
+                    Inventory inventory = new AuctionGUI(p).getInventory();
+
+                    p.openInventory(inventory);
+
                 }
                 return true;
             }

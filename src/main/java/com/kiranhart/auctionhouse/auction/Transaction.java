@@ -95,8 +95,7 @@ public class Transaction {
     }
 
     private static ItemStack getTransactionItem(String node) {
-        String[] stack = Core.getInstance().getConfig().getString("transaction.item").split(":");
-        ItemStack item = XMaterial.matchXMaterial(stack[0].toUpperCase(), Byte.parseByte(stack[1])).get().parseItem();
+        ItemStack item = XMaterial.matchXMaterial(Core.getInstance().getConfig().getString("transaction.item")).get().parseItem();
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("transaction.name").replace("{transaction_id}", Core.getInstance().getTransactions().getConfig().getString("transactions." + node + ".auction-id"))));
         List<String> lore = new ArrayList<>();

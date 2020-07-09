@@ -160,8 +160,7 @@ public class AuctionAPI {
      * but does not have enough money to bid or purchase it.
      */
     public ItemStack createNotEnoughMoneyIcon() {
-        String[] item = Core.getInstance().getConfig().getString("guis.auctionhouse.items.not-enough-money.item").split(":");
-        ItemStack stack = XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).get().parseItem();
+        ItemStack stack = XMaterial.matchXMaterial(Core.getInstance().getConfig().getString("guis.auctionhouse.items.not-enough-money.item")).get().parseItem();
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString("guis.auctionhouse.items.not-enough-money.name")));
         List<String> lore = new ArrayList<>();
@@ -178,8 +177,7 @@ public class AuctionAPI {
      * @return the generated configuration item based on params
      */
     public ItemStack createConfigurationItem(String node, int activeAuctions, int expiredAuctions) {
-        String[] item = Core.getInstance().getConfig().getString(node + ".item").split(":");
-        ItemStack stack = XMaterial.matchXMaterial(item[0].toUpperCase(), Byte.parseByte(item[1])).get().parseItem();
+        ItemStack stack = XMaterial.matchXMaterial(Core.getInstance().getConfig().getString(node + ".item")).get().parseItem();
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString(node + ".name")));
         List<String> lore = new ArrayList<>();
@@ -199,8 +197,7 @@ public class AuctionAPI {
      * @return
      */
     public ItemStack createTransactionConfigItem(String node, String buyer, String seller, int startPrice, int bidincrement, int buynowprice) {
-        String[] rawItem = Core.getInstance().getConfig().getString(node + ".item").split(":");
-        ItemStack stack = XMaterial.matchXMaterial(rawItem[0].toUpperCase(), Byte.parseByte(rawItem[1])).get().parseItem();
+        ItemStack stack = XMaterial.matchXMaterial(Core.getInstance().getConfig().getString(node + ".item")).get().parseItem();
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Core.getInstance().getConfig().getString(node + ".name")));
         List<String> lore = new ArrayList<>();
