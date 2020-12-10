@@ -115,7 +115,7 @@ public class AuctionGUI implements AGUI {
                         if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
                     }
 
-                    if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getBuyNowPrice())) {
+                    if (Core.getInstance().getEconomy().has(p, possibleAuctionItem.getBuyNowPrice())) {
                         //Check if the person who clicked is the owner
                         if (possibleAuctionItem.getOwner().equals(p.getUniqueId())) {
                             if (AuctionSettings.OWNER_CAN_PURCHASE_OWN) {
@@ -141,7 +141,7 @@ public class AuctionGUI implements AGUI {
                     }
 
                     //Check if player has enough money to bid
-                    if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getCurrentPrice() + possibleAuctionItem.getBidIncrement())) {
+                    if (Core.getInstance().getEconomy().has(p, possibleAuctionItem.getCurrentPrice() + possibleAuctionItem.getBidIncrement())) {
                         //Check if the person who clicked is the owner
                         if (possibleAuctionItem.getOwner().equals(p.getUniqueId())) {
                             //can the owner bid on their own item?
@@ -191,7 +191,7 @@ public class AuctionGUI implements AGUI {
                         if (auctionItem.getKey().equalsIgnoreCase(auctionItemKey)) possibleAuctionItem = auctionItem;
                     }
 
-                    if (Core.getInstance().getEconomy().hasBalance(p, possibleAuctionItem.getBuyNowPrice())) {
+                    if (Core.getInstance().getEconomy().has(p, possibleAuctionItem.getBuyNowPrice())) {
 
                         //Check if the person who clicked is the owner
                         if (possibleAuctionItem.getOwner().equals(p.getUniqueId())) {

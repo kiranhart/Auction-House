@@ -27,6 +27,7 @@ public class AuctionSettings {
     public static boolean INCREASE_AUCTION_TIME_ON_BID = true;
     public static boolean USE_SHORT_NUMBERS_ON_ITEMS = false;
     public static boolean SAVE_TRANSACTIONS = true;
+    public static boolean ALERT_PLAYERS_ON_ITEM_LIST = false;
 
     public static int TIME_TO_INCREASE_BY_BID = 10;
     public static int DECREASE_SECONDS_BY_TICK = 5;
@@ -61,6 +62,7 @@ public class AuctionSettings {
         UPDATE_EVERY_TICK = Core.getInstance().getConfig().getInt("settings.update-every-tick");
         AUTO_SAVE_EVERY = Core.getInstance().getConfig().getInt("settings.auto-save-every");
         SAVE_TRANSACTIONS = Core.getInstance().getConfig().getBoolean("settings.save-transactions");
+        ALERT_PLAYERS_ON_ITEM_LIST = Core.getInstance().getConfig().getBoolean("settings.alert-players-on-item-list");
 
         DB_ENABLED = Core.getInstance().getConfig().getBoolean("database.enabled");
         //  ATTEMPT_TO_CREATE_DB_TABLES_ON_START = Core.getInstance().getConfig().getBoolean("database.attempt-table-creation-on-start");

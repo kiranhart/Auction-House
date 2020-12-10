@@ -76,11 +76,11 @@ public class TickAuctionsTask extends BukkitRunnable {
                                 if (highestBidder.isOnline()) {
                                     //Highest bidder is currently online
                                     //Check the balance (has enough money)
-                                    if (Core.getInstance().getEconomy().hasBalance(highestBidder, auctionItem.getCurrentPrice())) {
+                                    if (Core.getInstance().getEconomy().has(highestBidder, auctionItem.getCurrentPrice())) {
                                         //Withdraw the money
-                                        Core.getInstance().getEconomy().withdrawBalance(highestBidder, auctionItem.getCurrentPrice());
+                                        Core.getInstance().getEconomy().withdrawPlayer(highestBidder, auctionItem.getCurrentPrice());
                                         //Give money the owner
-                                        Core.getInstance().getEconomy().deposit(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionItem.getCurrentPrice());
+                                        Core.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionItem.getCurrentPrice());
                                         //TODO Send money removal / addition messages
 
                                         //Check if player has available slots
@@ -110,12 +110,12 @@ public class TickAuctionsTask extends BukkitRunnable {
                                     Core.getInstance().getAuctionItems().remove(auctionItem);
                                 } else {
                                     //Highest bidder is currently offline
-                                    if (Core.getInstance().getEconomy().hasBalance(highestBidder, auctionItem.getCurrentPrice())) {
+                                    if (Core.getInstance().getEconomy().has(highestBidder, auctionItem.getCurrentPrice())) {
                                         //Has enough money
                                         Core.getInstance().getData().getConfig().set("expired." + auctionItem.getHighestBidder().toString() + "." + auctionItem.getKey() + ".item", auctionItem.getItem());
                                         Core.getInstance().getData().getConfig().set("expired." + auctionItem.getHighestBidder().toString() + "." + auctionItem.getKey() + ".display", AuctionAPI.getInstance().expiredAuctionItem(auctionItem));
-                                        Core.getInstance().getEconomy().withdrawBalance(highestBidder, auctionItem.getCurrentPrice());
-                                        Core.getInstance().getEconomy().deposit(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionItem.getCurrentPrice());
+                                        Core.getInstance().getEconomy().withdrawPlayer(highestBidder, auctionItem.getCurrentPrice());
+                                        Core.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionItem.getCurrentPrice());
 
                                         //Perform the transaction
                                         Transaction transaction = new Transaction(Transaction.TransactionType.AUCTION_WON, auctionItem, auctionItem.getHighestBidder(), System.currentTimeMillis());

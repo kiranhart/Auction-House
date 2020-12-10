@@ -11,6 +11,7 @@ import com.kiranhart.auctionhouse.api.version.XMaterial;
 import com.kiranhart.auctionhouse.auction.AuctionItem;
 import com.kiranhart.auctionhouse.auction.AuctionPlayer;
 import com.kiranhart.auctionhouse.cmds.SubCommand;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -110,6 +111,10 @@ public class SellCommand extends SubCommand {
                     if (!auctionStartEvent.isCancelled()) {
                         Core.getInstance().getAuctionItems().add(0, auctionItem);
                         Core.getInstance().getLocale().getMessage(AuctionLang.AUCTION_LISTED).processPlaceholder("itemname", auctionItem.getDisplayName()).processPlaceholder("price", AuctionAPI.getInstance().getFriendlyNumber(buyNow)).sendPrefixedMessage(p);
+                        // Alert players
+                        if (AuctionSettings.ALERT_PLAYERS_ON_ITEM_LIST) {
+                            Bukkit.getOnlinePlayers().forEach(allPlayers -> Core.getInstance().getLocale().getMessage(AuctionLang.AUCTION_ITEM_LIST_ALERT).processPlaceholder("amt", auctionItem.getItem().getAmount()).processPlaceholder("player", p.getName()).processPlaceholder("itemname", auctionItem.getDisplayName()).processPlaceholder("price_buy", AuctionAPI.getInstance().getFriendlyNumber(buyNow)).sendPrefixedMessage(allPlayers));
+                        }
 
                         AuctionAPI.getInstance().setItemInHand(p, null);
                         p.updateInventory();
@@ -191,6 +196,19 @@ public class SellCommand extends SubCommand {
                     if (!auctionStartEvent.isCancelled()) {
                         Core.getInstance().getAuctionItems().add(0, auctionItem);
                         Core.getInstance().getLocale().getMessage(AuctionLang.AUCTION_LISTED_WITH_BID).processPlaceholder("itemname", auctionItem.getDisplayName()).processPlaceholder("price", AuctionAPI.getInstance().getFriendlyNumber(buyNow)).sendPrefixedMessage(p);
+
+                        // Alert players
+                        if (AuctionSettings.ALERT_PLAYERS_ON_ITEM_LIST) {
+                            Bukkit.getOnlinePlayers().forEach(allPlayers -> Core.getInstance().getLocale().getMessage(AuctionLang.AUCTION_ITEM_LIST_ALERT)
+                                    .processPlaceholder("player", p.getName())
+                                    .processPlaceholder("itemname", auctionItem.getDisplayName())
+                                    .processPlaceholder("amt", auctionItem.getItem().getAmount())
+                                    .processPlaceholder("price_buy", AuctionAPI.getInstance().getFriendlyNumber(buyNow))
+                                    .processPlaceholder("price_increment", AuctionAPI.getInstance().getFriendlyNumber(increment))
+                                    .processPlaceholder("price_start", AuctionAPI.getInstance().getFriendlyNumber(startPrice))
+                                    .sendPrefixedMessage(allPlayers));
+                        }
+
                         AuctionAPI.getInstance().setItemInHand(p, null);
                     }
                 } else {

@@ -33,6 +33,15 @@ auction.max = "&cYou cannot auction more items, please upgrade to do so."
 auction.buy = "&eYou purchased &6%itemname% &Efor &A$%price%"
 auction.sold = "&6%player% &Ehas bought your listed item: &6%itemname% &efor &a$%price%"
 
+# itemlistalert variables
+# player ===            the name of the player who placed the item for sale
+# itemname ===          the name of the item
+# price_buy ===         the price for the buy now value or when not using the bidding system
+# price_increment ===   the price / value increment when using the bidding system
+# price_start ===       the starting bid price when using the bidding system
+# amt ===               the amount of the item
+auction.itemlistalert = "&b%player%&e has placed &fx&6%amt% &d%itemname% &efor&a $%price_buy%"
+
 #Command Messages
 cmd.invalid = "&cThat isn't a valid subcommand!"
 cmd.sell.withbid = "&e/ah sell <buyNowPrice> <startPrice> <bidIncrement>"

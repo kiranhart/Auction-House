@@ -4,7 +4,7 @@
   <groupId>com.kiranhart</groupId>
   <artifactId>AuctionHouse</artifactId>
   <name>AuctionHouse</name>
-  <version>1.12.6</version>
+  <version>1.12.7</version>
   <description>The ultimate auction house plugin</description>
   <url>https://www.kiranhart.com</url>
   <build>
@@ -51,26 +51,26 @@
       <url>https://jitpack.io</url>
     </repository>
   </repositories>
-  <dependencies>
-    <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot</artifactId>
-        <version>1.16.1-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-      <dependency>
-          <groupId>com.github.MilkBowl</groupId>
-          <artifactId>VaultAPI</artifactId>
-          <version>1.7</version>
-          <scope>provided</scope>
-          <exclusions>
-              <exclusion>
-                  <artifactId>bukkit</artifactId>
-                  <groupId>org.bukkit</groupId>
-              </exclusion>
-          </exclusions>
-      </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.16.3-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>bukkit</artifactId>
+                    <groupId>org.bukkit</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>

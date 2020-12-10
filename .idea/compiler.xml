@@ -12,6 +12,7 @@
     <bytecodeTargetLevel>
       <module name="Auction House - Multiversion" target="1.8" />
       <module name="AuctionHouse" target="1.8" />
+      <module name="AuctionHouse-Dev" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

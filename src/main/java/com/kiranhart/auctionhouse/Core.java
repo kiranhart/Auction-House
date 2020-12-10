@@ -8,20 +8,20 @@ import com.kiranhart.auctionhouse.cmds.CommandManager;
 import com.kiranhart.auctionhouse.inventory.AGUI;
 import com.kiranhart.auctionhouse.listeners.AGUIListener;
 import com.kiranhart.auctionhouse.util.Metrics;
-import com.kiranhart.auctionhouse.util.economy.Economy;
-import com.kiranhart.auctionhouse.util.economy.VaultEconomy;
 import com.kiranhart.auctionhouse.util.locale.Locale;
 import com.kiranhart.auctionhouse.util.storage.ConfigWrapper;
 import com.kiranhart.auctionhouse.util.tasks.AutoSaveTask;
 import com.kiranhart.auctionhouse.util.tasks.LoadAuctionsTask;
 import com.kiranhart.auctionhouse.util.tasks.TickAuctionsTask;
 import com.zaxxer.hikari.HikariDataSource;
+import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -40,7 +40,7 @@ public final class Core extends JavaPlugin {
     private AuctionSettings auctionSettings;
     private CommandManager commandManager;
 
-    private Economy economy;
+    private static Economy economy;
     private Locale locale;
 
     private LinkedList<AuctionItem> auctionItems;
@@ -90,11 +90,10 @@ public final class Core extends JavaPlugin {
         this.locale = Locale.getLocale(getConfig().getString("lang"));
 
         //Economy
-        if (getServer().getPluginManager().getPlugin("Vault") != null) {
-            economy = new VaultEconomy();
-        } else {
-            console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&c COULD NOT FIND VAULT, DISABLING PLUGIN"));
+        if (!setupEconomy()) {
+            console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c[&6AuctionHouse&8]&c Disabling due to vault error"));
             getServer().getPluginManager().disablePlugin(this);
+            return;
         }
 
         console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6AuctionHouse&8]&a Loading data files"));
@@ -236,7 +235,7 @@ public final class Core extends JavaPlugin {
         return commandManager;
     }
 
-    public Economy getEconomy() {
+    public static Economy getEconomy() {
         return economy;
     }
 
@@ -270,6 +269,18 @@ public final class Core extends JavaPlugin {
 
     public Map<Player, Integer> getCurrentAuctionPage() {
         return currentAuctionPage;
+    }
+
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        economy = rsp.getProvider();
+        return economy != null;
     }
 }
 

@@ -54,10 +54,10 @@ public class ConfirmationGUI implements AGUI {
             //Check if the auction item is hasn't been purchased yet
             if (Core.getInstance().getAuctionItems().contains(auctionItem)) {
                 //Check if they have enough money to purchase the item
-                if (Core.getInstance().getEconomy().hasBalance(p, auctionItem.getBuyNowPrice())) {
+                if (Core.getInstance().getEconomy().has(p, auctionItem.getBuyNowPrice())) {
                     //Withdraw
-                    Core.getInstance().getEconomy().withdrawBalance(p, auctionItem.getBuyNowPrice());
-                    Core.getInstance().getEconomy().deposit(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionItem.getBuyNowPrice());
+                    Core.getInstance().getEconomy().withdrawPlayer(p, auctionItem.getBuyNowPrice());
+                    Core.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionItem.getBuyNowPrice());
 
                     //Check inventory space
                     if (AuctionAPI.getInstance().availableSlots(p.getInventory()) == 0) {

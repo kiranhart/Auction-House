@@ -23,6 +23,7 @@ settings:
   update-every-tick: 5
   auto-save-every: 1800
   save-transactions: true
+  alert-players-on-item-list: true
 
 help-msg:
 - "&6======== &eAuction House&6 ========"

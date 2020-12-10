@@ -5,6 +5,7 @@ main: com.kiranhart.auctionhouse.Core
 authors: [Kiran Hart]
 description: The ultimate auction house plugin
 website: https://www.kiranhart.com
+depends: [ Vault ]
 
 commands:
   auctionhouse:

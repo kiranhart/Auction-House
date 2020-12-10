@@ -43,6 +43,7 @@ public class AuctionLang {
     public static final String AUCTION_MAX= "auction.max";
     public static final String AUCTION_BUY = "auction.buy";
     public static final String AUCTION_SOLD = "auction.sold";
+    public static final String AUCTION_ITEM_LIST_ALERT = "auction.itemlistalert";
 
     //Auction Command Messages
     public static final String COMMAND_INVALID = "cmd.invalid";
