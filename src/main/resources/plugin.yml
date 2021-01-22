@@ -1,0 +1,8 @@
+name: AuctionHouse
+version: maven-version-number
+description: Auction House
+authors: [Kiran Hart]
+main: ca.tweetzy.auctionhouse.AuctionHouse
+
+commands:
+  auctionhouse:

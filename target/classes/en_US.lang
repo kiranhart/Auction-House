@@ -1,0 +1,12 @@
+general:
+    prefix: '&8[&eAuctionHouse&8]'
+    notanumber: '&cThe entry &4%value% &cis not a valid number!'
+    locked: '&cThe Auction House is currently locked!'
+    notenoughmoney: '&cYou do not have enough money!'
+    cantbidonown: '&cYou cannot bid on your own item!'
+    cantbuyown: '&cYou cannot buy your own item!'
+    blockeditem: '&cYou're not allowed to auction that item. (%item%)
+    air: '&cSorry, but you cannot sell air o.O'
+
+
+

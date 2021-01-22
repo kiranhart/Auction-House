@@ -1,0 +1,8 @@
+name: AuctionHouse
+version: 1.0.0
+description: Auction House
+authors: [Kiran Hart]
+main: ca.tweetzy.auctionhouse.AuctionHouse
+
+commands:
+  auctionhouse:
