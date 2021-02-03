@@ -1,10 +1,13 @@
 package ca.tweetzy.auctionhouse;
 
 import ca.tweetzy.auctionhouse.commands.CommandAuctionHouse;
+import ca.tweetzy.auctionhouse.commands.CommandSell;
+import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.TweetyCore;
 import ca.tweetzy.core.TweetyPlugin;
 import ca.tweetzy.core.commands.CommandManager;
+
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.core.PluginID;
@@ -31,6 +34,7 @@ public class AuctionHouse extends TweetyPlugin {
 
     protected Metrics metrics;
     private CommandManager commandManager;
+    private AuctionItemManager auctionItemManager;
 
     @Override
     public void onPluginLoad() {
@@ -61,8 +65,16 @@ public class AuctionHouse extends TweetyPlugin {
         setLocale(Settings.LANG.getString(), false);
 
         // commands
+        this.commandManager = new CommandManager(this);
+        this.commandManager.addCommand(new CommandAuctionHouse(this)).addSubCommands(
+                new CommandSell(this)
+        );
 
         this.data.load();
+
+        // load auction items
+        this.auctionItemManager = new AuctionItemManager();
+        this.auctionItemManager.loadItems();
 
         // metrics
         if (Settings.METRICS.getBoolean()) {
@@ -102,5 +114,9 @@ public class AuctionHouse extends TweetyPlugin {
 
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public AuctionItemManager getAuctionItemManager() {
+        return auctionItemManager;
     }
 }

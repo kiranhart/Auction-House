@@ -40,6 +40,16 @@ public class Settings {
     public static final ConfigSetting TIME_TO_DECREASE_BY = new ConfigSetting(config, "auction setting.decrease time by", 5, "How much ticks to decrease auction times by each run. 20 == 1 second");
 
     /*  ===============================
+     *         BLOCKED ITEMS
+     *  ===============================*/
+    public static final ConfigSetting BLOCKED_ITEMS = new ConfigSetting(config, "blocked items", Collections.singletonList("ENDER_CHEST"), "Materials that should be blocked (not allowed to sell)");
+
+    /*  ===============================
+     *         MAX AUCTION TIME
+     *  ===============================*/
+    public static final ConfigSetting AUCTION_TIME = new ConfigSetting(config, "auction time", Collections.singletonList("rankone:1200"), "Special time permissions for users.", "If they have the following permission in this format:", "auctionhouse.time.rankone", "rankone refers to the list item under auction time, they will get the time specified (in seconds)");
+
+    /*  ===============================
      *           GLOBAL ITEMS
      *  ===============================*/
     public static final ConfigSetting GUI_BACK_BTN_ITEM = new ConfigSetting(config, "gui.global items.back button.item", "ARROW", "Settings for the back button");
@@ -116,6 +126,43 @@ public class Settings {
             "",
             "&e&l%expired_player_auctions% Item(s)"
     ));
+
+    /*  ===============================
+     *         AUCTION STACKS
+     *  ===============================*/
+    public static final ConfigSetting AUCTION_ITEM_AUCTION_STACK = new ConfigSetting(config, "auction items.auction stack", Arrays.asList(
+            "&7-------------------------",
+            "&eSeller&f: &b%seller%",
+            "",
+            "&eBuy Now: &a$%buynowprice%",
+            "&eCurrent Price: &a$%currentprice%",
+            "&eBid Increment: &a$%bidincrement%",
+            "&eHighest Bidder: &a$%highestbidder%",
+            "",
+            "&eTime Left: &b%remaining_days%&f:&b%remaining_hours%&f:&b%remaining_minutes%&f:&b%remaining_seconds%"
+    ), "This the item stack lore that will be appended to", "auction items in /ah (lore will be applied first, then these)");
+
+    public static final ConfigSetting AUCTION_ITEM_LISTING_STACK = new ConfigSetting(config, "auction items.listing stack", Arrays.asList(
+            "&7-------------------------",
+            "&eBuy Now: &a$%buynowprice%",
+            "&eCurrent Price: &a$%currentprice%",
+            "&eBid Increment: &a$%bidincrement%",
+            "&eHighest Bidder: &a$%highestbidder%",
+            "&eTime Left: &b%remaining_days%&f:&b%remaining_hours%&f:&b%remaining_minutes%&f:&b%remaining_seconds%"
+    ), "This the item stack lore that will be appended to", "auction items in /ah listings (lore will be applied first, then these)");
+
+    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_BID_ON = new ConfigSetting(config, "auction items.controls.using bid", Arrays.asList(
+            "&7-------------------------",
+            "&eLeft-Click&f: &bBid",
+            "&eRight-Click&f: &bBuy Now",
+            "&7-------------------------"
+    ), "This will be appended at the end of the lore", "If the auction item is using a bid, this will show");
+
+    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_BID_OFF = new ConfigSetting(config, "auction items.controls.not using bid", Arrays.asList(
+            "&7-------------------------",
+            "&eLeft-Click&f: &bBuy Now",
+            "&7-------------------------"
+    ), "This will be appended at the end of the lore", "If the auction item is not using a bid, this will show");
 
     public static void setup() {
         config.load();
