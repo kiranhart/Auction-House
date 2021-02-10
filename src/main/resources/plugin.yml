@@ -6,3 +6,20 @@ main: ca.tweetzy.auctionhouse.AuctionHouse
 
 commands:
   auctionhouse:
+    description: Main command for the auction house plugin
+    aliases: [ah, auctions, auctionhouses]
+    default: true
+    usage: /ah
+
+permissions:
+  auctionhouse.*:
+    description: Allows access to all sub permissions
+    children:
+      auctionhouse.cmd: true
+      auctionhouse.cmd.sell: true
+  auctionhouse.cmd:
+    description: Allows the user to use /ah
+    default: op
+  auctionhouse.cmd.sell:
+    description: Allows the user to sell items in the auction house
+    default: op

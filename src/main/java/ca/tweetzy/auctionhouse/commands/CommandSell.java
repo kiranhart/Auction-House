@@ -9,6 +9,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -102,8 +103,85 @@ public class CommandSell extends AbstractCommand {
                     allowedTime
             ));
 
+            this.instance.getLocale().getMessage("auction.listed.nobid")
+                    .processPlaceholder("amount", itemToSell.getAmount())
+                    .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
+                    .processPlaceholder("base_price", basePrice)
+                    .sendPrefixedMessage(player);
+
         } else {
             // they want to use the bidding system, so make it a bid item
+            if (!NumberUtils.isDouble(args[0])) {
+                instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
+                return ReturnType.SYNTAX_ERROR;
+            }
+
+            if (!NumberUtils.isDouble(args[1])) {
+                instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[1]).sendPrefixedMessage(player);
+                return ReturnType.SYNTAX_ERROR;
+            }
+
+            if (!NumberUtils.isDouble(args[2])) {
+                instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[2]).sendPrefixedMessage(player);
+                return ReturnType.SYNTAX_ERROR;
+            }
+
+            double basePrice = Double.parseDouble(args[0]);
+            double bidStartPrice = Double.parseDouble(args[1]);
+            double bidIncPrice = Double.parseDouble(args[2]);
+
+            // check min
+            if (basePrice < Settings.MIN_AUCTION_PRICE.getDouble()) {
+                instance.getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", args[0]).sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
+
+            if (bidStartPrice < Settings.MIN_AUCTION_START_PRICE.getDouble()) {
+                instance.getLocale().getMessage("pricing.minstartingprice").processPlaceholder("price", args[1]).sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
+
+            if (bidIncPrice < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()) {
+                instance.getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", args[2]).sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
+
+            // check max
+            if (basePrice > Settings.MAX_AUCTION_PRICE.getDouble()) {
+                instance.getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", args[0]).sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
+
+            if (bidStartPrice > Settings.MAX_AUCTION_START_PRICE.getDouble()) {
+                instance.getLocale().getMessage("pricing.maxstartingprice").processPlaceholder("price", args[1]).sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
+
+            if (bidIncPrice > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
+                instance.getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", args[2]).sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
+
+            instance.getAuctionItemManager().addItem(new AuctionItem(
+                    player.getUniqueId(),
+                    player.getUniqueId(),
+                    itemToSell,
+                    MaterialCategorizer.getMaterialCategory(itemToSell),
+                    UUID.randomUUID(),
+                    basePrice,
+                    bidStartPrice,
+                    bidIncPrice,
+                    basePrice,
+                    allowedTime
+            ));
+
+            this.instance.getLocale().getMessage("auction.listed.withbid")
+                    .processPlaceholder("amount", itemToSell.getAmount())
+                    .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
+                    .processPlaceholder("base_price", basePrice)
+                    .processPlaceholder("start_price", bidStartPrice)
+                    .processPlaceholder("increment_price", bidIncPrice)
+                    .sendPrefixedMessage(player);
         }
 
         return ReturnType.SUCCESS;

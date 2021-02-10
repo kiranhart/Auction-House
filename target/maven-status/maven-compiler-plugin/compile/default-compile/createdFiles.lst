@@ -1,9 +1,13 @@
 ca\tweetzy\auctionhouse\auction\AuctionItem.class
+ca\tweetzy\auctionhouse\auction\AuctionItemCategory.class
+ca\tweetzy\auctionhouse\commands\CommandSell.class
+ca\tweetzy\auctionhouse\auction\AuctionPlayer.class
+ca\tweetzy\auctionhouse\auction\AuctionSaleType.class
+ca\tweetzy\auctionhouse\helpers\MaterialCategorizer.class
+ca\tweetzy\auctionhouse\settings\Settings.class
+ca\tweetzy\auctionhouse\AuctionHouse.class
 ca\tweetzy\auctionhouse\api\AuctionAPI.class
 ca\tweetzy\auctionhouse\commands\CommandAuctionHouse.class
-ca\tweetzy\auctionhouse\commands\CommandSell.class
+ca\tweetzy\auctionhouse\managers\AuctionItemManager.class
 ca\tweetzy\auctionhouse\auction\AuctionStackType.class
-ca\tweetzy\auctionhouse\auction\AuctionSaleType.class
-ca\tweetzy\auctionhouse\settings\Settings.class
 ca\tweetzy\auctionhouse\helpers\PlayerHelper.class
-ca\tweetzy\auctionhouse\AuctionHouse.class
