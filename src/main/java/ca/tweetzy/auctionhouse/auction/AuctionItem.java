@@ -98,7 +98,7 @@ public class AuctionItem {
         String bidIncPrice = (this.bidStartPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.bidIncPrice) : String.format("%,.2f", this.bidIncPrice);
         String currentPrice = (this.bidStartPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : String.format("%,.2f", this.currentPrice);
 
-        double[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.remainingTime);
+        long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.remainingTime);
 
         if (type == AuctionStackType.MAIN_AUCTION_HOUSE) {
             Settings.AUCTION_ITEM_AUCTION_STACK.getStringList().forEach(line -> {
@@ -110,8 +110,8 @@ public class AuctionItem {
                         .replace("%highestbidder%", highestBidder)
                         .replace("%remaining_days%", String.valueOf(times[0]))
                         .replace("%remaining_hours%", String.valueOf(times[1]))
-                        .replace("%remaining_minutes", String.valueOf(times[2]))
-                        .replace("%remaining_seconds", String.valueOf(times[3]))
+                        .replace("%remaining_minutes%", String.valueOf(times[2]))
+                        .replace("%remaining_seconds%", String.valueOf(times[3]))
                 ));
             });
 
@@ -134,8 +134,8 @@ public class AuctionItem {
 
         meta.setLore(lore);
         itemStack.setItemMeta(meta);
-        itemStack = NBTEditor.set(itemStack, getKey(), "AuctionItemKey");
-        itemStack = NBTEditor.set(itemStack, this.bidStartPrice <= 0 ? "NOT_BID_ITEM" : "IS_BID_ITEM", "AuctionItemType");
+//        itemStack = NBTEditor.set(itemStack, getKey(), "AuctionItemKey");
+//        itemStack = NBTEditor.set(itemStack, this.bidStartPrice <= 0 ? "NOT_BID_ITEM" : "IS_BID_ITEM", "AuctionItemType");
         return itemStack;
     }
 }

@@ -8,6 +8,7 @@ package ca.tweetzy.auctionhouse.auction;
  */
 public enum AuctionItemCategory {
 
+    ALL("All"),
     FOOD("Food"),
     ARMOR("Armor"),
     BLOCKS("Blocks"),

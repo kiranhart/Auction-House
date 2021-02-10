@@ -2,7 +2,9 @@ package ca.tweetzy.auctionhouse;
 
 import ca.tweetzy.auctionhouse.commands.CommandAuctionHouse;
 import ca.tweetzy.auctionhouse.commands.CommandSell;
+import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
+import ca.tweetzy.auctionhouse.managers.AuctionPlayerManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.TweetyCore;
 import ca.tweetzy.core.TweetyPlugin;
@@ -14,6 +16,7 @@ import ca.tweetzy.core.core.PluginID;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.List;
@@ -34,6 +37,7 @@ public class AuctionHouse extends TweetyPlugin {
 
     protected Metrics metrics;
     private CommandManager commandManager;
+    private AuctionPlayerManager auctionPlayerManager;
     private AuctionItemManager auctionItemManager;
 
     @Override
@@ -64,17 +68,24 @@ public class AuctionHouse extends TweetyPlugin {
         // local
         setLocale(Settings.LANG.getString(), false);
 
+        // listeners
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
+
+        this.data.load();
+
+        // auction players
+        this.auctionPlayerManager = new AuctionPlayerManager();
+        Bukkit.getOnlinePlayers().forEach(p -> this.auctionPlayerManager.addSpeedyPlayer(p));
+
+        // load auction items
+        this.auctionItemManager = new AuctionItemManager();
+        this.auctionItemManager.loadItems();
+
         // commands
         this.commandManager = new CommandManager(this);
         this.commandManager.addCommand(new CommandAuctionHouse(this)).addSubCommands(
                 new CommandSell(this)
         );
-
-        this.data.load();
-
-        // load auction items
-        this.auctionItemManager = new AuctionItemManager();
-        this.auctionItemManager.loadItems();
 
         // metrics
         if (Settings.METRICS.getBoolean()) {
@@ -84,6 +95,7 @@ public class AuctionHouse extends TweetyPlugin {
 
     @Override
     public void onPluginDisable() {
+        this.auctionPlayerManager.closeAuctionHouse();
         instance = null;
     }
 
@@ -118,5 +130,9 @@ public class AuctionHouse extends TweetyPlugin {
 
     public AuctionItemManager getAuctionItemManager() {
         return auctionItemManager;
+    }
+
+    public AuctionPlayerManager getAuctionPlayerManager() {
+        return auctionPlayerManager;
     }
 }

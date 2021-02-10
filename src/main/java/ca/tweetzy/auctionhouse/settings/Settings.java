@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.settings;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.configuration.ConfigSetting;
 
@@ -139,7 +140,7 @@ public class Settings {
             "&eBid Increment: &a$%bidincrement%",
             "&eHighest Bidder: &a$%highestbidder%",
             "",
-            "&eTime Left: &b%remaining_days%&f:&b%remaining_hours%&f:&b%remaining_minutes%&f:&b%remaining_seconds%"
+            "&eTime Left: &b%remaining_days%&f days &b%remaining_hours%&f hours &b%remaining_minutes%&f minutes &b%remaining_seconds% seconds"
     ), "This the item stack lore that will be appended to", "auction items in /ah (lore will be applied first, then these)");
 
     public static final ConfigSetting AUCTION_ITEM_LISTING_STACK = new ConfigSetting(config, "auction items.listing stack", Arrays.asList(
@@ -163,6 +164,13 @@ public class Settings {
             "&eLeft-Click&f: &bBuy Now",
             "&7-------------------------"
     ), "This will be appended at the end of the lore", "If the auction item is not using a bid, this will show");
+
+    /*  ===============================
+     *         AUCTION STACKS
+     *  ===============================*/
+    public static final ConfigSetting SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE = new ConfigSetting(config, "sounds.listed item on the auction house", XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound().name());
+    public static final ConfigSetting SOUNDS_NAVIGATE_GUI_PAGES = new ConfigSetting(config, "sounds.navigated between gui pages", XSound.ENTITY_BAT_TAKEOFF.parseSound().name());
+    public static final ConfigSetting SOUNDS_NOT_ENOUGH_MONEY = new ConfigSetting(config, "sounds.not enough money", XSound.ENTITY_ITEM_BREAK.parseSound().name());
 
     public static void setup() {
         config.load();

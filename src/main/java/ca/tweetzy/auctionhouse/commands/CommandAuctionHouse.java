@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.guis.AuctionHouseGUI;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
@@ -26,8 +27,9 @@ public class CommandAuctionHouse extends AbstractCommand {
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (args.length == 0) {
-
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            player.openInventory(new AuctionHouseGUI(instance.getAuctionPlayerManager().locateAndSelectPlayer(player)).getInventory());
         }
         return ReturnType.SUCCESS;
     }

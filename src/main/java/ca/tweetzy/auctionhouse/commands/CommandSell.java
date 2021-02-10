@@ -39,7 +39,7 @@ public class CommandSell extends AbstractCommand {
     protected ReturnType runCommand(CommandSender sender, String... args) {
         if (args.length <= 0) return ReturnType.SYNTAX_ERROR;
         Player player = (Player) sender;
-        AuctionPlayer auctionPlayer = new AuctionPlayer(player);
+        AuctionPlayer auctionPlayer = this.instance.getAuctionPlayerManager().locateAndSelectPlayer(player);
 
         ItemStack itemToSell = PlayerHelper.getHeldItem(player);
 
@@ -171,7 +171,7 @@ public class CommandSell extends AbstractCommand {
                     basePrice,
                     bidStartPrice,
                     bidIncPrice,
-                    basePrice,
+                    bidStartPrice,
                     allowedTime
             ));
 

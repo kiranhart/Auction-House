@@ -2,9 +2,11 @@ package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -13,13 +15,24 @@ import java.util.stream.Collectors;
  * Time Created: 6:26 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
+
+@Getter
+@Setter
 public class AuctionPlayer {
 
-    @Getter
-    private Player player;
+    private final UUID id;
+    private final Player player;
+
+    private boolean viewingAuctionHouse;
+    private int currentAuctionPage;
+    private AuctionItemCategory preferredCategory;
 
     public AuctionPlayer(Player player) {
         this.player = player;
+        this.id = player.getUniqueId();
+        this.viewingAuctionHouse = false;
+        this.currentAuctionPage = 1;
+        this.preferredCategory = AuctionItemCategory.ALL;
     }
 
     public List<AuctionItem> getActiveItems() {
