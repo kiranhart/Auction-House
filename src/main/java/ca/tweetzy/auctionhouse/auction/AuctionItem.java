@@ -58,19 +58,6 @@ public class AuctionItem {
         this.remainingTime = remainingTime;
     }
 
-    public AuctionItem(UUID owner, UUID highestBidder, ItemStack originalItem, AuctionItemCategory category, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, int remainingTime) {
-        this.owner = owner;
-        this.highestBidder = highestBidder;
-        this.originalItem = originalItem;
-        this.category = category;
-        this.key = UUID.randomUUID();
-        this.basePrice = basePrice;
-        this.bidStartPrice = bidStartPrice;
-        this.bidIncPrice = bidIncPrice;
-        this.currentPrice = currentPrice;
-        this.remainingTime = remainingTime;
-    }
-
     public void updateRemainingTime(int removeAmount) {
         this.remainingTime = Math.max(this.remainingTime - removeAmount, 0);
     }
@@ -101,41 +88,66 @@ public class AuctionItem {
         long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.remainingTime);
 
         if (type == AuctionStackType.MAIN_AUCTION_HOUSE) {
-            Settings.AUCTION_ITEM_AUCTION_STACK.getStringList().forEach(line -> {
-                lore.add(TextUtils.formatText(line
-                        .replace("%seller%", theSeller)
-                        .replace("%buynowprice%", basePrice)
-                        .replace("%currentprice%", currentPrice)
-                        .replace("%bidincrement%", bidIncPrice)
-                        .replace("%highestbidder%", highestBidder)
-                        .replace("%remaining_days%", String.valueOf(times[0]))
-                        .replace("%remaining_hours%", String.valueOf(times[1]))
-                        .replace("%remaining_minutes%", String.valueOf(times[2]))
-                        .replace("%remaining_seconds%", String.valueOf(times[3]))
-                ));
-            });
+            if (this.bidStartPrice <= 0) {
+                Settings.AUCTION_ITEM_AUCTION_STACK.getStringList().forEach(line -> {
+                    lore.add(TextUtils.formatText(line
+                            .replace("%seller%", theSeller)
+                            .replace("%buynowprice%", basePrice)
+                            .replace("%remaining_days%", String.valueOf(times[0]))
+                            .replace("%remaining_hours%", String.valueOf(times[1]))
+                            .replace("%remaining_minutes%", String.valueOf(times[2]))
+                            .replace("%remaining_seconds%", String.valueOf(times[3]))
+                    ));
+                });
+            } else {
+                Settings.AUCTION_ITEM_AUCTION_STACK_WITH_BID.getStringList().forEach(line -> {
+                    lore.add(TextUtils.formatText(line
+                            .replace("%seller%", theSeller)
+                            .replace("%buynowprice%", basePrice)
+                            .replace("%currentprice%", currentPrice)
+                            .replace("%bidincrement%", bidIncPrice)
+                            .replace("%highestbidder%", highestBidder)
+                            .replace("%remaining_days%", String.valueOf(times[0]))
+                            .replace("%remaining_hours%", String.valueOf(times[1]))
+                            .replace("%remaining_minutes%", String.valueOf(times[2]))
+                            .replace("%remaining_seconds%", String.valueOf(times[3]))
+                    ));
+                });
+            }
 
             lore.addAll(this.bidStartPrice <= 0 ? Settings.AUCTION_PURCHASE_CONTROLS_BID_OFF.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()) : Settings.AUCTION_PURCHASE_CONTROLS_BID_ON.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
         } else {
-            Settings.AUCTION_ITEM_LISTING_STACK.getStringList().forEach(line -> {
-                lore.add(TextUtils.formatText(line
-                        .replace("%seller%", theSeller)
-                        .replace("%buynowprice%", basePrice)
-                        .replace("%currentprice%", currentPrice)
-                        .replace("%bidincrement%", bidIncPrice)
-                        .replace("%highestbidder%", highestBidder)
-                        .replace("%remaining_days%", String.valueOf(times[0]))
-                        .replace("%remaining_hours%", String.valueOf(times[1]))
-                        .replace("%remaining_minutes", String.valueOf(times[2]))
-                        .replace("%remaining_seconds", String.valueOf(times[3]))
-                ));
-            });
+            if (this.bidStartPrice <= 0) {
+                Settings.AUCTION_ITEM_LISTING_STACK.getStringList().forEach(line -> {
+                    lore.add(TextUtils.formatText(line
+                            .replace("%seller%", theSeller)
+                            .replace("%buynowprice%", basePrice)
+                            .replace("%remaining_days%", String.valueOf(times[0]))
+                            .replace("%remaining_hours%", String.valueOf(times[1]))
+                            .replace("%remaining_minutes%", String.valueOf(times[2]))
+                            .replace("%remaining_seconds%", String.valueOf(times[3]))
+                    ));
+                });
+            } else {
+                Settings.AUCTION_ITEM_LISTING_STACK_WITH_BID.getStringList().forEach(line -> {
+                    lore.add(TextUtils.formatText(line
+                            .replace("%seller%", theSeller)
+                            .replace("%buynowprice%", basePrice)
+                            .replace("%currentprice%", currentPrice)
+                            .replace("%bidincrement%", bidIncPrice)
+                            .replace("%highestbidder%", highestBidder)
+                            .replace("%remaining_days%", String.valueOf(times[0]))
+                            .replace("%remaining_hours%", String.valueOf(times[1]))
+                            .replace("%remaining_minutes%", String.valueOf(times[2]))
+                            .replace("%remaining_seconds%", String.valueOf(times[3]))
+                    ));
+                });
+            }
         }
 
         meta.setLore(lore);
         itemStack.setItemMeta(meta);
 //        itemStack = NBTEditor.set(itemStack, getKey(), "AuctionItemKey");
-//        itemStack = NBTEditor.set(itemStack, this.bidStartPrice <= 0 ? "NOT_BID_ITEM" : "IS_BID_ITEM", "AuctionItemType");
         return itemStack;
     }
 }

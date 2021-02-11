@@ -5,6 +5,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionStackType;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.inventory.TInventory;
 import com.google.common.collect.Lists;
@@ -29,9 +30,10 @@ public class AuctionHouseGUI extends TInventory {
 
     public AuctionHouseGUI(AuctionPlayer auctionPlayer) {
         this.auctionPlayer = auctionPlayer;
+        this.auctionPlayer.setViewingAuctionHouse(true);
         this.items = Lists.partition(AuctionHouse.getInstance().getAuctionItemManager().getFilteredItems(auctionPlayer.getPreferredCategory()), 45);
         setTitle(Settings.GUI_AUCTION_HOUSE_TITLE.getString());
-        setPage(1);
+        setPage(auctionPlayer.getCurrentAuctionPage());
         setRows(6);
         setDynamic(false);
     }
@@ -39,6 +41,35 @@ public class AuctionHouseGUI extends TInventory {
     @Override
     public void onClick(InventoryClickEvent e, int slot) {
         e.setCancelled(true);
+
+        switch (slot) {
+            case 45:
+                break;
+            case 46:
+                break;
+            case 48:
+                if (getPage() > 1) {
+                    auctionPlayer.setCurrentAuctionPage(auctionPlayer.getCurrentAuctionPage() - 1);
+                    auctionPlayer.getPlayer().openInventory(new AuctionHouseGUI(auctionPlayer).getInventory());
+                    SoundManager.getInstance().playSound(auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString(), 1f, 1f);
+                }
+                break;
+            case 49:
+                auctionPlayer.setCurrentAuctionPage(1);
+                auctionPlayer.getPlayer().openInventory(new AuctionHouseGUI(auctionPlayer).getInventory());
+                break;
+            case 50:
+                if (getPage() < this.items.size()) {
+                    auctionPlayer.setCurrentAuctionPage(auctionPlayer.getCurrentAuctionPage() + 1);
+                    auctionPlayer.getPlayer().openInventory(new AuctionHouseGUI(auctionPlayer).getInventory());
+                    SoundManager.getInstance().playSound(auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString(), 1f, 1f);
+                }
+                break;
+            case 51:
+                break;
+            default:
+                break;
+        }
     }
 
     @Override

@@ -96,6 +96,7 @@ public class AuctionHouse extends TweetyPlugin {
     @Override
     public void onPluginDisable() {
         this.auctionPlayerManager.closeAuctionHouse();
+        this.auctionItemManager.saveItems();
         instance = null;
     }
 
