@@ -17,8 +17,12 @@ pricing:
     maxbaseprice: "&cThe maximum base price is &a$%price%"
     maxstartingprice: "&cThe maximum starting bid price is &a$%price%"
     maxbidincrementprice: "&cThe maximum bid increment is &a$%price%"
+    moneyremove: "&c&l- $%price%"
+    moneyadd: "&a&l+ $%price%"
 
 auction:
     listed:
         withbid: "&eListed &fx%amount% &6%item% &e&lBuy Now&f: &a%base_price% &e&lStarting&f: &a%start_price% &e&lIncrement&f: &a%increment_price%"
         nobid: "&eListed &fx%amount% &6%item% &efor &a%base_price%"
+    bidwon: "&eYou won the bid for&fx%amount% &6%item% &efor &a%price%"
+    itemsold: "&eYou sold &6%item% &efor &a%price%"

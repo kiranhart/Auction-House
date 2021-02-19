@@ -1,8 +1,10 @@
 name: AuctionHouse
 version: maven-version-number
-description: Auction House
-authors: [Kiran Hart]
+api-version: 1.16
 main: ca.tweetzy.auctionhouse.AuctionHouse
+description: idfk... sell stuff in a gui
+authors: [Kiran Hart]
+depend: [Vault]
 
 commands:
   auctionhouse:

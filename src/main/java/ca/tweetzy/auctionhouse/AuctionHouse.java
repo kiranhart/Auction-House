@@ -6,6 +6,7 @@ import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
 import ca.tweetzy.auctionhouse.managers.AuctionPlayerManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.auctionhouse.tasks.TickAuctionsTask;
 import ca.tweetzy.core.TweetyCore;
 import ca.tweetzy.core.TweetyPlugin;
 import ca.tweetzy.core.commands.CommandManager;
@@ -86,6 +87,9 @@ public class AuctionHouse extends TweetyPlugin {
         this.commandManager.addCommand(new CommandAuctionHouse(this)).addSubCommands(
                 new CommandSell(this)
         );
+
+        // start the auction tick task
+        TickAuctionsTask.startTask(); // probs error
 
         // metrics
         if (Settings.METRICS.getBoolean()) {

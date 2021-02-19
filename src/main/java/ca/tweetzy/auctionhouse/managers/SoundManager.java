@@ -35,7 +35,7 @@ public class SoundManager {
     }
 
     public void playSound(Player player, String sound, float volume, float pitch, int delay) {
-        Bukkit.getServer().getScheduler().runTaskLater(AuctionHouse.getInstance(), () -> playSound(player, sound, volume, delay), delay);
+        Bukkit.getServer().getScheduler().runTaskLater(AuctionHouse.getInstance(), () -> playSound(player, sound, volume, pitch), delay);
     }
 
 

@@ -147,7 +147,7 @@ public class AuctionItem {
 
         meta.setLore(lore);
         itemStack.setItemMeta(meta);
-//        itemStack = NBTEditor.set(itemStack, getKey(), "AuctionItemKey");
+        itemStack = NBTEditor.set(itemStack, getKey().toString(), "AuctionItemKey");
         return itemStack;
     }
 }

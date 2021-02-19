@@ -38,7 +38,7 @@ public class Settings {
     public static final ConfigSetting USE_SHORT_NUMBERS_ON_ITEMS = new ConfigSetting(config, "auction setting.use short numbers", false, "Should numbers be shortened into a prefixed form?");
     public static final ConfigSetting INCREASE_TIME_ON_BID = new ConfigSetting(config, "auction setting.increase time on bid", true, "Should the remaining time be increased when a bid is placed?");
     public static final ConfigSetting TIME_TO_INCREASE_BY_ON_BID = new ConfigSetting(config, "auction setting.time to increase by on the bid", 20, "How much ticks should be added to the bid? 20 == 1 second");
-    public static final ConfigSetting TIME_TO_DECREASE_BY = new ConfigSetting(config, "auction setting.decrease time by", 5, "How much ticks to decrease auction times by each run. 20 == 1 second");
+    public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 5, "How many seconds should pass before the plugin updates all the times on items?");
 
     /*  ===============================
      *         BLOCKED ITEMS
@@ -129,6 +129,19 @@ public class Settings {
     ));
 
     /*  ===============================
+     *         ACTIVE AUCTION GUI
+     *  ===============================*/
+
+    public static final ConfigSetting GUI_ACTIVE_AUCTIONS_TITLE = new ConfigSetting(config, "gui.active auctions.title", "&7Active Listings");
+
+    public static final ConfigSetting GUI_ACTIVE_AUCTIONS_ITEM = new ConfigSetting(config, "gui.active auctions.cancel all.item", "ENDER_CHEST");
+    public static final ConfigSetting GUI_ACTIVE_AUCTIONS_NAME = new ConfigSetting(config, "gui.active auctions.cancel all.name", "&e&lEnd All");
+    public static final ConfigSetting GUI_ACTIVE_AUCTIONS_LORE = new ConfigSetting(config, "gui.active auctions.cancel all.lore", Arrays.asList(
+            "&7Click here to end all of the active listings",
+            "&7that you have posted."
+    ));
+
+    /*  ===============================
      *         AUCTION STACKS
      *  ===============================*/
     public static final ConfigSetting AUCTION_ITEM_AUCTION_STACK = new ConfigSetting(config, "auction items.auction stack", Arrays.asList(
@@ -153,7 +166,7 @@ public class Settings {
             "&eBuy Now: &a$%buynowprice%",
             "&eCurrent Price: &a$%currentprice%",
             "&eBid Increment: &a$%bidincrement%",
-            "&eHighest Bidder: &a$%highestbidder%",
+            "&eHighest Bidder: &a%highestbidder%",
             "",
             "&eTime Left: &b%remaining_days%&f days &b%remaining_hours%&f hours &b%remaining_minutes%&f minutes &b%remaining_seconds% seconds"
     ), "This the item stack lore that will be appended to", "auction items in /ah (lore will be applied first, then these)");
@@ -163,7 +176,7 @@ public class Settings {
             "&eBuy Now: &a$%buynowprice%",
             "&eCurrent Price: &a$%currentprice%",
             "&eBid Increment: &a$%bidincrement%",
-            "&eHighest Bidder: &a$%highestbidder%",
+            "&eHighest Bidder: &a%highestbidder%",
             "&eTime Left: &b%remaining_days%&f:&b%remaining_hours%&f:&b%remaining_minutes%&f:&b%remaining_seconds%"
     ), "This the item stack lore that will be appended to", "auction items in /ah listings (lore will be applied first, then these)");
 

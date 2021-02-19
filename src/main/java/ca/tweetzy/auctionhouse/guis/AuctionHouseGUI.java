@@ -44,6 +44,7 @@ public class AuctionHouseGUI extends TInventory {
 
         switch (slot) {
             case 45:
+                auctionPlayer.getPlayer().openInventory(new ActiveAuctionsGUI(auctionPlayer.getPlayer()).getInventory());
                 break;
             case 46:
                 break;
