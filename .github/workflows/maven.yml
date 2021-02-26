@@ -19,13 +19,13 @@ jobs:
         run: mvn package
 
       - name: Transfer main branch to Tweetzy
-        id: push_directory
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        uses: cpina/github-action-push-to-another-repository@master
+        uses: andstor/copycat-action@v3
         with:
-          source-directory: '.'
-          destination-github-username: 'Tweetzy'
-          destination-repository-name: 'Auction-House'
-          user-email: 'kiran.hart@live.com'
-          commit-message: See ORIGIN_COMMIT
+          personal_token: ${{ secrets.API_TOKEN_GITHUB }}
+          src_path: /.
+          dst_owner: Tweetzy
+          dst_repo_name: Auction-House
+          email: kiran.hart@live.com
+          src_branch: main
+          dst_branch: master
+
