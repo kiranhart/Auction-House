@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 public class TickAuctionsTask extends BukkitRunnable {
 
-    private static TickAuctionsTask instance;
+    private static TickAuctionsTask instance;//master
 
     public static TickAuctionsTask startTask() {
         if (instance == null) {
