@@ -95,6 +95,10 @@
             <url>https://repo.codemc.org/repository/nms/</url>
         </repository>
         <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/kiranhart/*</url>
+        </repository>
+        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -103,20 +107,19 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ca.tweetzy</groupId>
+            <artifactId>tweetycore</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.7</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>ca.tweetzy</groupId>
-            <artifactId>TweetyCore</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
