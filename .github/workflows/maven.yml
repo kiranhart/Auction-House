@@ -17,3 +17,13 @@ jobs:
 
       - name: Build with Maven
         run: mvn package
+
+      - name: Transfer main branch to Tweetzy
+        id: push_directory
+        uses: cpina/github-action-push-to-another-repository@cp_instead_of_deleting
+        with:
+          source-directory: 'output'
+          destination-github-username: 'Tweetzy'
+          destination-repository-name: 'Auction-House'
+          user-email: 'kiran.hart@live.com'
+          commit-message: See ORIGIN_COMMIT
