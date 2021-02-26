@@ -2,7 +2,7 @@ name: Auction House Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
