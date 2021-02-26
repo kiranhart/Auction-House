@@ -20,6 +20,8 @@ jobs:
 
       - name: Transfer main branch to Tweetzy
         id: push_directory
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         uses: cpina/github-action-push-to-another-repository@cp_instead_of_deleting
         with:
           source-directory: 'output'
