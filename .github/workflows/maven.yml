@@ -10,6 +10,7 @@ jobs:
 
     steps:
 
+
       - name: Transfer main branch to Tweetzy
         uses: andstor/copycat-action@v3
         with:
@@ -19,6 +20,6 @@ jobs:
           dst_repo_name: Auction-House
           email: kiran.hart@live.com
           src_branch: main
-          dst_branch: master
+          dst_branch: main
           commit_message: ${{ github.event.head_commit.message }}
-          exclude: "*/.github/*"
+          exclude: /.github/
