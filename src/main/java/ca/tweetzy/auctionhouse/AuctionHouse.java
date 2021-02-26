@@ -100,7 +100,7 @@ public class AuctionHouse extends TweetyPlugin {
         this.auctionPlayerManager.closeAuctionHouse();
         this.auctionItemManager.saveItems();
         instance = null;
-        //token change
+        //token change test
     }
 
     @Override
