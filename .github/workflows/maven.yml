@@ -21,4 +21,4 @@ jobs:
           src_branch: main
           dst_branch: main
           commit_message: ${{ github.event.head_commit.message }}
-          exclude: .github/
+          exclude: .github/*
