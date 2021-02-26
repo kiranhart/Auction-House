@@ -89,7 +89,7 @@ public class AuctionHouse extends TweetyPlugin {
         );
 
         // start the auction tick task
-        TickAuctionsTask.startTask(); // probs error
+        TickAuctionsTask.startTask();
 
         // metrics
         if (Settings.METRICS.getBoolean()) {
