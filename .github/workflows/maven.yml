@@ -22,9 +22,9 @@ jobs:
         id: push_directory
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        uses: cpina/github-action-push-to-another-repository@cp_instead_of_deleting
+        uses: cpina/github-action-push-to-another-repository@master
         with:
-          source-directory: 'output'
+          source-directory: '.'
           destination-github-username: 'Tweetzy'
           destination-repository-name: 'Auction-House'
           user-email: 'kiran.hart@live.com'
