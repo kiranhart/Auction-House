@@ -20,9 +20,10 @@ import java.util.stream.Collectors;
  * Time Created: 6:27 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-@Getter
+
 public class AuctionItemManager {
 
+    @Getter
     private final LinkedList<AuctionItem> auctionItems = new LinkedList<>();
 
     public void loadItems() {
