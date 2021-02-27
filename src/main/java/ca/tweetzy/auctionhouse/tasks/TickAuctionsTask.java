@@ -2,9 +2,7 @@ package ca.tweetzy.auctionhouse.tasks;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
-import ca.tweetzy.auctionhouse.guis.AuctionHouseGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.inventory.TInventory;
 import ca.tweetzy.core.utils.PlayerUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -21,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class TickAuctionsTask extends BukkitRunnable {
 
-    private static TickAuctionsTask instance;//master
+    private static TickAuctionsTask instance;
 
     public static TickAuctionsTask startTask() {
         if (instance == null) {

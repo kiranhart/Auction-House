@@ -46,6 +46,7 @@ public class AuctionHouseGUI extends TInventory {
                 auctionPlayer.getPlayer().openInventory(new ActiveAuctionsGUI(auctionPlayer.getPlayer()).getInventory());
                 break;
             case 46:
+                auctionPlayer.getPlayer().openInventory(new ExpiredItemsGUI(auctionPlayer.getPlayer()).getInventory());
                 break;
             case 48:
                 if (getPage() > 1) {
@@ -79,7 +80,9 @@ public class AuctionHouseGUI extends TInventory {
         inventory.setItem(45, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), new HashMap<String, Object>(){{
             put("%active_player_auctions%", auctionPlayer.getActiveItems().size());
         }}));
-        inventory.setItem(46, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), null));
+        inventory.setItem(46, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), new HashMap<String, Object>(){{
+            put("%expired_player_auctions%", auctionPlayer.getExpiredItems(auctionPlayer.getPlayer(), false).size());
+        }}));
         inventory.setItem(48, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BACK_BTN_ITEM.getString(), Settings.GUI_BACK_BTN_NAME.getString(), Settings.GUI_BACK_BTN_LORE.getStringList(), null));
         inventory.setItem(49, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_REFRESH_BTN_ITEM.getString(), Settings.GUI_REFRESH_BTN_NAME.getString(), Settings.GUI_REFRESH_BTN_LORE.getStringList(), null));
         inventory.setItem(50, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_NEXT_BTN_ITEM.getString(), Settings.GUI_NEXT_BTN_NAME.getString(), Settings.GUI_NEXT_BTN_LORE.getStringList(), null));

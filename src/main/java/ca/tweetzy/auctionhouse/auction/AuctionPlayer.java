@@ -1,10 +1,14 @@
 package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -45,6 +49,22 @@ public class AuctionPlayer {
             if (player.hasPermission("auctionhouse.maxsell." + i)) return i;
         }
         return 0;
+    }
+
+    public ArrayList<ItemStack> getExpiredItems(Player player, boolean addNBT) {
+        ConfigurationSection section = AuctionHouse.getInstance().getData().getConfigurationSection("expired." + player.getUniqueId().toString());
+        ArrayList<ItemStack> expiredItems = new ArrayList<>();
+        if (section == null || section.getKeys(false).size() == 0) return expiredItems;
+
+        for (String nodes : section.getKeys(false)) {
+            ItemStack stack = AuctionHouse.getInstance().getData().getItemStack("expired." + player.getUniqueId().toString() + "." + nodes + ".item");
+            if (addNBT) {
+                stack = NBTEditor.set(stack, AuctionHouse.getInstance().getData().getString("expired." + player.getUniqueId().toString() + "." + nodes + ".key"), "AuctionItemKey");
+            }
+            expiredItems.add(stack);
+        }
+
+        return expiredItems;
     }
 
     public boolean isAtSellLimit() {

@@ -3,7 +3,6 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.guis.AuctionHouseGUI;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
