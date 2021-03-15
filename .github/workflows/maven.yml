@@ -46,6 +46,7 @@ jobs:
           dst_branch: main
           commit_message: ${{ github.event.head_commit.message }}
           exclude: .github/*
+          clean: true
 
   jitpack:
     runs-on: ubuntu-latest
