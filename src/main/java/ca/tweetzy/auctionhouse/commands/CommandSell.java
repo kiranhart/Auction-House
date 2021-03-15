@@ -7,8 +7,10 @@ import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.core.utils.PlayerUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -106,6 +108,7 @@ public class CommandSell extends AbstractCommand {
                     .processPlaceholder("base_price", basePrice)
                     .sendPrefixedMessage(player);
 
+            PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
         } else {
             // they want to use the bidding system, so make it a bid item
             if (!NumberUtils.isDouble(args[0])) {
@@ -180,6 +183,8 @@ public class CommandSell extends AbstractCommand {
                     .processPlaceholder("start_price", bidStartPrice)
                     .processPlaceholder("increment_price", bidIncPrice)
                     .sendPrefixedMessage(player);
+
+            PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
         }
 
         return ReturnType.SUCCESS;

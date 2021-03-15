@@ -47,7 +47,7 @@ public class AuctionItemManager {
         if (category == null) {
             return Collections.unmodifiableList(this.auctionItems);
         }
-        return Collections.unmodifiableList(auctionItems.stream().filter(auctionItem -> MaterialCategorizer.getMaterialCategory(AuctionAPI.deserializeItem(auctionItem.getRawItem())) == category).collect(Collectors.toList()));
+        return Collections.unmodifiableList(auctionItems.stream().filter(auctionItem -> MaterialCategorizer.getMaterialCategory(AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem())) == category).collect(Collectors.toList()));
     }
 
     public void loadItems() {
@@ -75,7 +75,7 @@ public class AuctionItemManager {
 
         List<AuctionItem> foundItems = AuctionHouse.getInstance().getData().getStringList("auction items").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (AuctionItem) object).collect(Collectors.toList());
         foundItems.addAll(items);
-        AuctionHouse.getInstance().getData().set("auction items", foundItems);
+        AuctionHouse.getInstance().getData().set("auction items", foundItems.stream().map(AuctionAPI.getInstance()::convertToBase64).collect(Collectors.toList()));
         AuctionHouse.getInstance().getData().save();
     }
 
@@ -87,7 +87,7 @@ public class AuctionItemManager {
         }
 
         List<AuctionItem> items = AuctionHouse.getInstance().getData().getStringList("auction items").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (AuctionItem) object).collect(Collectors.toList());
-        if (items.stream().anyMatch(i -> i.getKey().equals(item.getKey())) && !add) {
+        if (items.stream().anyMatch(i -> i.getKey().equals(item.getKey())) || !add) {
             items.removeIf(i -> i.getKey().equals(item.getKey()));
         } else {
             items.add(item);

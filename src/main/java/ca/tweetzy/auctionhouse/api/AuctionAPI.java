@@ -111,7 +111,7 @@ public class AuctionAPI {
      * @param data Data to deserialize.
      * @return Deserialized ItemStack.
      */
-    public static ItemStack deserializeItem(byte[] data) {
+    public ItemStack deserializeItem(byte[] data) {
         ItemStack item = null;
         try (BukkitObjectInputStream stream = new BukkitObjectInputStream(new ByteArrayInputStream(data))) {
             item = (ItemStack) stream.readObject();
@@ -128,7 +128,7 @@ public class AuctionAPI {
      * @param item Item to serialize.
      * @return Serialized data.
      */
-    public static byte[] serializeItem(ItemStack item) {
+    public byte[] serializeItem(ItemStack item) {
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream(); BukkitObjectOutputStream bukkitStream = new BukkitObjectOutputStream(stream)) {
             bukkitStream.writeObject(item);
             return stream.toByteArray();

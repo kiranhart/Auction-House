@@ -45,7 +45,7 @@ public class AuctionItem implements Serializable {
     public AuctionItem(UUID owner, UUID highestBidder, ItemStack originalItem, AuctionItemCategory category, UUID key, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, int remainingTime, boolean expired) {
         this.owner = owner;
         this.highestBidder = highestBidder;
-        this.rawItem = AuctionAPI.serializeItem(originalItem);
+        this.rawItem = AuctionAPI.getInstance().serializeItem(originalItem);
         this.category = category;
         this.key = key;
         this.basePrice = basePrice;
@@ -62,7 +62,7 @@ public class AuctionItem implements Serializable {
     }
 
     public ItemStack getDisplayStack(AuctionStackType type) {
-        ItemStack itemStack = AuctionAPI.deserializeItem(this.rawItem).clone();
+        ItemStack itemStack = AuctionAPI.getInstance().deserializeItem(this.rawItem).clone();
         itemStack.setAmount(Math.max(itemStack.getAmount(), 1));
         ItemMeta meta = itemStack.getItemMeta();
         List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
