@@ -1,9 +1,6 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
-import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import ca.tweetzy.auctionhouse.auction.AuctionStackType;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -11,16 +8,13 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.inventory.TInventory;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
-import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import sun.security.x509.OCSPNoCheckExtension;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -35,7 +29,7 @@ public class ExpiredItemsGUI extends TInventory {
 
     public ExpiredItemsGUI(Player player) {
         this.player = player;
-        this.items = Lists.partition(AuctionHouse.getInstance().getAuctionPlayerManager().locateAndSelectPlayer(player).getExpiredItems(player, true), 45);
+     //   this.items = Lists.partition(AuctionHouse.getInstance().getAuctionPlayerManager().locateAndSelectPlayer(player).getExpiredItems(player, true), 45);
         setTitle(Settings.GUI_EXPIRED_AUCTIONS_TITLE.getString());
         setPage(1);
         setRows(6);
@@ -50,11 +44,11 @@ public class ExpiredItemsGUI extends TInventory {
         switch (slot) {
             case 45:
                 // back button (send them to the main auction house page)
-                player.openInventory(new AuctionHouseGUI(AuctionHouse.getInstance().getAuctionPlayerManager().locateAndSelectPlayer(player)).getInventory());
+               // player.openInventory(new AuctionHouseGUI(AuctionHouse.getInstance().getAuctionPlayerManager().locateAndSelectPlayer(player)).getInventory());
                 break;
             case 46:
                 // claim all of the expired auctions
-                PlayerUtils.giveItem(player, AuctionHouse.getInstance().getAuctionPlayerManager().locateAndSelectPlayer(player).getExpiredItems(player, false));
+             //   PlayerUtils.giveItem(player, AuctionHouse.getInstance().getAuctionPlayerManager().locateAndSelectPlayer(player).getExpiredItems(player, false));
                 AuctionHouse.getInstance().getData().set("expired." + this.player.getUniqueId().toString(), null);
                 AuctionHouse.getInstance().getData().save();
 
@@ -90,7 +84,7 @@ public class ExpiredItemsGUI extends TInventory {
                     PlayerUtils.giveItem(player, AuctionHouse.getInstance().getData().getItemStack("expired." + player.getUniqueId().toString() + "." + key + ".item"));
                     AuctionHouse.getInstance().getData().set("expired." + player.getUniqueId().toString() + "." + key, null);
                     AuctionHouse.getInstance().getData().save();
-                    player.openInventory(new ActiveAuctionsGUI(player).getInventory());
+
                 }
                 break;
         }

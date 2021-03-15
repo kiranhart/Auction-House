@@ -26,30 +26,27 @@ import java.util.UUID;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 public class CommandSell extends AbstractCommand {
-
-    final AuctionHouse instance;
-
-    public CommandSell(AuctionHouse instance) {
+    
+    public CommandSell() {
         super(CommandType.PLAYER_ONLY, "sell");
-        this.instance = instance;
     }
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         if (args.length <= 0) return ReturnType.SYNTAX_ERROR;
         Player player = (Player) sender;
-        AuctionPlayer auctionPlayer = this.instance.getAuctionPlayerManager().locateAndSelectPlayer(player);
+        AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
         ItemStack itemToSell = PlayerHelper.getHeldItem(player);
 
         if (itemToSell.getType() == XMaterial.AIR.parseMaterial()) {
-            instance.getLocale().getMessage("general.air").sendPrefixedMessage(player);
+            AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
             return ReturnType.FAILURE;
         }
 
         // Check for block items
         if (Settings.BLOCKED_ITEMS.getStringList().contains(itemToSell.getType().name())) {
-            instance.getLocale().getMessage("general.blocked").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
+            AuctionHouse.getInstance().getLocale().getMessage("general.blocked").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
             return ReturnType.FAILURE;
         }
 
@@ -66,30 +63,30 @@ public class CommandSell extends AbstractCommand {
 
         // check if player is at their selling limit
         if (auctionPlayer.isAtSellLimit()) {
-            instance.getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(player);
+            AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(player);
             return ReturnType.FAILURE;
         }
 
         if (args.length <= 1) {
             if (!NumberUtils.isDouble(args[0])) {
-                instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
                 return ReturnType.SYNTAX_ERROR;
             }
 
             double basePrice = Double.parseDouble(args[0]);
 
             if (basePrice < Settings.MIN_AUCTION_PRICE.getDouble()) {
-                instance.getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", args[0]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", args[0]).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
 
             if (basePrice > Settings.MAX_AUCTION_PRICE.getDouble()) {
-                instance.getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", args[0]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", args[0]).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
 
             // list the item
-            instance.getAuctionItemManager().addItem(new AuctionItem(
+            AuctionHouse.getInstance().getAuctionItemManager().addItem(new AuctionItem(
                     player.getUniqueId(),
                     player.getUniqueId(),
                     itemToSell,
@@ -99,10 +96,11 @@ public class CommandSell extends AbstractCommand {
                     0,
                     0,
                     basePrice,
-                    allowedTime
+                    allowedTime,
+                    false
             ));
 
-            this.instance.getLocale().getMessage("auction.listed.nobid")
+            AuctionHouse.getInstance().getLocale().getMessage("auction.listed.nobid")
                     .processPlaceholder("amount", itemToSell.getAmount())
                     .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
                     .processPlaceholder("base_price", basePrice)
@@ -111,17 +109,17 @@ public class CommandSell extends AbstractCommand {
         } else {
             // they want to use the bidding system, so make it a bid item
             if (!NumberUtils.isDouble(args[0])) {
-                instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
                 return ReturnType.SYNTAX_ERROR;
             }
 
             if (!NumberUtils.isDouble(args[1])) {
-                instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[1]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[1]).sendPrefixedMessage(player);
                 return ReturnType.SYNTAX_ERROR;
             }
 
             if (!NumberUtils.isDouble(args[2])) {
-                instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[2]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[2]).sendPrefixedMessage(player);
                 return ReturnType.SYNTAX_ERROR;
             }
 
@@ -131,37 +129,37 @@ public class CommandSell extends AbstractCommand {
 
             // check min
             if (basePrice < Settings.MIN_AUCTION_PRICE.getDouble()) {
-                instance.getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", args[0]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", args[0]).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
 
             if (bidStartPrice < Settings.MIN_AUCTION_START_PRICE.getDouble()) {
-                instance.getLocale().getMessage("pricing.minstartingprice").processPlaceholder("price", args[1]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.minstartingprice").processPlaceholder("price", args[1]).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
 
             if (bidIncPrice < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()) {
-                instance.getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", args[2]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", args[2]).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
 
             // check max
             if (basePrice > Settings.MAX_AUCTION_PRICE.getDouble()) {
-                instance.getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", args[0]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", args[0]).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
 
             if (bidStartPrice > Settings.MAX_AUCTION_START_PRICE.getDouble()) {
-                instance.getLocale().getMessage("pricing.maxstartingprice").processPlaceholder("price", args[1]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.maxstartingprice").processPlaceholder("price", args[1]).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
 
             if (bidIncPrice > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
-                instance.getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", args[2]).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", args[2]).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
 
-            instance.getAuctionItemManager().addItem(new AuctionItem(
+            AuctionHouse.getInstance().getAuctionItemManager().addItem(new AuctionItem(
                     player.getUniqueId(),
                     player.getUniqueId(),
                     itemToSell,
@@ -171,10 +169,11 @@ public class CommandSell extends AbstractCommand {
                     bidStartPrice,
                     bidIncPrice,
                     bidStartPrice,
-                    allowedTime
+                    allowedTime,
+                    false
             ));
 
-            this.instance.getLocale().getMessage("auction.listed.withbid")
+            AuctionHouse.getInstance().getLocale().getMessage("auction.listed.withbid")
                     .processPlaceholder("amount", itemToSell.getAmount())
                     .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
                     .processPlaceholder("base_price", basePrice)

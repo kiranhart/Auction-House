@@ -162,13 +162,13 @@ public class Settings {
             "",
             "&eBuy Now: &a$%buynowprice%",
             "",
-            "&eTime Left: &b%remaining_days%&f days &b%remaining_hours%&f hours &b%remaining_minutes%&f minutes &b%remaining_seconds% seconds"
+            "&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
     ), "This the item stack lore that will be appended to", "auction items in /ah (lore will be applied first, then these)");
 
     public static final ConfigSetting AUCTION_ITEM_LISTING_STACK = new ConfigSetting(config, "auction items.listing stack", Arrays.asList(
             "&7-------------------------",
             "&eBuy Now: &a$%buynowprice%",
-            "&eTime Left: &b%remaining_days%&f:&b%remaining_hours%&f:&b%remaining_minutes%&f:&b%remaining_seconds%"
+            "&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
     ), "This the item stack lore that will be appended to", "auction items in /ah listings (lore will be applied first, then these)");
 
     public static final ConfigSetting AUCTION_ITEM_AUCTION_STACK_WITH_BID = new ConfigSetting(config, "auction items.auction stack with bid", Arrays.asList(
@@ -180,7 +180,7 @@ public class Settings {
             "&eBid Increment: &a$%bidincrement%",
             "&eHighest Bidder: &a%highestbidder%",
             "",
-            "&eTime Left: &b%remaining_days%&f days &b%remaining_hours%&f hours &b%remaining_minutes%&f minutes &b%remaining_seconds% seconds"
+            "&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
     ), "This the item stack lore that will be appended to", "auction items in /ah (lore will be applied first, then these)");
 
     public static final ConfigSetting AUCTION_ITEM_LISTING_STACK_WITH_BID = new ConfigSetting(config, "auction items.listing stack with bid", Arrays.asList(
@@ -189,7 +189,7 @@ public class Settings {
             "&eCurrent Price: &a$%currentprice%",
             "&eBid Increment: &a$%bidincrement%",
             "&eHighest Bidder: &a%highestbidder%",
-            "&eTime Left: &b%remaining_days%&f:&b%remaining_hours%&f:&b%remaining_minutes%&f:&b%remaining_seconds%"
+            "&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
     ), "This the item stack lore that will be appended to", "auction items in /ah listings (lore will be applied first, then these)");
 
     public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_BID_ON = new ConfigSetting(config, "auction items.controls.using bid", Arrays.asList(

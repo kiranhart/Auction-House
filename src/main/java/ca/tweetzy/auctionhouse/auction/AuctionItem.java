@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,12 +25,12 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-public class AuctionItem {
+public class AuctionItem implements Serializable {
 
     private UUID owner;
     private UUID highestBidder;
 
-    private ItemStack originalItem;
+    private byte[] rawItem;
     private AuctionItemCategory category;
     private UUID key;
 
@@ -38,12 +39,13 @@ public class AuctionItem {
     private double bidIncPrice;
     private double currentPrice;
 
+    private boolean expired;
     private int remainingTime;
 
-    public AuctionItem(UUID owner, UUID highestBidder, ItemStack originalItem, AuctionItemCategory category, UUID key, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, int remainingTime) {
+    public AuctionItem(UUID owner, UUID highestBidder, ItemStack originalItem, AuctionItemCategory category, UUID key, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, int remainingTime, boolean expired) {
         this.owner = owner;
         this.highestBidder = highestBidder;
-        this.originalItem = originalItem;
+        this.rawItem = AuctionAPI.serializeItem(originalItem);
         this.category = category;
         this.key = key;
         this.basePrice = basePrice;
@@ -51,24 +53,16 @@ public class AuctionItem {
         this.bidIncPrice = bidIncPrice;
         this.currentPrice = currentPrice;
         this.remainingTime = remainingTime;
+        this.expired = expired;
     }
 
     public void updateRemainingTime(int removeAmount) {
         this.remainingTime = Math.max(this.remainingTime - removeAmount, 0);
-    }
-
-    public String getDisplayName() {
-        String name;
-        if (this.originalItem.hasItemMeta()) {
-            name = (this.originalItem.getItemMeta().hasDisplayName()) ? this.originalItem.getItemMeta().getDisplayName() : StringUtils.capitalize(this.originalItem.getType().name().toLowerCase().replace("_", " "));
-        } else {
-            name = StringUtils.capitalize(this.originalItem.getType().name().toLowerCase().replace("_", " "));
-        }
-        return name;
+        if (this.remainingTime <= 0) this.expired = true;
     }
 
     public ItemStack getDisplayStack(AuctionStackType type) {
-        ItemStack itemStack = this.originalItem.clone();
+        ItemStack itemStack = AuctionAPI.deserializeItem(this.rawItem).clone();
         itemStack.setAmount(Math.max(itemStack.getAmount(), 1));
         ItemMeta meta = itemStack.getItemMeta();
         List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
@@ -76,7 +70,6 @@ public class AuctionItem {
         String theSeller = (this.owner == null) ? "&eSeller Name???" : Bukkit.getOfflinePlayer(this.owner).getName();
         String highestBidder = (this.bidStartPrice <= 0) ? "" : (this.owner.equals(this.highestBidder)) ? Bukkit.getOfflinePlayer(this.owner).getName() : (Bukkit.getOfflinePlayer(this.highestBidder).isOnline()) ? Bukkit.getOfflinePlayer(this.highestBidder).getPlayer().getName() : "Offline";
         String basePrice = Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : String.format("%,.2f", this.basePrice);
-      //  String bidStartPrice = Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.bidStartPrice) : String.format("%,.2f", this.bidStartPrice);
         String bidIncPrice = (this.bidStartPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.bidIncPrice) : String.format("%,.2f", this.bidIncPrice);
         String currentPrice = (this.bidStartPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : String.format("%,.2f", this.currentPrice);
 

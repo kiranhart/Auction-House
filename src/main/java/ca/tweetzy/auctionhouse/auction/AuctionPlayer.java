@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 @Setter
 public class AuctionPlayer {
 
-    private final UUID id;
     private final Player player;
 
     private boolean viewingAuctionHouse;
@@ -33,14 +32,13 @@ public class AuctionPlayer {
 
     public AuctionPlayer(Player player) {
         this.player = player;
-        this.id = player.getUniqueId();
         this.viewingAuctionHouse = false;
         this.currentAuctionPage = 1;
         this.preferredCategory = AuctionItemCategory.ALL;
     }
 
-    public List<AuctionItem> getActiveItems() {
-        return AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> item.getOwner().equals(this.player.getUniqueId())).collect(Collectors.toList());
+    public List<AuctionItem> getItems(boolean getExpired) {
+        return Collections.unmodifiableList(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> item.getOwner().equals(this.player.getUniqueId()) && item.isExpired() == getExpired).collect(Collectors.toList()));
     }
 
     public int getSellLimit() {
@@ -51,23 +49,8 @@ public class AuctionPlayer {
         return 0;
     }
 
-    public ArrayList<ItemStack> getExpiredItems(Player player, boolean addNBT) {
-        ConfigurationSection section = AuctionHouse.getInstance().getData().getConfigurationSection("expired." + player.getUniqueId().toString());
-        ArrayList<ItemStack> expiredItems = new ArrayList<>();
-        if (section == null || section.getKeys(false).size() == 0) return expiredItems;
-
-        for (String nodes : section.getKeys(false)) {
-            ItemStack stack = AuctionHouse.getInstance().getData().getItemStack("expired." + player.getUniqueId().toString() + "." + nodes + ".item");
-            if (addNBT) {
-                stack = NBTEditor.set(stack, AuctionHouse.getInstance().getData().getString("expired." + player.getUniqueId().toString() + "." + nodes + ".key"), "AuctionItemKey");
-            }
-            expiredItems.add(stack);
-        }
-
-        return expiredItems;
-    }
 
     public boolean isAtSellLimit() {
-        return getSellLimit() - 1 < getActiveItems().size();
+        return getSellLimit() - 1 < getItems(false).size();
     }
 }

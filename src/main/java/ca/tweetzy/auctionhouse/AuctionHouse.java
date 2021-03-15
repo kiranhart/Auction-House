@@ -13,6 +13,7 @@ import ca.tweetzy.core.commands.CommandManager;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.core.PluginID;
+import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -32,6 +33,7 @@ public class AuctionHouse extends TweetyPlugin {
 
     private Economy economy;
 
+    private final GuiManager guiManager = new GuiManager(this);
     private final Config data = new Config(this, "data.yml");
 
     protected Metrics metrics;
@@ -74,25 +76,26 @@ public class AuctionHouse extends TweetyPlugin {
 
         // auction players
         this.auctionPlayerManager = new AuctionPlayerManager();
-        Bukkit.getOnlinePlayers().forEach(p -> this.auctionPlayerManager.addSpeedyPlayer(p));
+//        Bukkit.getOnlinePlayers().forEach(p -> this.auctionPlayerManager.addSpeedyPlayer(p));
 
         // load auction items
         this.auctionItemManager = new AuctionItemManager();
         this.auctionItemManager.loadItems();
 
+        // gui manager
+        this.guiManager.init();
+
         // commands
         this.commandManager = new CommandManager(this);
-        this.commandManager.addCommand(new CommandAuctionHouse(this)).addSubCommands(
-                new CommandSell(this)
+        this.commandManager.addCommand(new CommandAuctionHouse()).addSubCommands(
+                new CommandSell()
         );
 
         // start the auction tick task
         TickAuctionsTask.startTask();
 
         // metrics
-        if (Settings.METRICS.getBoolean()) {
-            this.metrics = new Metrics(this, (int) PluginID.AUCTION_HOUSE.getbStatsID());
-        }
+        this.metrics = new Metrics(this, (int) PluginID.AUCTION_HOUSE.getbStatsID());
     }
 
     @Override
@@ -138,5 +141,9 @@ public class AuctionHouse extends TweetyPlugin {
 
     public AuctionPlayerManager getAuctionPlayerManager() {
         return auctionPlayerManager;
+    }
+
+    public GuiManager getGuiManager() {
+        return guiManager;
     }
 }

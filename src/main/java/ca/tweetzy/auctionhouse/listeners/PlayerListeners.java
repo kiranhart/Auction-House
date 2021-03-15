@@ -21,15 +21,13 @@ public class PlayerListeners implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
-            if (AuctionHouse.getInstance().getAuctionPlayerManager().getAuctionPlayers().stream().noneMatch(players -> players.getId().equals(player.getUniqueId()))) {
-                AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
-            }
+            AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
         }, 20);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
-        AuctionHouse.getInstance().getAuctionPlayerManager().removePlayer(AuctionHouse.getInstance().getAuctionPlayerManager().locateAndSelectPlayer(player));
+        AuctionHouse.getInstance().getAuctionPlayerManager().removePlayer(player.getUniqueId());
     }
 }

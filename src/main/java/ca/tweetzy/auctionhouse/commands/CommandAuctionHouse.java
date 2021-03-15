@@ -1,7 +1,7 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.guis.AuctionHouseGUI;
+import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.core.commands.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,18 +17,15 @@ import java.util.stream.Collectors;
  */
 public class CommandAuctionHouse extends AbstractCommand {
 
-    final AuctionHouse instance;
-
-    public CommandAuctionHouse(AuctionHouse instance) {
+    public CommandAuctionHouse() {
         super(CommandType.PLAYER_ONLY, "auctionhouse");
-        this.instance = instance;
     }
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            player.openInventory(new AuctionHouseGUI(instance.getAuctionPlayerManager().locateAndSelectPlayer(player)).getInventory());
+            AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())));
         }
         return ReturnType.SUCCESS;
     }
@@ -36,7 +33,7 @@ public class CommandAuctionHouse extends AbstractCommand {
     @Override
     protected List<String> onTab(CommandSender sender, String... args) {
         Player player = (Player) sender;
-        return instance.getCommandManager().getAllCommands().stream().filter(cmd -> cmd.getPermissionNode() == null ||  player.hasPermission(cmd.getPermissionNode())).map(AbstractCommand::getSyntax).collect(Collectors.toList());
+        return AuctionHouse.getInstance().getCommandManager().getAllCommands().stream().filter(cmd -> cmd.getPermissionNode() == null ||  player.hasPermission(cmd.getPermissionNode())).map(AbstractCommand::getSyntax).collect(Collectors.toList());
     }
 
     @Override
@@ -46,7 +43,7 @@ public class CommandAuctionHouse extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/Ah";
+        return "/ah";
     }
 
     @Override
