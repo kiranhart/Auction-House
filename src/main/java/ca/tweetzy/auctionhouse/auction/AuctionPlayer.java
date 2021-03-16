@@ -1,14 +1,10 @@
 package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,15 +21,10 @@ import java.util.stream.Collectors;
 public class AuctionPlayer {
 
     private final Player player;
-
-    private boolean viewingAuctionHouse;
-    private int currentAuctionPage;
     private AuctionItemCategory preferredCategory;
 
     public AuctionPlayer(Player player) {
         this.player = player;
-        this.viewingAuctionHouse = false;
-        this.currentAuctionPage = 1;
         this.preferredCategory = AuctionItemCategory.ALL;
     }
 

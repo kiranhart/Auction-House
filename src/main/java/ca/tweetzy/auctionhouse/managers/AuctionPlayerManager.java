@@ -2,7 +2,6 @@ package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import lombok.Getter;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,10 +20,6 @@ public class AuctionPlayerManager {
 
     private final ArrayList<AuctionPlayer> auctionPlayers = new ArrayList<>();
 
-    public void closeAuctionHouse() {
-        auctionPlayers.stream().filter(AuctionPlayer::isViewingAuctionHouse).map(AuctionPlayer::getPlayer).forEach(Player::closeInventory);
-    }
-
     public void addPlayer(AuctionPlayer auctionPlayer) {
         if (auctionPlayer == null) return;
         if (this.auctionPlayers.stream().anyMatch(player -> player.getPlayer().getUniqueId().equals(auctionPlayer.getPlayer().getUniqueId()))) return;
@@ -42,4 +37,5 @@ public class AuctionPlayerManager {
     public List<AuctionPlayer> getAuctionPlayers() {
         return Collections.unmodifiableList(auctionPlayers);
     }
+
 }

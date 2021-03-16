@@ -111,16 +111,6 @@ public class TickAuctionsTask extends BukkitRunnable {
                 }
             });
 
-
-            // auction page updates
-//            if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
-//                Bukkit.getOnlinePlayers().forEach(player -> {
-//                    if (player.getOpenInventory().getTitle().equals(Settings.GUI_AUCTION_HOUSE_TITLE.getString())) {
-//                        player.openInventory(new AuctionHouseGUI(AuctionHouse.getInstance().getAuctionPlayerManager().locateAndSelectPlayer(player)).getInventory());
-//                    }
-//                });
-//            }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

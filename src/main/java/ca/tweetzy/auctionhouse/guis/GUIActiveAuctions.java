@@ -1,5 +1,6 @@
 package ca.tweetzy.auctionhouse.guis;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionStackType;
@@ -8,6 +9,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
+import org.bukkit.Bukkit;
 
 import java.util.Comparator;
 import java.util.List;
@@ -24,12 +26,22 @@ public class GUIActiveAuctions extends Gui {
 
     final AuctionPlayer auctionPlayer;
 
+    private int taskId;
+
     public GUIActiveAuctions(AuctionPlayer auctionPlayer) {
         this.auctionPlayer = auctionPlayer;
         setTitle(TextUtils.formatText(Settings.GUI_ACTIVE_AUCTIONS_TITLE.getString()));
         setRows(6);
         setAcceptsItems(false);
         draw();
+
+        setOnOpen(e -> {
+            taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::draw, 0L, Settings.TICK_UPDATE_TIME.getInt());
+        });
+
+        setOnClose(e -> {
+            Bukkit.getServer().getScheduler().cancelTask(taskId);
+        });
     }
 
     private void draw() {

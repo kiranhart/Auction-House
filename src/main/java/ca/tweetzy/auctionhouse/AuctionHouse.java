@@ -1,6 +1,8 @@
 package ca.tweetzy.auctionhouse;
 
+import ca.tweetzy.auctionhouse.commands.CommandActive;
 import ca.tweetzy.auctionhouse.commands.CommandAuctionHouse;
+import ca.tweetzy.auctionhouse.commands.CommandExpired;
 import ca.tweetzy.auctionhouse.commands.CommandSell;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
@@ -88,7 +90,9 @@ public class AuctionHouse extends TweetyPlugin {
         // commands
         this.commandManager = new CommandManager(this);
         this.commandManager.addCommand(new CommandAuctionHouse()).addSubCommands(
-                new CommandSell()
+                new CommandSell(),
+                new CommandActive(),
+                new CommandExpired()
         );
 
         // start the auction tick task
@@ -100,7 +104,6 @@ public class AuctionHouse extends TweetyPlugin {
 
     @Override
     public void onPluginDisable() {
-        this.auctionPlayerManager.closeAuctionHouse();
         this.auctionItemManager.saveItems();
         instance = null;
         //token change test
