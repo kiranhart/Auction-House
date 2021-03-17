@@ -20,16 +20,15 @@ public class AuctionListeners implements Listener {
 
     @EventHandler
     public void onAuctionStart(AuctionStartEvent e) {
-        if (Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean()) {
-            Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
-                Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> AuctionAPI.getInstance().sendDiscordMessage(hook, e.getSeller(), e.getSeller(), e.getAuctionItem(), AuctionSaleType.USED_BIDDING_SYSTEM, true, e.getAuctionItem().getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble()));
-            }, 0L);
+        if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean()) {
+            Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> AuctionAPI.getInstance().sendDiscordMessage(hook, e.getSeller(), e.getSeller(), e.getAuctionItem(), AuctionSaleType.USED_BIDDING_SYSTEM, true, e.getAuctionItem().getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble())), 1L);
         }
     }
 
     @EventHandler
     public void onAuctionEnd(AuctionEndEvent e) {
-
+        if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_FINISH.getBoolean()) {
+            Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> AuctionAPI.getInstance().sendDiscordMessage(hook, e.getOriginalOwner(), e.getBuyer(), e.getAuctionItem(), e.getSaleType(), false, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM)), 1L);
+        }
     }
-
 }

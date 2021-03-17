@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.tasks;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
+import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
 import org.apache.commons.lang.WordUtils;
@@ -49,21 +50,22 @@ public class TickAuctionsTask extends BukkitRunnable {
 
             AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> item.getRemainingTime() <= 0).collect(Collectors.toList()).iterator().forEachRemaining(item -> {
                 // call the auction end event
-                AuctionEndEvent auctionEndEvent = new AuctionEndEvent(item);
-                AuctionHouse.getInstance().getServer().getPluginManager().callEvent(auctionEndEvent);
+                AuctionEndEvent auctionEndEvent = null;
 
-                // if the event is cancelled then stop
-                if (!auctionEndEvent.isCancelled()) {
-                    // check if the auction item owner is the same as the highest bidder
-                    if (item.getOwner().equals(item.getHighestBidder())) {
-                        // was not sold
-                        item.setExpired(true);
-                        AuctionHouse.getInstance().getAuctionItemManager().adjustItemsInFile(item, true);
-                    } else {
-                        // the item was sold ?? then do the checks
-                        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(item.getHighestBidder());
-                        if (offlinePlayer.isOnline()) {
-                            if (AuctionHouse.getInstance().getEconomy().has(offlinePlayer, item.getCurrentPrice())) {
+                // check if the auction item owner is the same as the highest bidder
+                if (item.getOwner().equals(item.getHighestBidder())) {
+                    // was not sold
+                    item.setExpired(true);
+                    AuctionHouse.getInstance().getAuctionItemManager().adjustItemsInFile(item, true);
+                } else {
+                    // the item was sold ?? then do the checks
+                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(item.getHighestBidder());
+                    if (offlinePlayer.isOnline()) {
+                        if (AuctionHouse.getInstance().getEconomy().has(offlinePlayer, item.getCurrentPrice())) {
+                            auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(item.getOwner()), offlinePlayer, item, AuctionSaleType.USED_BIDDING_SYSTEM);
+                            AuctionHouse.getInstance().getServer().getPluginManager().callEvent(auctionEndEvent);
+
+                            if (!auctionEndEvent.isCancelled()) {
                                 // since they're online, try to add the item to their inventory
                                 PlayerUtils.giveItem(offlinePlayer.getPlayer(), AuctionAPI.getInstance().deserializeItem(item.getRawItem()));
                                 // withdraw money and give to the owner
@@ -87,28 +89,35 @@ public class TickAuctionsTask extends BukkitRunnable {
 
                                 AuctionHouse.getInstance().getAuctionItemManager().removeItem(item.getKey());
                                 AuctionHouse.getInstance().getAuctionItemManager().adjustItemsInFile(item, false);
-                            } else {
-                                // they don't have enough money to buy it, so send it back to the original owner
-                                item.setExpired(true);
-                                AuctionHouse.getInstance().getAuctionItemManager().adjustItemsInFile(item, true);
                             }
+
                         } else {
-                            // offline, so save their purchase in the collection inventory
-                            if (AuctionHouse.getInstance().getEconomy().has(offlinePlayer, item.getCurrentPrice())) {
+                            // they don't have enough money to buy it, so send it back to the original owner
+                            item.setExpired(true);
+                            AuctionHouse.getInstance().getAuctionItemManager().adjustItemsInFile(item, true);
+                        }
+                    } else {
+                        // offline, so save their purchase in the collection inventory
+                        if (AuctionHouse.getInstance().getEconomy().has(offlinePlayer, item.getCurrentPrice())) {
+                            auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(item.getOwner()), offlinePlayer, item, AuctionSaleType.USED_BIDDING_SYSTEM);
+                            AuctionHouse.getInstance().getServer().getPluginManager().callEvent(auctionEndEvent);
+
+                            if (!auctionEndEvent.isCancelled()) {
                                 // withdraw money and give to the owner
                                 AuctionHouse.getInstance().getEconomy().withdrawPlayer(offlinePlayer, item.getCurrentPrice());
                                 AuctionHouse.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(item.getOwner()), item.getCurrentPrice());
                                 item.setOwner(offlinePlayer.getUniqueId());
                                 item.setExpired(true);
                                 AuctionHouse.getInstance().getAuctionItemManager().adjustItemsInFile(item, true);
-                            } else {
-                                // they don't have enough money to buy it, so send it back to the original owner
-                                item.setExpired(true);
-                                AuctionHouse.getInstance().getAuctionItemManager().adjustItemsInFile(item, true);
                             }
+                        } else {
+                            // they don't have enough money to buy it, so send it back to the original owner
+                            item.setExpired(true);
+                            AuctionHouse.getInstance().getAuctionItemManager().adjustItemsInFile(item, true);
                         }
                     }
                 }
+
             });
 
         } catch (Exception e) {

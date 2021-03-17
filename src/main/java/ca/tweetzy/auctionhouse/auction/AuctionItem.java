@@ -65,8 +65,8 @@ public class AuctionItem implements Serializable {
 
     public String getItemName() {
         ItemStack stack = AuctionAPI.getInstance().deserializeItem(this.rawItem);
-        if (stack == null) return "";
-        if (!stack.hasItemMeta()) return "";
+        if (stack == null) return "Invalid Item";
+        if (!stack.hasItemMeta()) return WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " "));
         return stack.getItemMeta().hasDisplayName() ? ChatColor.stripColor(stack.getItemMeta().getDisplayName()) : WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " "));
     }
 

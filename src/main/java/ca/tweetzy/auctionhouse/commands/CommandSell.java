@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
@@ -12,6 +13,7 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -87,8 +89,7 @@ public class CommandSell extends AbstractCommand {
                 return ReturnType.FAILURE;
             }
 
-            // list the item
-            AuctionHouse.getInstance().getAuctionItemManager().addItem(new AuctionItem(
+            AuctionItem item = new AuctionItem(
                     player.getUniqueId(),
                     player.getUniqueId(),
                     itemToSell,
@@ -100,7 +101,14 @@ public class CommandSell extends AbstractCommand {
                     basePrice,
                     allowedTime,
                     false
-            ));
+            );
+
+            AuctionStartEvent startEvent = new AuctionStartEvent(player, item);
+            Bukkit.getServer().getPluginManager().callEvent(startEvent);
+            if (startEvent.isCancelled()) return ReturnType.FAILURE;
+
+            // list the item
+            AuctionHouse.getInstance().getAuctionItemManager().addItem(item);
 
             AuctionHouse.getInstance().getLocale().getMessage("auction.listed.nobid")
                     .processPlaceholder("amount", itemToSell.getAmount())
@@ -162,7 +170,7 @@ public class CommandSell extends AbstractCommand {
                 return ReturnType.FAILURE;
             }
 
-            AuctionHouse.getInstance().getAuctionItemManager().addItem(new AuctionItem(
+            AuctionItem item = new AuctionItem(
                     player.getUniqueId(),
                     player.getUniqueId(),
                     itemToSell,
@@ -174,7 +182,13 @@ public class CommandSell extends AbstractCommand {
                     bidStartPrice,
                     allowedTime,
                     false
-            ));
+            );
+
+            AuctionStartEvent startEvent = new AuctionStartEvent(player, item);
+            Bukkit.getServer().getPluginManager().callEvent(startEvent);
+            if (startEvent.isCancelled()) return ReturnType.FAILURE;
+
+            AuctionHouse.getInstance().getAuctionItemManager().addItem(item);
 
             AuctionHouse.getInstance().getLocale().getMessage("auction.listed.withbid")
                     .processPlaceholder("amount", itemToSell.getAmount())
