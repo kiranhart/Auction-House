@@ -35,13 +35,15 @@ public class GUIActiveAuctions extends Gui {
         setAcceptsItems(false);
         draw();
 
-        setOnOpen(e -> {
-            taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::draw, 0L, Settings.TICK_UPDATE_TIME.getInt());
-        });
+        if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
+            setOnOpen(e -> {
+                taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::draw, 0L, Settings.TICK_UPDATE_TIME.getInt());
+            });
 
-        setOnClose(e -> {
-            Bukkit.getServer().getScheduler().cancelTask(taskId);
-        });
+            setOnClose(e -> {
+                Bukkit.getServer().getScheduler().cancelTask(taskId);
+            });
+        }
     }
 
     private void draw() {

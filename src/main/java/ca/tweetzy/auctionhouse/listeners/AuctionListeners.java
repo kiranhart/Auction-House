@@ -15,7 +15,6 @@ public class AuctionListeners implements Listener {
 
     @EventHandler
     public void onAuctionStart(AuctionStartEvent e) {
-
     }
 
     @EventHandler

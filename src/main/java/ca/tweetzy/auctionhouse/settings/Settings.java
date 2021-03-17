@@ -20,8 +20,6 @@ public class Settings {
 
     public static final ConfigSetting LANG = new ConfigSetting(config, "lang", "en_US", "Default language file");
     public static final ConfigSetting UPDATE_CHECKER = new ConfigSetting(config, "update checker", true, "Should auction house check for updates?");
-    public static final ConfigSetting METRICS = new ConfigSetting(config, "metrics", true, "Should the plugin use metrics?", "It simply allows me to see how many servers", "are currently using the auction house plugin.");
-
     /*  ===============================
      *          BASIC SETTINGS
      *  ===============================*/
@@ -37,8 +35,54 @@ public class Settings {
     public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGES = new ConfigSetting(config, "auction setting.auto refresh auction pages", true, "Should auction pages auto refresh?");
     public static final ConfigSetting USE_SHORT_NUMBERS_ON_ITEMS = new ConfigSetting(config, "auction setting.use short numbers", false, "Should numbers be shortened into a prefixed form?");
     public static final ConfigSetting INCREASE_TIME_ON_BID = new ConfigSetting(config, "auction setting.increase time on bid", true, "Should the remaining time be increased when a bid is placed?");
-    public static final ConfigSetting TIME_TO_INCREASE_BY_ON_BID = new ConfigSetting(config, "auction setting.time to increase by on the bid", 20, "How much ticks should be added to the bid? 20 == 1 second");
+    public static final ConfigSetting TIME_TO_INCREASE_BY_ON_BID = new ConfigSetting(config, "auction setting.time to increase by on the bid", 20, "How many seconds should be added to the remaining time?");
     public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
+
+    /*  ===============================
+     *         DISCORD WEBHOOK
+     *  ===============================*/
+    public static final ConfigSetting DISCORD_ENABLED = new ConfigSetting(config, "discord.enabled", true, "Should the discord webhook feature be enabled?");
+    public static final ConfigSetting DISCORD_ALERT_ON_AUCTION_START = new ConfigSetting(config, "discord.alert on auction start", true, "Should a message be sent to the discord server when someone lists a new auction item");
+    public static final ConfigSetting DISCORD_ALERT_ON_AUCTION_FINISH = new ConfigSetting(config, "discord.alert on auction finish", true, "Should a message when an auction finishes?");
+    public static final ConfigSetting DISCORD_WEBHOOKS = new ConfigSetting(config, "discord.webhooks", Collections.singletonList(""), "A list of webhook urls (channels) you want a message sent to");
+    public static final ConfigSetting DISCORD_MSG_USERNAME = new ConfigSetting(config, "discord.user.username", "Auction House", "The name of the user who will send the message");
+    public static final ConfigSetting DISCORD_MSG_PFP = new ConfigSetting(config, "discord.user.avatar picture", "https://cdn.kiranhart.com/spigot/auctionhouse/icon.png", "The name of the user who will send the message");
+    public static final ConfigSetting DISCORD_MSG_USE_RANDOM_COLOUR = new ConfigSetting(config, "discord.msg.use random colour", true, "The name of the user who will send the message");
+    public static final ConfigSetting DISCORD_MSG_DEFAULT_COLOUR = new ConfigSetting(config, "discord.msg.default colour", "137-100-100", "The color of the embed, it needs to be in hsb format.", "Separate the numbers with a -");
+    public static final ConfigSetting DISCORD_MSG_START_TITLE = new ConfigSetting(config, "discord.msg.auction start title", "New Auction Available", "The title of the message when a new auction is made");
+    public static final ConfigSetting DISCORD_MSG_FINISH_TITLE = new ConfigSetting(config, "discord.msg.auction finish title", "Auction Finished", "The title of th message when an auction finishes");
+
+    public static final ConfigSetting DISCORD_MSG_FIELD_SELLER_NAME = new ConfigSetting(config, "discord.msg.seller.name", "Seller");
+    public static final ConfigSetting DISCORD_MSG_FIELD_SELLER_VALUE = new ConfigSetting(config, "discord.msg.seller.value", "%seller%");
+    public static final ConfigSetting DISCORD_MSG_FIELD_SELLER_INLINE = new ConfigSetting(config, "discord.msg.seller.inline", true);
+
+    public static final ConfigSetting DISCORD_MSG_FIELD_BUYER_NAME = new ConfigSetting(config, "discord.msg.buyer.name", "Buyer");
+    public static final ConfigSetting DISCORD_MSG_FIELD_BUYER_VALUE = new ConfigSetting(config, "discord.msg.buyer.value", "%buyer%");
+    public static final ConfigSetting DISCORD_MSG_FIELD_BUYER_INLINE = new ConfigSetting(config, "discord.msg.buyer.inline", true);
+
+    public static final ConfigSetting DISCORD_MSG_FIELD_BUY_NOW_PRICE_NAME = new ConfigSetting(config, "discord.msg.buy now price.name", "Buy Now Price");
+    public static final ConfigSetting DISCORD_MSG_FIELD_BUY_NOW_PRICE_VALUE = new ConfigSetting(config, "discord.msg.buy now price.value", "%buy_now_price%");
+    public static final ConfigSetting DISCORD_MSG_FIELD_BUY_NOW_PRICE_INLINE = new ConfigSetting(config, "discord.msg.buy now price.inline", true);
+
+    public static final ConfigSetting DISCORD_MSG_FIELD_FINAL_PRICE_NAME = new ConfigSetting(config, "discord.msg.final price.name", "Final Price");
+    public static final ConfigSetting DISCORD_MSG_FIELD_FINAL_PRICE_VALUE = new ConfigSetting(config, "discord.msg.final price.value", "%final_price%");
+    public static final ConfigSetting DISCORD_MSG_FIELD_FINAL_PRICE_INLINE = new ConfigSetting(config, "discord.msg.final price.inline", true);
+
+    public static final ConfigSetting DISCORD_MSG_FIELD_IS_BID_NAME = new ConfigSetting(config, "discord.msg.is bid.name", "Was Bid");
+    public static final ConfigSetting DISCORD_MSG_FIELD_IS_BID_VALUE = new ConfigSetting(config, "discord.msg.is bid.value", "%is_bid");
+    public static final ConfigSetting DISCORD_MSG_FIELD_IS_BID_INLINE = new ConfigSetting(config, "discord.msg.is bid.inline", true);
+
+    public static final ConfigSetting DISCORD_MSG_FIELD_PURCHASE_TYPE_NAME = new ConfigSetting(config, "discord.msg.purchase type.name", "Purchase Type");
+    public static final ConfigSetting DISCORD_MSG_FIELD_PURCHASE_TYPE_VALUE = new ConfigSetting(config, "discord.msg.purchase type.value", "%purchase_type%");
+    public static final ConfigSetting DISCORD_MSG_FIELD_PURCHASE_INLINE = new ConfigSetting(config, "discord.msg.purchase type.inline", true);
+
+    public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_NAME = new ConfigSetting(config, "discord.msg.item.name", "Item Name");
+    public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_VALUE = new ConfigSetting(config, "discord.msg.item.value", "%item_name%");
+    public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_INLINE = new ConfigSetting(config, "discord.msg.item.inline", true);
+
+    public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_AMOUNT_NAME = new ConfigSetting(config, "discord.msg.item amount.name", "Item Amount");
+    public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_AMOUNT_VALUE = new ConfigSetting(config, "discord.msg.item amount.value", "%item_amount%");
+    public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_AMOUNT_INLINE = new ConfigSetting(config, "discord.msg.item amount.inline", true);
 
     /*  ===============================
      *         BLOCKED ITEMS
