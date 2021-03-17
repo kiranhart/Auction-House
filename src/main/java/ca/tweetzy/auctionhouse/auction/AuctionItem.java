@@ -7,7 +7,9 @@ import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -59,6 +61,13 @@ public class AuctionItem implements Serializable {
     public void updateRemainingTime(int removeAmount) {
         this.remainingTime = Math.max(this.remainingTime - removeAmount, 0);
         if (this.remainingTime <= 0) this.expired = true;
+    }
+
+    public String getItemName() {
+        ItemStack stack = AuctionAPI.getInstance().deserializeItem(this.rawItem);
+        if (stack == null) return "";
+        if (!stack.hasItemMeta()) return "";
+        return stack.getItemMeta().hasDisplayName() ? ChatColor.stripColor(stack.getItemMeta().getDisplayName()) : WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " "));
     }
 
     public ItemStack getDisplayStack(AuctionStackType type) {

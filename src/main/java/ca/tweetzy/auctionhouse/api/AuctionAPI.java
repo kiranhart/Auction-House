@@ -1,13 +1,19 @@
 package ca.tweetzy.auctionhouse.api;
 
+import ca.tweetzy.auctionhouse.auction.AuctionItem;
+import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
+import ca.tweetzy.auctionhouse.settings.Settings;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
+import java.awt.*;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Base64;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -139,4 +145,43 @@ public class AuctionAPI {
         return null;
     }
 
+    /**
+     * Used to send a discord message to a webhook link
+     *
+     * @param seller      The Seller of the auction item
+     * @param buyer       The Buyer of the auction item
+     * @param auctionItem The object of the auction item
+     * @param saleType    The sale type, was it a bid won or an immediate purchase?
+     * @param isNew       Is this the start of a new auction or the end of one?
+     * @param isBid       Is this auction a bid enabled auction, or a single sale auction?
+     */
+    public void sendDiscordMessage(String webhook, OfflinePlayer seller, OfflinePlayer buyer, AuctionItem auctionItem, AuctionSaleType saleType, boolean isNew, boolean isBid) {
+        DiscordWebhook hook = new DiscordWebhook(webhook);
+        hook.setUsername(Settings.DISCORD_MSG_USERNAME.getString());
+        hook.setAvatarUrl(Settings.DISCORD_MSG_PFP.getString());
+
+        String[] possibleColours = Settings.DISCORD_MSG_DEFAULT_COLOUR.getString().split("-");
+        Color colour = Settings.DISCORD_MSG_USE_RANDOM_COLOUR.getBoolean()
+                ? Color.getHSBColor(ThreadLocalRandom.current().nextFloat() * 360F, ThreadLocalRandom.current().nextFloat() * 101F, ThreadLocalRandom.current().nextFloat() * 101F)
+                : Color.getHSBColor(Float.parseFloat(possibleColours[0]), Float.parseFloat(possibleColours[1]), Float.parseFloat(possibleColours[2]));
+
+        hook.addEmbed(new DiscordWebhook.EmbedObject()
+                .setTitle(isNew ? Settings.DISCORD_MSG_START_TITLE.getString() : Settings.DISCORD_MSG_FINISH_TITLE.getString())
+                .setColor(colour)
+                .addField(Settings.DISCORD_MSG_FIELD_SELLER_NAME.getString(), Settings.DISCORD_MSG_FIELD_SELLER_VALUE.getString().replace("%seller%", seller.getName() != null ? seller.getName() : "Player Lost o.O"), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean())
+                .addField(Settings.DISCORD_MSG_FIELD_BUYER_NAME.getString(), isNew ? "No Buyer" : Settings.DISCORD_MSG_FIELD_BUYER_VALUE.getString().replace("%buyer%", buyer.getName() != null ? buyer.getName() : "Player Lost o.O"), Settings.DISCORD_MSG_FIELD_BUYER_INLINE.getBoolean())
+                .addField(Settings.DISCORD_MSG_FIELD_BUY_NOW_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_BUY_NOW_PRICE_VALUE.getString().replace("%buy_now_price%", this.getFriendlyNumber(auctionItem.getBasePrice())), Settings.DISCORD_MSG_FIELD_BUY_NOW_PRICE_INLINE.getBoolean())
+                .addField(Settings.DISCORD_MSG_FIELD_FINAL_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_FINAL_PRICE_VALUE.getString().replace("%final_price%", this.getFriendlyNumber(isBid ? auctionItem.getCurrentPrice() : auctionItem.getBasePrice())), Settings.DISCORD_MSG_FIELD_FINAL_PRICE_INLINE.getBoolean())
+                .addField(Settings.DISCORD_MSG_FIELD_IS_BID_NAME.getString(), Settings.DISCORD_MSG_FIELD_IS_BID_VALUE.getString().replace("%is_bid%", String.valueOf(isBid)), Settings.DISCORD_MSG_FIELD_IS_BID_INLINE.getBoolean())
+                .addField(Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_NAME.getString(), isNew ? "Was not bought" : Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_VALUE.getString().replace("%purchase_type%", saleType == AuctionSaleType.USED_BIDDING_SYSTEM ? "Won Bid" : "Bought Immediately"), Settings.DISCORD_MSG_FIELD_PURCHASE_INLINE.getBoolean())
+                .addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", auctionItem.getItemName()), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean())
+                .addField(Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_VALUE.getString().replace("%item_value%", String.valueOf(this.deserializeItem(auctionItem.getRawItem()).getAmount())), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_INLINE.getBoolean())
+        );
+
+        try {
+            hook.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

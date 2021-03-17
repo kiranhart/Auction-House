@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.commands.CommandActive;
 import ca.tweetzy.auctionhouse.commands.CommandAuctionHouse;
 import ca.tweetzy.auctionhouse.commands.CommandExpired;
 import ca.tweetzy.auctionhouse.commands.CommandSell;
+import ca.tweetzy.auctionhouse.listeners.AuctionListeners;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
 import ca.tweetzy.auctionhouse.managers.AuctionPlayerManager;
@@ -73,6 +74,7 @@ public class AuctionHouse extends TweetyPlugin {
 
         // listeners
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new AuctionListeners(), this);
 
         this.data.load();
 
