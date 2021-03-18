@@ -174,7 +174,7 @@ public class AuctionAPI {
                 .addField(Settings.DISCORD_MSG_FIELD_FINAL_PRICE_NAME.getString(), isNew ? "Not Sold" : Settings.DISCORD_MSG_FIELD_FINAL_PRICE_VALUE.getString().replace("%final_price%", this.getFriendlyNumber(isBid ? auctionItem.getCurrentPrice() : auctionItem.getBasePrice())), Settings.DISCORD_MSG_FIELD_FINAL_PRICE_INLINE.getBoolean())
                 .addField(Settings.DISCORD_MSG_FIELD_IS_BID_NAME.getString(), Settings.DISCORD_MSG_FIELD_IS_BID_VALUE.getString().replace("%is_bid%", String.valueOf(isBid)), Settings.DISCORD_MSG_FIELD_IS_BID_INLINE.getBoolean())
                 .addField(Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_NAME.getString(), isNew ? "Was not bought" : Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_VALUE.getString().replace("%purchase_type%", saleType == AuctionSaleType.USED_BIDDING_SYSTEM ? "Won Bid" : "Bought Immediately"), Settings.DISCORD_MSG_FIELD_PURCHASE_INLINE.getBoolean())
-                .addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), auctionItem.getItemName(), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean())
+                .addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", auctionItem.getItemName()), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean())
                 .addField(Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_VALUE.getString().replace("%item_amount%", String.valueOf(this.deserializeItem(auctionItem.getRawItem()).getAmount())), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_INLINE.getBoolean())
         );
 

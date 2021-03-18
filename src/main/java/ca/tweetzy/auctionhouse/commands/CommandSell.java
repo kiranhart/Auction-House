@@ -63,7 +63,7 @@ public class CommandSell extends AbstractCommand {
         });
 
         // get the max allowed time for this player.
-        int allowedTime = possibleTimes.size() <= 0 ? Settings.DEFAULT_AUCTION_TIME.getInt() : Collections.max(possibleTimes);
+        int allowedTime = possibleTimes.size() <= 0 ? Settings.DEFAULT_AUCTION_TIME.getInt() : Math.max(Settings.DEFAULT_AUCTION_TIME.getInt(), Collections.max(possibleTimes));
 
         // check if player is at their selling limit
         if (auctionPlayer.isAtSellLimit()) {

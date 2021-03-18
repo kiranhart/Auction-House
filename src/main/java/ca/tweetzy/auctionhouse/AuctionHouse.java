@@ -1,5 +1,6 @@
 package ca.tweetzy.auctionhouse;
 
+import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.commands.CommandActive;
 import ca.tweetzy.auctionhouse.commands.CommandAuctionHouse;
 import ca.tweetzy.auctionhouse.commands.CommandExpired;
@@ -80,7 +81,7 @@ public class AuctionHouse extends TweetyPlugin {
 
         // auction players
         this.auctionPlayerManager = new AuctionPlayerManager();
-//        Bukkit.getOnlinePlayers().forEach(p -> this.auctionPlayerManager.addSpeedyPlayer(p));
+        Bukkit.getOnlinePlayers().forEach(p -> this.auctionPlayerManager.addPlayer(new AuctionPlayer(p)));
 
         // load auction items
         this.auctionItemManager = new AuctionItemManager();
