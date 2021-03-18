@@ -1,5 +1,6 @@
 package ca.tweetzy.auctionhouse;
 
+import ca.tweetzy.auctionhouse.api.UpdateChecker;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.commands.CommandActive;
 import ca.tweetzy.auctionhouse.commands.CommandAuctionHouse;
@@ -19,6 +20,7 @@ import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.core.PluginID;
 import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
+import ca.tweetzy.core.utils.TextUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -44,6 +46,8 @@ public class AuctionHouse extends TweetyPlugin {
     private CommandManager commandManager;
     private AuctionPlayerManager auctionPlayerManager;
     private AuctionItemManager auctionItemManager;
+
+    private UpdateChecker.UpdateStatus status;
 
     @Override
     public void onPluginLoad() {
@@ -101,6 +105,9 @@ public class AuctionHouse extends TweetyPlugin {
         // start the auction tick task
         TickAuctionsTask.startTask();
 
+        // update check
+        this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus();
+
         // metrics
         this.metrics = new Metrics(this, (int) PluginID.AUCTION_HOUSE.getbStatsID());
     }
@@ -151,5 +158,9 @@ public class AuctionHouse extends TweetyPlugin {
 
     public GuiManager getGuiManager() {
         return guiManager;
+    }
+
+    public UpdateChecker.UpdateStatus getUpdateStatus() {
+        return status;
     }
 }
