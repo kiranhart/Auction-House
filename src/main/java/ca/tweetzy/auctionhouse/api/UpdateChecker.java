@@ -1,10 +1,9 @@
 package ca.tweetzy.auctionhouse.api;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.core.TweetyPlugin;
 import ca.tweetzy.core.utils.TextUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -28,7 +27,7 @@ public class UpdateChecker {
     private UpdateStatus status = UpdateStatus.UNKNOWN;
     final String API_URL = "https://api.spigotmc.org/legacy/update.php?resource=%d";
 
-    final JavaPlugin plugin;
+    final TweetyPlugin plugin;
     final int SPIGOT_ID;
     final CommandSender[] to;
     private String latestVersion = "0.0.0";
@@ -89,19 +88,19 @@ public class UpdateChecker {
         for (CommandSender sender : to) {
             switch (status) {
                 case UP_TO_DATE:
-                    AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aIs running the latest version!")).sendPrefixedMessage(sender);
+                    plugin.getLocale().newMessage(TextUtils.formatText("&aIs running the latest version!")).sendPrefixedMessage(sender);
                     break;
                 case UPDATE_AVAILABLE:
-                    AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&dA new update is available for Auction House")).sendPrefixedMessage(sender);
+                    plugin.getLocale().newMessage(TextUtils.formatText("&dA new update is available for Auction House")).sendPrefixedMessage(sender);
                     break;
                 case UNRELEASED_VERSION:
-                    AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", AuctionHouse.getInstance().getDescription().getVersion()))).sendPrefixedMessage(sender);
+                    plugin.getLocale().newMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", plugin.getDescription().getVersion()))).sendPrefixedMessage(sender);
                     break;
                 case UNKNOWN:
-                    AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cUnknown version is in use")).sendPrefixedMessage(sender);
+                    plugin.getLocale().newMessage(TextUtils.formatText("&cUnknown version is in use")).sendPrefixedMessage(sender);
                     break;
                 case ERROR:
-                    AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cAn error has occurred while trying to get the latest version")).sendPrefixedMessage(sender);
+                    plugin.getLocale().newMessage(TextUtils.formatText("&cAn error has occurred while trying to get the latest version")).sendPrefixedMessage(sender);
                     break;
             }
         }
@@ -109,7 +108,7 @@ public class UpdateChecker {
         return this;
     }
 
-    public UpdateChecker(JavaPlugin plugin, int spigotID, CommandSender... to) {
+    public UpdateChecker(TweetyPlugin plugin, int spigotID, CommandSender... to) {
         this.plugin = plugin;
         this.SPIGOT_ID = spigotID;
         this.to = to;

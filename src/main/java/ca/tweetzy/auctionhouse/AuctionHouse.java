@@ -106,7 +106,9 @@ public class AuctionHouse extends TweetyPlugin {
         TickAuctionsTask.startTask();
 
         // update check
-        this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus();
+        getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
+            this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus();
+        }, 1L);
 
         // metrics
         this.metrics = new Metrics(this, (int) PluginID.AUCTION_HOUSE.getbStatsID());
@@ -116,7 +118,6 @@ public class AuctionHouse extends TweetyPlugin {
     public void onPluginDisable() {
         this.auctionItemManager.saveItems();
         instance = null;
-        //token change test
     }
 
     @Override
