@@ -26,3 +26,4 @@ auction:
         nobid: "&eListed &fx%amount% &6%item% &efor &a%base_price%"
     bidwon: "&eYou won the bid for&fx%amount% &6%item% &efor &a%price%"
     itemsold: "&eYou sold &6%item% &efor &a%price%"
+    itemnotavailable: "&cThat item is no longer available :("

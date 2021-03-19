@@ -50,7 +50,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 
             AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> item.getRemainingTime() <= 0).collect(Collectors.toList()).iterator().forEachRemaining(item -> {
                 // call the auction end event
-                AuctionEndEvent auctionEndEvent = null;
+                AuctionEndEvent auctionEndEvent;
 
                 // check if the auction item owner is the same as the highest bidder
                 if (item.getOwner().equals(item.getHighestBidder())) {
