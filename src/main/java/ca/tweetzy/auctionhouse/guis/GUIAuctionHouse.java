@@ -5,6 +5,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionStackType;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
@@ -57,7 +58,10 @@ public class GUIAuctionHouse extends Gui {
         setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
         setButton(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_REFRESH_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_REFRESH_BTN_NAME.getString()).setLore(Settings.GUI_REFRESH_BTN_LORE.getStringList()).toItemStack(), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
         setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
-        setOnPage(e -> draw());
+        setOnPage(e -> {
+            draw();
+            SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString(), 1.0F, 1.0F);
+        });
 
         // Other Buttons
         setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), new HashMap<String, Object>(){{
@@ -77,7 +81,47 @@ public class GUIAuctionHouse extends Gui {
         List<AuctionItem> data = this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
         for (AuctionItem auctionItem : data) {
             setButton(slot++, auctionItem.getDisplayStack(AuctionStackType.MAIN_AUCTION_HOUSE), e -> {
+                switch (e.clickType) {
+                    case LEFT:
+                        if (auctionItem.getBidStartPrice() <= 0) {
+                            if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_PURCHASE_OWN_ITEM.getBoolean()) {
+                                AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(e.player);
+                                return;
+                            }
+                            e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem));
+                        } else {
+                            if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_BID_OWN_ITEM.getBoolean()) {
+                                AuctionHouse.getInstance().getLocale().getMessage("general.cantbidonown").sendPrefixedMessage(e.player);
+                                return;
+                            }
 
+                            auctionItem.setCurrentPrice(auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice());
+
+                            if (Settings.INCREASE_TIME_ON_BID.getBoolean()) {
+                                auctionItem.setRemainingTime(auctionItem.getRemainingTime() + Settings.TIME_TO_INCREASE_BY_ON_BID.getInt());
+                            }
+
+                            if (Settings.REFRESH_GUI_WHEN_BID.getBoolean()) {
+                                e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                            }
+                        }
+                        break;
+                    case MIDDLE:
+                        if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin")) {
+                            AuctionHouse.getInstance().getAuctionItemManager().removeItem(auctionItem.getKey());
+                            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                        }
+                        break;
+                    case RIGHT:
+                        if (auctionItem.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble()) {
+                            if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_PURCHASE_OWN_ITEM.getBoolean()) {
+                                AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(e.player);
+                                return;
+                            }
+                            e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem));
+                        }
+                        break;
+                }
             });
         }
     }

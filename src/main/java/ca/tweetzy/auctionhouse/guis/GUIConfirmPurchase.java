@@ -2,8 +2,11 @@ package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
+import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -52,9 +55,15 @@ public class GUIConfirmPurchase extends Gui {
 
             if (!AuctionHouse.getInstance().getEconomy().has(e.player, located.getBasePrice())) {
                 AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
+                SoundManager.getInstance().playSound(e.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString(), 1.0F, 1.0F);
                 e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
                 return;
             }
+
+            AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), e.player, this.auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM);
+            Bukkit.getServer().getPluginManager().callEvent(auctionEndEvent);
+
+            if (auctionEndEvent.isCancelled()) return;
 
             AuctionHouse.getInstance().getEconomy().withdrawPlayer(e.player, located.getBasePrice());
             AuctionHouse.getInstance().getAuctionItemManager().removeItem(located.getKey());

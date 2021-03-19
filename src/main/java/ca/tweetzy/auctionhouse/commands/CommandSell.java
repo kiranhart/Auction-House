@@ -6,6 +6,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
+import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.CompatibleHand;
@@ -117,6 +118,8 @@ public class CommandSell extends AbstractCommand {
                     .sendPrefixedMessage(player);
 
             PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
+            SoundManager.getInstance().playSound(player, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
+
         } else {
             // they want to use the bidding system, so make it a bid item
             if (!NumberUtils.isDouble(args[0])) {
@@ -199,8 +202,8 @@ public class CommandSell extends AbstractCommand {
                     .sendPrefixedMessage(player);
 
             PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
+            SoundManager.getInstance().playSound(player, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
         }
-
         return ReturnType.SUCCESS;
     }
 

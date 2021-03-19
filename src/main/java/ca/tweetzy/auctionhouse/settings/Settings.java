@@ -19,7 +19,6 @@ public class Settings {
     static final Config config = AuctionHouse.getInstance().getCoreConfig();
 
     public static final ConfigSetting LANG = new ConfigSetting(config, "lang", "en_US", "Default language file");
-    public static final ConfigSetting UPDATE_CHECKER = new ConfigSetting(config, "update checker", true, "Should auction house check for updates?");
     /*  ===============================
      *          BASIC SETTINGS
      *  ===============================*/
@@ -37,6 +36,7 @@ public class Settings {
     public static final ConfigSetting INCREASE_TIME_ON_BID = new ConfigSetting(config, "auction setting.increase time on bid", true, "Should the remaining time be increased when a bid is placed?");
     public static final ConfigSetting TIME_TO_INCREASE_BY_ON_BID = new ConfigSetting(config, "auction setting.time to increase by on the bid", 20, "How many seconds should be added to the remaining time?");
     public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
+    public static final ConfigSetting REFRESH_GUI_WHEN_BID = new ConfigSetting(config, "auction setting.refresh gui when bid", true, "Should the auction gui be re-opened (not redrawn) when a user places a bid, so they get the latest items?");
 
     /*  ===============================
      *         DISCORD WEBHOOK

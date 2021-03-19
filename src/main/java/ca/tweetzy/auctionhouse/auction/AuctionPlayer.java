@@ -21,11 +21,9 @@ import java.util.stream.Collectors;
 public class AuctionPlayer {
 
     private final Player player;
-    private AuctionItemCategory preferredCategory;
 
     public AuctionPlayer(Player player) {
         this.player = player;
-        this.preferredCategory = AuctionItemCategory.ALL;
     }
 
     public List<AuctionItem> getItems(boolean getExpired) {
