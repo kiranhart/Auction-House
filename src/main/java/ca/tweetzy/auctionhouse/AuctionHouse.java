@@ -2,10 +2,7 @@ package ca.tweetzy.auctionhouse;
 
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import ca.tweetzy.auctionhouse.commands.CommandActive;
-import ca.tweetzy.auctionhouse.commands.CommandAuctionHouse;
-import ca.tweetzy.auctionhouse.commands.CommandExpired;
-import ca.tweetzy.auctionhouse.commands.CommandSell;
+import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.listeners.AuctionListeners;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
@@ -99,7 +96,8 @@ public class AuctionHouse extends TweetyPlugin {
         this.commandManager.addCommand(new CommandAuctionHouse()).addSubCommands(
                 new CommandSell(),
                 new CommandActive(),
-                new CommandExpired()
+                new CommandExpired(),
+                new CommandSettings()
         );
 
         // start the auction tick task

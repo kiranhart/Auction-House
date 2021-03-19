@@ -1,8 +1,9 @@
 name: AuctionHouse
 version: maven-version-number
-api-version: 1.16
+api-version: 1.13
 main: ca.tweetzy.auctionhouse.AuctionHouse
-description: idfk... sell stuff in a gui
+description: Auction House is a premium auction solution for your server.
+website: https://tweetzy.ca/
 authors: [Kiran Hart]
 depend: [Vault]
 
@@ -19,9 +20,21 @@ permissions:
     children:
       auctionhouse.cmd: true
       auctionhouse.cmd.sell: true
+      auctionhouse.cmd.active: true
+      auctionhouse.cmd.expired: true
+      auctionhouse.cmd.settings: true
   auctionhouse.cmd:
     description: Allows the user to use /ah
     default: op
   auctionhouse.cmd.sell:
     description: Allows the user to sell items in the auction house
+    default: op
+  auctionhouse.cmd.active:
+    description: Allows the user to open the active listings gui through a command
+    default: op
+  auctionhouse.cmd.expired:
+    description: Allows the user to open the expired listings gui through a command
+    default: op
+  auctionhouse.cmd.settings:
+    description: Allows the user to open the in game config editor
     default: op
