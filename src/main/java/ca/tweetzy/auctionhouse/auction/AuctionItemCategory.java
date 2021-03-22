@@ -16,7 +16,7 @@ public enum AuctionItemCategory {
     MISC("Misc");
 
 
-    private String type;
+    private final String type;
 
     AuctionItemCategory(String type) {
         this.type = type;
@@ -24,5 +24,9 @@ public enum AuctionItemCategory {
 
     public String getType() {
         return type;
+    }
+
+    public AuctionItemCategory next() {
+        return values()[(this.ordinal() + 1) % values().length];
     }
 }

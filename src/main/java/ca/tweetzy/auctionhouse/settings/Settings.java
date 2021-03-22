@@ -173,6 +173,16 @@ public class Settings {
             "&e&l%expired_player_auctions% Item(s)"
     ));
 
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_ITEM = new ConfigSetting(config, "gui.auction house.items.filter.item", "NETHER_STAR");
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME = new ConfigSetting(config, "gui.auction house.items.filter.name", "&e&lFilter Options");
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE = new ConfigSetting(config, "gui.auction house.items.filter.lore", Arrays.asList(
+            "&eItem Category&f: &7%filter_category%",
+            "&eAuction Type&f: &7%filter_auction_type%",
+            "",
+            "&7Left-Click to change item category",
+            "&7Right-Click to change change auction type"
+    ));
+
     /*  ===============================
      *         CONFIRM BUY GUI
      *  ===============================*/

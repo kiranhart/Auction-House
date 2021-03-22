@@ -8,6 +8,21 @@ package ca.tweetzy.auctionhouse.auction;
  */
 public enum AuctionSaleType {
 
-    USED_BIDDING_SYSTEM,
-    WITHOUT_BIDDING_SYSTEM
+    USED_BIDDING_SYSTEM("Biddable"),
+    WITHOUT_BIDDING_SYSTEM("Not Biddable"),
+    // Didn't feel like making an entirely new enumeration, so BOTH is really only used in the auction filtering
+    BOTH("All");
+
+    private final String type;
+
+    AuctionSaleType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+    public AuctionSaleType next() {
+        return values()[(this.ordinal() + 1) % values().length];
+    }
 }

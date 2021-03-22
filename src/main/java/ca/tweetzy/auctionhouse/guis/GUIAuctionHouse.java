@@ -1,9 +1,7 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
-import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import ca.tweetzy.auctionhouse.auction.AuctionStackType;
+import ca.tweetzy.auctionhouse.auction.*;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -12,6 +10,7 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 
+import javax.security.auth.login.Configuration;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +29,8 @@ public class GUIAuctionHouse extends Gui {
     final List<AuctionItem> items;
 
     private int taskId;
+    private AuctionItemCategory filterCategory = AuctionItemCategory.ALL;
+    private AuctionSaleType filterAuctionType = AuctionSaleType.BOTH;
 
     public GUIAuctionHouse(AuctionPlayer auctionPlayer) {
         this.auctionPlayer = auctionPlayer;
@@ -48,6 +49,12 @@ public class GUIAuctionHouse extends Gui {
                 Bukkit.getServer().getScheduler().cancelTask(taskId);
             });
         }
+    }
+
+    public GUIAuctionHouse(AuctionPlayer auctionPlayer, AuctionItemCategory filterCategory, AuctionSaleType filterAuctionType) {
+        this(auctionPlayer);
+        this.filterCategory = filterCategory;
+        this.filterAuctionType = filterAuctionType;
     }
 
     public void draw() {
@@ -72,6 +79,22 @@ public class GUIAuctionHouse extends Gui {
             put("%expired_player_auctions%", auctionPlayer.getItems(true).size());
         }}), e -> e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer)));
 
+        setButton(5, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(), new HashMap<String, Object>(){{
+            put("%filter_category%", filterCategory.getType());
+            put("%filter_auction_type%", filterAuctionType.getType());
+        }}), e -> {
+            switch (e.clickType) {
+                case LEFT:
+                    this.filterCategory = this.filterCategory.next();
+                    draw();
+                    break;
+                case RIGHT:
+                    this.filterAuctionType = this.filterAuctionType.next();
+                    draw();
+                    break;
+            }
+        });
+
         setButton(5, 6, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList(), null), null);
         setButton(5, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList(), null), null);
         setButton(5, 8, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList(), null), null);
@@ -79,6 +102,10 @@ public class GUIAuctionHouse extends Gui {
         // Items
         int slot = 0;
         List<AuctionItem> data = this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
+        // Apply any filtering, there is probably a cleaner way of doing this, but I'm blanking
+        if (this.filterCategory != AuctionItemCategory.ALL) data = data.stream().filter(item -> item.getCategory() == this.filterCategory).collect(Collectors.toList());
+        if (this.filterAuctionType != AuctionSaleType.BOTH) data = data.stream().filter(item -> this.filterAuctionType == AuctionSaleType.USED_BIDDING_SYSTEM ? item.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble() : item.getBidStartPrice() <= 0).collect(Collectors.toList());
+
         for (AuctionItem auctionItem : data) {
             setButton(slot++, auctionItem.getDisplayStack(AuctionStackType.MAIN_AUCTION_HOUSE), e -> {
                 switch (e.clickType) {
