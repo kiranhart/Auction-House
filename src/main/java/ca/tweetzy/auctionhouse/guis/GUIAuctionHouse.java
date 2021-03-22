@@ -86,11 +86,19 @@ public class GUIAuctionHouse extends Gui {
             switch (e.clickType) {
                 case LEFT:
                     this.filterCategory = this.filterCategory.next();
-                    draw();
+                    if (Settings.REFRESH_GUI_ON_FILTER_CHANGE.getBoolean()) {
+                        e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                    } else {
+                        draw();
+                    }
                     break;
                 case RIGHT:
                     this.filterAuctionType = this.filterAuctionType.next();
-                    draw();
+                    if (Settings.REFRESH_GUI_ON_FILTER_CHANGE.getBoolean()){
+                        e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                    } else {
+                        draw();
+                    }
                     break;
             }
         });
