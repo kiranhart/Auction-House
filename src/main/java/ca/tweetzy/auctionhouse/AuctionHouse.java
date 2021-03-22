@@ -7,6 +7,7 @@ import ca.tweetzy.auctionhouse.listeners.AuctionListeners;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
 import ca.tweetzy.auctionhouse.managers.AuctionPlayerManager;
+import ca.tweetzy.auctionhouse.managers.TransactionManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.tasks.TickAuctionsTask;
 import ca.tweetzy.core.TweetyCore;
@@ -43,6 +44,7 @@ public class AuctionHouse extends TweetyPlugin {
     private CommandManager commandManager;
     private AuctionPlayerManager auctionPlayerManager;
     private AuctionItemManager auctionItemManager;
+    private TransactionManager transactionManager;
 
     private UpdateChecker.UpdateStatus status;
 
@@ -88,6 +90,10 @@ public class AuctionHouse extends TweetyPlugin {
         this.auctionItemManager = new AuctionItemManager();
         this.auctionItemManager.loadItems();
 
+        // load transactions
+        this.transactionManager = new TransactionManager();
+        this.transactionManager.loadTransactions();
+
         // gui manager
         this.guiManager.init();
 
@@ -115,6 +121,7 @@ public class AuctionHouse extends TweetyPlugin {
     @Override
     public void onPluginDisable() {
         this.auctionItemManager.saveItems();
+        this.transactionManager.saveTransactions();
         instance = null;
     }
 
@@ -153,6 +160,10 @@ public class AuctionHouse extends TweetyPlugin {
 
     public AuctionPlayerManager getAuctionPlayerManager() {
         return auctionPlayerManager;
+    }
+
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
     }
 
     public GuiManager getGuiManager() {

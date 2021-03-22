@@ -60,24 +60,29 @@ public class GUIConfirmPurchase extends Gui {
                 return;
             }
 
-            AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), e.player, this.auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM);
-            Bukkit.getServer().getPluginManager().callEvent(auctionEndEvent);
+            Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
+                AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), e.player, this.auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM);
+                Bukkit.getServer().getPluginManager().callEvent(auctionEndEvent);
 
-            if (auctionEndEvent.isCancelled()) return;
+                if (auctionEndEvent.isCancelled()) return;
 
-            AuctionHouse.getInstance().getEconomy().withdrawPlayer(e.player, located.getBasePrice());
-            AuctionHouse.getInstance().getAuctionItemManager().removeItem(located.getKey());
-            PlayerUtils.giveItem(e.player, AuctionAPI.getInstance().deserializeItem(located.getRawItem()));
+                AuctionHouse.getInstance().getEconomy().withdrawPlayer(e.player, located.getBasePrice());
+                AuctionHouse.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), located.getBasePrice());
+                AuctionHouse.getInstance().getAuctionItemManager().removeItem(located.getKey());
+                PlayerUtils.giveItem(e.player, AuctionAPI.getInstance().deserializeItem(located.getRawItem()));
 
-            AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", String.format("%,.2f", located.getCurrentPrice())).sendPrefixedMessage(e.player);
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", String.format("%,.2f", located.getCurrentPrice())).sendPrefixedMessage(e.player);
 
-            if (Bukkit.getOfflinePlayer(located.getOwner()).isOnline()) {
-                AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
-                        .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(located.getRawItem()).getType().name().replace("_", " ")))
-                        .processPlaceholder("price", String.format("%,.2f", located.getCurrentPrice()))
-                        .sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
-                AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", String.format("%,.2f", located.getCurrentPrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
-            }
+                if (Bukkit.getOfflinePlayer(located.getOwner()).isOnline()) {
+                    AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
+                            .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(located.getRawItem()).getType().name().replace("_", " ")))
+                            .processPlaceholder("price", String.format("%,.2f", located.getCurrentPrice()))
+                            .sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", String.format("%,.2f", located.getCurrentPrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
+                }
+
+                e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+            }, 1L);
         });
     }
 }

@@ -2,6 +2,8 @@ package ca.tweetzy.auctionhouse.transaction;
 
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -12,6 +14,9 @@ import java.util.UUID;
  * Time Created: 12:53 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
+
+@Getter
+@Setter
 public class Transaction implements Serializable {
 
     private final UUID id;

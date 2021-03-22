@@ -53,10 +53,9 @@ public class AuctionItemManager {
     public void loadItems() {
         if (AuctionHouse.getInstance().getData().contains("auction items") && AuctionHouse.getInstance().getData().isList("auction items")) {
             List<AuctionItem> items = AuctionHouse.getInstance().getData().getStringList("auction items").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (AuctionItem) object).collect(Collectors.toList());
-            items.forEach(item -> {
-                this.addItem(item);
-                Bukkit.getConsoleSender().sendMessage(TextUtils.formatText(String.format("&aLoaded Item&f: &e%s &f(&a$%s&f) (&a$%.2f&f) (&a$%.2f&f) (&a$%.2f&f)", item.getKey().toString(), item.getBasePrice(), item.getBidStartPrice(), item.getBidIncPrice(), item.getCurrentPrice())));
-            });
+            long start = System.currentTimeMillis();
+            items.forEach(this::addItem);
+            AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&aLoaded &2%d &aauction items(s) in &e%d&fms", items.size(), System.currentTimeMillis() - start))).sendPrefixedMessage(Bukkit.getConsoleSender());
             AuctionHouse.getInstance().getData().set("auction items", null);
             AuctionHouse.getInstance().getData().save();
         }
