@@ -37,13 +37,8 @@ public class GUIActiveAuctions extends Gui {
         draw();
 
         if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
-            setOnOpen(e -> {
-                taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::draw, 0L, Settings.TICK_UPDATE_TIME.getInt());
-            });
-
-            setOnClose(e -> {
-                Bukkit.getServer().getScheduler().cancelTask(taskId);
-            });
+            setOnOpen(e -> startTask());
+            setOnClose(e -> killTask());
         }
     }
 
@@ -61,7 +56,10 @@ public class GUIActiveAuctions extends Gui {
         });
 
         // Other Buttons
-        setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
+        setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
+            killTask();
+            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+        });
         setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString(), Settings.GUI_ACTIVE_AUCTIONS_NAME.getString(), Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList(), null), e -> {
             this.auctionPlayer.getItems(false).forEach(item -> item.setExpired(true));
             draw();
@@ -75,5 +73,13 @@ public class GUIActiveAuctions extends Gui {
                 draw();
             });
         }
+    }
+
+    private void startTask() {
+        taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::draw, 0L, Settings.TICK_UPDATE_TIME.getInt());
+    }
+
+    private void killTask() {
+        Bukkit.getServer().getScheduler().cancelTask(taskId);
     }
 }

@@ -18,7 +18,6 @@ import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.core.PluginID;
 import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
-import ca.tweetzy.core.utils.TextUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
