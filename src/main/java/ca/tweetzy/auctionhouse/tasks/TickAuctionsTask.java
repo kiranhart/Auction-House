@@ -103,6 +103,15 @@ public class TickAuctionsTask extends BukkitRunnable {
                                 // withdraw money and give to the owner
                                 AuctionHouse.getInstance().getEconomy().withdrawPlayer(offlinePlayer, item.getCurrentPrice());
                                 AuctionHouse.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(item.getOwner()), item.getCurrentPrice());
+
+                                if (Bukkit.getOfflinePlayer(item.getOwner()).isOnline()) {
+                                    AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
+                                            .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(item.getRawItem()).getType().name().replace("_", " ")))
+                                            .processPlaceholder("price", String.format("%,.2f", item.getCurrentPrice()))
+                                            .sendPrefixedMessage(Bukkit.getOfflinePlayer(item.getOwner()).getPlayer());
+                                    AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", String.format("%,.2f", item.getCurrentPrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(item.getOwner()).getPlayer());
+                                }
+
                                 item.setOwner(offlinePlayer.getUniqueId());
                                 item.setExpired(true);
                             }
