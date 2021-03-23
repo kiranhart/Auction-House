@@ -3,8 +3,10 @@ package ca.tweetzy.auctionhouse.api;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.compatibility.XMaterial;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
@@ -157,6 +159,20 @@ public class AuctionAPI {
         }
 
         return null;
+    }
+
+    /**
+     * Used to create a player head
+     *
+     * @param name is the name of the player
+     * @return the player skull
+     */
+    public ItemStack getPlayerHead(String name) {
+        ItemStack stack = XMaterial.PLAYER_HEAD.parseItem();
+        SkullMeta meta = (SkullMeta) stack.getItemMeta();
+        meta.setOwner(name);
+        stack.setItemMeta(meta);
+        return stack;
     }
 
     /**

@@ -25,6 +25,7 @@ public class Transaction implements Serializable {
     private final long transactionTime;
     private final AuctionItem auctionItem;
     private final AuctionSaleType auctionSaleType;
+    private final double finalPrice;
 
     public Transaction(UUID id, UUID seller, UUID buyer, long transactionTime, AuctionItem auctionItem, AuctionSaleType auctionSaleType) {
         this.id = id;
@@ -33,5 +34,6 @@ public class Transaction implements Serializable {
         this.transactionTime = transactionTime;
         this.auctionItem = auctionItem;
         this.auctionSaleType = auctionSaleType;
+        this.finalPrice = auctionSaleType == AuctionSaleType.USED_BIDDING_SYSTEM ? auctionItem.getCurrentPrice() : auctionItem.getBasePrice();
     }
 }
