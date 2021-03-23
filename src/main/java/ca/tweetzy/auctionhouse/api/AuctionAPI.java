@@ -12,7 +12,9 @@ import java.awt.*;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -70,6 +72,18 @@ public class AuctionAPI {
         vals[2] = minute;
         vals[3] = second;
         return vals;
+    }
+
+    /**
+     * Used to convert milliseconds (usually System.currentMillis) into a readable date format
+     *
+     * @param milliseconds is the total milliseconds
+     * @return a readable date format
+     */
+    public String convertMillisToDate(long milliseconds) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
+        Date date = new Date(milliseconds);
+        return simpleDateFormat.format(date);
     }
 
     /**

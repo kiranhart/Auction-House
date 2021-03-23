@@ -227,6 +227,30 @@ public class Settings {
     ));
 
     /*  ===============================
+     *      TRANSACTIONS LIST GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_TRANSACTIONS_TITLE = new ConfigSetting(config, "gui.transactions.title", "&7Transaction History");
+
+    public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TOGGLE_OWN_ITEM = new ConfigSetting(config, "gui.transactions.items.toggle own.item", "NETHER_STAR");
+    public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TOGGLE_OWN_NAME = new ConfigSetting(config, "gui.transactions.items.toggle own.name", "&e&LToggle Your Transactions");
+    public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TOGGLE_OWN_LORE = new ConfigSetting(config, "gui.transactions.items.toggle own.lore", Arrays.asList(
+            "&7Click to toggle whether you see",
+            "&7only your transactions or all",
+            "&7the transactions ever made."
+    ));
+
+    public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TRANSACTION_ITEM = new ConfigSetting(config, "gui.transactions.items.transaction.item", "PAPER");
+    public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME = new ConfigSetting(config, "gui.transactions.items.transaction.name", "&e%transaction_id%");
+    public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE = new ConfigSetting(config, "gui.transactions.items.transaction.lore", Arrays.asList(
+            "&7Seller&F: &e%seller%",
+            "&7Buyer&F: &e%buyer%",
+            "&7Date&F: &e%date%",
+            "",
+            "&7Click to view more details"
+    ));
+
+
+    /*  ===============================
      *         AUCTION STACKS
      *  ===============================*/
     public static final ConfigSetting AUCTION_ITEM_AUCTION_STACK = new ConfigSetting(config, "auction items.auction stack", Arrays.asList(

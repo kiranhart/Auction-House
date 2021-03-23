@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.*;
+import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -10,7 +11,6 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 
-import javax.security.auth.login.Configuration;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +63,7 @@ public class GUIAuctionHouse extends Gui {
         // Pagination
         pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45));
         setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setButton(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_REFRESH_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_REFRESH_BTN_NAME.getString()).setLore(Settings.GUI_REFRESH_BTN_LORE.getStringList()).toItemStack(), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
+        setButton(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_REFRESH_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_REFRESH_BTN_NAME.getString()).setLore(Settings.GUI_REFRESH_BTN_LORE.getStringList()).toItemStack(), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer, this.filterCategory, this.filterAuctionType)));
         setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
         setOnPage(e -> {
             draw();
@@ -71,15 +71,15 @@ public class GUIAuctionHouse extends Gui {
         });
 
         // Other Buttons
-        setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), new HashMap<String, Object>(){{
+        setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), new HashMap<String, Object>() {{
             put("%active_player_auctions%", auctionPlayer.getItems(false).size());
         }}), e -> e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer)));
 
-        setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), new HashMap<String, Object>(){{
+        setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), new HashMap<String, Object>() {{
             put("%expired_player_auctions%", auctionPlayer.getItems(true).size());
         }}), e -> e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer)));
 
-        setButton(5, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(), new HashMap<String, Object>(){{
+        setButton(5, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(), new HashMap<String, Object>() {{
             put("%filter_category%", filterCategory.getType());
             put("%filter_auction_type%", filterAuctionType.getType());
         }}), e -> {
@@ -94,7 +94,7 @@ public class GUIAuctionHouse extends Gui {
                     break;
                 case RIGHT:
                     this.filterAuctionType = this.filterAuctionType.next();
-                    if (Settings.REFRESH_GUI_ON_FILTER_CHANGE.getBoolean()){
+                    if (Settings.REFRESH_GUI_ON_FILTER_CHANGE.getBoolean()) {
                         e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
                     } else {
                         draw();
@@ -103,7 +103,7 @@ public class GUIAuctionHouse extends Gui {
             }
         });
 
-        setButton(5, 6, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList(), null), null);
+        setButton(5, 6, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUITransactionList(this.auctionPlayer)));
         setButton(5, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList(), null), null);
         setButton(5, 8, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList(), null), null);
 
@@ -111,8 +111,10 @@ public class GUIAuctionHouse extends Gui {
         int slot = 0;
         List<AuctionItem> data = this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
         // Apply any filtering, there is probably a cleaner way of doing this, but I'm blanking
-        if (this.filterCategory != AuctionItemCategory.ALL) data = data.stream().filter(item -> item.getCategory() == this.filterCategory).collect(Collectors.toList());
-        if (this.filterAuctionType != AuctionSaleType.BOTH) data = data.stream().filter(item -> this.filterAuctionType == AuctionSaleType.USED_BIDDING_SYSTEM ? item.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble() : item.getBidStartPrice() <= 0).collect(Collectors.toList());
+        if (this.filterCategory != AuctionItemCategory.ALL)
+            data = data.stream().filter(item -> item.getCategory() == this.filterCategory).collect(Collectors.toList());
+        if (this.filterAuctionType != AuctionSaleType.BOTH)
+            data = data.stream().filter(item -> this.filterAuctionType == AuctionSaleType.USED_BIDDING_SYSTEM ? item.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble() : item.getBidStartPrice() <= 0).collect(Collectors.toList());
 
         for (AuctionItem auctionItem : data) {
             setButton(slot++, auctionItem.getDisplayStack(AuctionStackType.MAIN_AUCTION_HOUSE), e -> {

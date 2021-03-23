@@ -23,6 +23,10 @@ public class ConfigurationItemHelper {
         meta.setDisplayName(TextUtils.formatText(title));
 
         if (replacements !=  null) {
+            for (String key : replacements.keySet()) {
+                if (title.contains(key)) title = title.replace(key, String.valueOf(replacements.get(key)));
+            }
+
             for (int i = 0; i < lore.size(); i++) {
                 for (String key : replacements.keySet()) {
                     if (lore.get(i).contains(key)) {
@@ -32,6 +36,7 @@ public class ConfigurationItemHelper {
             }
         }
 
+        meta.setDisplayName(TextUtils.formatText(title));
         meta.setLore(lore.stream().map(TextUtils::formatText).collect(Collectors.toList()));
         stack.setItemMeta(meta);
         return stack;
