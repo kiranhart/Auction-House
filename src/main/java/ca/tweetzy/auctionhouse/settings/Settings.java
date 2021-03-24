@@ -133,14 +133,11 @@ public class Settings {
             "&7money by selling farmable items other",
             "&7players may be interested in buying.",
             "",
-            "&7All sell listings last for a max of &e60 minutes",
-            "&7unsold items are sent to your collection bin.",
+            "&7Any unsold items are sent to your collection bin.",
             "",
             "&7Each item is listed as a auction, so",
             "&7players can out bid each other, or simply",
-            "&7purchase it right away with a set price.",
-            "",
-            "&7For more help, use &e/ah help!"
+            "&7purchase it right away with a set price."
     ));
 
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM = new ConfigSetting(config, "gui.auction house.items.transactions.item", "PAPER");
