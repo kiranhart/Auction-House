@@ -102,6 +102,7 @@ public class AuctionHouse extends TweetyPlugin {
                 new CommandSell(),
                 new CommandActive(),
                 new CommandExpired(),
+                new CommandTransactions(),
                 new CommandSettings()
         );
 

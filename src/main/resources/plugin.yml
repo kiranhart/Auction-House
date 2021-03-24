@@ -23,6 +23,7 @@ permissions:
       auctionhouse.cmd.active: true
       auctionhouse.cmd.expired: true
       auctionhouse.cmd.settings: true
+      auctionhouse.cmd.transactions: true
   auctionhouse.cmd:
     description: Allows the user to use /ah
     default: op
@@ -37,4 +38,7 @@ permissions:
     default: op
   auctionhouse.cmd.settings:
     description: Allows the user to open the in game config editor
+    default: op
+  auctionhouse.cmd.transactions:
+    description: Allows the user to open the transactions menu
     default: op
