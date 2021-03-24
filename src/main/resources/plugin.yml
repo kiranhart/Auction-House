@@ -24,6 +24,7 @@ permissions:
       auctionhouse.cmd.expired: true
       auctionhouse.cmd.settings: true
       auctionhouse.cmd.transactions: true
+      auctionhouse.cmd.search: true
   auctionhouse.cmd:
     description: Allows the user to use /ah
     default: op
@@ -41,4 +42,7 @@ permissions:
     default: op
   auctionhouse.cmd.transactions:
     description: Allows the user to open the transactions menu
+    default: op
+  auctionhouse.cmd.search:
+    description: Allows the user to search for auction items.
     default: op

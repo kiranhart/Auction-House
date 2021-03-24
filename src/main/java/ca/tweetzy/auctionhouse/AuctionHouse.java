@@ -55,7 +55,6 @@ public class AuctionHouse extends TweetyPlugin {
     @Override
     public void onPluginEnable() {
         TweetyCore.registerPlugin(this, (int) PluginID.AUCTION_HOUSE.getTweetzyID(), "CHEST");
-        TweetyCore.initEvents(this);
 
         // Check server version
         if (ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_7)) {
