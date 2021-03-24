@@ -19,6 +19,8 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The current file has been created by Kiran Hart
@@ -213,5 +215,11 @@ public class AuctionAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean match(String pattern, String sentence) {
+        Pattern patt = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = patt.matcher(sentence);
+        return matcher.find();
     }
 }

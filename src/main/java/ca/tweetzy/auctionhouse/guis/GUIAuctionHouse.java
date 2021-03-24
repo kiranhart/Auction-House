@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.*;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
@@ -10,6 +11,7 @@ import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -44,6 +46,12 @@ public class GUIAuctionHouse extends Gui {
             setOnOpen(e -> startTask());
             setOnClose(e -> killTask());
         }
+    }
+
+    public GUIAuctionHouse(AuctionPlayer auctionPlayer, String phrase) {
+        this(auctionPlayer);
+        // re-fetch the auction items since we wanna filter out any items that match the phrase
+        this.items = this.items.stream().filter(auctionItem -> AuctionAPI.getInstance().match(phrase, ChatColor.stripColor(auctionItem.getItemName())) || AuctionAPI.getInstance().match(phrase, auctionItem.getCategory().getType()) || AuctionAPI.getInstance().match(phrase, Bukkit.getOfflinePlayer(auctionItem.getOwner()).getName())).collect(Collectors.toList());
     }
 
     public GUIAuctionHouse(AuctionPlayer auctionPlayer, AuctionItemCategory filterCategory, AuctionSaleType filterAuctionType) {
