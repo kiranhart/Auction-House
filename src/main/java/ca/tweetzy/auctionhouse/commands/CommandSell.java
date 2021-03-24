@@ -117,6 +117,14 @@ public class CommandSell extends AbstractCommand {
                     .processPlaceholder("base_price", String.format("%,.2f", basePrice))
                     .sendPrefixedMessage(player);
 
+            if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
+                Bukkit.getOnlinePlayers().forEach(AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.nobid")
+                        .processPlaceholder("player", player.getName())
+                        .processPlaceholder("amount", itemToSell.getAmount())
+                        .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
+                        .processPlaceholder("base_price", String.format("%,.2f", basePrice))::sendPrefixedMessage);
+            }
+
             PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
             SoundManager.getInstance().playSound(player, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
 
@@ -200,6 +208,16 @@ public class CommandSell extends AbstractCommand {
                     .processPlaceholder("start_price", String.format("%,.2f", bidStartPrice))
                     .processPlaceholder("increment_price", String.format("%,.2f", bidIncPrice))
                     .sendPrefixedMessage(player);
+
+            if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
+                Bukkit.getOnlinePlayers().forEach(AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.withbid")
+                        .processPlaceholder("player", player.getName())
+                        .processPlaceholder("amount", itemToSell.getAmount())
+                        .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
+                        .processPlaceholder("base_price", String.format("%,.2f", basePrice))
+                        .processPlaceholder("start_price", String.format("%,.2f", bidStartPrice))
+                        .processPlaceholder("increment_price", String.format("%,.2f", bidIncPrice))::sendPrefixedMessage);
+            }
 
             PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
             SoundManager.getInstance().playSound(player, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);

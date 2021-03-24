@@ -40,6 +40,7 @@ public class Settings {
     public static final ConfigSetting REFRESH_GUI_WHEN_BID = new ConfigSetting(config, "auction setting.refresh gui when bid", true, "Should the auction gui be re-opened (not redrawn) when a user places a bid, so they get the latest items?");
     public static final ConfigSetting REFRESH_GUI_ON_FILTER_CHANGE = new ConfigSetting(config, "auction setting.refresh gui when filter changed", false, "Should the gui refresh when the player changes the filter mode?");
     public static final ConfigSetting RECORD_TRANSACTIONS = new ConfigSetting(config, "auction setting.record transactions", true, "Should every transaction be recorded (everything an auction is won or an item is bought)");
+    public static final ConfigSetting BROADCAST_AUCTION_LIST = new ConfigSetting(config, "auction setting.broadcast auction list", false, "Should the entire server be alerted when a player lists an item?");
 
     /*  ===============================
      *         DISCORD WEBHOOK
