@@ -34,6 +34,11 @@ public class CommandConvert extends AbstractCommand {
             ConfigurationSection activeSection = AuctionHouse.getInstance().getData().getConfigurationSection("active");
             ConfigurationSection expiredSection = AuctionHouse.getInstance().getData().getConfigurationSection("expired");
 
+            if (activeSection == null || expiredSection == null) {
+                AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&4Active/Expired section(s) could not be found, have you ran the conversion command already?")).sendPrefixedMessage(sender);
+                return;
+            }
+
             if (activeSection != null && activeSection.getKeys(false).size() != 0) {
                 activeSection.getKeys(false).forEach(key -> AuctionHouse.getInstance().getAuctionItemManager().addItem(new AuctionItem(
                         UUID.fromString(Objects.requireNonNull(AuctionHouse.getInstance().getData().getString("active." + key + ".owner"))),
