@@ -51,7 +51,7 @@ public class GUIAuctionHouse extends Gui {
     public GUIAuctionHouse(AuctionPlayer auctionPlayer, String phrase) {
         this(auctionPlayer);
         // re-fetch the auction items since we wanna filter out any items that match the phrase
-        this.items = this.items.stream().filter(auctionItem -> AuctionAPI.getInstance().match(phrase, ChatColor.stripColor(auctionItem.getItemName())) || AuctionAPI.getInstance().match(phrase, auctionItem.getCategory().getType()) || AuctionAPI.getInstance().match(phrase, Bukkit.getOfflinePlayer(auctionItem.getOwner()).getName())).collect(Collectors.toList());
+        this.items = this.items.stream().filter(auctionItem -> AuctionAPI.getInstance().match(phrase, ChatColor.stripColor(auctionItem.getItemName())) || AuctionAPI.getInstance().match(phrase, auctionItem.getCategory().getType()) || AuctionAPI.getInstance().match(phrase, auctionItem.getCategory().getTranslatedType()) || AuctionAPI.getInstance().match(phrase, Bukkit.getOfflinePlayer(auctionItem.getOwner()).getName())).collect(Collectors.toList());
     }
 
     public GUIAuctionHouse(AuctionPlayer auctionPlayer, AuctionItemCategory filterCategory, AuctionSaleType filterAuctionType) {
@@ -98,8 +98,8 @@ public class GUIAuctionHouse extends Gui {
         });
 
         setButton(5, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(), new HashMap<String, Object>() {{
-            put("%filter_category%", filterCategory.getType());
-            put("%filter_auction_type%", filterAuctionType.getType());
+            put("%filter_category%", filterCategory.getTranslatedType());
+            put("%filter_auction_type%", filterAuctionType.getTranslatedType());
         }}), e -> {
             switch (e.clickType) {
                 case LEFT:

@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.auction;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
+
 /**
  * The current file has been created by Kiran Hart
  * Date Created: February 01 2021
@@ -24,6 +26,24 @@ public enum AuctionItemCategory {
 
     public String getType() {
         return type;
+    }
+
+    public String getTranslatedType() {
+        switch (this) {
+            case ALL:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.all").getMessage();
+            case FOOD:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.food").getMessage();
+            case ARMOR:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.armor").getMessage();
+            case BLOCKS:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.blocks").getMessage();
+            case TOOLS:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.tools").getMessage();
+            case MISC:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.misc").getMessage();
+        }
+        return getType();
     }
 
     public AuctionItemCategory next() {

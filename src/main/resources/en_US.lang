@@ -20,6 +20,29 @@ pricing:
     moneyremove: "&c&l- $%price%"
     moneyadd: "&a&l+ $%price%"
 
+discord:
+    player_lost: "Player Lost o.O"
+    no_buyer: "No Buyer"
+    not_sold: "Not Sold"
+    not_bought: "Was not bought"
+    sale_bid_win: "Won Bid"
+    sale_immediate_buy: "Bought Immediately"
+    is_bid_true: "true"
+    is_bid_false: "false"
+
+auction_filter:
+    sale_types:
+        biddable: "Biddable"
+        non_biddable: "Not Biddable"
+        both: "All"
+    categories:
+        all: "All"
+        food: "Food"
+        armor: "Armor"
+        blocks: "Blocks"
+        tools: "Tools"
+        misc: "Misc"
+
 auction:
     listed:
         withbid: "&eListed &fx%amount% &6%item% &e&lBuy Now&f: &a%base_price% &e&lStarting&f: &a%start_price% &e&lIncrement&f: &a%increment_price%"

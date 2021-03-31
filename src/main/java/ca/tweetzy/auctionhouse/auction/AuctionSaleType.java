@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.auction;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
+
 /**
  * The current file has been created by Kiran Hart
  * Date Created: January 17 2021
@@ -22,6 +24,19 @@ public enum AuctionSaleType {
     public String getType() {
         return type;
     }
+
+    public String getTranslatedType() {
+        switch (this) {
+            case USED_BIDDING_SYSTEM:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sale_types.biddable").getMessage();
+            case WITHOUT_BIDDING_SYSTEM:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sale_types.non_biddable").getMessage();
+            case BOTH:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sale_types.both").getMessage();
+        }
+        return getType();
+    }
+
     public AuctionSaleType next() {
         return values()[(this.ordinal() + 1) % values().length];
     }
