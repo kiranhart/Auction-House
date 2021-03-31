@@ -30,6 +30,8 @@ import java.util.List;
  * Time Created: 6:30 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
+
+@SuppressWarnings("unused")
 public class AuctionHouse extends TweetyPlugin {
 
     private static AuctionHouse instance;
@@ -111,9 +113,7 @@ public class AuctionHouse extends TweetyPlugin {
         TickAuctionsTask.startTask();
 
         // update check
-        getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
-            this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus();
-        }, 1L);
+        getServer().getScheduler().runTaskLaterAsynchronously(this, () -> this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus(), 1L);
 
         // metrics
         this.metrics = new Metrics(this, (int) PluginID.AUCTION_HOUSE.getbStatsID());
@@ -174,4 +174,12 @@ public class AuctionHouse extends TweetyPlugin {
     public UpdateChecker.UpdateStatus getUpdateStatus() {
         return status;
     }
+
+    String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
+    String SONGODA_NODE = "%%__SONGODA_NODE__%%";
+    String TIMESTAMP = "%%__TIMESTAMP__%%";
+    String USER = "%%__USER__%%";
+    String USERNAME = "%%__USERNAME__%%";
+    String RESOURCE = "%%__RESOURCE__%%";
+    String NONCE = "%%__NONCE__%%";
 }
