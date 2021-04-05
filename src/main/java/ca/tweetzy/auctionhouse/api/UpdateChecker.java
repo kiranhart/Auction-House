@@ -1,6 +1,5 @@
 package ca.tweetzy.auctionhouse.api;
 
-import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.core.TweetyPlugin;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.command.CommandSender;
