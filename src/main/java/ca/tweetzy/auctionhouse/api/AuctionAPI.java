@@ -196,7 +196,7 @@ public class AuctionAPI {
         String[] possibleColours = Settings.DISCORD_MSG_DEFAULT_COLOUR.getString().split("-");
         Color colour = Settings.DISCORD_MSG_USE_RANDOM_COLOUR.getBoolean()
                 ? Color.getHSBColor(ThreadLocalRandom.current().nextFloat() * 360F, ThreadLocalRandom.current().nextFloat() * 101F, ThreadLocalRandom.current().nextFloat() * 101F)
-                : Color.getHSBColor(Float.parseFloat(possibleColours[0]), Float.parseFloat(possibleColours[1]), Float.parseFloat(possibleColours[2]));
+                : Color.getHSBColor(Float.parseFloat(possibleColours[0]) / 360, Float.parseFloat(possibleColours[1]) / 100, Float.parseFloat(possibleColours[2]) / 100);
 
         hook.addEmbed(new DiscordWebhook.EmbedObject()
                 .setTitle(isNew ? Settings.DISCORD_MSG_START_TITLE.getString() : Settings.DISCORD_MSG_FINISH_TITLE.getString())
