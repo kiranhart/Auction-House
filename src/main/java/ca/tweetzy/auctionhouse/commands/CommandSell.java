@@ -130,6 +130,8 @@ public class CommandSell extends AbstractCommand {
 
         } else {
             // they want to use the bidding system, so make it a bid item
+            if (args.length != 3) return ReturnType.SYNTAX_ERROR;
+
             if (!NumberUtils.isDouble(args[0])) {
                 AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
                 return ReturnType.SYNTAX_ERROR;

@@ -106,7 +106,8 @@ public class AuctionHouse extends TweetyPlugin {
                 new CommandTransactions(),
                 new CommandSearch(),
                 new CommandSettings(),
-                new CommandConvert()
+                new CommandConvert(),
+                new CommandReload()
         );
 
         // start the auction tick task
@@ -128,10 +129,8 @@ public class AuctionHouse extends TweetyPlugin {
 
     @Override
     public void onConfigReload() {
-    }
-
-    @Override
-    public void reloadConfig() {
+        Settings.setup();
+        setLocale(Settings.LANG.getString(), true);
     }
 
     @Override
