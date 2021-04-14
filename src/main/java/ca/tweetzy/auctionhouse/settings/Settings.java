@@ -41,6 +41,7 @@ public class Settings {
     public static final ConfigSetting REFRESH_GUI_ON_FILTER_CHANGE = new ConfigSetting(config, "auction setting.refresh gui when filter changed", false, "Should the gui refresh when the player changes the filter mode?");
     public static final ConfigSetting RECORD_TRANSACTIONS = new ConfigSetting(config, "auction setting.record transactions", true, "Should every transaction be recorded (everything an auction is won or an item is bought)");
     public static final ConfigSetting BROADCAST_AUCTION_LIST = new ConfigSetting(config, "auction setting.broadcast auction list", false, "Should the entire server be alerted when a player lists an item?");
+    public static final ConfigSetting PLAYER_NEEDS_TOTAL_PRICE_TO_BID = new ConfigSetting(config, "auction setting.bidder must have funds in account", false, "Should the player who is placing a bid on an item have the money in their account to cover the cost?");
 
     /*  ===============================
      *         DISCORD WEBHOOK
