@@ -7,11 +7,17 @@ import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.compatibility.ServerVersion;
+import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.ShulkerBox;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -149,7 +155,7 @@ public class GUIAuctionHouse extends Gui {
                                 return;
                             }
 
-                            if(Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getInstance().getEconomy().has(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice())) {
+                            if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getInstance().getEconomy().has(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice())) {
                                 AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
                                 return;
                             }
@@ -172,6 +178,19 @@ public class GUIAuctionHouse extends Gui {
                             AuctionHouse.getInstance().getAuctionItemManager().removeItem(auctionItem.getKey());
                             killTask();
                             e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                        }
+                        break;
+                    case SHIFT_RIGHT:
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) return;
+                        if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin") || e.player.hasPermission("auctionhouse.inspectshulker")) {
+                            ItemStack clicked = e.clickedItem;
+                            if (!(clicked.getItemMeta() instanceof BlockStateMeta)) return;
+
+                            BlockStateMeta meta = (BlockStateMeta) clicked.getItemMeta();
+                            if (!(meta.getBlockState() instanceof ShulkerBox)) return;
+
+                            killTask();
+                            e.manager.showGUI(e.player, new GUIShulkerInspect(e.clickedItem));
                         }
                         break;
                     case RIGHT:

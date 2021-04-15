@@ -278,6 +278,12 @@ public class Settings {
     ));
 
     /*  ===============================
+     *         MAIN AUCTION GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_SHULKER_INSPECT_TITLE = new ConfigSetting(config, "gui.shulker inspect.title", "&7&LInspecting Shulker Box");
+    public static final ConfigSetting GUI_SHULKER_INSPECT_BG_ITEM = new ConfigSetting(config, "gui.shulker inspect.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+    /*  ===============================
      *         AUCTION STACKS
      *  ===============================*/
     public static final ConfigSetting AUCTION_ITEM_AUCTION_STACK = new ConfigSetting(config, "auction items.auction stack", Arrays.asList(
