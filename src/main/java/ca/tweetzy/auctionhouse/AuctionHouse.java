@@ -3,12 +3,15 @@ package ca.tweetzy.auctionhouse;
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.commands.*;
+import ca.tweetzy.auctionhouse.database.DataManager;
+import ca.tweetzy.auctionhouse.database.migrations._1_InitialMigration;
 import ca.tweetzy.auctionhouse.listeners.AuctionListeners;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
 import ca.tweetzy.auctionhouse.managers.AuctionPlayerManager;
 import ca.tweetzy.auctionhouse.managers.TransactionManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.auctionhouse.tasks.AutoSaveTask;
 import ca.tweetzy.auctionhouse.tasks.TickAuctionsTask;
 import ca.tweetzy.core.TweetyCore;
 import ca.tweetzy.core.TweetyPlugin;
@@ -16,8 +19,12 @@ import ca.tweetzy.core.commands.CommandManager;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.core.PluginID;
+import ca.tweetzy.core.database.DataMigrationManager;
+import ca.tweetzy.core.database.DatabaseConnector;
+import ca.tweetzy.core.database.MySQLConnector;
 import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
+import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -36,17 +43,36 @@ public class AuctionHouse extends TweetyPlugin {
 
     private static AuctionHouse instance;
 
+    @Getter
     private Economy economy;
 
+    @Getter
     private final GuiManager guiManager = new GuiManager(this);
+
+    @Getter
     private final Config data = new Config(this, "data.yml");
 
     protected Metrics metrics;
+
+    @Getter
     private CommandManager commandManager;
+
+    @Getter
     private AuctionPlayerManager auctionPlayerManager;
+
+    @Getter
     private AuctionItemManager auctionItemManager;
+
+    @Getter
     private TransactionManager transactionManager;
 
+    @Getter
+    private DatabaseConnector databaseConnector;
+
+    @Getter
+    private DataManager dataManager;
+
+    @Getter
     private UpdateChecker.UpdateStatus status;
 
     @Override
@@ -86,13 +112,21 @@ public class AuctionHouse extends TweetyPlugin {
         this.auctionPlayerManager = new AuctionPlayerManager();
         Bukkit.getOnlinePlayers().forEach(p -> this.auctionPlayerManager.addPlayer(new AuctionPlayer(p)));
 
+        // Setup the database if enabled
+        if (Settings.DATABASE_USE.getBoolean()) {
+            this.databaseConnector = new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean());
+            this.dataManager = new DataManager(this.databaseConnector, this);
+            DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager, new _1_InitialMigration());
+            dataMigrationManager.runMigrations();
+        }
+
         // load auction items
         this.auctionItemManager = new AuctionItemManager();
-        this.auctionItemManager.loadItems();
+        this.auctionItemManager.loadItems(Settings.DATABASE_USE.getBoolean());
 
         // load transactions
         this.transactionManager = new TransactionManager();
-        this.transactionManager.loadTransactions();
+        this.transactionManager.loadTransactions(Settings.DATABASE_USE.getBoolean());
 
         // gui manager
         this.guiManager.init();
@@ -107,11 +141,16 @@ public class AuctionHouse extends TweetyPlugin {
                 new CommandSearch(),
                 new CommandSettings(),
                 new CommandConvert(),
-                new CommandReload()
+                new CommandReload(),
+                new CommandUpload()
         );
 
         // start the auction tick task
         TickAuctionsTask.startTask();
+        // auto save task
+        if (Settings.AUTO_SAVE_ENABLED.getBoolean()) {
+            AutoSaveTask.startTask();
+        }
 
         // update check
         getServer().getScheduler().runTaskLaterAsynchronously(this, () -> this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus(), 1L);
@@ -122,8 +161,8 @@ public class AuctionHouse extends TweetyPlugin {
 
     @Override
     public void onPluginDisable() {
-        this.auctionItemManager.saveItems();
-        this.transactionManager.saveTransactions();
+        this.auctionItemManager.saveItems(Settings.DATABASE_USE.getBoolean(), false);
+        this.transactionManager.saveTransactions(Settings.DATABASE_USE.getBoolean(), false);
         instance = null;
     }
 
@@ -140,38 +179,6 @@ public class AuctionHouse extends TweetyPlugin {
 
     public static AuctionHouse getInstance() {
         return instance;
-    }
-
-    public Config getData() {
-        return data;
-    }
-
-    public Economy getEconomy() {
-        return economy;
-    }
-
-    public CommandManager getCommandManager() {
-        return commandManager;
-    }
-
-    public AuctionItemManager getAuctionItemManager() {
-        return auctionItemManager;
-    }
-
-    public AuctionPlayerManager getAuctionPlayerManager() {
-        return auctionPlayerManager;
-    }
-
-    public TransactionManager getTransactionManager() {
-        return transactionManager;
-    }
-
-    public GuiManager getGuiManager() {
-        return guiManager;
-    }
-
-    public UpdateChecker.UpdateStatus getUpdateStatus() {
-        return status;
     }
 
     String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";

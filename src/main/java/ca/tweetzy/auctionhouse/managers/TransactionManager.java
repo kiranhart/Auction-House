@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
@@ -39,17 +40,25 @@ public class TransactionManager {
         return Collections.unmodifiableList(this.transactions);
     }
 
-    public void loadTransactions() {
-        if (AuctionHouse.getInstance().getData().contains("transactions") && AuctionHouse.getInstance().getData().isList("transactions")) {
-            List<Transaction> transactions = AuctionHouse.getInstance().getData().getStringList("transactions").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (Transaction) object).collect(Collectors.toList());
-            long start = System.currentTimeMillis();
-            transactions.forEach(this::addTransaction);
-            AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&aLoaded &2%d &atransaction(s) in &e%d&fms", transactions.size(), System.currentTimeMillis() - start))).sendPrefixedMessage(Bukkit.getConsoleSender());
+    public void loadTransactions(boolean useDatabase) {
+        if (useDatabase) {
+            AuctionHouse.getInstance().getDataManager().getTransactions(all -> all.forEach(this::addTransaction));
+        } else {
+            if (AuctionHouse.getInstance().getData().contains("transactions") && AuctionHouse.getInstance().getData().isList("transactions")) {
+                List<Transaction> transactions = AuctionHouse.getInstance().getData().getStringList("transactions").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (Transaction) object).collect(Collectors.toList());
+                long start = System.currentTimeMillis();
+                transactions.forEach(this::addTransaction);
+                AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&aLoaded &2%d &atransaction(s) in &e%d&fms", transactions.size(), System.currentTimeMillis() - start))).sendPrefixedMessage(Bukkit.getConsoleSender());
+            }
         }
     }
 
-    public void saveTransactions() {
-        AuctionHouse.getInstance().getData().set("transactions", this.transactions.stream().map(AuctionAPI.getInstance()::convertToBase64).collect(Collectors.toList()));
-        AuctionHouse.getInstance().getData().save();
+    public void saveTransactions(boolean useDatabase, boolean async) {
+        if (useDatabase) {
+            AuctionHouse.getInstance().getDataManager().saveTransactions(getTransactions(), async);
+        } else {
+            AuctionHouse.getInstance().getData().set("transactions", this.transactions.stream().map(AuctionAPI.getInstance()::convertToBase64).collect(Collectors.toList()));
+            AuctionHouse.getInstance().getData().save();
+        }
     }
 }

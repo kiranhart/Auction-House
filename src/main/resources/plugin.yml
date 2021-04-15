@@ -26,6 +26,7 @@ permissions:
       auctionhouse.cmd.transactions: true
       auctionhouse.cmd.search: true
       auctionhouse.cmd.convert: true
+      auctionhouse.cmd.upload: true
   auctionhouse.cmd:
     description: Allows the user to use /ah
     default: op
@@ -49,4 +50,7 @@ permissions:
     default: op
   auctionhouse.cmd.convert:
     description: Allows the user to run conversion command
+    default: op
+  auctionhouse.cmd.upload:
+    description: Allows the user to run upload command
     default: op

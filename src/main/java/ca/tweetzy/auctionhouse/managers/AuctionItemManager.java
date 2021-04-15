@@ -50,48 +50,30 @@ public class AuctionItemManager {
         return Collections.unmodifiableList(auctionItems.stream().filter(auctionItem -> MaterialCategorizer.getMaterialCategory(AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem())) == category).collect(Collectors.toList()));
     }
 
-    public void loadItems() {
-        if (AuctionHouse.getInstance().getData().contains("auction items") && AuctionHouse.getInstance().getData().isList("auction items")) {
-            List<AuctionItem> items = AuctionHouse.getInstance().getData().getStringList("auction items").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (AuctionItem) object).collect(Collectors.toList());
-            long start = System.currentTimeMillis();
-            items.forEach(this::addItem);
-            AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&aLoaded &2%d &aauction items(s) in &e%d&fms", items.size(), System.currentTimeMillis() - start))).sendPrefixedMessage(Bukkit.getConsoleSender());
-            AuctionHouse.getInstance().getData().set("auction items", null);
-            AuctionHouse.getInstance().getData().save();
+    public void loadItems(boolean useDatabase) {
+        if (useDatabase) {
+            AuctionHouse.getInstance().getDataManager().getItems(all -> all.forEach(this::addItem));
+        } else {
+            if (AuctionHouse.getInstance().getData().contains("auction items") && AuctionHouse.getInstance().getData().isList("auction items")) {
+                List<AuctionItem> items = AuctionHouse.getInstance().getData().getStringList("auction items").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (AuctionItem) object).collect(Collectors.toList());
+                long start = System.currentTimeMillis();
+                items.forEach(this::addItem);
+                AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&aLoaded &2%d &aauction items(s) in &e%d&fms", items.size(), System.currentTimeMillis() - start))).sendPrefixedMessage(Bukkit.getConsoleSender());
+                AuctionHouse.getInstance().getData().set("auction items", null);
+                AuctionHouse.getInstance().getData().save();
+            }
         }
     }
 
-    public void saveItems() {
-        this.adjustItemsInFile(this.getAuctionItems());
+    public void saveItems(boolean useDatabase, boolean async) {
+        if (useDatabase) {
+            AuctionHouse.getInstance().getDataManager().saveItems(getAuctionItems(), async);
+        } else {
+            this.adjustItemsInFile(this.getAuctionItems());
+        }
     }
 
     public void adjustItemsInFile(List<AuctionItem> items) {
-        if (!AuctionHouse.getInstance().getData().contains("auction items")) {
-            AuctionHouse.getInstance().getData().set("auction items", items.stream().map(AuctionAPI.getInstance()::convertToBase64).collect(Collectors.toList()));
-            AuctionHouse.getInstance().getData().save();
-            return;
-        }
-
-        List<AuctionItem> foundItems = AuctionHouse.getInstance().getData().getStringList("auction items").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (AuctionItem) object).collect(Collectors.toList());
-        foundItems.addAll(items);
-        AuctionHouse.getInstance().getData().set("auction items", foundItems.stream().map(AuctionAPI.getInstance()::convertToBase64).collect(Collectors.toList()));
-        AuctionHouse.getInstance().getData().save();
-    }
-
-    public void adjustItemsInFile(AuctionItem item, boolean add) {
-        if (!AuctionHouse.getInstance().getData().contains("auction items") && add) {
-            AuctionHouse.getInstance().getData().set("auction items", Collections.singletonList(AuctionAPI.getInstance().convertToBase64(item)));
-            AuctionHouse.getInstance().getData().save();
-            return;
-        }
-
-        List<AuctionItem> items = AuctionHouse.getInstance().getData().getStringList("auction items").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (AuctionItem) object).collect(Collectors.toList());
-        if (items.stream().anyMatch(i -> i.getKey().equals(item.getKey())) || !add) {
-            items.removeIf(i -> i.getKey().equals(item.getKey()));
-        } else {
-            items.add(item);
-        }
-
         AuctionHouse.getInstance().getData().set("auction items", items.stream().map(AuctionAPI.getInstance()::convertToBase64).collect(Collectors.toList()));
         AuctionHouse.getInstance().getData().save();
     }

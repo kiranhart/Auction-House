@@ -42,6 +42,21 @@ public class Settings {
     public static final ConfigSetting RECORD_TRANSACTIONS = new ConfigSetting(config, "auction setting.record transactions", true, "Should every transaction be recorded (everything an auction is won or an item is bought)");
     public static final ConfigSetting BROADCAST_AUCTION_LIST = new ConfigSetting(config, "auction setting.broadcast auction list", false, "Should the entire server be alerted when a player lists an item?");
     public static final ConfigSetting PLAYER_NEEDS_TOTAL_PRICE_TO_BID = new ConfigSetting(config, "auction setting.bidder must have funds in account", false, "Should the player who is placing a bid on an item have the money in their account to cover the cost?");
+    public static final ConfigSetting USE_ASYNC_GUI_REFRESH = new ConfigSetting(config, "auction setting.use async gui refresh", false, "Should the gui refresh be done using asynchronous tasks?", "This may reduce lag that can be caused, but", "items may have a flickering effect inside the gui.");
+    public static final ConfigSetting AUTO_SAVE_ENABLED = new ConfigSetting(config, "auction setting.auto save.enabled", true, "Should the auto save task be enabled?");
+    public static final ConfigSetting AUTO_SAVE_EVERY = new ConfigSetting(config, "auction setting.auto save.time", 900, "How often should the auto save active? (in seconds. Ex. 900 = 15min)");
+
+    /*  ===============================
+     *         DATABASE OPTIONS
+     *  ===============================*/
+    public static final ConfigSetting DATABASE_USE = new ConfigSetting(config, "database.use database", false, "Should the plugin use a database to store shop data?");
+    public static final ConfigSetting DATABASE_HOST = new ConfigSetting(config, "database.host", "kiranhart.com", "What is the connection url/host");
+    public static final ConfigSetting DATABASE_PORT = new ConfigSetting(config, "database.port", 3306, "What is the port to database (default is 3306)");
+    public static final ConfigSetting DATABASE_NAME = new ConfigSetting(config, "database.name", "kiranhar_temporary", "What is the name of the database?");
+    public static final ConfigSetting DATABASE_USERNAME = new ConfigSetting(config, "database.username", "kiranhar_temp", "What is the name of the user connecting?");
+    public static final ConfigSetting DATABASE_PASSWORD = new ConfigSetting(config, "database.password", "Tw33tyHart1.", "What is the password to the user connecting?");
+    public static final ConfigSetting DATABASE_USE_SSL = new ConfigSetting(config, "database.use ssl", true, "Should the database connection use ssl?");
+
 
     /*  ===============================
      *         DISCORD WEBHOOK

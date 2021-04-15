@@ -11,6 +11,7 @@ import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Comparator;
 import java.util.List;
@@ -27,6 +28,7 @@ public class GUIActiveAuctions extends Gui {
 
     final AuctionPlayer auctionPlayer;
 
+    private BukkitTask task;
     private int taskId;
 
     public GUIActiveAuctions(AuctionPlayer auctionPlayer) {
@@ -37,8 +39,20 @@ public class GUIActiveAuctions extends Gui {
         draw();
 
         if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
-            setOnOpen(e -> startTask());
-            setOnClose(e -> killTask());
+            setOnOpen(e -> {
+                if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
+                    startTaskAsync();
+                } else {
+                    startTask();
+                }
+            });
+            setOnClose(e -> {
+                if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
+                    killAsyncTask();
+                } else {
+                    killTask();
+                }
+            });
         }
     }
 
@@ -79,7 +93,15 @@ public class GUIActiveAuctions extends Gui {
         taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::draw, 0L, Settings.TICK_UPDATE_TIME.getInt());
     }
 
+    private void startTaskAsync() {
+        task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::draw, 0L, Settings.TICK_UPDATE_TIME.getInt());
+    }
+
     private void killTask() {
         Bukkit.getServer().getScheduler().cancelTask(taskId);
+    }
+
+    private void killAsyncTask() {
+        task.cancel();
     }
 }

@@ -18,6 +18,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class GUIAuctionHouse extends Gui {
     List<AuctionItem> items;
 
     private int taskId;
+    private BukkitTask task;
     private AuctionItemCategory filterCategory = AuctionItemCategory.ALL;
     private AuctionSaleType filterAuctionType = AuctionSaleType.BOTH;
 
@@ -49,8 +51,20 @@ public class GUIAuctionHouse extends Gui {
         draw();
 
         if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
-            setOnOpen(e -> startTask());
-            setOnClose(e -> killTask());
+            setOnOpen(e -> {
+                if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
+                    startTaskAsync();
+                } else {
+                    startTask();
+                }
+            });
+            setOnClose(e -> {
+                if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
+                    killAsyncTask();
+                } else {
+                    killTask();
+                }
+            });
         }
     }
 
@@ -212,7 +226,15 @@ public class GUIAuctionHouse extends Gui {
         taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::draw, 0L, Settings.TICK_UPDATE_TIME.getInt());
     }
 
+    private void startTaskAsync() {
+        task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::draw, 0L, Settings.TICK_UPDATE_TIME.getInt());
+    }
+
     private void killTask() {
         Bukkit.getServer().getScheduler().cancelTask(taskId);
+    }
+
+    private void killAsyncTask() {
+        task.cancel();
     }
 }

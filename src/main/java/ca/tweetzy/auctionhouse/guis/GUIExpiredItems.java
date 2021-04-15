@@ -53,7 +53,6 @@ public class GUIExpiredItems extends Gui {
         setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
         setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_EXPIRED_AUCTIONS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList(), null), e -> {
             this.auctionPlayer.getItems(true).forEach(item -> {
-                AuctionHouse.getInstance().getAuctionItemManager().adjustItemsInFile(item, false);
                 AuctionHouse.getInstance().getAuctionItemManager().removeItem(item.getKey());
                 PlayerUtils.giveItem(e.player, AuctionAPI.getInstance().deserializeItem(item.getRawItem()));
             });
@@ -64,7 +63,6 @@ public class GUIExpiredItems extends Gui {
         int slot = 0;
         for (AuctionItem item : data) {
             setButton(slot++, AuctionAPI.getInstance().deserializeItem(item.getRawItem()), e -> {
-                AuctionHouse.getInstance().getAuctionItemManager().adjustItemsInFile(item, false);
                 AuctionHouse.getInstance().getAuctionItemManager().removeItem(item.getKey());
                 PlayerUtils.giveItem(e.player, AuctionAPI.getInstance().deserializeItem(item.getRawItem()));
                 draw();
