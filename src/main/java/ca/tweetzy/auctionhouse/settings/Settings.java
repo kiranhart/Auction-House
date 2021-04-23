@@ -43,6 +43,8 @@ public class Settings {
     public static final ConfigSetting BROADCAST_AUCTION_LIST = new ConfigSetting(config, "auction setting.broadcast auction list", false, "Should the entire server be alerted when a player lists an item?");
     public static final ConfigSetting PLAYER_NEEDS_TOTAL_PRICE_TO_BID = new ConfigSetting(config, "auction setting.bidder must have funds in account", false, "Should the player who is placing a bid on an item have the money in their account to cover the cost?");
     public static final ConfigSetting USE_ASYNC_GUI_REFRESH = new ConfigSetting(config, "auction setting.use async gui refresh", false, "Should the gui refresh be done using asynchronous tasks?", "This may reduce lag that can be caused, but", "items may have a flickering effect inside the gui.");
+    public static final ConfigSetting SEND_REMOVED_ITEM_BACK_TO_PLAYER = new ConfigSetting(config, "auction setting.send removed item back to player", true, "Should items removed by staff from the auction house be sent back to the player?");
+    public static final ConfigSetting ALLOW_USAGE_OF_BID_SYSTEM = new ConfigSetting(config, "auction setting.allow bid system usage", true, "Should players be allowed to use the bid option cmd params?");
     public static final ConfigSetting AUTO_SAVE_ENABLED = new ConfigSetting(config, "auction setting.auto save.enabled", true, "Should the auto save task be enabled?");
     public static final ConfigSetting AUTO_SAVE_EVERY = new ConfigSetting(config, "auction setting.auto save.time", 900, "How often should the auto save active? (in seconds. Ex. 900 = 15min)");
 

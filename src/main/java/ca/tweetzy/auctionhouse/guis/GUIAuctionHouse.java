@@ -8,13 +8,11 @@ import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.ServerVersion;
-import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
@@ -150,7 +148,6 @@ public class GUIAuctionHouse extends Gui {
         // Items
         int slot = 0;
         List<AuctionItem> data = this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
-
         for (AuctionItem auctionItem : data) {
             setButton(slot++, auctionItem.getDisplayStack(AuctionStackType.MAIN_AUCTION_HOUSE), e -> {
                 switch (e.clickType) {
@@ -189,7 +186,11 @@ public class GUIAuctionHouse extends Gui {
                         break;
                     case MIDDLE:
                         if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin")) {
-                            AuctionHouse.getInstance().getAuctionItemManager().removeItem(auctionItem.getKey());
+                            if (Settings.SEND_REMOVED_ITEM_BACK_TO_PLAYER.getBoolean()) {
+                                AuctionHouse.getInstance().getAuctionItemManager().getItem(auctionItem.getKey()).setExpired(true);
+                            } else {
+                                AuctionHouse.getInstance().getAuctionItemManager().removeItem(auctionItem.getKey());
+                            }
                             killTask();
                             e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
                         }

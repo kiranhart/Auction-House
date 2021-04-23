@@ -129,6 +129,8 @@ public class CommandSell extends AbstractCommand {
             SoundManager.getInstance().playSound(player, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
 
         } else {
+            // check if the bid system is available to players
+            if (!Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) return ReturnType.FAILURE;
             // they want to use the bidding system, so make it a bid item
             if (args.length != 3) return ReturnType.SYNTAX_ERROR;
 
