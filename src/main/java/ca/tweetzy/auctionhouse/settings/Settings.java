@@ -37,6 +37,7 @@ public class Settings {
     public static final ConfigSetting INCREASE_TIME_ON_BID = new ConfigSetting(config, "auction setting.increase time on bid", true, "Should the remaining time be increased when a bid is placed?");
     public static final ConfigSetting TIME_TO_INCREASE_BY_ON_BID = new ConfigSetting(config, "auction setting.time to increase by on the bid", 20, "How many seconds should be added to the remaining time?");
     public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
+    public static final ConfigSetting TICK_UPDATE_GUI_TIME = new ConfigSetting(config, "auction setting.refresh gui every", 10, "How many seconds should pass before the auction gui auto refreshes?");
     public static final ConfigSetting REFRESH_GUI_WHEN_BID = new ConfigSetting(config, "auction setting.refresh gui when bid", true, "Should the auction gui be re-opened (not redrawn) when a user places a bid, so they get the latest items?");
     public static final ConfigSetting REFRESH_GUI_ON_FILTER_CHANGE = new ConfigSetting(config, "auction setting.refresh gui when filter changed", false, "Should the gui refresh when the player changes the filter mode?");
     public static final ConfigSetting RECORD_TRANSACTIONS = new ConfigSetting(config, "auction setting.record transactions", true, "Should every transaction be recorded (everything an auction is won or an item is bought)");

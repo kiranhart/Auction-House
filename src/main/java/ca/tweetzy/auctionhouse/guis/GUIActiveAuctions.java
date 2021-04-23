@@ -90,11 +90,11 @@ public class GUIActiveAuctions extends Gui {
     }
 
     private void startTask() {
-        taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::draw, 0L, Settings.TICK_UPDATE_TIME.getInt());
+        taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::draw, 0L, (long) 20 * Settings.TICK_UPDATE_GUI_TIME.getInt());
     }
 
     private void startTaskAsync() {
-        task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::draw, 0L, Settings.TICK_UPDATE_TIME.getInt());
+        task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::draw, 0L, (long) 20 * Settings.TICK_UPDATE_GUI_TIME.getInt());
     }
 
     private void killTask() {
