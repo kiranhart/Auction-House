@@ -71,14 +71,14 @@ public class GUIConfirmPurchase extends Gui {
                 AuctionHouse.getInstance().getAuctionItemManager().removeItem(located.getKey());
                 PlayerUtils.giveItem(e.player, AuctionAPI.getInstance().deserializeItem(located.getRawItem()));
 
-                AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", String.format("%,.2f", located.getCurrentPrice())).sendPrefixedMessage(e.player);
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", String.format("%,.2f", located.getBasePrice())).sendPrefixedMessage(e.player);
 
                 if (Bukkit.getOfflinePlayer(located.getOwner()).isOnline()) {
                     AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
                             .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(located.getRawItem()).getType().name().replace("_", " ")))
-                            .processPlaceholder("price", String.format("%,.2f", located.getCurrentPrice()))
+                            .processPlaceholder("price", String.format("%,.2f", located.getBasePrice()))
                             .sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
-                    AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", String.format("%,.2f", located.getCurrentPrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", String.format("%,.2f", located.getBasePrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
                 }
 
                 e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
