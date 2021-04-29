@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
  * Time Created: 6:34 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
+
+// TODO CLEAN UP THE ENTIRE CLICK SYSTEM, IT'S KINDA MESSY
 public class GUIAuctionHouse extends Gui {
 
     final AuctionPlayer auctionPlayer;
@@ -49,20 +51,8 @@ public class GUIAuctionHouse extends Gui {
         draw();
 
         if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
-            setOnOpen(e -> {
-                if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
-                    startTaskAsync();
-                } else {
-                    startTask();
-                }
-            });
-            setOnClose(e -> {
-                if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
-                    killAsyncTask();
-                } else {
-                    killTask();
-                }
-            });
+            setOnOpen(e -> makeMess());
+            setOnClose(e -> cleanup());
         }
     }
 
@@ -91,7 +81,15 @@ public class GUIAuctionHouse extends Gui {
         pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45));
         setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
         setButton(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_REFRESH_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_REFRESH_BTN_NAME.getString()).setLore(Settings.GUI_REFRESH_BTN_LORE.getStringList()).toItemStack(), e -> {
-            killTask();
+            if (Settings.USE_REFRESH_COOL_DOWN.getBoolean()) {
+                if (AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().containsKey(this.auctionPlayer.getPlayer().getUniqueId())) {
+                    if (AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().get(this.auctionPlayer.getPlayer().getUniqueId()) > System.currentTimeMillis()) {
+                        return;
+                    }
+                }
+                AuctionHouse.getInstance().getAuctionPlayerManager().addCooldown(this.auctionPlayer.getPlayer().getUniqueId());
+            }
+            cleanup();
             e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
         });
         setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
@@ -104,14 +102,14 @@ public class GUIAuctionHouse extends Gui {
         setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), new HashMap<String, Object>() {{
             put("%active_player_auctions%", auctionPlayer.getItems(false).size());
         }}), e -> {
-            killTask();
+            cleanup();
             e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
         });
 
         setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), new HashMap<String, Object>() {{
             put("%expired_player_auctions%", auctionPlayer.getItems(true).size());
         }}), e -> {
-            killTask();
+            cleanup();
             e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer));
         });
 
@@ -123,7 +121,7 @@ public class GUIAuctionHouse extends Gui {
                 case LEFT:
                     this.filterCategory = this.filterCategory.next();
                     if (Settings.REFRESH_GUI_ON_FILTER_CHANGE.getBoolean()) {
-                        killTask();
+                        cleanup();
                         e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer, this.filterCategory, this.filterAuctionType));
                     } else {
                         draw();
@@ -132,7 +130,7 @@ public class GUIAuctionHouse extends Gui {
                 case RIGHT:
                     this.filterAuctionType = this.filterAuctionType.next();
                     if (Settings.REFRESH_GUI_ON_FILTER_CHANGE.getBoolean()) {
-                        killTask();
+                        cleanup();
                         e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer, this.filterCategory, this.filterAuctionType));
                     } else {
                         draw();
@@ -146,8 +144,17 @@ public class GUIAuctionHouse extends Gui {
         setButton(5, 8, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList(), null), null);
 
         // Items
-        int slot = 0;
         List<AuctionItem> data = this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
+        if (Settings.FILL_ITEMS_USING_ASYNC.getBoolean()) {
+            Bukkit.getServer().getScheduler().runTaskAsynchronously(AuctionHouse.getInstance(), () -> placeItems(data));
+            return;
+        }
+
+        placeItems(data);
+    }
+
+    private void placeItems(List<AuctionItem> data) {
+        int slot = 0;
         for (AuctionItem auctionItem : data) {
             setButton(slot++, auctionItem.getDisplayStack(AuctionStackType.MAIN_AUCTION_HOUSE), e -> {
                 switch (e.clickType) {
@@ -158,8 +165,8 @@ public class GUIAuctionHouse extends Gui {
                                 return;
                             }
 
-                            killTask();
-                            e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem));
+                            cleanup();
+                            e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
                         } else {
                             if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_BID_OWN_ITEM.getBoolean()) {
                                 AuctionHouse.getInstance().getLocale().getMessage("general.cantbidonown").sendPrefixedMessage(e.player);
@@ -179,7 +186,7 @@ public class GUIAuctionHouse extends Gui {
                             }
 
                             if (Settings.REFRESH_GUI_WHEN_BID.getBoolean()) {
-                                killTask();
+                                cleanup();
                                 e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
                             }
                         }
@@ -191,7 +198,8 @@ public class GUIAuctionHouse extends Gui {
                             } else {
                                 AuctionHouse.getInstance().getAuctionItemManager().removeItem(auctionItem.getKey());
                             }
-                            killTask();
+
+                            cleanup();
                             e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
                         }
                         break;
@@ -203,21 +211,27 @@ public class GUIAuctionHouse extends Gui {
 
                             BlockStateMeta meta = (BlockStateMeta) clicked.getItemMeta();
                             if (!(meta.getBlockState() instanceof ShulkerBox)) return;
-
-                            killTask();
+                            cleanup();
                             e.manager.showGUI(e.player, new GUIShulkerInspect(e.clickedItem));
                         }
                         break;
                     case RIGHT:
+                        if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_PURCHASE_OWN_ITEM.getBoolean()) {
+                            AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(e.player);
+                            return;
+                        }
+
+                        if (auctionItem.getBidStartPrice() <= 0 || !Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
+                            if (!Settings.ALLOW_PURCHASE_OF_SPECIFIC_QUANTITIES.getBoolean()) return;
+                            cleanup();
+                            e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, true));
+                            return;
+                        }
+
                         if (auctionItem.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble()) {
                             if (!Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) return;
-
-                            if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_PURCHASE_OWN_ITEM.getBoolean()) {
-                                AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(e.player);
-                                return;
-                            }
-                            killTask();
-                            e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem));
+                            cleanup();
+                            e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
                         }
                         break;
                 }
@@ -239,5 +253,21 @@ public class GUIAuctionHouse extends Gui {
 
     private void killAsyncTask() {
         task.cancel();
+    }
+
+    private void makeMess() {
+        if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
+            startTaskAsync();
+        } else {
+            startTask();
+        }
+    }
+
+    private void cleanup() {
+        if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
+            killAsyncTask();
+        } else {
+            killTask();
+        }
     }
 }

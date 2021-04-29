@@ -39,20 +39,8 @@ public class GUIActiveAuctions extends Gui {
         draw();
 
         if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
-            setOnOpen(e -> {
-                if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
-                    startTaskAsync();
-                } else {
-                    startTask();
-                }
-            });
-            setOnClose(e -> {
-                if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
-                    killAsyncTask();
-                } else {
-                    killTask();
-                }
-            });
+            setOnOpen(e -> makeMess());
+            setOnClose(e -> cleanup());
         }
     }
 
@@ -71,7 +59,7 @@ public class GUIActiveAuctions extends Gui {
 
         // Other Buttons
         setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
-            killTask();
+            cleanup();
             e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
         });
         setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString(), Settings.GUI_ACTIVE_AUCTIONS_NAME.getString(), Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList(), null), e -> {
@@ -103,5 +91,21 @@ public class GUIActiveAuctions extends Gui {
 
     private void killAsyncTask() {
         task.cancel();
+    }
+
+    private void makeMess() {
+        if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
+            startTaskAsync();
+        } else {
+            startTask();
+        }
+    }
+
+    private void cleanup() {
+        if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
+            killAsyncTask();
+        } else {
+            killTask();
+        }
     }
 }

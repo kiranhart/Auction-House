@@ -34,5 +34,6 @@ public class PlayerListeners implements Listener {
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
         AuctionHouse.getInstance().getAuctionPlayerManager().removePlayer(player.getUniqueId());
+        AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().remove(player.getUniqueId());
     }
 }
