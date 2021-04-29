@@ -110,21 +110,23 @@ public class GUIConfirmPurchase extends Gui {
             });
         });
 
-        drawPurchaseInfo(this.maxStackSize);
+        if (this.buyingSpecificQuantity) {
+            drawPurchaseInfo(this.maxStackSize);
 
-        // Decrease Button
-        setButton(3, 3, new TItemBuilder(Settings.GUI_CONFIRM_DECREASE_QTY_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_CONFIRM_DECREASE_QTY_NAME.getString()).setLore(Settings.GUI_CONFIRM_DECREASE_QTY_LORE.getStringList()).toItemStack(), e -> {
-            if ((this.purchaseQuantity - 1) <= 0) return;
-            this.purchaseQuantity -= 1;
-            drawPurchaseInfo(this.purchaseQuantity);
-        });
+            // Decrease Button
+            setButton(3, 3, new TItemBuilder(Settings.GUI_CONFIRM_DECREASE_QTY_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_CONFIRM_DECREASE_QTY_NAME.getString()).setLore(Settings.GUI_CONFIRM_DECREASE_QTY_LORE.getStringList()).toItemStack(), e -> {
+                if ((this.purchaseQuantity - 1) <= 0) return;
+                this.purchaseQuantity -= 1;
+                drawPurchaseInfo(this.purchaseQuantity);
+            });
 
-        // Increase Button
-        setButton(3, 5, new TItemBuilder(Settings.GUI_CONFIRM_INCREASE_QTY_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_CONFIRM_INCREASE_QTY_NAME.getString()).setLore(Settings.GUI_CONFIRM_INCREASE_QTY_LORE.getStringList()).toItemStack(), e -> {
-            if ((this.purchaseQuantity + 1) > this.maxStackSize) return;
-            this.purchaseQuantity += 1;
-            drawPurchaseInfo(this.purchaseQuantity);
-        });
+            // Increase Button
+            setButton(3, 5, new TItemBuilder(Settings.GUI_CONFIRM_INCREASE_QTY_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_CONFIRM_INCREASE_QTY_NAME.getString()).setLore(Settings.GUI_CONFIRM_INCREASE_QTY_LORE.getStringList()).toItemStack(), e -> {
+                if ((this.purchaseQuantity + 1) > this.maxStackSize) return;
+                this.purchaseQuantity += 1;
+                drawPurchaseInfo(this.purchaseQuantity);
+            });
+        }
     }
 
     private void transferFunds(Player from, double amount) {
