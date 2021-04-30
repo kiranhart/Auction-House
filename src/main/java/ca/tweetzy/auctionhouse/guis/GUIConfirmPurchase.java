@@ -75,6 +75,14 @@ public class GUIConfirmPurchase extends Gui {
             AuctionItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getKey());
             preItemChecks(e, located);
 
+            // Check economy
+            if (!AuctionHouse.getInstance().getEconomy().has(e.player, this.buyingSpecificQuantity ? this.purchaseQuantity * this.pricePerItem : located.getBasePrice())) {
+                AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
+                SoundManager.getInstance().playSound(e.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString(), 1.0F, 1.0F);
+                e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                return;
+            }
+
             Bukkit.getServer().getScheduler().runTaskAsynchronously(AuctionHouse.getInstance(), () -> {
                 AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), e.player, this.auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM);
                 Bukkit.getServer().getPluginManager().callEvent(auctionEndEvent);
@@ -156,13 +164,6 @@ public class GUIConfirmPurchase extends Gui {
     private void preItemChecks(GuiClickEvent e, AuctionItem located) {
         if (located == null || located.isExpired()) {
             AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(e.player);
-            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
-            return;
-        }
-
-        if (!AuctionHouse.getInstance().getEconomy().has(e.player, located.getBasePrice())) {
-            AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
-            SoundManager.getInstance().playSound(e.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString(), 1.0F, 1.0F);
             e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
             return;
         }

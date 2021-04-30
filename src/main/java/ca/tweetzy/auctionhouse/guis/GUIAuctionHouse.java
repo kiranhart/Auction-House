@@ -165,6 +165,11 @@ public class GUIAuctionHouse extends Gui {
                                 return;
                             }
 
+                            if (!AuctionHouse.getInstance().getEconomy().has(e.player, auctionItem.getBasePrice())) {
+                                AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
+                                return;
+                            }
+
                             cleanup();
                             e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
                         } else {
