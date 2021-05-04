@@ -24,6 +24,7 @@ public class PlayerListeners implements Listener {
         Player player = e.getPlayer();
         Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
             AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+            AuctionHouse.getInstance().getLogger().info("Adding player: " + player.getName() + " to Auction Player list.");
             if (AuctionHouse.getInstance().getStatus() == UpdateChecker.UpdateStatus.UNRELEASED_VERSION && player.isOp()) {
                 AuctionHouse.getInstance().getLocale().getMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", AuctionHouse.getInstance().getDescription().getVersion()))).sendPrefixedMessage(player);
             }
@@ -35,5 +36,6 @@ public class PlayerListeners implements Listener {
         Player player = e.getPlayer();
         AuctionHouse.getInstance().getAuctionPlayerManager().removePlayer(player.getUniqueId());
         AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().remove(player.getUniqueId());
+        AuctionHouse.getInstance().getLogger().info("Removing Auction Player and Cooldown instances for user: " + player.getName());
     }
 }

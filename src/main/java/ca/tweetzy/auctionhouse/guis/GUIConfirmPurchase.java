@@ -148,6 +148,7 @@ public class GUIConfirmPurchase extends Gui {
             AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
                     .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(located.getRawItem()).getType().name().replace("_", " ")))
                     .processPlaceholder("price", String.format("%,.2f", overwritePrice ? price : located.getBasePrice()))
+                    .processPlaceholder("buyer_name", e.player.getName())
                     .sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
             AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", String.format("%,.2f", overwritePrice ? price : located.getBasePrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
         }

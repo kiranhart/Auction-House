@@ -82,6 +82,7 @@ public class TickAuctionsTask extends BukkitRunnable {
                                     AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
                                             .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(item.getRawItem()).getType().name().replace("_", " ")))
                                             .processPlaceholder("price", String.format("%,.2f", item.getCurrentPrice()))
+                                            .processPlaceholder("buyer_name", Bukkit.getOfflinePlayer(item.getHighestBidder()).getPlayer().getName())
                                             .sendPrefixedMessage(Bukkit.getOfflinePlayer(item.getOwner()).getPlayer());
                                     AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", String.format("%,.2f", item.getCurrentPrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(item.getOwner()).getPlayer());
                                 }
@@ -108,6 +109,7 @@ public class TickAuctionsTask extends BukkitRunnable {
                                     AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
                                             .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(item.getRawItem()).getType().name().replace("_", " ")))
                                             .processPlaceholder("price", String.format("%,.2f", item.getCurrentPrice()))
+                                            .processPlaceholder("buyer_name", Bukkit.getOfflinePlayer(item.getHighestBidder()).getPlayer().getName())
                                             .sendPrefixedMessage(Bukkit.getOfflinePlayer(item.getOwner()).getPlayer());
                                     AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", String.format("%,.2f", item.getCurrentPrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(item.getOwner()).getPlayer());
                                 }
