@@ -39,11 +39,11 @@ public class CommandSettings extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "settings";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.settings").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Open the in-game config editor";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.settings").getMessage();
     }
 }

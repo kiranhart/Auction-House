@@ -43,12 +43,12 @@ public class CommandActive extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "active";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.active").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "View all your auction listings";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.active").getMessage();
     }
 
     @Override

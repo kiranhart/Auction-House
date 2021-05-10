@@ -38,11 +38,11 @@ public class CommandReload extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "reload";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.reload").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Reload plugin files";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.reload").getMessage();
     }
 }

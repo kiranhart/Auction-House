@@ -8,7 +8,8 @@ general:
     blockeditem: "&cYou are not allowed to auction that item. (%item%)"
     air: "&cSorry, but you cannot sell air o.O"
     blocked: "&cSorry, you are not allowed to sell &e%item%"
-    sellinglimit: "You cannot sell more items, please remove/sell current active items"
+    sellinglimit: "&cYou cannot sell more items, please remove/sell current active items"
+    noroom: "&cPlease clear room in your inventory to purchase that item."
 
 pricing:
     minbaseprice: "&cThe minimum base price must be &a$%price%"
@@ -53,3 +54,27 @@ auction:
     bidwon: "&eYou won the bid for&fx%amount% &6%item% &efor &a%price%"
     itemsold: "&eYou sold &6%item% &eto &6%buyer_name% &efor &a%price%"
     itemnotavailable: "&cThat item is no longer available :("
+
+commands:
+    syntax:
+        active: "active"
+        auctionhouse: "/ah"
+        convert: "convert"
+        expired: "expired"
+        reload: "reload"
+        search: "search <keywords>"
+        sell: "sell <basePrice> [bidStart] [bidIncr]"
+        settings: "settings"
+        transactions: "transactions"
+        upload: "upload"
+    description:
+        active: "View all your auction listings"
+        auctionhouse: "Main command for the plugin, it opens the auction window."
+        convert: "Used to make an attempted conversion from < 2.0.0+"
+        expired: "View all your expired/cancelled listings"
+        reload:  "Reload plugin files"
+        search: "Search for specific item(s) in the auction house"
+        sell: "Used to put an item up for auction"
+        settings: "Open the in-game config editor"
+        transactions: "Used to open the transactions menu"
+        upload: "Used to upload flat file data to the database"

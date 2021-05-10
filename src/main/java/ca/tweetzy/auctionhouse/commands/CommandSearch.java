@@ -41,12 +41,12 @@ public class CommandSearch extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "search <keywords>";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.search").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Search for specific item(s) in the auction house";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.search").getMessage();
     }
 
     @Override

@@ -89,6 +89,11 @@ public class GUIConfirmPurchase extends Gui {
 
                 if (auctionEndEvent.isCancelled()) return;
 
+                if (!Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean() && e.player.getInventory().firstEmpty() == -1) {
+                    AuctionHouse.getInstance().getLocale().getMessage("general.noroom").sendPrefixedMessage(e.player);
+                    return;
+                }
+
                 if (this.buyingSpecificQuantity) {
                     ItemStack item = AuctionAPI.getInstance().deserializeItem(located.getRawItem());
 //                    Bukkit.broadcastMessage(String.format("Total Item Qty: %d\nTotal Purchase Qty: %d\nAmount of purchase: %d", item.getAmount(), this.purchaseQuantity, item.getAmount() - this.purchaseQuantity));

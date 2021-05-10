@@ -59,12 +59,12 @@ public class CommandUpload extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "upload";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.upload").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Used to upload flat file data to the database";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.upload").getMessage();
     }
 
     @Override

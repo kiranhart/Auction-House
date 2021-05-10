@@ -241,11 +241,11 @@ public class CommandSell extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "sell <basePrice> [bidStart] [bidIncr]";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.sell").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Used to put an item up for auction";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.sell").getMessage();
     }
 }

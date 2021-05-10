@@ -34,12 +34,12 @@ public class CommandTransactions extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "transactions";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.transactions").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Used to open the transactions menu";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.transactions").getMessage();
     }
 
     @Override

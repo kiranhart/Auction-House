@@ -65,8 +65,6 @@ public class TickAuctionsTask extends BukkitRunnable {
                             AuctionHouse.getInstance().getServer().getPluginManager().callEvent(auctionEndEvent);
 
                             if (!auctionEndEvent.isCancelled()) {
-                                // since they're online, try to add the item to their inventory
-                                PlayerUtils.giveItem(offlinePlayer.getPlayer(), AuctionAPI.getInstance().deserializeItem(item.getRawItem()));
                                 // withdraw money and give to the owner
                                 AuctionHouse.getInstance().getEconomy().withdrawPlayer(offlinePlayer, item.getCurrentPrice());
                                 AuctionHouse.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(item.getOwner()), item.getCurrentPrice());
@@ -87,7 +85,20 @@ public class TickAuctionsTask extends BukkitRunnable {
                                     AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", String.format("%,.2f", item.getCurrentPrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(item.getOwner()).getPlayer());
                                 }
 
-                                AuctionHouse.getInstance().getAuctionItemManager().removeItem(item.getKey());
+                                // since they're online, try to add the item to their inventory
+                                // TODO CLEAN THIS UP A BIT
+                                if (Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean()) {
+                                    PlayerUtils.giveItem(offlinePlayer.getPlayer(), AuctionAPI.getInstance().deserializeItem(item.getRawItem()));
+                                    AuctionHouse.getInstance().getAuctionItemManager().removeItem(item.getKey());
+                                } else {
+                                    if (offlinePlayer.getPlayer().getInventory().firstEmpty() == -1) {
+                                        item.setOwner(offlinePlayer.getUniqueId());
+                                        item.setExpired(true);
+                                    } else {
+                                        PlayerUtils.giveItem(offlinePlayer.getPlayer(), AuctionAPI.getInstance().deserializeItem(item.getRawItem()));
+                                        AuctionHouse.getInstance().getAuctionItemManager().removeItem(item.getKey());
+                                    }
+                                }
                             }
 
                         } else {

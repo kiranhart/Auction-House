@@ -43,12 +43,12 @@ public class CommandExpired extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "expired";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.expired").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "View all your expired/cancelled listings";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.expired").getMessage();
     }
 
     @Override

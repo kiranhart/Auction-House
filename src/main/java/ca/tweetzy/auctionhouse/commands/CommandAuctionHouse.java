@@ -51,11 +51,11 @@ public class CommandAuctionHouse extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/ah";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.auctionhouse").getMessage();
     }
 
     @Override
     public String getDescription() {
-        return "Main command for the plugin, it opens the auction window.";
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.auctionhouse").getMessage();
     }
 }

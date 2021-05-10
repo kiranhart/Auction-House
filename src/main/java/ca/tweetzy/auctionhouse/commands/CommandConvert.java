@@ -28,6 +28,32 @@ public class CommandConvert extends AbstractCommand {
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
+        handleLegacyConversion(sender);
+
+        return ReturnType.SUCCESS;
+    }
+
+    @Override
+    public String getPermissionNode() {
+        return "auctionhouse.cmd.convert";
+    }
+
+    @Override
+    public String getSyntax() {
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.convert").getMessage();
+    }
+
+    @Override
+    public String getDescription() {
+        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.convert").getMessage();
+    }
+
+    @Override
+    protected List<String> onTab(CommandSender sender, String... args) {
+        return null;
+    }
+    
+    private void handleLegacyConversion(CommandSender sender) {
         AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&4Beginning the ATTEMPTED conversion process, this may take some time.")).sendPrefixedMessage(sender);
         long start = System.currentTimeMillis();
         Bukkit.getServer().getScheduler().runTaskLater(AuctionHouse.getInstance(), () -> {
@@ -81,27 +107,5 @@ public class CommandConvert extends AbstractCommand {
             AuctionHouse.getInstance().getData().save();
 
         }, 1L);
-
-        return ReturnType.SUCCESS;
-    }
-
-    @Override
-    public String getPermissionNode() {
-        return "auctionhouse.cmd.convert";
-    }
-
-    @Override
-    public String getSyntax() {
-        return "convert";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Used to make an attempted conversion from < 2.0.0+";
-    }
-
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
     }
 }
