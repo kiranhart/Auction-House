@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -15,6 +16,7 @@ import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -31,7 +34,7 @@ import java.util.UUID;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 public class CommandSell extends AbstractCommand {
-    
+
     public CommandSell() {
         super(CommandType.PLAYER_ONLY, "sell");
     }
@@ -51,9 +54,35 @@ public class CommandSell extends AbstractCommand {
 
         // Check for block items
         if (Settings.BLOCKED_ITEMS.getStringList().contains(itemToSell.getType().name())) {
-            AuctionHouse.getInstance().getLocale().getMessage("general.blocked").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
+            AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
             return ReturnType.FAILURE;
         }
+
+        boolean blocked = false;
+
+        String itemName = ChatColor.stripColor(AuctionAPI.getInstance().getItemName(itemToSell).toLowerCase());
+        List<String> itemLore = AuctionAPI.getInstance().getItemLore(itemToSell).stream().map(line -> ChatColor.stripColor(line.toLowerCase())).collect(Collectors.toList());
+
+        // Check for blocked names and lore
+        for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
+            if (AuctionAPI.getInstance().match(s, itemName)) {
+                AuctionHouse.getInstance().getLocale().getMessage("general.blockedname").sendPrefixedMessage(player);
+                blocked = true;
+            }
+        }
+
+        if (!itemLore.isEmpty() && !blocked) {
+            for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
+                for (String line : itemLore) {
+                    if (AuctionAPI.getInstance().match(s, line)) {
+                        AuctionHouse.getInstance().getLocale().getMessage("general.blockedlore").sendPrefixedMessage(player);
+                        blocked = true;
+                    }
+                }
+            }
+        }
+
+        if (blocked) return ReturnType.FAILURE;
 
         List<Integer> possibleTimes = new ArrayList<>();
         Settings.AUCTION_TIME.getStringList().forEach(line -> {
@@ -182,6 +211,11 @@ public class CommandSell extends AbstractCommand {
 
             if (bidIncPrice > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
                 AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
+
+            if (Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && bidStartPrice > basePrice) {
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.basepricetoolow").sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
 

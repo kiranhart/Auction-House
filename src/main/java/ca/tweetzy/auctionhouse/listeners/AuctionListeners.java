@@ -30,20 +30,20 @@ public class AuctionListeners implements Listener {
 
     @EventHandler
     public void onAuctionEnd(AuctionEndEvent e) {
-        if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_FINISH.getBoolean()) {
-            Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
-                if (Settings.RECORD_TRANSACTIONS.getBoolean()) {
-                    AuctionHouse.getInstance().getTransactionManager().addTransaction(new Transaction(
-                            UUID.randomUUID(),
-                            e.getOriginalOwner().getUniqueId(),
-                            e.getBuyer().getUniqueId(),
-                            System.currentTimeMillis(),
-                            e.getAuctionItem(),
-                            e.getSaleType()
-                    ));
-                }
+        Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
+            if (Settings.RECORD_TRANSACTIONS.getBoolean()) {
+                AuctionHouse.getInstance().getTransactionManager().addTransaction(new Transaction(
+                        UUID.randomUUID(),
+                        e.getOriginalOwner().getUniqueId(),
+                        e.getBuyer().getUniqueId(),
+                        System.currentTimeMillis(),
+                        e.getAuctionItem(),
+                        e.getSaleType()
+                ));
+            }
+            if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_FINISH.getBoolean()) {
                 Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> AuctionAPI.getInstance().sendDiscordMessage(hook, e.getOriginalOwner(), e.getBuyer(), e.getAuctionItem(), e.getSaleType(), false, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM));
-            }, 1L);
-        }
+            }
+        }, 1L);
     }
 }

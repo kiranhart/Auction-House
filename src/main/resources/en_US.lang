@@ -6,6 +6,8 @@ general:
     cantbidonown: "&cYou cannot bid on your own item!"
     cantbuyown: "&cYou cannot buy your own item!"
     blockeditem: "&cYou are not allowed to auction that item. (%item%)"
+    blockedname: "&cThat item contains a blocked name phrase"
+    blockedlore: "&cThat item contains a blocked lore phrase"
     air: "&cSorry, but you cannot sell air o.O"
     blocked: "&cSorry, you are not allowed to sell &e%item%"
     sellinglimit: "&cYou cannot sell more items, please remove/sell current active items"
@@ -18,6 +20,7 @@ pricing:
     maxbaseprice: "&cThe maximum base price is &a$%price%"
     maxstartingprice: "&cThe maximum starting bid price is &a$%price%"
     maxbidincrementprice: "&cThe maximum bid increment is &a$%price%"
+    basepricetoolow: "&cThe buy now price must be higher than the starting bid."
     moneyremove: "&c&l- $%price%"
     moneyadd: "&a&l+ $%price%"
 

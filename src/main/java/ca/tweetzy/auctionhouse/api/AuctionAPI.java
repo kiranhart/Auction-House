@@ -5,6 +5,8 @@ import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.utils.TextUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -16,8 +18,8 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
+import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -216,6 +218,22 @@ public class AuctionAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getItemName(ItemStack stack) {
+        Objects.requireNonNull(stack, "Item stack cannot be null when getting name");
+        return stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : TextUtils.formatText("&f" + WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " ")));
+    }
+
+    public List<String> getItemLore(ItemStack stack) {
+        List<String> lore = new ArrayList<>();
+        Objects.requireNonNull(stack, "Item stack cannot be null when getting lore");
+        if (stack.hasItemMeta()) {
+            if (stack.getItemMeta().hasLore() && stack.getItemMeta().getLore() != null) {
+                lore.addAll(stack.getItemMeta().getLore());
+            }
+        }
+        return lore;
     }
 
     public boolean match(String pattern, String sentence) {

@@ -39,6 +39,7 @@ public class GUIConfirmBid extends Gui {
         this.auctionItem = auctionItem;
         setTitle(TextUtils.formatText(Settings.GUI_CONFIRM_BID_TITLE.getString()));
         setAcceptsItems(false);
+        setRows(1);
         draw();
     }
 
@@ -63,6 +64,9 @@ public class GUIConfirmBid extends Gui {
 
             auctionItem.setHighestBidder(e.player.getUniqueId());
             auctionItem.setCurrentPrice(auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice());
+            if (Settings.SYNC_BASE_PRICE_TO_HIGHEST_PRICE.getBoolean() && auctionItem.getCurrentPrice() > auctionItem.getBasePrice()) {
+                auctionItem.setBasePrice(auctionItem.getCurrentPrice());
+            }
 
             if (Settings.INCREASE_TIME_ON_BID.getBoolean()) {
                 auctionItem.setRemainingTime(auctionItem.getRemainingTime() + Settings.TIME_TO_INCREASE_BY_ON_BID.getInt());

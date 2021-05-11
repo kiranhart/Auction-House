@@ -56,6 +56,8 @@ public class Settings {
     public static final ConfigSetting ALLOW_PURCHASE_IF_INVENTORY_FULL = new ConfigSetting(config, "auction setting.allow purchase with full inventory", true, "Should auction house allow players to buy items even if their", "inventory is full, if true, items will be dropped on the floor if there is no room.");
 
     public static final ConfigSetting ASK_FOR_BID_CONFIRMATION = new ConfigSetting(config, "auction setting.ask for bid confirmation", true, "Should Auction House open the confirmation menu for the user to confirm", "whether they actually meant to place a bid or not?");
+    public static final ConfigSetting BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START = new ConfigSetting(config, "auction setting.base price must be higher than bid start", true, "Should the base price (buy now price) be higher than the initial bid starting price?");
+    public static final ConfigSetting SYNC_BASE_PRICE_TO_HIGHEST_PRICE = new ConfigSetting(config, "auction setting.sync the base price to the current price", true, "Ex. If the buy now price was 100, and the current price exceeds 100 to say 200, the buy now price will become 200.");
 
     /*  ===============================
      *         DATABASE OPTIONS
@@ -116,9 +118,21 @@ public class Settings {
     public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_AMOUNT_INLINE = new ConfigSetting(config, "discord.msg.item amount.inline", true);
 
     /*  ===============================
-     *         BLOCKED ITEMS
+     *          BLACK LISTED
      *  ===============================*/
     public static final ConfigSetting BLOCKED_ITEMS = new ConfigSetting(config, "blocked items", Collections.singletonList("ENDER_CHEST"), "Materials that should be blocked (not allowed to sell)");
+    public static final ConfigSetting BLOCKED_ITEM_NAMES = new ConfigSetting(config, "blocked item names", Arrays.asList(
+            "fuck",
+            "bitch",
+            "nigger",
+            "nigga",
+            "pussy"
+    ), "If an item contains any words/names specified here, it won't list.");
+
+    public static final ConfigSetting BLOCKED_ITEM_LORES = new ConfigSetting(config, "blocked item lores", Arrays.asList(
+            "kill yourself",
+            "another random phrase"
+    ), "If an item lore contains any of these values, it won't list");
 
     /*  ===============================
      *         MAX AUCTION TIME
@@ -188,7 +202,8 @@ public class Settings {
             "&7Click here to view all of the items you",
             "&7are currently selling on the auction.",
             "",
-            "&e&l%active_player_auctions% Item(s)"
+            "&e&l%active_player_auctions% Item(s)",
+            "&e&lBalance &a$%player_balance%"
     ));
 
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM = new ConfigSetting(config, "gui.auction house.items.collection bin.item", "ENDER_CHEST");
