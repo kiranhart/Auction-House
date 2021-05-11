@@ -398,7 +398,7 @@ public class Settings {
             "&eLeft-Click&f: &bBuy Now"
     ), "This will be appended at the end of the lore", "If the auction item is not using a bid, this will show");
 
-    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_INSPECTION = new ConfigSetting(config, "auction items.controls.inspection", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box or barrel)");
+    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_INSPECTION = new ConfigSetting(config, "auction items.controls.inspection", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box)");
 
     /*  ===============================
      *         AUCTION STACKS
