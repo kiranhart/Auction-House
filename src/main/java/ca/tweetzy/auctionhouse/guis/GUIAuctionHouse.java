@@ -183,16 +183,22 @@ public class GUIAuctionHouse extends Gui {
                                 return;
                             }
 
-                            auctionItem.setHighestBidder(e.player.getUniqueId());
-                            auctionItem.setCurrentPrice(auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice());
-
-                            if (Settings.INCREASE_TIME_ON_BID.getBoolean()) {
-                                auctionItem.setRemainingTime(auctionItem.getRemainingTime() + Settings.TIME_TO_INCREASE_BY_ON_BID.getInt());
-                            }
-
-                            if (Settings.REFRESH_GUI_WHEN_BID.getBoolean()) {
+                            // TODO CLEAN UP THIS
+                            if (Settings.ASK_FOR_BID_CONFIRMATION.getBoolean()) {
                                 cleanup();
-                                e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                                e.manager.showGUI(e.player, new GUIConfirmBid(this.auctionPlayer, auctionItem));
+                            } else {
+                                auctionItem.setHighestBidder(e.player.getUniqueId());
+                                auctionItem.setCurrentPrice(auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice());
+
+                                if (Settings.INCREASE_TIME_ON_BID.getBoolean()) {
+                                    auctionItem.setRemainingTime(auctionItem.getRemainingTime() + Settings.TIME_TO_INCREASE_BY_ON_BID.getInt());
+                                }
+
+                                if (Settings.REFRESH_GUI_WHEN_BID.getBoolean()) {
+                                    cleanup();
+                                    e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                                }
                             }
                         }
                         break;
@@ -210,14 +216,14 @@ public class GUIAuctionHouse extends Gui {
                         break;
                     case SHIFT_RIGHT:
                         if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) return;
-                        if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin") || e.player.hasPermission("auctionhouse.inspectshulker")) {
+                        if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin") || e.player.hasPermission("auctionhouse.inspectcontainer")) {
                             ItemStack clicked = e.clickedItem;
                             if (!(clicked.getItemMeta() instanceof BlockStateMeta)) return;
 
                             BlockStateMeta meta = (BlockStateMeta) clicked.getItemMeta();
                             if (!(meta.getBlockState() instanceof ShulkerBox)) return;
                             cleanup();
-                            e.manager.showGUI(e.player, new GUIShulkerInspect(e.clickedItem));
+                            e.manager.showGUI(e.player, new GUIContainerInspect(e.clickedItem));
                         }
                         break;
                     case RIGHT:
