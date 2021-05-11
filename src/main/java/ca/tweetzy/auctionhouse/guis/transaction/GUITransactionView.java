@@ -43,7 +43,7 @@ public class GUITransactionView extends Gui {
             put("%transaction_id%", transaction.getId().toString());
             put("%sale_type%", transaction.getAuctionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? "Won Auction" : "Bought Immediately");
             put("%transaction_date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
-            put("%final_price%", String.format("%,.2f", transaction.getFinalPrice()));
+            put("%final_price%", AuctionAPI.getInstance().formatNumber(transaction.getFinalPrice()));
         }}));
     }
 }

@@ -143,7 +143,7 @@ public class CommandSell extends AbstractCommand {
             AuctionHouse.getInstance().getLocale().getMessage("auction.listed.nobid")
                     .processPlaceholder("amount", itemToSell.getAmount())
                     .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
-                    .processPlaceholder("base_price", String.format("%,.2f", basePrice))
+                    .processPlaceholder("base_price", AuctionAPI.getInstance().formatNumber(basePrice))
                     .sendPrefixedMessage(player);
 
             if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
@@ -151,7 +151,7 @@ public class CommandSell extends AbstractCommand {
                         .processPlaceholder("player", player.getName())
                         .processPlaceholder("amount", itemToSell.getAmount())
                         .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
-                        .processPlaceholder("base_price", String.format("%,.2f", basePrice))::sendPrefixedMessage);
+                        .processPlaceholder("base_price", AuctionAPI.getInstance().formatNumber(basePrice))::sendPrefixedMessage);
             }
 
             PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
@@ -242,9 +242,9 @@ public class CommandSell extends AbstractCommand {
             AuctionHouse.getInstance().getLocale().getMessage("auction.listed.withbid")
                     .processPlaceholder("amount", itemToSell.getAmount())
                     .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
-                    .processPlaceholder("base_price", String.format("%,.2f", basePrice))
-                    .processPlaceholder("start_price", String.format("%,.2f", bidStartPrice))
-                    .processPlaceholder("increment_price", String.format("%,.2f", bidIncPrice))
+                    .processPlaceholder("base_price", AuctionAPI.getInstance().formatNumber(basePrice))
+                    .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(bidStartPrice))
+                    .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(bidIncPrice))
                     .sendPrefixedMessage(player);
 
             if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
@@ -252,9 +252,9 @@ public class CommandSell extends AbstractCommand {
                         .processPlaceholder("player", player.getName())
                         .processPlaceholder("amount", itemToSell.getAmount())
                         .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
-                        .processPlaceholder("base_price", String.format("%,.2f", basePrice))
-                        .processPlaceholder("start_price", String.format("%,.2f", bidStartPrice))
-                        .processPlaceholder("increment_price", String.format("%,.2f", bidIncPrice))::sendPrefixedMessage);
+                        .processPlaceholder("base_price", AuctionAPI.getInstance().formatNumber(basePrice))
+                        .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(bidStartPrice))
+                        .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(bidIncPrice))::sendPrefixedMessage);
             }
 
             PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());

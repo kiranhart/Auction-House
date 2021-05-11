@@ -82,9 +82,9 @@ public class AuctionItem implements Serializable {
 
         String theSeller = (this.owner == null) ? "&eSeller Name???" : Bukkit.getOfflinePlayer(this.owner).getName();
         String highestBidder = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "" : (this.owner.equals(this.highestBidder)) ? Bukkit.getOfflinePlayer(this.owner).getName() : (Bukkit.getOfflinePlayer(this.highestBidder).isOnline()) ? Bukkit.getOfflinePlayer(this.highestBidder).getPlayer().getName() : "Offline";
-        String basePrice = Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : String.format("%,.2f", this.basePrice);
-        String bidIncPrice = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.bidIncPrice) : String.format("%,.2f", this.bidIncPrice);
-        String currentPrice = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : String.format("%,.2f", this.currentPrice);
+        String basePrice = Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : AuctionAPI.getInstance().formatNumber(this.basePrice);// base
+        String bidIncPrice = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.bidIncPrice) : AuctionAPI.getInstance().formatNumber(this.bidIncPrice);
+        String currentPrice = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : AuctionAPI.getInstance().formatNumber(this.currentPrice);
 
         long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.remainingTime);
         List<String> preLore = type == AuctionStackType.MAIN_AUCTION_HOUSE ? this.bidStartPrice <= 0 || this.bidIncPrice <= 0 ? Settings.AUCTION_ITEM_AUCTION_STACK.getStringList() :  Settings.AUCTION_ITEM_AUCTION_STACK_WITH_BID.getStringList() : this.bidStartPrice <= 0 ? Settings.AUCTION_ITEM_LISTING_STACK.getStringList() :  Settings.AUCTION_ITEM_LISTING_STACK_WITH_BID.getStringList();

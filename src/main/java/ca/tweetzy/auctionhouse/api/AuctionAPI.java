@@ -241,4 +241,15 @@ public class AuctionAPI {
         Matcher matcher = patt.matcher(sentence);
         return matcher.find();
     }
+
+    public String formatNumber(double number) {
+        String formatted = String.format("%,.2f", number);
+        return Settings.USE_ALTERNATE_CURRENCY_FORMAT.getBoolean() ? replaceLast(formatted.replace(",", "."), ".", ",") : formatted;
+    }
+
+    private String replaceLast(String string, String substring, String replacement) {
+        int index = string.lastIndexOf(substring);
+        if (index == -1) return string;
+        return string.substring(0, index) + replacement + string.substring(index + substring.length());
+    }
 }
