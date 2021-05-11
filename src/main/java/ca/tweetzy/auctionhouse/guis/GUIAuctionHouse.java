@@ -216,7 +216,7 @@ public class GUIAuctionHouse extends Gui {
                         break;
                     case SHIFT_RIGHT:
                         if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) return;
-                        if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin") || e.player.hasPermission("auctionhouse.inspectcontainer")) {
+                        if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin") || e.player.hasPermission("auctionhouse.inspectshulker")) {
                             ItemStack clicked = e.clickedItem;
                             if (!(clicked.getItemMeta() instanceof BlockStateMeta)) return;
 

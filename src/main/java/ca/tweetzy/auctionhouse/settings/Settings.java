@@ -341,10 +341,11 @@ public class Settings {
     ));
 
     /*  ===============================
-     *         MAIN AUCTION GUI
+     *         INSPECTION GUI
      *  ===============================*/
     public static final ConfigSetting GUI_SHULKER_INSPECT_TITLE = new ConfigSetting(config, "gui.shulker inspect.title", "&7&LInspecting Shulker Box");
     public static final ConfigSetting GUI_SHULKER_INSPECT_BG_ITEM = new ConfigSetting(config, "gui.shulker inspect.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
 
     /*  ===============================
      *         AUCTION STACKS
@@ -385,18 +386,19 @@ public class Settings {
             "&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
     ), "This the item stack lore that will be appended to", "auction items in /ah listings (lore will be applied first, then these)");
 
+    public static final ConfigSetting AUCTION_PURCHASE_CONTROL_HEADER = new ConfigSetting(config, "auction items.controls.header", Collections.singletonList("&7-------------------------"));
+    public static final ConfigSetting AUCTION_PURCHASE_CONTROL_FOOTER = new ConfigSetting(config, "auction items.controls.footer", Collections.singletonList("&7-------------------------"));
+
     public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_BID_ON = new ConfigSetting(config, "auction items.controls.using bid", Arrays.asList(
-            "&7-------------------------",
             "&eLeft-Click&f: &bBid",
-            "&eRight-Click&f: &bBuy Now",
-            "&7-------------------------"
+            "&eRight-Click&f: &bBuy Now"
     ), "This will be appended at the end of the lore", "If the auction item is using a bid, this will show");
 
-    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_BID_OFF = new ConfigSetting(config, "auction items.controls.not using bid", Arrays.asList(
-            "&7-------------------------",
-            "&eLeft-Click&f: &bBuy Now",
-            "&7-------------------------"
+    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_BID_OFF = new ConfigSetting(config, "auction items.controls.not using bid", Collections.singletonList(
+            "&eLeft-Click&f: &bBuy Now"
     ), "This will be appended at the end of the lore", "If the auction item is not using a bid, this will show");
+
+    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_INSPECTION = new ConfigSetting(config, "auction items.controls.inspection", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box or barrel)");
 
     /*  ===============================
      *         AUCTION STACKS

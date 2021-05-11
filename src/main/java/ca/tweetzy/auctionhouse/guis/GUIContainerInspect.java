@@ -20,15 +20,15 @@ import java.util.Arrays;
 public class GUIContainerInspect extends Gui {
 
     final int[] fillSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 46, 47, 48, 50, 51, 52, 53};
-    final ItemStack container;
+    final ItemStack shulker;
 
     /**
      * Used to inspect a shulker box from it's item stack.
      *
-     * @param container is the shulker box
+     * @param shulker is the shulker box
      */
-    public GUIContainerInspect(ItemStack container) {
-        this.container = container;
+    public GUIContainerInspect(ItemStack shulker) {
+        this.shulker = shulker;
         setTitle(TextUtils.formatText(Settings.GUI_SHULKER_INSPECT_TITLE.getString()));
         setDefaultItem(Settings.GUI_SHULKER_INSPECT_BG_ITEM.getMaterial().parseItem());
         setUseLockedCells(false);
@@ -45,7 +45,7 @@ public class GUIContainerInspect extends Gui {
 
         for (int i : fillSlots) setItem(i, getDefaultItem());
         setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId()))));
-        BlockStateMeta meta = (BlockStateMeta) this.container.getItemMeta();
+        BlockStateMeta meta = (BlockStateMeta) this.shulker.getItemMeta();
         ShulkerBox skulkerBox = (ShulkerBox) meta.getBlockState();
 
         int slot = 9;

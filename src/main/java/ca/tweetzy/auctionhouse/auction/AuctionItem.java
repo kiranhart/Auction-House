@@ -2,6 +2,8 @@ package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.compatibility.ServerVersion;
+import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.Getter;
@@ -10,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -83,63 +86,28 @@ public class AuctionItem implements Serializable {
         String currentPrice = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : String.format("%,.2f", this.currentPrice);
 
         long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.remainingTime);
+        List<String> preLore = type == AuctionStackType.MAIN_AUCTION_HOUSE ? this.bidStartPrice <= 0 || this.bidIncPrice <= 0 ? Settings.AUCTION_ITEM_AUCTION_STACK.getStringList() :  Settings.AUCTION_ITEM_AUCTION_STACK_WITH_BID.getStringList() : this.bidStartPrice <= 0 ? Settings.AUCTION_ITEM_LISTING_STACK.getStringList() :  Settings.AUCTION_ITEM_LISTING_STACK_WITH_BID.getStringList();
+
+        lore.addAll(preLore.stream().map(line -> TextUtils.formatText(line
+                .replace("%seller%", theSeller != null ? theSeller : "&eUnknown Seller")
+                .replace("%buynowprice%", basePrice)
+                .replace("%currentprice%", currentPrice)
+                .replace("%bidincrement%", bidIncPrice)
+                .replace("%highestbidder%", highestBidder)
+                .replace("%remaining_days%", String.valueOf(times[0]))
+                .replace("%remaining_hours%", String.valueOf(times[1]))
+                .replace("%remaining_minutes%", String.valueOf(times[2]))
+                .replace("%remaining_seconds%", String.valueOf(times[3])))).collect(Collectors.toList()));
 
         if (type == AuctionStackType.MAIN_AUCTION_HOUSE) {
-            if (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) {
-                Settings.AUCTION_ITEM_AUCTION_STACK.getStringList().forEach(line -> {
-                    lore.add(TextUtils.formatText(line
-                            .replace("%seller%", theSeller != null ? theSeller : "&eUnknown Seller")
-                            .replace("%buynowprice%", basePrice)
-                            .replace("%remaining_days%", String.valueOf(times[0]))
-                            .replace("%remaining_hours%", String.valueOf(times[1]))
-                            .replace("%remaining_minutes%", String.valueOf(times[2]))
-                            .replace("%remaining_seconds%", String.valueOf(times[3]))
-                    ));
-                });
-            } else {
-                Settings.AUCTION_ITEM_AUCTION_STACK_WITH_BID.getStringList().forEach(line -> {
-                    lore.add(TextUtils.formatText(line
-                            .replace("%seller%", theSeller != null ? theSeller : "&eUnknown Seller")
-                            .replace("%buynowprice%", basePrice)
-                            .replace("%currentprice%", currentPrice)
-                            .replace("%bidincrement%", bidIncPrice)
-                            .replace("%highestbidder%", highestBidder)
-                            .replace("%remaining_days%", String.valueOf(times[0]))
-                            .replace("%remaining_hours%", String.valueOf(times[1]))
-                            .replace("%remaining_minutes%", String.valueOf(times[2]))
-                            .replace("%remaining_seconds%", String.valueOf(times[3]))
-                    ));
-                });
+            lore.addAll(Settings.AUCTION_PURCHASE_CONTROL_HEADER.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
+            lore.addAll(this.bidStartPrice <= 0  || this.bidIncPrice <= 0 ? Settings.AUCTION_PURCHASE_CONTROLS_BID_OFF.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()) : Settings.AUCTION_PURCHASE_CONTROLS_BID_ON.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
+
+            if ((ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && itemStack.getType() == XMaterial.SHULKER_BOX.parseMaterial()) || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14) && itemStack.getType() == XMaterial.SHULKER_BOX.parseMaterial() || itemStack.getType() == XMaterial.BARREL.parseMaterial())) {
+                lore.addAll(Settings.AUCTION_PURCHASE_CONTROLS_INSPECTION.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
             }
 
-            lore.addAll(this.bidStartPrice <= 0  || this.bidIncPrice <= 0 ? Settings.AUCTION_PURCHASE_CONTROLS_BID_OFF.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()) : Settings.AUCTION_PURCHASE_CONTROLS_BID_ON.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
-        } else {
-            if (this.bidStartPrice <= 0) {
-                Settings.AUCTION_ITEM_LISTING_STACK.getStringList().forEach(line -> {
-                    lore.add(TextUtils.formatText(line
-                            .replace("%seller%", theSeller)
-                            .replace("%buynowprice%", basePrice)
-                            .replace("%remaining_days%", String.valueOf(times[0]))
-                            .replace("%remaining_hours%", String.valueOf(times[1]))
-                            .replace("%remaining_minutes%", String.valueOf(times[2]))
-                            .replace("%remaining_seconds%", String.valueOf(times[3]))
-                    ));
-                });
-            } else {
-                Settings.AUCTION_ITEM_LISTING_STACK_WITH_BID.getStringList().forEach(line -> {
-                    lore.add(TextUtils.formatText(line
-                            .replace("%seller%", theSeller)
-                            .replace("%buynowprice%", basePrice)
-                            .replace("%currentprice%", currentPrice)
-                            .replace("%bidincrement%", bidIncPrice)
-                            .replace("%highestbidder%", highestBidder)
-                            .replace("%remaining_days%", String.valueOf(times[0]))
-                            .replace("%remaining_hours%", String.valueOf(times[1]))
-                            .replace("%remaining_minutes%", String.valueOf(times[2]))
-                            .replace("%remaining_seconds%", String.valueOf(times[3]))
-                    ));
-                });
-            }
+            lore.addAll(Settings.AUCTION_PURCHASE_CONTROL_FOOTER.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
         }
 
         meta.setLore(lore);
