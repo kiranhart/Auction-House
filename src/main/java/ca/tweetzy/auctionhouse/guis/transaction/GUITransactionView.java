@@ -1,5 +1,6 @@
 package ca.tweetzy.auctionhouse.guis.transaction;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -41,7 +42,7 @@ public class GUITransactionView extends Gui {
 
         setItem(3, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_ITEM.getString(), Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_NAME.getString(), Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_LORE.getStringList(), new HashMap<String, Object>() {{
             put("%transaction_id%", transaction.getId().toString());
-            put("%sale_type%", transaction.getAuctionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? "Won Auction" : "Bought Immediately");
+            put("%sale_type%", transaction.getAuctionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? AuctionHouse.getInstance().getLocale().getMessage("transaction.sale_type.bid_won").getMessage() : AuctionHouse.getInstance().getLocale().getMessage("transaction.sale_type.immediate_buy").getMessage());
             put("%transaction_date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
             put("%final_price%", AuctionAPI.getInstance().formatNumber(transaction.getFinalPrice()));
         }}));

@@ -8,18 +8,15 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -81,13 +78,15 @@ public class AuctionItem implements Serializable {
         List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
 
         String theSeller = (this.owner == null) ? "&eSeller Name???" : Bukkit.getOfflinePlayer(this.owner).getName();
-        String highestBidder = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "" : (this.owner.equals(this.highestBidder)) ? Bukkit.getOfflinePlayer(this.owner).getName() : (Bukkit.getOfflinePlayer(this.highestBidder).isOnline()) ? Bukkit.getOfflinePlayer(this.highestBidder).getPlayer().getName() : "Offline";
-        String basePrice = Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : AuctionAPI.getInstance().formatNumber(this.basePrice);// base
+        String highestBidder = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "" : (this.owner.equals(this.highestBidder)) ? Bukkit.getOfflinePlayer(this.owner).getName() : Bukkit.getOfflinePlayer(this.highestBidder).getName();
+
+        String basePrice = this.basePrice == -1 ? Settings.AUCTION_PURCHASE_CONTROLS_BUY_NOW_OFF_FOR_BID.getString() : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : AuctionAPI.getInstance().formatNumber(this.basePrice);// base
+
         String bidIncPrice = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.bidIncPrice) : AuctionAPI.getInstance().formatNumber(this.bidIncPrice);
         String currentPrice = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : AuctionAPI.getInstance().formatNumber(this.currentPrice);
 
         long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.remainingTime);
-        List<String> preLore = type == AuctionStackType.MAIN_AUCTION_HOUSE ? this.bidStartPrice <= 0 || this.bidIncPrice <= 0 ? Settings.AUCTION_ITEM_AUCTION_STACK.getStringList() :  Settings.AUCTION_ITEM_AUCTION_STACK_WITH_BID.getStringList() : this.bidStartPrice <= 0 ? Settings.AUCTION_ITEM_LISTING_STACK.getStringList() :  Settings.AUCTION_ITEM_LISTING_STACK_WITH_BID.getStringList();
+        List<String> preLore = type == AuctionStackType.MAIN_AUCTION_HOUSE ? this.bidStartPrice <= 0 || this.bidIncPrice <= 0 ? Settings.AUCTION_ITEM_AUCTION_STACK.getStringList() : Settings.AUCTION_ITEM_AUCTION_STACK_WITH_BID.getStringList() : this.bidStartPrice <= 0 ? Settings.AUCTION_ITEM_LISTING_STACK.getStringList() : Settings.AUCTION_ITEM_LISTING_STACK_WITH_BID.getStringList();
 
         lore.addAll(preLore.stream().map(line -> TextUtils.formatText(line
                 .replace("%seller%", theSeller != null ? theSeller : "&eUnknown Seller")
@@ -102,7 +101,7 @@ public class AuctionItem implements Serializable {
 
         if (type == AuctionStackType.MAIN_AUCTION_HOUSE) {
             lore.addAll(Settings.AUCTION_PURCHASE_CONTROL_HEADER.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
-            lore.addAll(this.bidStartPrice <= 0  || this.bidIncPrice <= 0 ? Settings.AUCTION_PURCHASE_CONTROLS_BID_OFF.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()) : Settings.AUCTION_PURCHASE_CONTROLS_BID_ON.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
+            lore.addAll(this.bidStartPrice <= 0 || this.bidIncPrice <= 0 ? Settings.AUCTION_PURCHASE_CONTROLS_BID_OFF.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()) : Settings.AUCTION_PURCHASE_CONTROLS_BID_ON.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
 
             if ((ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && itemStack.getType() == XMaterial.SHULKER_BOX.parseMaterial()) || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14) && itemStack.getType() == XMaterial.SHULKER_BOX.parseMaterial() || itemStack.getType() == XMaterial.BARREL.parseMaterial())) {
                 lore.addAll(Settings.AUCTION_PURCHASE_CONTROLS_INSPECTION.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));

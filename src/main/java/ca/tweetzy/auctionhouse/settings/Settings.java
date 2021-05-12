@@ -39,17 +39,15 @@ public class Settings {
     public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
     public static final ConfigSetting TICK_UPDATE_GUI_TIME = new ConfigSetting(config, "auction setting.refresh gui every", 10, "How many seconds should pass before the auction gui auto refreshes?");
     public static final ConfigSetting REFRESH_GUI_WHEN_BID = new ConfigSetting(config, "auction setting.refresh gui when bid", true, "Should the auction gui be re-opened (not redrawn) when a user places a bid, so they get the latest items?");
-    public static final ConfigSetting REFRESH_GUI_ON_FILTER_CHANGE = new ConfigSetting(config, "auction setting.refresh gui when filter changed", false, "Should the gui refresh when the player changes the filter mode?");
     public static final ConfigSetting RECORD_TRANSACTIONS = new ConfigSetting(config, "auction setting.record transactions", true, "Should every transaction be recorded (everything an auction is won or an item is bought)");
     public static final ConfigSetting BROADCAST_AUCTION_LIST = new ConfigSetting(config, "auction setting.broadcast auction list", false, "Should the entire server be alerted when a player lists an item?");
     public static final ConfigSetting PLAYER_NEEDS_TOTAL_PRICE_TO_BID = new ConfigSetting(config, "auction setting.bidder must have funds in account", false, "Should the player who is placing a bid on an item have the money in their account to cover the cost?");
-    public static final ConfigSetting USE_ASYNC_GUI_REFRESH = new ConfigSetting(config, "auction setting.use async gui refresh", false, "Should the gui refresh be done using asynchronous tasks?", "This may reduce lag that can be caused, but", "items may have a flickering effect inside the gui.");
+    public static final ConfigSetting USE_ASYNC_GUI_REFRESH = new ConfigSetting(config, "auction setting.use async gui refresh", true, "Should the gui refresh be done using asynchronous tasks?", "This may reduce lag that can be caused, but", "items may have a flickering effect inside the gui.");
     public static final ConfigSetting SEND_REMOVED_ITEM_BACK_TO_PLAYER = new ConfigSetting(config, "auction setting.send removed item back to player", true, "Should items removed by staff from the auction house be sent back to the player?");
     public static final ConfigSetting ALLOW_USAGE_OF_BID_SYSTEM = new ConfigSetting(config, "auction setting.allow bid system usage", true, "Should players be allowed to use the bid option cmd params?");
     public static final ConfigSetting ALLOW_USAGE_OF_BUY_NOW_SYSTEM = new ConfigSetting(config, "auction setting.allow buy now system usage", true, "Should players be allowed to use the right-click buy now feature on biddable items?");
     public static final ConfigSetting AUTO_SAVE_ENABLED = new ConfigSetting(config, "auction setting.auto save.enabled", true, "Should the auto save task be enabled?");
     public static final ConfigSetting AUTO_SAVE_EVERY = new ConfigSetting(config, "auction setting.auto save.time", 900, "How often should the auto save active? (in seconds. Ex. 900 = 15min)");
-    public static final ConfigSetting FILL_ITEMS_USING_ASYNC = new ConfigSetting(config, "auction setting.fill auction items using async", true, "Should auction items be loaded into the gui asynchronously");
     public static final ConfigSetting ALLOW_PURCHASE_OF_SPECIFIC_QUANTITIES = new ConfigSetting(config, "auction setting.allow purchase of specific quantities", false, "When a buy now item is right-clicked should it open a", "special gui to specify the quantity of items to buy from the stack?");
     public static final ConfigSetting USE_REFRESH_COOL_DOWN = new ConfigSetting(config, "auction setting.use refresh cool down", true, "Should the refresh cooldown be enabled?");
     public static final ConfigSetting REFRESH_COOL_DOWN = new ConfigSetting(config, "auction setting.refresh cool down", 2, "How many seconds should pass before the player can refresh the auction house again?");
@@ -326,6 +324,7 @@ public class Settings {
     public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE = new ConfigSetting(config, "gui.transactions.items.transaction.lore", Arrays.asList(
             "&7Seller&F: &e%seller%",
             "&7Buyer&F: &e%buyer%",
+            "&7Item name&F: %item_name%",
             "&7Date&F: &e%date%",
             "",
             "&7Click to view more details"
@@ -418,6 +417,7 @@ public class Settings {
     ), "This will be appended at the end of the lore", "If the auction item is not using a bid, this will show");
 
     public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_INSPECTION = new ConfigSetting(config, "auction items.controls.inspection", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box)");
+    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_BUY_NOW_OFF_FOR_BID = new ConfigSetting(config, "auction items.controls.buy now is off for bid", "&cN/A", "If they player sets the buy now price to -1 on a bid item, it will mean make the item", "a bid item, but users will not be able to use the buy now option on the item.");
 
     /*  ===============================
      *         AUCTION STACKS

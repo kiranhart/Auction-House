@@ -14,7 +14,6 @@ import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -142,7 +141,7 @@ public class CommandSell extends AbstractCommand {
 
             AuctionHouse.getInstance().getLocale().getMessage("auction.listed.nobid")
                     .processPlaceholder("amount", itemToSell.getAmount())
-                    .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
+                    .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToSell))
                     .processPlaceholder("base_price", AuctionAPI.getInstance().formatNumber(basePrice))
                     .sendPrefixedMessage(player);
 
@@ -150,7 +149,7 @@ public class CommandSell extends AbstractCommand {
                 Bukkit.getOnlinePlayers().forEach(AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.nobid")
                         .processPlaceholder("player", player.getName())
                         .processPlaceholder("amount", itemToSell.getAmount())
-                        .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
+                        .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToSell))
                         .processPlaceholder("base_price", AuctionAPI.getInstance().formatNumber(basePrice))::sendPrefixedMessage);
             }
 
@@ -183,7 +182,7 @@ public class CommandSell extends AbstractCommand {
             double bidIncPrice = Double.parseDouble(args[2]);
 
             // check min
-            if (basePrice < Settings.MIN_AUCTION_PRICE.getDouble()) {
+            if (basePrice < Settings.MIN_AUCTION_PRICE.getDouble() && !(basePrice <= -1)) {
                 AuctionHouse.getInstance().getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
@@ -214,7 +213,7 @@ public class CommandSell extends AbstractCommand {
                 return ReturnType.FAILURE;
             }
 
-            if (Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && bidStartPrice > basePrice) {
+            if (Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && bidStartPrice > basePrice && !(basePrice <= -1)) {
                 AuctionHouse.getInstance().getLocale().getMessage("pricing.basepricetoolow").sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
@@ -225,7 +224,7 @@ public class CommandSell extends AbstractCommand {
                     itemToSell,
                     MaterialCategorizer.getMaterialCategory(itemToSell),
                     UUID.randomUUID(),
-                    basePrice,
+                    basePrice <= -1 ? -1 : basePrice,
                     bidStartPrice,
                     bidIncPrice,
                     bidStartPrice,
@@ -241,8 +240,8 @@ public class CommandSell extends AbstractCommand {
 
             AuctionHouse.getInstance().getLocale().getMessage("auction.listed.withbid")
                     .processPlaceholder("amount", itemToSell.getAmount())
-                    .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
-                    .processPlaceholder("base_price", AuctionAPI.getInstance().formatNumber(basePrice))
+                    .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToSell))
+                    .processPlaceholder("base_price", basePrice <= -1 ? AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage() : AuctionAPI.getInstance().formatNumber(basePrice))
                     .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(bidStartPrice))
                     .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(bidIncPrice))
                     .sendPrefixedMessage(player);
@@ -251,8 +250,8 @@ public class CommandSell extends AbstractCommand {
                 Bukkit.getOnlinePlayers().forEach(AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.withbid")
                         .processPlaceholder("player", player.getName())
                         .processPlaceholder("amount", itemToSell.getAmount())
-                        .processPlaceholder("item", WordUtils.capitalizeFully(itemToSell.getType().name().replace("_", " ")))
-                        .processPlaceholder("base_price", AuctionAPI.getInstance().formatNumber(basePrice))
+                        .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToSell))
+                        .processPlaceholder("base_price", basePrice <= -1 ? AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage() : AuctionAPI.getInstance().formatNumber(basePrice))
                         .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(bidStartPrice))
                         .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(bidIncPrice))::sendPrefixedMessage);
             }

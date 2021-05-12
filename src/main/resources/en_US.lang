@@ -12,6 +12,7 @@ general:
     blocked: "&cSorry, you are not allowed to sell &e%item%"
     sellinglimit: "&cYou cannot sell more items, please remove/sell current active items"
     noroom: "&cPlease clear room in your inventory to purchase that item."
+    buynowdisabledonitem: "&cBuy now is disabled on this item."
 
 pricing:
     minbaseprice: "&cThe minimum base price must be &a$%price%"
@@ -23,6 +24,11 @@ pricing:
     basepricetoolow: "&cThe buy now price must be higher than the starting bid."
     moneyremove: "&c&l- $%price%"
     moneyadd: "&a&l+ $%price%"
+
+transaction:
+    sale_type:
+        bid_won: "Won Auction"
+        immediate_buy: "Bought Immediately"
 
 discord:
     player_lost: "Player Lost o.O"
@@ -57,6 +63,7 @@ auction:
     bidwon: "&eYou won the bid for&fx%amount% &6%item% &efor &a%price%"
     itemsold: "&eYou sold &6%item% &eto &6%buyer_name% &efor &a%price%"
     itemnotavailable: "&cThat item is no longer available :("
+    biditemwithdisabledbuynow: "&cN/A"
 
 commands:
     syntax:

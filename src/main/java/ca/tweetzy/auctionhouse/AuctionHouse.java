@@ -18,12 +18,14 @@ import ca.tweetzy.core.TweetyPlugin;
 import ca.tweetzy.core.commands.CommandManager;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.configuration.Config;
-import ca.tweetzy.core.core.PluginID;
 import ca.tweetzy.core.database.DataMigrationManager;
 import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
 import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
+import co.aikar.taskchain.BukkitTaskChainFactory;
+import co.aikar.taskchain.TaskChain;
+import co.aikar.taskchain.TaskChainFactory;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -41,6 +43,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class AuctionHouse extends TweetyPlugin {
 
+    private static TaskChainFactory taskChainFactory;
     private static AuctionHouse instance;
 
     @Getter
@@ -82,7 +85,7 @@ public class AuctionHouse extends TweetyPlugin {
 
     @Override
     public void onPluginEnable() {
-        TweetyCore.registerPlugin(this, (int) PluginID.AUCTION_HOUSE.getTweetzyID(), "CHEST");
+        TweetyCore.registerPlugin(this, 1, "CHEST");
 
         // Check server version
         if (ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_7)) {
@@ -95,6 +98,8 @@ public class AuctionHouse extends TweetyPlugin {
             RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
             if (rsp != null) this.economy = rsp.getProvider();
         }
+
+        taskChainFactory = BukkitTaskChainFactory.create(this);
 
         // Settings
         Settings.setup();
@@ -156,7 +161,7 @@ public class AuctionHouse extends TweetyPlugin {
         getServer().getScheduler().runTaskLaterAsynchronously(this, () -> this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus(), 1L);
 
         // metrics
-        this.metrics = new Metrics(this, (int) PluginID.AUCTION_HOUSE.getbStatsID());
+        this.metrics = new Metrics(this, 6806);
     }
 
     @Override
@@ -179,6 +184,14 @@ public class AuctionHouse extends TweetyPlugin {
 
     public static AuctionHouse getInstance() {
         return instance;
+    }
+
+    public static <T> TaskChain<T> newChain() {
+        return taskChainFactory.newChain();
+    }
+
+    public static <T> TaskChain<T> newSharedChain(String name) {
+        return taskChainFactory.newSharedChain(name);
     }
 
     String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";

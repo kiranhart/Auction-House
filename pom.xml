@@ -6,7 +6,7 @@
 
     <groupId>ca.tweetzy</groupId>
     <artifactId>auctionhouse</artifactId>
-    <version>2.8.0</version>
+    <version>2.9.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -77,6 +77,8 @@
                                     <include>com.zaxxer:HikariCP</include>
                                     <include>org.slf4j:slf4j-api</include>
                                     <include>org.slf4j:slf4j-nop</include>
+                                    <include>co.aikar:taskchain-bukkit</include>
+                                    <include>co.aikar:taskchain-core</include>
                                 </includes>
                             </artifactSet>
                             <filters>
@@ -94,6 +96,10 @@
                                     <pattern>ca.tweetzy.core</pattern>
                                     <shadedPattern>${project.groupId}.auctionhouse.core</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>co.aikar.taskchain</pattern>
+                                    <shadedPattern>${project.groupId}.auctionhouse.taskchain</shadedPattern> <!-- Replace this -->
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -103,6 +109,10 @@
     </build>
 
     <repositories>
+        <repository>
+            <id>aikar</id>
+            <url>https://repo.aikar.co/content/groups/aikar/</url>
+        </repository>
         <repository>
             <id>nms-repo</id>
             <url>https://repo.codemc.org/repository/nms/</url>
@@ -141,14 +151,19 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-deploy-plugin</artifactId>
-            <version>2.8.2</version>
+            <groupId>co.aikar</groupId>
+            <artifactId>taskchain-bukkit</artifactId>
+            <version>3.7.2</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>3.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>2.8.2</version>
         </dependency>
     </dependencies>
 </project>
