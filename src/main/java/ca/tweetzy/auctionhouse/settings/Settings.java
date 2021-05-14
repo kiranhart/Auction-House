@@ -52,11 +52,77 @@ public class Settings {
     public static final ConfigSetting USE_REFRESH_COOL_DOWN = new ConfigSetting(config, "auction setting.use refresh cool down", true, "Should the refresh cooldown be enabled?");
     public static final ConfigSetting REFRESH_COOL_DOWN = new ConfigSetting(config, "auction setting.refresh cool down", 2, "How many seconds should pass before the player can refresh the auction house again?");
     public static final ConfigSetting ALLOW_PURCHASE_IF_INVENTORY_FULL = new ConfigSetting(config, "auction setting.allow purchase with full inventory", true, "Should auction house allow players to buy items even if their", "inventory is full, if true, items will be dropped on the floor if there is no room.");
-
     public static final ConfigSetting ASK_FOR_BID_CONFIRMATION = new ConfigSetting(config, "auction setting.ask for bid confirmation", true, "Should Auction House open the confirmation menu for the user to confirm", "whether they actually meant to place a bid or not?");
     public static final ConfigSetting BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START = new ConfigSetting(config, "auction setting.base price must be higher than bid start", true, "Should the base price (buy now price) be higher than the initial bid starting price?");
     public static final ConfigSetting SYNC_BASE_PRICE_TO_HIGHEST_PRICE = new ConfigSetting(config, "auction setting.sync the base price to the current price", true, "Ex. If the buy now price was 100, and the current price exceeds 100 to say 200, the buy now price will become 200.");
     public static final ConfigSetting USE_ALTERNATE_CURRENCY_FORMAT = new ConfigSetting(config, "auction setting.use alternate currency format", false, "If true, $123,456.78 will become $123.456,78");
+    public static final ConfigSetting DATE_FORMAT = new ConfigSetting(config, "auction setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
+    public static final ConfigSetting ALLOW_PLAYERS_TO_ACCEPT_BID = new ConfigSetting(config, "auction setting.allow players to accept bid", true, "If true, players can right click a biddable item inside their active listings menu to accept the current bid");
+
+    public static final ConfigSetting CLICKS_NON_BID_ITEM_PURCHASE = new ConfigSetting(config, "auction setting.clicks.non bid item purchase", "LEFT",
+            "Valid Click Types",
+            "LEFT",
+            "RIGHT",
+            "SHIFT_LEFT",
+            "SHIFT_RIGHT",
+            "MIDDLE",
+            "",
+            "&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+    );
+    public static final ConfigSetting CLICKS_NON_BID_ITEM_QTY_PURCHASE = new ConfigSetting(config, "auction setting.clicks.non bid item qty purchase", "RIGHT",
+            "Valid Click Types",
+            "LEFT",
+            "RIGHT",
+            "SHIFT_LEFT",
+            "SHIFT_RIGHT",
+            "MIDDLE",
+            "",
+            "&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+    );
+
+    public static final ConfigSetting CLICKS_BID_ITEM_PLACE_BID = new ConfigSetting(config, "auction setting.clicks.bid item place bid", "LEFT",
+            "Valid Click Types",
+            "LEFT",
+            "RIGHT",
+            "SHIFT_LEFT",
+            "SHIFT_RIGHT",
+            "MIDDLE",
+            "",
+            "&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+    );
+    public static final ConfigSetting CLICKS_BID_ITEM_BUY_NOW = new ConfigSetting(config, "auction setting.clicks.bid item buy now", "RIGHT",
+            "Valid Click Types",
+            "LEFT",
+            "RIGHT",
+            "SHIFT_LEFT",
+            "SHIFT_RIGHT",
+            "MIDDLE",
+            "",
+            "&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+    );
+
+
+    public static final ConfigSetting CLICKS_INSPECT_CONTAINER = new ConfigSetting(config, "auction setting.clicks.inspect container", "SHIFT_RIGHT",
+            "Valid Click Types",
+            "LEFT",
+            "RIGHT",
+            "SHIFT_LEFT",
+            "SHIFT_RIGHT",
+            "MIDDLE",
+            "",
+            "&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+    );
+
+    public static final ConfigSetting CLICKS_REMOVE_ITEM = new ConfigSetting(config, "auction setting.clicks.remove item", "MIDDLE",
+            "Valid Click Types",
+            "LEFT",
+            "RIGHT",
+            "SHIFT_LEFT",
+            "SHIFT_RIGHT",
+            "MIDDLE",
+            "",
+            "&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+    );
 
     /*  ===============================
      *         DATABASE OPTIONS
@@ -417,6 +483,7 @@ public class Settings {
     ), "This will be appended at the end of the lore", "If the auction item is not using a bid, this will show");
 
     public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_INSPECTION = new ConfigSetting(config, "auction items.controls.inspection", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box)");
+    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_ACCEPT_BID = new ConfigSetting(config, "auction items.controls.accept bid", Collections.singletonList("&eRight-Click to accept the current bid"), "This will only show on items within the active listings menu on biddable items.");
     public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_BUY_NOW_OFF_FOR_BID = new ConfigSetting(config, "auction items.controls.buy now is off for bid", "&cN/A", "If they player sets the buy now price to -1 on a bid item, it will mean make the item", "a bid item, but users will not be able to use the buy now option on the item.");
 
     /*  ===============================

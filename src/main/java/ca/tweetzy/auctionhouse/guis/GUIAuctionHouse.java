@@ -10,11 +10,13 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.ShulkerBox;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.scheduler.BukkitTask;
@@ -75,10 +77,9 @@ public class GUIAuctionHouse extends Gui {
         drawItems();
     }
 
-
     private void drawItems() {
         AuctionHouse.newChain().asyncFirst(() -> {
-            this.items = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> !item.isExpired()).collect(Collectors.toList());
+            this.items = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> !item.isExpired() && item.getRemainingTime() >= 1).collect(Collectors.toList());
 
             if (this.searchPhrase.length() != 0) {
                 this.items = this.items.stream().filter(auctionItem -> AuctionAPI.getInstance().match(this.searchPhrase, ChatColor.stripColor(auctionItem.getItemName())) || AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getCategory().getType()) || AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getCategory().getTranslatedType()) || AuctionAPI.getInstance().match(this.searchPhrase, Bukkit.getOfflinePlayer(auctionItem.getOwner()).getName())).collect(Collectors.toList());
@@ -97,109 +98,147 @@ public class GUIAuctionHouse extends Gui {
         }).execute();
     }
 
+    /*
+    ====================== CLICK HANDLES ======================
+     */
+    private void handleNonBidItem(AuctionItem auctionItem, GuiClickEvent e, boolean buyingQuantity) {
+        if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_PURCHASE_OWN_ITEM.getBoolean()) {
+            AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(e.player);
+            return;
+        }
+
+        if (!AuctionHouse.getInstance().getEconomy().has(e.player, auctionItem.getBasePrice())) {
+            AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
+            return;
+        }
+
+        if (buyingQuantity) {
+            if (auctionItem.getBidStartPrice() <= 0 || !Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
+                if (!Settings.ALLOW_PURCHASE_OF_SPECIFIC_QUANTITIES.getBoolean()) return;
+            }
+        }
+
+        cleanup();
+        e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, buyingQuantity));
+    }
+
+    private void handleBidItem(AuctionItem auctionItem, GuiClickEvent e, boolean buyNow) {
+        if (buyNow) {
+            if (auctionItem.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble()) {
+                if (!Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) return;
+                if (auctionItem.getBasePrice() <= -1) {
+                    AuctionHouse.getInstance().getLocale().getMessage("general.buynowdisabledonitem").sendPrefixedMessage(e.player);
+                    return;
+                }
+
+                cleanup();
+                e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
+            }
+            return;
+        }
+
+        if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_BID_OWN_ITEM.getBoolean()) {
+            AuctionHouse.getInstance().getLocale().getMessage("general.cantbidonown").sendPrefixedMessage(e.player);
+            return;
+        }
+
+        if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getInstance().getEconomy().has(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice())) {
+            AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
+            return;
+        }
+
+        if (Settings.ASK_FOR_BID_CONFIRMATION.getBoolean()) {
+            cleanup();
+            e.manager.showGUI(e.player, new GUIConfirmBid(this.auctionPlayer, auctionItem));
+        } else {
+            auctionItem.setHighestBidder(e.player.getUniqueId());
+            auctionItem.setCurrentPrice(auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice());
+            if (Settings.SYNC_BASE_PRICE_TO_HIGHEST_PRICE.getBoolean() && auctionItem.getCurrentPrice() > auctionItem.getBasePrice()) {
+                auctionItem.setBasePrice(auctionItem.getCurrentPrice());
+            }
+
+            if (Settings.INCREASE_TIME_ON_BID.getBoolean()) {
+                auctionItem.setRemainingTime(auctionItem.getRemainingTime() + Settings.TIME_TO_INCREASE_BY_ON_BID.getInt());
+            }
+
+            if (Settings.REFRESH_GUI_WHEN_BID.getBoolean()) {
+                cleanup();
+                e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+            }
+        }
+    }
+
+    private void handleItemRemove(AuctionItem auctionItem, GuiClickEvent e) {
+        if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin")) {
+            if (Settings.SEND_REMOVED_ITEM_BACK_TO_PLAYER.getBoolean()) {
+                AuctionHouse.getInstance().getAuctionItemManager().getItem(auctionItem.getKey()).setExpired(true);
+            } else {
+                AuctionHouse.getInstance().getAuctionItemManager().removeItem(auctionItem.getKey());
+            }
+
+            cleanup();
+            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+        }
+    }
+
+    private void handleContainerInspect(GuiClickEvent e) {
+        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) return;
+        if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin") || e.player.hasPermission("auctionhouse.inspectshulker")) {
+            ItemStack clicked = e.clickedItem;
+            if (!(clicked.getItemMeta() instanceof BlockStateMeta)) return;
+
+            BlockStateMeta meta = (BlockStateMeta) clicked.getItemMeta();
+            if (!(meta.getBlockState() instanceof ShulkerBox)) return;
+            cleanup();
+            e.manager.showGUI(e.player, new GUIContainerInspect(e.clickedItem));
+        }
+    }
+
     private void placeItems(List<AuctionItem> data) {
         int slot = 0;
         for (AuctionItem auctionItem : data) {
             setButton(slot++, auctionItem.getDisplayStack(AuctionStackType.MAIN_AUCTION_HOUSE), e -> {
-                switch (e.clickType) {
-                    case LEFT:
-                        if (auctionItem.getBidStartPrice() <= 0) {
-                            if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_PURCHASE_OWN_ITEM.getBoolean()) {
-                                AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(e.player);
-                                return;
-                            }
+                // Non Type specific actions
+                if (e.clickType == ClickType.valueOf(Settings.CLICKS_INSPECT_CONTAINER.getString().toUpperCase())) {
+                    handleContainerInspect(e);
+                    return;
+                }
 
-                            if (!AuctionHouse.getInstance().getEconomy().has(e.player, auctionItem.getBasePrice())) {
-                                AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
-                                return;
-                            }
+                if (e.clickType == ClickType.valueOf(Settings.CLICKS_REMOVE_ITEM.getString().toUpperCase())) {
+                    handleItemRemove(auctionItem, e);
+                    return;
+                }
 
-                            cleanup();
-                            e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
-                        } else {
-                            if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_BID_OWN_ITEM.getBoolean()) {
-                                AuctionHouse.getInstance().getLocale().getMessage("general.cantbidonown").sendPrefixedMessage(e.player);
-                                return;
-                            }
+                // Non Biddable Items
+                if (auctionItem.getBidStartPrice() <= 0) {
+                    if (e.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_PURCHASE.getString().toUpperCase())) {
+                        handleNonBidItem(auctionItem, e, false);
+                        return;
+                    }
 
-                            if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getInstance().getEconomy().has(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice())) {
-                                AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
-                                return;
-                            }
+                    if (e.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_QTY_PURCHASE.getString().toUpperCase())) {
+                        handleNonBidItem(auctionItem, e, true);
+                        return;
+                    }
+                    return;
+                }
 
-                            // TODO CLEAN UP THIS
-                            if (Settings.ASK_FOR_BID_CONFIRMATION.getBoolean()) {
-                                cleanup();
-                                e.manager.showGUI(e.player, new GUIConfirmBid(this.auctionPlayer, auctionItem));
-                            } else {
-                                auctionItem.setHighestBidder(e.player.getUniqueId());
-                                auctionItem.setCurrentPrice(auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice());
-                                if (Settings.SYNC_BASE_PRICE_TO_HIGHEST_PRICE.getBoolean() && auctionItem.getCurrentPrice() > auctionItem.getBasePrice()) {
-                                    auctionItem.setBasePrice(auctionItem.getCurrentPrice());
-                                }
+                // Biddable Items
+                if (e.clickType == ClickType.valueOf(Settings.CLICKS_BID_ITEM_PLACE_BID.getString().toUpperCase())) {
+                    handleBidItem(auctionItem, e, false);
+                    return;
+                }
 
-                                if (Settings.INCREASE_TIME_ON_BID.getBoolean()) {
-                                    auctionItem.setRemainingTime(auctionItem.getRemainingTime() + Settings.TIME_TO_INCREASE_BY_ON_BID.getInt());
-                                }
-
-                                if (Settings.REFRESH_GUI_WHEN_BID.getBoolean()) {
-                                    cleanup();
-                                    e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
-                                }
-                            }
-                        }
-                        break;
-                    case MIDDLE:
-                        if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin")) {
-                            if (Settings.SEND_REMOVED_ITEM_BACK_TO_PLAYER.getBoolean()) {
-                                AuctionHouse.getInstance().getAuctionItemManager().getItem(auctionItem.getKey()).setExpired(true);
-                            } else {
-                                AuctionHouse.getInstance().getAuctionItemManager().removeItem(auctionItem.getKey());
-                            }
-
-                            cleanup();
-                            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
-                        }
-                        break;
-                    case SHIFT_RIGHT:
-                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) return;
-                        if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin") || e.player.hasPermission("auctionhouse.inspectshulker")) {
-                            ItemStack clicked = e.clickedItem;
-                            if (!(clicked.getItemMeta() instanceof BlockStateMeta)) return;
-
-                            BlockStateMeta meta = (BlockStateMeta) clicked.getItemMeta();
-                            if (!(meta.getBlockState() instanceof ShulkerBox)) return;
-                            cleanup();
-                            e.manager.showGUI(e.player, new GUIContainerInspect(e.clickedItem));
-                        }
-                        break;
-                    case RIGHT:
-                        if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_PURCHASE_OWN_ITEM.getBoolean()) {
-                            AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(e.player);
-                            return;
-                        }
-
-                        if (auctionItem.getBidStartPrice() <= 0 || !Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
-                            if (!Settings.ALLOW_PURCHASE_OF_SPECIFIC_QUANTITIES.getBoolean()) return;
-                            cleanup();
-                            e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, true));
-                            return;
-                        }
-
-                        if (auctionItem.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble()) {
-                            if (!Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) return;
-                            if (auctionItem.getBasePrice() <= -1) {
-                                AuctionHouse.getInstance().getLocale().getMessage("general.buynowdisabledonitem").sendPrefixedMessage(e.player);
-                                return;
-                            }
-                            cleanup();
-                            e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
-                        }
-                        break;
+                if (e.clickType == ClickType.valueOf(Settings.CLICKS_BID_ITEM_BUY_NOW.getString().toUpperCase())) {
+                    handleBidItem(auctionItem, e, true);
                 }
             });
         }
     }
+
+    /*
+    ====================== FIXED BUTTONS ======================
+     */
 
     private void drawPaginationButtons() {
         setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());

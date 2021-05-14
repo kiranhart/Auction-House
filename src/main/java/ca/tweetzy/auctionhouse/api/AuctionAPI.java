@@ -1,12 +1,15 @@
 package ca.tweetzy.auctionhouse.api;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -88,7 +91,7 @@ public class AuctionAPI {
      * @return a readable date format
      */
     public String convertMillisToDate(long milliseconds) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Settings.DATE_FORMAT.getString());
         Date date = new Date(milliseconds);
         return simpleDateFormat.format(date);
     }
@@ -251,5 +254,91 @@ public class AuctionAPI {
         int index = string.lastIndexOf(substring);
         if (index == -1) return string;
         return string.substring(0, index) + replacement + string.substring(index + substring.length());
+    }
+
+    public void endAuction(AuctionItem item) {
+        // check if the auction item owner is the same as the highest bidder
+        if (item.getOwner().equals(item.getHighestBidder())) {
+            // was not sold
+            item.setExpired(true);
+        } else {
+            // the item was sold ?? then do the checks
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(item.getHighestBidder());
+            AuctionEndEvent auctionEndEvent;
+            if (offlinePlayer.isOnline()) {
+                if (AuctionHouse.getInstance().getEconomy().has(offlinePlayer, item.getCurrentPrice())) {
+                    auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(item.getOwner()), offlinePlayer, item, AuctionSaleType.USED_BIDDING_SYSTEM);
+                    AuctionHouse.getInstance().getServer().getPluginManager().callEvent(auctionEndEvent);
+
+                    if (!auctionEndEvent.isCancelled()) {
+                        // withdraw money and give to the owner
+                        AuctionHouse.getInstance().getEconomy().withdrawPlayer(offlinePlayer, item.getCurrentPrice());
+                        AuctionHouse.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(item.getOwner()), item.getCurrentPrice());
+                        // send a message to each of them
+                        AuctionHouse.getInstance().getLocale().getMessage("auction.bidwon")
+                                .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(item.getRawItem()).getType().name().replace("_", " ")))
+                                .processPlaceholder("amount", AuctionAPI.getInstance().deserializeItem(item.getRawItem()).getAmount())
+                                .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(item.getCurrentPrice()))
+                                .sendPrefixedMessage(offlinePlayer.getPlayer());
+                        AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(item.getCurrentPrice())).sendPrefixedMessage(offlinePlayer.getPlayer());
+                        // if the original owner is online, let them know they sold an item
+                        if (Bukkit.getOfflinePlayer(item.getOwner()).isOnline()) {
+                            AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
+                                    .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(item.getRawItem()).getType().name().replace("_", " ")))
+                                    .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(item.getCurrentPrice()))
+                                    .processPlaceholder("buyer_name", Bukkit.getOfflinePlayer(item.getHighestBidder()).getName())
+                                    .sendPrefixedMessage(Bukkit.getOfflinePlayer(item.getOwner()).getPlayer());
+                            AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(item.getCurrentPrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(item.getOwner()).getPlayer());
+                        }
+
+                        // since they're online, try to add the item to their inventory
+                        // TODO CLEAN THIS UP A BIT
+                        if (Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean()) {
+                            PlayerUtils.giveItem(offlinePlayer.getPlayer(), AuctionAPI.getInstance().deserializeItem(item.getRawItem()));
+                            AuctionHouse.getInstance().getAuctionItemManager().removeItem(item.getKey());
+                        } else {
+                            if (offlinePlayer.getPlayer().getInventory().firstEmpty() == -1) {
+                                item.setOwner(offlinePlayer.getUniqueId());
+                                item.setExpired(true);
+                            } else {
+                                PlayerUtils.giveItem(offlinePlayer.getPlayer(), AuctionAPI.getInstance().deserializeItem(item.getRawItem()));
+                                AuctionHouse.getInstance().getAuctionItemManager().removeItem(item.getKey());
+                            }
+                        }
+                    }
+
+                } else {
+                    // they don't have enough money to buy it, so send it back to the original owner
+                    item.setExpired(true);
+                }
+            } else {
+                // offline, so save their purchase in the collection inventory
+                if (AuctionHouse.getInstance().getEconomy().has(offlinePlayer, item.getCurrentPrice())) {
+                    auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(item.getOwner()), offlinePlayer, item, AuctionSaleType.USED_BIDDING_SYSTEM);
+                    AuctionHouse.getInstance().getServer().getPluginManager().callEvent(auctionEndEvent);
+
+                    if (!auctionEndEvent.isCancelled()) {
+                        // withdraw money and give to the owner
+                        AuctionHouse.getInstance().getEconomy().withdrawPlayer(offlinePlayer, item.getCurrentPrice());
+                        AuctionHouse.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(item.getOwner()), item.getCurrentPrice());
+
+                        if (Bukkit.getOfflinePlayer(item.getOwner()).isOnline()) {
+                            AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
+                                    .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(item.getRawItem()).getType().name().replace("_", " ")))
+                                    .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(item.getCurrentPrice()))
+                                    .processPlaceholder("buyer_name", Bukkit.getOfflinePlayer(item.getHighestBidder()).getName())
+                                    .sendPrefixedMessage(Bukkit.getOfflinePlayer(item.getOwner()).getPlayer());
+                            AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(item.getCurrentPrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(item.getOwner()).getPlayer());
+                        }
+
+                        item.setOwner(offlinePlayer.getUniqueId());
+                        item.setExpired(true);
+                    }
+                } else {
+                    // they don't have enough money to buy it, so send it back to the original owner
+                    item.setExpired(true);
+                }
+            }
+        }
     }
 }

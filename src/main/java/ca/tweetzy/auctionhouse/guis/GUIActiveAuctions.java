@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionStackType;
@@ -31,6 +32,8 @@ public class GUIActiveAuctions extends Gui {
     private BukkitTask task;
     private int taskId;
 
+    List<AuctionItem> items;
+
     public GUIActiveAuctions(AuctionPlayer auctionPlayer) {
         this.auctionPlayer = auctionPlayer;
         setTitle(TextUtils.formatText(Settings.GUI_ACTIVE_AUCTIONS_TITLE.getString()));
@@ -46,66 +49,76 @@ public class GUIActiveAuctions extends Gui {
 
     private void draw() {
         reset();
+        drawFixedButtons();
+        drawItems();
+    }
 
-        // Pagination
-        pages = (int) Math.max(1, Math.ceil(this.auctionPlayer.getItems(false).size() / (double) 45));
+    private void drawItems() {
+        AuctionHouse.newChain().asyncFirst(() -> {
+            this.items = this.auctionPlayer.getItems(false);
+            return this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
+        }).asyncLast((data) -> {
+            pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));
+            drawPaginationButtons();
+
+            int slot = 0;
+            for (AuctionItem item : data) {
+                setButton(slot++, item.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST), e -> {
+                    switch (e.clickType) {
+                        case LEFT:
+                            item.setExpired(true);
+                            draw();
+                            break;
+                        case RIGHT:
+                            if (Settings.ALLOW_PLAYERS_TO_ACCEPT_BID.getBoolean() && item.getBidStartPrice() != 0) {
+                                AuctionHouse.newChain().async(() -> AuctionAPI.getInstance().endAuction(item)).sync(this::draw).execute();
+                            }
+                            break;
+                    }
+                });
+            }
+        }).execute();
+    }
+
+    private void drawFixedButtons() {
+        setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
+            cleanup();
+            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+        });
+
+        setButton(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_REFRESH_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_REFRESH_BTN_NAME.getString()).setLore(Settings.GUI_REFRESH_BTN_LORE.getStringList()).toItemStack(), e -> e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer)));
+
+        setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString(), Settings.GUI_ACTIVE_AUCTIONS_NAME.getString(), Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList(), null), e -> {
+            this.auctionPlayer.getItems(false).forEach(item -> item.setExpired(true));
+            draw();
+        });
+    }
+
+    private void drawPaginationButtons() {
         setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setButton(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_REFRESH_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_REFRESH_BTN_NAME.getString()).setLore(Settings.GUI_REFRESH_BTN_LORE.getStringList()).toItemStack(), e -> draw());
         setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
         setOnPage(e -> {
             draw();
             SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString(), 1.0F, 1.0F);
         });
-
-        // Other Buttons
-        setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
-            cleanup();
-            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
-        });
-        setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString(), Settings.GUI_ACTIVE_AUCTIONS_NAME.getString(), Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList(), null), e -> {
-            this.auctionPlayer.getItems(false).forEach(item -> item.setExpired(true));
-            draw();
-        });
-
-        List<AuctionItem> data = this.auctionPlayer.getItems(false).stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
-        int slot = 0;
-        for (AuctionItem item : data) {
-            setButton(slot++, item.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST), e -> {
-                item.setExpired(true);
-                draw();
-            });
-        }
     }
 
-    private void startTask() {
-        taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::draw, 0L, (long) 20 * Settings.TICK_UPDATE_GUI_TIME.getInt());
-    }
-
-    private void startTaskAsync() {
-        task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::draw, 0L, (long) 20 * Settings.TICK_UPDATE_GUI_TIME.getInt());
-    }
-
-    private void killTask() {
-        Bukkit.getServer().getScheduler().cancelTask(taskId);
-    }
-
-    private void killAsyncTask() {
-        task.cancel();
-    }
-
+    /*
+    ====================== AUTO REFRESH ======================
+     */
     private void makeMess() {
         if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
-            startTaskAsync();
+            task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::drawItems, 0L, (long) 20 * Settings.TICK_UPDATE_GUI_TIME.getInt());
         } else {
-            startTask();
+            taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::drawItems, 0L, (long) 20 * Settings.TICK_UPDATE_GUI_TIME.getInt());
         }
     }
 
     private void cleanup() {
         if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
-            killAsyncTask();
+            task.cancel();
         } else {
-            killTask();
+            Bukkit.getServer().getScheduler().cancelTask(taskId);
         }
     }
 }
