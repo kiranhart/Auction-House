@@ -62,8 +62,7 @@ public class GUIAuctionHouse extends Gui {
     public GUIAuctionHouse(AuctionPlayer auctionPlayer, String phrase) {
         this(auctionPlayer);
         this.searchPhrase = phrase;
-        this.items = this.items.stream().filter(auctionItem -> AuctionAPI.getInstance().match(phrase, ChatColor.stripColor(auctionItem.getItemName())) || AuctionAPI.getInstance().match(phrase, auctionItem.getCategory().getType()) || AuctionAPI.getInstance().match(phrase, auctionItem.getCategory().getTranslatedType()) || AuctionAPI.getInstance().match(phrase, Bukkit.getOfflinePlayer(auctionItem.getOwner()).getName())).collect(Collectors.toList());
-    }
+     }
 
     public GUIAuctionHouse(AuctionPlayer auctionPlayer, AuctionItemCategory filterCategory, AuctionSaleType filterAuctionType) {
         this(auctionPlayer);

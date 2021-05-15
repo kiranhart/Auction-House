@@ -37,7 +37,6 @@ public class CommandSearch extends AbstractCommand {
             AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
             AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
         }
-
         AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()), builder.toString().trim()));
         return ReturnType.SUCCESS;
     }

@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ca.tweetzy</groupId>
     <artifactId>auctionhouse</artifactId>
-    <version>2.10.0</version>
+    <version>2.10.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,9 +32,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <annotationProcessors>
-                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
-                    </annotationProcessors>
                 </configuration>
             </plugin>
             <plugin>
@@ -117,8 +114,8 @@
             <url>https://maven.pkg.github.com/kiranhart/*</url>
         </repository>
         <repository>
-            <id>nms-repo</id>
-            <url>https://repo.codemc.org/repository/nms/</url>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
@@ -132,7 +129,7 @@
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
+            <artifactId>spigot-api</artifactId>
             <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
