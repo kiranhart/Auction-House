@@ -29,12 +29,16 @@ public class AuctionEndEvent extends Event implements Cancellable {
     private AuctionItem auctionItem;
     private AuctionSaleType saleType;
 
-    public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionItem auctionItem, AuctionSaleType saleType) {
-        super(true);
+    public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionItem auctionItem, AuctionSaleType saleType, boolean async) {
+        super(async);
         this.originalOwner = originalOwner;
         this.buyer = buyer;
         this.auctionItem = auctionItem;
         this.saleType = saleType;
+    }
+
+    public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionItem auctionItem, AuctionSaleType saleType) {
+        this(originalOwner, buyer, auctionItem, saleType, true);
     }
 
     public HandlerList getHandlers() {

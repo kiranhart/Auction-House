@@ -1,6 +1,8 @@
 package ca.tweetzy.auctionhouse.helpers;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.core.compatibility.ServerVersion;
+import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

@@ -6,11 +6,9 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -22,6 +20,7 @@ import java.util.stream.Collectors;
 public class TransactionManager {
 
     private final ArrayList<Transaction> transactions = new ArrayList<>();
+    private final HashMap<Player, UUID> prePurchaseHolding = new HashMap<>();
 
     public void addTransaction(Transaction transaction) {
         if (transaction == null) return;
@@ -38,6 +37,22 @@ public class TransactionManager {
 
     public List<Transaction> getTransactions() {
         return Collections.unmodifiableList(this.transactions);
+    }
+
+    public void addPrePurchase(Player player, UUID uuid) {
+        this.prePurchaseHolding.put(player, uuid);
+    }
+
+    public void removeAllRelatedPlayers(UUID uuid) {
+        this.prePurchaseHolding.keySet().removeIf(p -> this.prePurchaseHolding.get(p).equals(uuid));
+    }
+
+    public HashMap<Player, UUID> getPrePurchaseHolding() {
+        return prePurchaseHolding;
+    }
+
+    public List<Player> getPrePurchasePlayers(UUID uuid) {
+        return this.prePurchaseHolding.keySet().stream().filter(p -> this.prePurchaseHolding.get(p).equals(uuid)).collect(Collectors.toList());
     }
 
     public void loadTransactions(boolean useDatabase) {

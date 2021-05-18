@@ -61,6 +61,12 @@ public class GUIConfirmPurchase extends Gui {
             this.pricePerItem = this.auctionItem.getBasePrice() / this.maxStackSize;
         }
 
+        setOnClose(close -> {
+            AuctionHouse.getInstance().getTransactionManager().getPrePurchaseHolding().remove(close.player);
+            close.manager.showGUI(close.player, new GUIAuctionHouse(this.auctionPlayer));
+            AuctionHouse.getInstance().getLogger().info("Removed " + close.player.getName() + " from confirmation pre purchase");
+        });
+
         draw();
     }
 
@@ -69,7 +75,7 @@ public class GUIConfirmPurchase extends Gui {
         setItem(this.buyingSpecificQuantity ? 1 : 0, 4, AuctionAPI.getInstance().deserializeItem(this.auctionItem.getRawItem()));
         setItems(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_BUY_NO_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_BUY_NO_NAME.getString()).setLore(Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList()).toItemStack());
 
-        setActionForRange(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
+        setActionForRange(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, ClickType.LEFT, e -> e.gui.close());
         setActionForRange(this.buyingSpecificQuantity ? 9 : 0, this.buyingSpecificQuantity ? 12 : 3, ClickType.LEFT, e -> {
             // Re-select the item to ensure that it's available
             AuctionItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getKey());
@@ -79,47 +85,45 @@ public class GUIConfirmPurchase extends Gui {
             if (!AuctionHouse.getInstance().getEconomy().has(e.player, this.buyingSpecificQuantity ? this.purchaseQuantity * this.pricePerItem : located.getBasePrice())) {
                 AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
                 SoundManager.getInstance().playSound(e.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString(), 1.0F, 1.0F);
-                e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                e.gui.close();
                 return;
             }
 
-            Bukkit.getServer().getScheduler().runTaskAsynchronously(AuctionHouse.getInstance(), () -> {
-                AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), e.player, this.auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM);
-                Bukkit.getServer().getPluginManager().callEvent(auctionEndEvent);
+            AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), e.player, this.auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM, false);
+            Bukkit.getServer().getPluginManager().callEvent(auctionEndEvent);
+            if (auctionEndEvent.isCancelled()) return;
 
-                if (auctionEndEvent.isCancelled()) return;
+            if (!Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean() && e.player.getInventory().firstEmpty() == -1) {
+                AuctionHouse.getInstance().getLocale().getMessage("general.noroom").sendPrefixedMessage(e.player);
+                return;
+            }
 
-                if (!Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean() && e.player.getInventory().firstEmpty() == -1) {
-                    AuctionHouse.getInstance().getLocale().getMessage("general.noroom").sendPrefixedMessage(e.player);
-                    return;
+            if (this.buyingSpecificQuantity) {
+                ItemStack item = AuctionAPI.getInstance().deserializeItem(located.getRawItem());
+
+                if (item.getAmount() - this.purchaseQuantity >= 1) {
+                    item.setAmount(item.getAmount() - this.purchaseQuantity);
+                    located.setRawItem(AuctionAPI.getInstance().serializeItem(item));
+                    located.setBasePrice(located.getBasePrice() - this.purchaseQuantity * this.pricePerItem);
+                    item.setAmount(this.purchaseQuantity);
+                    transferFunds(e.player, this.purchaseQuantity * this.pricePerItem);
+                } else {
+                    transferFunds(e.player, located.getBasePrice());
+                    AuctionHouse.getInstance().getAuctionItemManager().removeItem(located.getKey());
                 }
+                givePlayerItem(e.player, item);
+                sendMessages(e, located, true, this.purchaseQuantity * this.pricePerItem);
 
-                if (this.buyingSpecificQuantity) {
-                    ItemStack item = AuctionAPI.getInstance().deserializeItem(located.getRawItem());
-//                    Bukkit.broadcastMessage(String.format("Total Item Qty: %d\nTotal Purchase Qty: %d\nAmount of purchase: %d", item.getAmount(), this.purchaseQuantity, item.getAmount() - this.purchaseQuantity));
-
-                    if (item.getAmount() - this.purchaseQuantity >= 1) {
-                        item.setAmount(item.getAmount() - this.purchaseQuantity);
-                        located.setRawItem(AuctionAPI.getInstance().serializeItem(item));
-                        located.setBasePrice(located.getBasePrice() - this.purchaseQuantity * this.pricePerItem);
-                        item.setAmount(this.purchaseQuantity);
-                        transferFunds(e.player, this.purchaseQuantity * this.pricePerItem);
-                    } else {
-                        transferFunds(e.player, located.getBasePrice());
-                        AuctionHouse.getInstance().getAuctionItemManager().removeItem(located.getKey());
-                    }
-
-                    givePlayerItem(e.player, item);
-                    sendMessages(e, located, true, this.purchaseQuantity * this.pricePerItem);
-                    e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
-                    return;
-                }
-
+            } else {
                 transferFunds(e.player, located.getBasePrice());
                 AuctionHouse.getInstance().getAuctionItemManager().removeItem(located.getKey());
                 givePlayerItem(e.player, AuctionAPI.getInstance().deserializeItem(located.getRawItem()));
                 sendMessages(e, located, false, 0);
-                e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+            }
+
+            AuctionHouse.getInstance().getTransactionManager().getPrePurchasePlayers(auctionItem.getKey()).forEach(player -> {
+                AuctionHouse.getInstance().getTransactionManager().removeAllRelatedPlayers(auctionItem.getKey());
+                player.closeInventory();
             });
         });
 

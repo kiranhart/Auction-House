@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 
-
 public class AuctionItemManager {
 
     private final ArrayList<AuctionItem> auctionItems = new ArrayList<>();
@@ -40,7 +39,7 @@ public class AuctionItemManager {
     }
 
     public List<AuctionItem> getAuctionItems() {
-        return Collections.unmodifiableList(auctionItems);
+        return this.auctionItems;
     }
 
     public List<AuctionItem> getFilteredItems(AuctionItemCategory category) {
