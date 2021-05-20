@@ -42,13 +42,6 @@ public class AuctionItemManager {
         return this.auctionItems;
     }
 
-    public List<AuctionItem> getFilteredItems(AuctionItemCategory category) {
-        if (category == null) {
-            return Collections.unmodifiableList(this.auctionItems);
-        }
-        return Collections.unmodifiableList(auctionItems.stream().filter(auctionItem -> MaterialCategorizer.getMaterialCategory(AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem())) == category).collect(Collectors.toList()));
-    }
-
     public void loadItems(boolean useDatabase) {
         if (useDatabase) {
             AuctionHouse.getInstance().getDataManager().getItems(all -> all.forEach(this::addItem));

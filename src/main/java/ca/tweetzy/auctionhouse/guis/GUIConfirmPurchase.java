@@ -111,13 +111,14 @@ public class GUIConfirmPurchase extends Gui {
                     transferFunds(e.player, located.getBasePrice());
                     AuctionHouse.getInstance().getAuctionItemManager().removeItem(located.getKey());
                 }
-                givePlayerItem(e.player, item);
+
+                PlayerUtils.giveItem(e.player, item);
                 sendMessages(e, located, true, this.purchaseQuantity * this.pricePerItem);
 
             } else {
                 transferFunds(e.player, located.getBasePrice());
                 AuctionHouse.getInstance().getAuctionItemManager().removeItem(located.getKey());
-                givePlayerItem(e.player, AuctionAPI.getInstance().deserializeItem(located.getRawItem()));
+                PlayerUtils.giveItem(e.player, AuctionAPI.getInstance().deserializeItem(located.getRawItem()));
                 sendMessages(e, located, false, 0);
             }
 
@@ -161,10 +162,6 @@ public class GUIConfirmPurchase extends Gui {
                     .sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
             AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(overwritePrice ? price : located.getBasePrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
         }
-    }
-
-    private void givePlayerItem(Player player, ItemStack stack) {
-        Bukkit.getServer().getScheduler().runTask(AuctionHouse.getInstance(), () -> PlayerUtils.giveItem(player, stack));
     }
 
     private void drawPurchaseInfo(int amt) {

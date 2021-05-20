@@ -66,6 +66,12 @@ public class GUIActiveAuctions extends Gui {
                 setButton(slot++, item.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST), e -> {
                     switch (e.clickType) {
                         case LEFT:
+                            if (((item.getBidStartPrice() > 0 || item.getBidIncPrice() > 0) && Settings.ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS.getBoolean()) || Settings.ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS.getBoolean()) {
+                                cleanup();
+                                e.manager.showGUI(e.player, new GUIConfirmCancel(this.auctionPlayer, item));
+                                return;
+                            }
+
                             item.setExpired(true);
                             draw();
                             break;

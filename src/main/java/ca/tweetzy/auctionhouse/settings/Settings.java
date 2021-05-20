@@ -53,6 +53,10 @@ public class Settings {
     public static final ConfigSetting REFRESH_COOL_DOWN = new ConfigSetting(config, "auction setting.refresh cool down", 2, "How many seconds should pass before the player can refresh the auction house again?");
     public static final ConfigSetting ALLOW_PURCHASE_IF_INVENTORY_FULL = new ConfigSetting(config, "auction setting.allow purchase with full inventory", true, "Should auction house allow players to buy items even if their", "inventory is full, if true, items will be dropped on the floor if there is no room.");
     public static final ConfigSetting ASK_FOR_BID_CONFIRMATION = new ConfigSetting(config, "auction setting.ask for bid confirmation", true, "Should Auction House open the confirmation menu for the user to confirm", "whether they actually meant to place a bid or not?");
+
+    public static final ConfigSetting ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS = new ConfigSetting(config, "auction setting.ask for cancel confirm on bid items", true, "Should Auction House ask the user if they want to cancel the item?");
+    public static final ConfigSetting ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS = new ConfigSetting(config, "auction setting.ask for cancel confirm on non bid items", false, "Should Auction House ask the user if they want to cancel the item?");
+
     public static final ConfigSetting BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START = new ConfigSetting(config, "auction setting.base price must be higher than bid start", true, "Should the base price (buy now price) be higher than the initial bid starting price?");
     public static final ConfigSetting SYNC_BASE_PRICE_TO_HIGHEST_PRICE = new ConfigSetting(config, "auction setting.sync the base price to the current price", true, "Ex. If the buy now price was 100, and the current price exceeds 100 to say 200, the buy now price will become 200.");
     public static final ConfigSetting USE_ALTERNATE_CURRENCY_FORMAT = new ConfigSetting(config, "auction setting.use alternate currency format", false, "If true, $123,456.78 will become $123.456,78");
@@ -345,6 +349,22 @@ public class Settings {
     public static final ConfigSetting GUI_CONFIRM_BID_YES_NAME = new ConfigSetting(config, "gui.confirm bid.yes.name", "&a&lConfirm");
     public static final ConfigSetting GUI_CONFIRM_BID_YES_LORE = new ConfigSetting(config, "gui.confirm bid.yes.lore", Collections.singletonList(
             "&7Click to confirm your bid"
+    ));
+
+    /*  ===============================
+     *       CONFIRM CANCEL GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_CONFIRM_CANCEL_TITLE = new ConfigSetting(config, "gui.confirm cancel.title", "&7Are you sure?");
+    public static final ConfigSetting GUI_CONFIRM_CANCEL_NO_ITEM = new ConfigSetting(config, "gui.confirm cancel.no.item", "RED_STAINED_GLASS_PANE");
+    public static final ConfigSetting GUI_CONFIRM_CANCEL_NO_NAME = new ConfigSetting(config, "gui.confirm cancel.no.name", "&c&LCancel");
+    public static final ConfigSetting GUI_CONFIRM_CANCEL_NO_LORE = new ConfigSetting(config, "gui.confirm cancel.no.lore", Collections.singletonList(
+            "&7Click to cancel item removal"
+    ));
+
+    public static final ConfigSetting GUI_CONFIRM_CANCEL_YES_ITEM = new ConfigSetting(config, "gui.confirm cancel.yes.item", "LIME_STAINED_GLASS_PANE");
+    public static final ConfigSetting GUI_CONFIRM_CANCEL_YES_NAME = new ConfigSetting(config, "gui.confirm cancel.yes.name", "&a&lConfirm");
+    public static final ConfigSetting GUI_CONFIRM_CANCEL_YES_LORE = new ConfigSetting(config, "gui.confirm cancel.yes.lore", Collections.singletonList(
+            "&7Click to confirm item cancellation"
     ));
 
     /*  ===============================
