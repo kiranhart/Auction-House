@@ -13,6 +13,8 @@ general:
     sellinglimit: "&cYou cannot sell more items, please remove/sell current active items"
     noroom: "&cPlease clear room in your inventory to purchase that item."
     buynowdisabledonitem: "&cBuy now is disabled on this item."
+    endedallauctions: "&cYou force ended all active auctions"
+    relisteditems: "&aYou relisted all expired items!"
 
 pricing:
     minbaseprice: "&cThe minimum base price must be &a$%price%"

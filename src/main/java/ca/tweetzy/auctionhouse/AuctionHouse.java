@@ -148,7 +148,9 @@ public class AuctionHouse extends TweetyPlugin {
                 new CommandSettings(),
                 new CommandConvert(),
                 new CommandReload(),
-                new CommandUpload()
+                new CommandUpload(),
+                new CommandStatus(),
+                new CommandAdmin()
         );
 
         // start the auction tick task

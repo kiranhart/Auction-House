@@ -93,7 +93,7 @@ public class AuctionItem implements Serializable {
                 .replace("%buynowprice%", basePrice)
                 .replace("%currentprice%", currentPrice)
                 .replace("%bidincrement%", bidIncPrice)
-                .replace("%highestbidder%", highestBidder)
+                .replace("%highestbidder%", highestBidder != null ? highestBidder : "&eUnknown Bidder")
                 .replace("%remaining_days%", String.valueOf(times[0]))
                 .replace("%remaining_hours%", String.valueOf(times[1]))
                 .replace("%remaining_minutes%", String.valueOf(times[2]))
