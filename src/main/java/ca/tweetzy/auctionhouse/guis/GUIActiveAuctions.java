@@ -67,6 +67,11 @@ public class GUIActiveAuctions extends Gui {
                     switch (e.clickType) {
                         case LEFT:
                             if (((item.getBidStartPrice() > 0 || item.getBidIncPrice() > 0) && Settings.ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS.getBoolean()) || Settings.ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS.getBoolean()) {
+                                if (item.getHighestBidder().equals(e.player.getUniqueId())) {
+                                    item.setExpired(true);
+                                    draw();
+                                    return;
+                                }
                                 cleanup();
                                 e.manager.showGUI(e.player, new GUIConfirmCancel(this.auctionPlayer, item));
                                 return;
