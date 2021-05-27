@@ -75,7 +75,9 @@ public class GUIConfirmPurchase extends Gui {
         setItem(this.buyingSpecificQuantity ? 1 : 0, 4, AuctionAPI.getInstance().deserializeItem(this.auctionItem.getRawItem()));
         setItems(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_BUY_NO_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_BUY_NO_NAME.getString()).setLore(Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList()).toItemStack());
 
-        setActionForRange(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, ClickType.LEFT, e -> e.gui.close());
+        setActionForRange(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, ClickType.LEFT, e -> {
+            e.gui.close();
+        });
         setActionForRange(this.buyingSpecificQuantity ? 9 : 0, this.buyingSpecificQuantity ? 12 : 3, ClickType.LEFT, e -> {
             // Re-select the item to ensure that it's available
             AuctionItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getKey());
