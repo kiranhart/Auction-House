@@ -21,10 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -92,8 +89,11 @@ public class GUIAuctionHouse extends Gui {
             return this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
         }).asyncLast((data) -> {
             pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));
-            drawPaginationButtons();
-            placeItems(data);
+            try {
+                drawPaginationButtons();
+                placeItems(data);
+            } catch (ConcurrentModificationException ignored) {
+            }
         }).execute();
     }
 

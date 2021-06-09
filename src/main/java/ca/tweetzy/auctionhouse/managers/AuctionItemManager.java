@@ -39,7 +39,7 @@ public class AuctionItemManager {
     }
 
     public List<AuctionItem> getAuctionItems() {
-        return this.auctionItems;
+        return Collections.unmodifiableList(this.auctionItems);
     }
 
     public void loadItems(boolean useDatabase) {

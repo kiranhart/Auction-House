@@ -109,8 +109,10 @@ public class AuctionItem implements Serializable {
 
             lore.addAll(Settings.AUCTION_PURCHASE_CONTROL_FOOTER.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
         } else {
-            if (Settings.ALLOW_PLAYERS_TO_ACCEPT_BID.getBoolean()) {
-                lore.addAll(Settings.AUCTION_PURCHASE_CONTROLS_ACCEPT_BID.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
+            if (Settings.ALLOW_PLAYERS_TO_ACCEPT_BID.getBoolean() && this.bidStartPrice >= 1 || this.bidIncPrice >= 1) {
+                if (!this.owner.equals(this.highestBidder)) {
+                    lore.addAll(Settings.AUCTION_PURCHASE_CONTROLS_ACCEPT_BID.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
+                }
             }
         }
 
