@@ -256,6 +256,16 @@ public class AuctionAPI {
         return string.substring(0, index) + replacement + string.substring(index + substring.length());
     }
 
+    public List<String> getCommandFlags(String... args) {
+        List<String> flags = new ArrayList<>();
+        for (String arg : args) {
+            if (arg.startsWith("-") && arg.length() >= 2) {
+                flags.add(arg.substring(0, 2));
+            }
+        }
+        return flags;
+    }
+
     public void endAuction(AuctionItem item) {
         // check if the auction item owner is the same as the highest bidder
         if (item.getOwner().equals(item.getHighestBidder())) {

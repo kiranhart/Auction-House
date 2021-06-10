@@ -100,6 +100,10 @@ public class CommandSell extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        // Special command arguments
+        List<String> commandFlags = AuctionAPI.getInstance().getCommandFlags(args);
+
+        // TODO Redo the selling command to fit the command flags
         if (args.length <= 1) {
             if (!NumberUtils.isDouble(args[0])) {
                 AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
