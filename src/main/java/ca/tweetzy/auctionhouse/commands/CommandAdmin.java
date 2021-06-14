@@ -38,6 +38,10 @@ public class CommandAdmin extends AbstractCommand {
                 });
                 AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(sender);
                 break;
+            case "cleanunknownusers":
+                // Don't tell ppl that this exists just yet
+                AuctionHouse.getInstance().getAuctionItemManager().removeUnknownOwnerItems();
+                break;
         }
 
         return ReturnType.SUCCESS;

@@ -2,7 +2,6 @@ package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;

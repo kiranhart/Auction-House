@@ -44,7 +44,7 @@ public class CommandSell extends AbstractCommand {
         Player player = (Player) sender;
         AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
-        ItemStack itemToSell = PlayerHelper.getHeldItem(player);
+        ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 
         if (itemToSell.getType() == XMaterial.AIR.parseMaterial()) {
             AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
@@ -112,10 +112,9 @@ public class CommandSell extends AbstractCommand {
 
         boolean isBiddingItem = listingPrices.size() == 3;
 
-
-        /*
+        /*======================================================================
         ================ THE PLAYER IS NOT USING THE BID OPTION ================
-         */
+        ======================================================================*/
 
         if (!isBiddingItem && listingPrices.get(0) < Settings.MIN_AUCTION_PRICE.getDouble()) {
             AuctionHouse.getInstance().getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
@@ -127,9 +126,9 @@ public class CommandSell extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
-        /*
+        /*======================================================================
         ================ THE PLAYER IS USING THE BIDDING SYSTEM ================
-         */
+        ======================================================================*/
 
         if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && isBiddingItem && listingPrices.get(0) < Settings.MIN_AUCTION_PRICE.getDouble() && !(listingPrices.get(0) <= -1)) {
             AuctionHouse.getInstance().getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);

@@ -22,7 +22,6 @@ import ca.tweetzy.core.database.DataMigrationManager;
 import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
 import ca.tweetzy.core.gui.GuiManager;
-import ca.tweetzy.core.locale.Locale;
 import ca.tweetzy.core.utils.Metrics;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;

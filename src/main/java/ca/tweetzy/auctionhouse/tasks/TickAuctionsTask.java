@@ -2,13 +2,7 @@ package ca.tweetzy.auctionhouse.tasks;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
-import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.PlayerUtils;
-import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.stream.Collectors;

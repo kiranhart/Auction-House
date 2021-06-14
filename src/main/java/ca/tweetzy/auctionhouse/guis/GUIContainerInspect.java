@@ -9,8 +9,6 @@ import org.bukkit.block.ShulkerBox;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
-import java.util.Arrays;
-
 /**
  * The current file has been created by Kiran Hart
  * Date Created: April 14 2021

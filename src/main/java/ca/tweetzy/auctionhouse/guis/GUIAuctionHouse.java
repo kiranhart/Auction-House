@@ -14,14 +14,16 @@ import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -74,28 +76,25 @@ public class GUIAuctionHouse extends Gui {
     }
 
     private void drawItems() {
-        try {
-            AuctionHouse.newChain().asyncFirst(() -> {
-                this.items = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> !item.isExpired() && item.getRemainingTime() >= 1).collect(Collectors.toList());
+        AuctionHouse.newChain().asyncFirst(() -> {
+            this.items = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> !item.isExpired() && item.getRemainingTime() >= 1).collect(Collectors.toList());
 
-                if (this.searchPhrase.length() != 0) {
-                    this.items = this.items.stream().filter(auctionItem -> AuctionAPI.getInstance().match(this.searchPhrase, ChatColor.stripColor(auctionItem.getItemName())) || AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getCategory().getType()) || AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getCategory().getTranslatedType()) || AuctionAPI.getInstance().match(this.searchPhrase, Bukkit.getOfflinePlayer(auctionItem.getOwner()).getName())).collect(Collectors.toList());
-                }
+            if (this.searchPhrase != null && this.searchPhrase.length() != 0) {
+                this.items = this.items.stream().filter(auctionItem -> AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getItemName()) || AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getCategory().getTranslatedType()) || AuctionAPI.getInstance().match(this.searchPhrase, Bukkit.getOfflinePlayer(auctionItem.getOwner()).getName())).collect(Collectors.toList());
+            }
 
-                if (this.filterCategory != AuctionItemCategory.ALL)
-                    this.items = items.stream().filter(item -> item.getCategory() == this.filterCategory).collect(Collectors.toList());
+            if (this.filterCategory != AuctionItemCategory.ALL)
+                this.items = items.stream().filter(item -> item.getCategory() == this.filterCategory).collect(Collectors.toList());
 
-                if (this.filterAuctionType != AuctionSaleType.BOTH)
-                    this.items = this.items.stream().filter(item -> this.filterAuctionType == AuctionSaleType.USED_BIDDING_SYSTEM ? item.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble() : item.getBidStartPrice() <= 0).collect(Collectors.toList());
+            if (this.filterAuctionType != AuctionSaleType.BOTH)
+                this.items = this.items.stream().filter(item -> this.filterAuctionType == AuctionSaleType.USED_BIDDING_SYSTEM ? item.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble() : item.getBidStartPrice() <= 0).collect(Collectors.toList());
 
-                return this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
-            }).asyncLast((data) -> {
-                pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));
-                drawPaginationButtons();
-                placeItems(data);
-            }).execute();
-        } catch (ConcurrentModificationException ignored) {
-        }
+            return this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
+        }).asyncLast((data) -> {
+            pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));
+            drawPaginationButtons();
+            placeItems(data);
+        }).execute();
     }
 
     /*
@@ -298,11 +297,11 @@ public class GUIAuctionHouse extends Gui {
             switch (e.clickType) {
                 case LEFT:
                     this.filterCategory = this.filterCategory.next();
-                    updateFilter();
+                    draw();
                     break;
                 case RIGHT:
                     this.filterAuctionType = this.filterAuctionType.next();
-                    updateFilter();
+                    draw();
                     break;
             }
         });

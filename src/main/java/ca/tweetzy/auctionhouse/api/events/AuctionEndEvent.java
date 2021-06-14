@@ -5,7 +5,6 @@ import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
