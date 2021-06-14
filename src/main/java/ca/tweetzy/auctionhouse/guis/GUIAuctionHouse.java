@@ -59,7 +59,7 @@ public class GUIAuctionHouse extends Gui {
     public GUIAuctionHouse(AuctionPlayer auctionPlayer, String phrase) {
         this(auctionPlayer);
         this.searchPhrase = phrase;
-     }
+    }
 
     public GUIAuctionHouse(AuctionPlayer auctionPlayer, AuctionItemCategory filterCategory, AuctionSaleType filterAuctionType) {
         this(auctionPlayer);
@@ -74,27 +74,28 @@ public class GUIAuctionHouse extends Gui {
     }
 
     private void drawItems() {
-        AuctionHouse.newChain().asyncFirst(() -> {
-            this.items = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> !item.isExpired() && item.getRemainingTime() >= 1).collect(Collectors.toList());
+        try {
+            AuctionHouse.newChain().asyncFirst(() -> {
+                this.items = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> !item.isExpired() && item.getRemainingTime() >= 1).collect(Collectors.toList());
 
-            if (this.searchPhrase.length() != 0) {
-                this.items = this.items.stream().filter(auctionItem -> AuctionAPI.getInstance().match(this.searchPhrase, ChatColor.stripColor(auctionItem.getItemName())) || AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getCategory().getType()) || AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getCategory().getTranslatedType()) || AuctionAPI.getInstance().match(this.searchPhrase, Bukkit.getOfflinePlayer(auctionItem.getOwner()).getName())).collect(Collectors.toList());
-            }
+                if (this.searchPhrase.length() != 0) {
+                    this.items = this.items.stream().filter(auctionItem -> AuctionAPI.getInstance().match(this.searchPhrase, ChatColor.stripColor(auctionItem.getItemName())) || AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getCategory().getType()) || AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getCategory().getTranslatedType()) || AuctionAPI.getInstance().match(this.searchPhrase, Bukkit.getOfflinePlayer(auctionItem.getOwner()).getName())).collect(Collectors.toList());
+                }
 
-            if (this.filterCategory != AuctionItemCategory.ALL)
-                this.items = items.stream().filter(item -> item.getCategory() == this.filterCategory).collect(Collectors.toList());
-            if (this.filterAuctionType != AuctionSaleType.BOTH)
-                this.items = this.items.stream().filter(item -> this.filterAuctionType == AuctionSaleType.USED_BIDDING_SYSTEM ? item.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble() : item.getBidStartPrice() <= 0).collect(Collectors.toList());
+                if (this.filterCategory != AuctionItemCategory.ALL)
+                    this.items = items.stream().filter(item -> item.getCategory() == this.filterCategory).collect(Collectors.toList());
 
-            return this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
-        }).asyncLast((data) -> {
-            pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));
-            try {
+                if (this.filterAuctionType != AuctionSaleType.BOTH)
+                    this.items = this.items.stream().filter(item -> this.filterAuctionType == AuctionSaleType.USED_BIDDING_SYSTEM ? item.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble() : item.getBidStartPrice() <= 0).collect(Collectors.toList());
+
+                return this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
+            }).asyncLast((data) -> {
+                pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));
                 drawPaginationButtons();
                 placeItems(data);
-            } catch (ConcurrentModificationException ignored) {
-            }
-        }).execute();
+            }).execute();
+        } catch (ConcurrentModificationException ignored) {
+        }
     }
 
     /*

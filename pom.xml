@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ca.tweetzy</groupId>
     <artifactId>auctionhouse</artifactId>
-    <version>2.12.4</version>
+    <version>2.13.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -129,14 +129,14 @@
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <artifactId>spigot</artifactId>
+            <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ca.tweetzy</groupId>
             <artifactId>tweetycore</artifactId>
-            <version>2.2.4</version>
+            <version>2.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
