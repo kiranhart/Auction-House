@@ -13,6 +13,7 @@ import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
+import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.event.inventory.ClickType;
@@ -183,8 +184,15 @@ public class GUIAuctionHouse extends Gui {
 
     private void handleContainerInspect(GuiClickEvent e) {
         if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) return;
+        ItemStack clicked = e.clickedItem;
+
+        if (NBTEditor.contains(clicked, "AuctionBundleItem")) {
+            cleanup();
+            e.manager.showGUI(e.player, new GUIContainerInspect(e.clickedItem));
+            return;
+        }
+
         if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin") || e.player.hasPermission("auctionhouse.inspectshulker")) {
-            ItemStack clicked = e.clickedItem;
             if (!(clicked.getItemMeta() instanceof BlockStateMeta)) return;
 
             BlockStateMeta meta = (BlockStateMeta) clicked.getItemMeta();

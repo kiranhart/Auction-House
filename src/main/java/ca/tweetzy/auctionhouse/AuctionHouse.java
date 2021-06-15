@@ -23,6 +23,7 @@ import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
 import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
+import ca.tweetzy.core.utils.TextUtils;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
@@ -138,6 +139,7 @@ public class AuctionHouse extends TweetyPlugin {
 
         // commands
         this.commandManager = new CommandManager(this);
+        this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessageLines()));
         this.commandManager.addCommand(new CommandAuctionHouse()).addSubCommands(
                 new CommandSell(),
                 new CommandActive(),

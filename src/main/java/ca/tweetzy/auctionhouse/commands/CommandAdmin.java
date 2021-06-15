@@ -2,9 +2,14 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
+import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.core.utils.items.ItemUtils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +46,13 @@ public class CommandAdmin extends AbstractCommand {
             case "cleanunknownusers":
                 // Don't tell ppl that this exists just yet
                 AuctionHouse.getInstance().getAuctionItemManager().removeUnknownOwnerItems();
+                break;
+            case "stacksize":
+                Player player = (Player) sender;
+                ItemStack item = PlayerHelper.getHeldItem(player);
+                ItemUtils.setMaxStack(item, 127);
+                item.setAmount(127);
+
                 break;
         }
 

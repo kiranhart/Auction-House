@@ -4,13 +4,17 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
+import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.core.utils.items.ItemUtils;
+import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -223,11 +227,23 @@ public class AuctionAPI {
         }
     }
 
+    /**
+     * Get the name of an item stack
+     *
+     * @param stack is the item you want to get name from
+     * @return the item name
+     */
     public String getItemName(ItemStack stack) {
         Objects.requireNonNull(stack, "Item stack cannot be null when getting name");
         return stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : TextUtils.formatText("&f" + WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " ")));
     }
 
+    /**
+     * Used to get the lore from an item stack
+     *
+     * @param stack is the item being checked
+     * @return the item lore if available
+     */
     public List<String> getItemLore(ItemStack stack) {
         List<String> lore = new ArrayList<>();
         Objects.requireNonNull(stack, "Item stack cannot be null when getting lore");
@@ -239,23 +255,50 @@ public class AuctionAPI {
         return lore;
     }
 
+    /**
+     * Used to match patterns
+     *
+     * @param pattern is the keyword being searched for
+     * @param sentence is the sentence you're checking
+     * @return whether the keyword is found
+     */
     public boolean match(String pattern, String sentence) {
         Pattern patt = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
         Matcher matcher = patt.matcher(sentence);
         return matcher.find();
     }
 
+    /**
+     * Used to format numbers with decimals and commas
+     *
+     * @param number is the number you want to format
+     * @return the formatted number string
+     */
     public String formatNumber(double number) {
         String formatted = String.format("%,.2f", number);
         return Settings.USE_ALTERNATE_CURRENCY_FORMAT.getBoolean() ? replaceLast(formatted.replace(",", "."), ".", ",") : formatted;
     }
 
+    /**
+     * Used to replace the last portion of a string
+     *
+     * @param string is the string being edited
+     * @param substring is the to replace word/phrase
+     * @param replacement is the keyword(s) you're replacing the old substring with
+     * @return the updated string
+     */
     private String replaceLast(String string, String substring, String replacement) {
         int index = string.lastIndexOf(substring);
         if (index == -1) return string;
         return string.substring(0, index) + replacement + string.substring(index + substring.length());
     }
 
+    /**
+     * Used to get command flags (ex. -h, -f, -t, etc)
+     *
+     * @param args is the arguments passed when running a command
+     * @return any command flags if any
+     */
     public List<String> getCommandFlags(String... args) {
         List<String> flags = new ArrayList<>();
         for (String arg : args) {
@@ -266,6 +309,100 @@ public class AuctionAPI {
         return flags;
     }
 
+    /**
+     * Get the total amount of an item in the player's inventory
+     *
+     * @param player is the player being checked
+     * @param stack is the item you want to find
+     * @return the total count of the item(s)
+     */
+    public int getItemCountInPlayerInventory(Player player, ItemStack stack) {
+        int total = 0;
+        if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
+            for (ItemStack item : player.getInventory().getContents()) {
+                if (item == null || item.getType() != XMaterial.PLAYER_HEAD.parseMaterial()) continue;
+                if (NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) total += item.getAmount();
+            }
+        } else {
+            for (ItemStack item : player.getInventory().getContents()) {
+                if (item == null || !item.isSimilar(stack)) continue;
+                total += item.getAmount();
+            }
+        }
+        return total;
+    }
+
+    public List<ItemStack> getSimilarItemsFromInventory(Player player, ItemStack stack) {
+        List<ItemStack> items = new ArrayList<>();
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            ItemStack item = player.getInventory().getItem(i);
+            if (item == null) continue;
+            if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial() && item.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
+                if (!NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) continue;
+            } else {
+                if (!item.isSimilar(stack)) continue;
+            }
+
+            items.add(item);
+        }
+
+        return items;
+    }
+
+    /**
+     * Removes a set amount of a specific item from the player inventory
+     *
+     * @param player is the player you want to remove the item from
+     * @param stack is the item that you want to remove
+     * @param amount is the amount of items you want to remove.
+     */
+    public void removeSpecificItemQuantityFromPlayer(Player player, ItemStack stack, int amount) {
+        int i = amount;
+        for (int j = 0; j < player.getInventory().getSize(); j++) {
+            ItemStack item = player.getInventory().getItem(j);
+            if (item == null) continue;
+            if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial() && item.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
+                if (!NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) continue;
+            } else {
+                if (!item.isSimilar(stack)) continue;
+
+            }
+
+            if (i >= item.getAmount()) {
+                player.getInventory().clear(j);
+                i -= item.getAmount();
+            } else if (i > 0) {
+                item.setAmount(item.getAmount() - i);
+                i = 0;
+            } else {
+                break;
+            }
+        }
+    }
+
+    public ItemStack createBundledItem(ItemStack baseItem, ItemStack... items) {
+        Objects.requireNonNull(items, "Cannot create a bundled item with no items");
+        ItemStack item = ConfigurationItemHelper.createConfigurationItem(Settings.ITEM_BUNDLE_ITEM.getString(), Settings.ITEM_BUNDLE_NAME.getString(), Settings.ITEM_BUNDLE_LORE.getStringList(), new HashMap<String, Object>(){{
+            put("%item_name%", getItemName(baseItem));
+        }});
+
+        int total = items.length;
+        item = NBTEditor.set(item, total, "AuctionBundleItem");
+        item = NBTEditor.set(item, UUID.randomUUID().toString(), "AuctionBundleItemUUID-" + UUID.randomUUID().toString());
+
+        for (int i = 0; i < total; i++) {
+            item = NBTEditor.set(item, serializeItem(items[i]), "AuctionBundleItem-" + i);
+        }
+
+        ItemUtils.addGlow(item);
+        return item;
+    }
+
+    /**
+     * Used to end an auction
+     *
+     * @param item is the auction item you want to end
+     */
     public void endAuction(AuctionItem item) {
         // check if the auction item owner is the same as the highest bidder
         if (item.getOwner().equals(item.getHighestBidder())) {

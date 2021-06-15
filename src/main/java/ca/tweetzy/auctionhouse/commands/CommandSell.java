@@ -14,6 +14,7 @@ import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -44,6 +45,7 @@ public class CommandSell extends AbstractCommand {
         Player player = (Player) sender;
         AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
+        ItemStack originalItem = PlayerHelper.getHeldItem(player).clone();
         ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 
         if (itemToSell.getType() == XMaterial.AIR.parseMaterial()) {
@@ -103,6 +105,8 @@ public class CommandSell extends AbstractCommand {
         // Special command arguments
         List<String> commandFlags = AuctionAPI.getInstance().getCommandFlags(args);
         List<Double> listingPrices = new ArrayList<>();
+
+        boolean isUsingBundle = false;
 
         for (String arg : args) {
             if (NumberUtils.isDouble(arg)) {
@@ -166,6 +170,16 @@ public class CommandSell extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        if (Settings.ALLOW_ITEM_BUNDLES.getBoolean() && commandFlags.contains("-b")) {
+            if (NBTEditor.contains(itemToSell, "AuctionBundleItem")) {
+                AuctionHouse.getInstance().getLocale().getMessage("general.cannotsellbundleditem").sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
+
+            itemToSell = AuctionAPI.getInstance().createBundledItem(itemToSell, AuctionAPI.getInstance().getSimilarItemsFromInventory(player, itemToSell).toArray(new ItemStack[0]));
+            isUsingBundle = true;
+        }
+
         AuctionItem auctionItem = new AuctionItem(
                 player.getUniqueId(),
                 player.getUniqueId(),
@@ -185,15 +199,21 @@ public class CommandSell extends AbstractCommand {
         if (startEvent.isCancelled()) return ReturnType.FAILURE;
 
         AuctionHouse.getInstance().getAuctionItemManager().addItem(auctionItem);
-        PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
+
+        if (isUsingBundle) {
+            AuctionAPI.getInstance().removeSpecificItemQuantityFromPlayer(player, originalItem, AuctionAPI.getInstance().getItemCountInPlayerInventory(player, originalItem));
+        } else {
+            PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
+        }
+
         SoundManager.getInstance().playSound(player, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
 
         AuctionHouse.getInstance().getLocale().getMessage(isBiddingItem ? "auction.listed.withbid" : "auction.listed.nobid")
                 .processPlaceholder("amount", itemToSell.getAmount())
                 .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToSell))
                 .processPlaceholder("base_price", listingPrices.get(0) <= -1 ? AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage() : AuctionAPI.getInstance().formatNumber(listingPrices.get(0)))
-                .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(listingPrices.get(1)))
-                .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(listingPrices.get(2)))
+                .processPlaceholder("start_price", isBiddingItem ? AuctionAPI.getInstance().formatNumber(listingPrices.get(1)) : 0)
+                .processPlaceholder("increment_price", isBiddingItem ? AuctionAPI.getInstance().formatNumber(listingPrices.get(2)) : 0)
                 .sendPrefixedMessage(player);
 
         if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
