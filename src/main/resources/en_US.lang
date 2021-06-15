@@ -70,6 +70,7 @@ auction:
 
 commands:
     invalid_syntax: "&7The valid syntax is: &6%syntax%&7."
+    no_permission: "&cYou do not have permission to do that."
     syntax:
         active: "active"
         auctionhouse: "/ah"

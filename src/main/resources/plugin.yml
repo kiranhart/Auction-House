@@ -10,7 +10,7 @@ depend: [Vault]
 commands:
   auctionhouse:
     description: Main command for the auction house plugin
-    aliases: [ah, auctions, auctionhouses]
+    aliases: [ah, auctions, auctionhouses, ahgui, auctiongui]
     default: true
     usage: /ah
 
