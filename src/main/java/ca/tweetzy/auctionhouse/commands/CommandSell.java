@@ -120,6 +120,11 @@ public class CommandSell extends AbstractCommand {
         ================ THE PLAYER IS NOT USING THE BID OPTION ================
         ======================================================================*/
 
+        if (!isBiddingItem && !NumberUtils.isDouble(args[0])) {
+            AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
+            return ReturnType.FAILURE;
+        }
+
         if (!isBiddingItem && listingPrices.get(0) < Settings.MIN_AUCTION_PRICE.getDouble()) {
             AuctionHouse.getInstance().getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
             return ReturnType.FAILURE;

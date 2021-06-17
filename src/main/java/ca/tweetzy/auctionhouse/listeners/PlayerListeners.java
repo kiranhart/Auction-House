@@ -39,7 +39,7 @@ public class PlayerListeners implements Listener {
             AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
             AuctionHouse.getInstance().getLogger().info("Adding player: " + player.getName() + " to Auction Player list.");
             if (AuctionHouse.getInstance().getStatus() == UpdateChecker.UpdateStatus.UNRELEASED_VERSION && player.isOp()) {
-                AuctionHouse.getInstance().getLocale().getMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", AuctionHouse.getInstance().getDescription().getVersion()))).sendPrefixedMessage(player);
+                AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", AuctionHouse.getInstance().getDescription().getVersion()))).sendPrefixedMessage(player);
             }
         }, 20);
     }

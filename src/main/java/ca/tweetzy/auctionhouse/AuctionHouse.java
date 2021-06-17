@@ -10,6 +10,7 @@ import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
 import ca.tweetzy.auctionhouse.managers.AuctionPlayerManager;
 import ca.tweetzy.auctionhouse.managers.TransactionManager;
+import ca.tweetzy.auctionhouse.settings.LocaleSettings;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.tasks.AutoSaveTask;
 import ca.tweetzy.auctionhouse.tasks.TickAuctionsTask;
@@ -33,6 +34,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.List;
+
 
 /**
  * The current file has been created by Kiran Hart
@@ -106,7 +108,9 @@ public class AuctionHouse extends TweetyPlugin {
         Settings.setup();
 
         // local
-        setLocale(Settings.LANG.getString(), false);
+        setLocale(Settings.LANG.getString());
+        LocaleSettings.setup();
+
 
         // listeners
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
@@ -139,7 +143,7 @@ public class AuctionHouse extends TweetyPlugin {
 
         // commands
         this.commandManager = new CommandManager(this);
-        this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessageLines()));
+        this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
         this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
         this.commandManager.addCommand(new CommandAuctionHouse()).addSubCommands(
                 new CommandSell(),
@@ -179,7 +183,9 @@ public class AuctionHouse extends TweetyPlugin {
     @Override
     public void onConfigReload() {
         Settings.setup();
-        setLocale(Settings.LANG.getString(), true);
+        setLocale(Settings.LANG.getString());
+        this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
+        this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
     }
 
     @Override
@@ -199,6 +205,7 @@ public class AuctionHouse extends TweetyPlugin {
         return taskChainFactory.newSharedChain(name);
     }
 
+
     String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
     String SONGODA_NODE = "%%__SONGODA_NODE__%%";
     String TIMESTAMP = "%%__TIMESTAMP__%%";
@@ -206,4 +213,5 @@ public class AuctionHouse extends TweetyPlugin {
     String USERNAME = "%%__USERNAME__%%";
     String RESOURCE = "%%__RESOURCE__%%";
     String NONCE = "%%__NONCE__%%";
+
 }
