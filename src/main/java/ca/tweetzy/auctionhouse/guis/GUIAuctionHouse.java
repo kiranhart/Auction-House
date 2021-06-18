@@ -21,10 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +35,7 @@ import java.util.stream.Collectors;
 public class GUIAuctionHouse extends Gui {
 
     final AuctionPlayer auctionPlayer;
-    List<AuctionItem> items;
+    private List<AuctionItem> items;
 
     private int taskId;
     private BukkitTask task;
@@ -51,6 +48,7 @@ public class GUIAuctionHouse extends Gui {
         setTitle(TextUtils.formatText(Settings.GUI_AUCTION_HOUSE_TITLE.getString()));
         setRows(6);
         setAcceptsItems(false);
+        setAllowShiftClick(false);
         draw();
 
         if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
@@ -78,19 +76,39 @@ public class GUIAuctionHouse extends Gui {
 
     private void drawItems() {
         AuctionHouse.newChain().asyncFirst(() -> {
-            this.items = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> !item.isExpired() && item.getRemainingTime() >= 1).collect(Collectors.toList());
+            List<AuctionItem> filteredItems = new ArrayList<>();
+           this.items = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(auctionItem -> !auctionItem.isExpired() && auctionItem.getRemainingTime() >= 1).collect(Collectors.toList());
 
-            if (this.searchPhrase != null && this.searchPhrase.length() != 0) {
-                this.items = this.items.stream().filter(auctionItem -> AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getItemName()) || AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getCategory().getTranslatedType()) || AuctionAPI.getInstance().match(this.searchPhrase, Bukkit.getOfflinePlayer(auctionItem.getOwner()).getName())).collect(Collectors.toList());
+            synchronized (this.items) {
+                Iterator<AuctionItem> iterator = this.items.iterator();
+                while (iterator.hasNext()) {
+                    AuctionItem item = iterator.next();
+
+                    if (!item.isExpired() && item.getRemainingTime() >= 1) {
+                        filteredItems.add(item);
+                    }
+
+                    // do the filter here now
+                    if (this.searchPhrase != null && this.searchPhrase.length() != 0) {
+                       filteredItems = filteredItems.stream().filter(auctionItem ->
+                               AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getItemName()) ||
+                                       AuctionAPI.getInstance().match(this.searchPhrase, auctionItem.getCategory().getTranslatedType()) ||
+                                       AuctionAPI.getInstance().match(this.searchPhrase, Bukkit.getOfflinePlayer(auctionItem.getOwner()).getName())) // TODO add enchantment searching
+                               .collect(Collectors.toList());
+                    }
+
+                    if (this.filterCategory != AuctionItemCategory.ALL) {
+                        filteredItems = filteredItems.stream().filter(auctionItem -> auctionItem.getCategory() == this.filterCategory).collect(Collectors.toList());
+                    }
+
+                    if (this.filterAuctionType != AuctionSaleType.BOTH) {
+                        filteredItems = filteredItems.stream().filter(auctionItem -> this.filterAuctionType == AuctionSaleType.USED_BIDDING_SYSTEM ? auctionItem.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble() : auctionItem.getBidStartPrice() <= 0).collect(Collectors.toList());
+                    }
+                }
             }
 
-            if (this.filterCategory != AuctionItemCategory.ALL)
-                this.items = items.stream().filter(item -> item.getCategory() == this.filterCategory).collect(Collectors.toList());
-
-            if (this.filterAuctionType != AuctionSaleType.BOTH)
-                this.items = this.items.stream().filter(item -> this.filterAuctionType == AuctionSaleType.USED_BIDDING_SYSTEM ? item.getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble() : item.getBidStartPrice() <= 0).collect(Collectors.toList());
-
-            return this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
+            filteredItems = filteredItems.stream().skip((page - 1) * 45L).limit(45).sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).collect(Collectors.toList());
+            return filteredItems;
         }).asyncLast((data) -> {
             pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));
             drawPaginationButtons();
@@ -293,7 +311,7 @@ public class GUIAuctionHouse extends Gui {
                 AuctionHouse.getInstance().getAuctionPlayerManager().addCooldown(this.auctionPlayer.getPlayer().getUniqueId());
             }
             cleanup();
-            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer, this.filterCategory, this.filterAuctionType));
+            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
         });
     }
 

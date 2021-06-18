@@ -40,7 +40,7 @@ public class AuctionItemManager {
     }
 
     public List<AuctionItem> getAuctionItems() {
-        return Collections.unmodifiableList(this.auctionItems);
+        return Collections.synchronizedList(this.auctionItems);
     }
 
     public void loadItems(boolean useDatabase) {

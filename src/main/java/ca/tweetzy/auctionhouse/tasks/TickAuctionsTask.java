@@ -2,10 +2,12 @@ package ca.tweetzy.auctionhouse.tasks;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.stream.Collectors;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * The current file has been created by Kiran Hart
@@ -28,24 +30,27 @@ public class TickAuctionsTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        try {
-            // check if the auction stack even has items
-            if (AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().size() == 0) {
+
+        // check if the auction stack even has items
+        List<AuctionItem> auctionItems = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems();
+
+        synchronized (auctionItems) {
+            if (auctionItems.size() == 0) {
                 return;
             }
 
-            // tick all the auction items
-            AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().forEach(item -> {
+            Iterator<AuctionItem> iterator = auctionItems.iterator();
+            while (iterator.hasNext()) {
+                AuctionItem item = iterator.next();
                 if (!item.isExpired()) {
                     item.updateRemainingTime(Settings.TICK_UPDATE_TIME.getInt());
                 }
-            });
 
-            // filter items where the time is less than or equal to 0
-            AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> item.getRemainingTime() <= 0).collect(Collectors.toList()).iterator().forEachRemaining(AuctionAPI.getInstance()::endAuction);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+                if (item.getRemainingTime() <= 0) {
+                    AuctionAPI.getInstance().endAuction(item);
+                }
+            }
         }
+
     }
 }

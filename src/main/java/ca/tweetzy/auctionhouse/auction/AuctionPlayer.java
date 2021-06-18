@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,21 @@ public class AuctionPlayer {
     }
 
     public List<AuctionItem> getItems(boolean getExpired) {
-        return Collections.unmodifiableList(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> item.getOwner().equals(this.player.getUniqueId()) && item.isExpired() == getExpired).collect(Collectors.toList()));
+        List<AuctionItem> auctionItems = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems();
+        List<AuctionItem> items = new ArrayList<>();
+
+        synchronized (auctionItems) {
+            Iterator<AuctionItem> iterator = auctionItems.iterator();
+            while(iterator.hasNext()) {
+                AuctionItem item = iterator.next();
+                if (item.getOwner().equals(this.player.getUniqueId()) && item.isExpired() == getExpired) {
+                    items.add(item);
+                }
+            }
+        }
+
+//        return Collections.unmodifiableList(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> item.getOwner().equals(this.player.getUniqueId()) && item.isExpired() == getExpired).collect(Collectors.toList()));
+        return items;
     }
 
     public int getSellLimit() {
