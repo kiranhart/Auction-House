@@ -33,6 +33,7 @@ public class LocaleSettings {
         languageNodes.put("general.endedallauctions", "&cYou force ended all active auctions");
         languageNodes.put("general.relisteditems", "&aYou relisted all expired items!");
         languageNodes.put("general.cannotsellbundleditem", "&cYou cannot sell a bundled item as a bundle.");
+        languageNodes.put("general.entersearchphrase", "&Enter a search phrase into chat");
 
 
         languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
@@ -68,6 +69,14 @@ public class LocaleSettings {
         languageNodes.put("auction_filter.categories.blocks", "Blocks");
         languageNodes.put("auction_filter.categories.tools", "Tools");
         languageNodes.put("auction_filter.categories.misc", "Misc");
+        languageNodes.put("auction_filter.categories.spawners", "Spawners");
+        languageNodes.put("auction_filter.categories.enchants", "Enchants");
+        languageNodes.put("auction_filter.categories.weapons", "Weapons");
+        languageNodes.put("auction_filter.categories.self", "Self");
+        languageNodes.put("auction_filter.categories.search", "Search");
+
+        languageNodes.put("auction_filter.sort_order.recent", "Recent");
+        languageNodes.put("auction_filter.sort_order.price", "Price");
 
         languageNodes.put("auction.listed.withbid", "&eListed &fx%amount% &6%item% &e&lBuy Now&f: &a%base_price% &e&lStarting&f: &a%start_price% &e&lIncrement&f: &a%increment_price%");
         languageNodes.put("auction.listed.nobid", "&eListed &fx%amount% &6%item% &efor &a%base_price%");

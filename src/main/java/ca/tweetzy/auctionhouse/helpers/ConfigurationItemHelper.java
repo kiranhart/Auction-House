@@ -2,11 +2,14 @@ package ca.tweetzy.auctionhouse.helpers;
 
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.core.utils.nms.NBTEditor;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -17,12 +20,12 @@ import java.util.stream.Collectors;
  */
 public class ConfigurationItemHelper {
 
-    public static ItemStack createConfigurationItem(String item, String title, List<String> lore, HashMap<String, Object> replacements) {
-        ItemStack stack = XMaterial.matchXMaterial(item.toUpperCase()).orElse(XMaterial.RED_STAINED_GLASS_PANE).parseItem();
+    public static ItemStack createConfigurationItem(ItemStack stack, String title, List<String> lore, HashMap<String, Object> replacements, String... nbtData) {
         ItemMeta meta = stack.getItemMeta();
+        assert meta != null;
         meta.setDisplayName(TextUtils.formatText(title));
 
-        if (replacements !=  null) {
+        if (replacements != null) {
             for (String key : replacements.keySet()) {
                 if (title.contains(key)) title = title.replace(key, String.valueOf(replacements.get(key)));
             }
@@ -39,6 +42,15 @@ public class ConfigurationItemHelper {
         meta.setDisplayName(TextUtils.formatText(title));
         meta.setLore(lore.stream().map(TextUtils::formatText).collect(Collectors.toList()));
         stack.setItemMeta(meta);
+        if (nbtData != null) {
+            for (String nbt : nbtData) {
+                stack = NBTEditor.set(stack, nbt.split(";")[1], nbt.split(";")[0]);
+            }
+        }
         return stack;
+    }
+
+    public static ItemStack createConfigurationItem(String item, String title, List<String> lore, HashMap<String, Object> replacements) {
+        return createConfigurationItem(Objects.requireNonNull(XMaterial.matchXMaterial(item).get().parseItem()), title, lore, replacements);
     }
 }

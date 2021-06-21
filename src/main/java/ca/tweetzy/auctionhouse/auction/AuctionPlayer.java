@@ -5,9 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,27 +21,27 @@ public class AuctionPlayer {
 
     private final Player player;
 
+    private AuctionSaleType selectedSaleType;
+    private AuctionItemCategory selectedFilter;
+    private AuctionSortType auctionSortType;
+    private String currentSearchPhrase;
+
     public AuctionPlayer(Player player) {
         this.player = player;
+        resetFilter();
     }
 
     public List<AuctionItem> getItems(boolean getExpired) {
-        List<AuctionItem> auctionItems = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems();
-        List<AuctionItem> items = new ArrayList<>();
-
-        synchronized (auctionItems) {
-            Iterator<AuctionItem> iterator = auctionItems.iterator();
-            while(iterator.hasNext()) {
-                AuctionItem item = iterator.next();
-                if (item.getOwner().equals(this.player.getUniqueId()) && item.isExpired() == getExpired) {
-                    items.add(item);
-                }
-            }
-        }
-
-//        return Collections.unmodifiableList(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> item.getOwner().equals(this.player.getUniqueId()) && item.isExpired() == getExpired).collect(Collectors.toList()));
-        return items;
+        return AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> item.getOwner().equals(this.player.getUniqueId()) && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().contains(item) && item.isExpired() == getExpired).collect(Collectors.toList());
     }
+
+    public void resetFilter() {
+        this.selectedFilter = AuctionItemCategory.ALL;
+        this.auctionSortType = AuctionSortType.RECENT;
+        this.selectedSaleType = AuctionSaleType.BOTH;
+        this.currentSearchPhrase = "";
+    }
+
 
     public int getSellLimit() {
         if (player.hasPermission("auctionhouse.maxsell.*")) return Integer.MAX_VALUE;

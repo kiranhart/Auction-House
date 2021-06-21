@@ -20,14 +20,16 @@ import java.util.stream.Collectors;
 public class AuctionItemManager {
 
     private final ArrayList<AuctionItem> auctionItems = new ArrayList<>();
+    private final Set<AuctionItem> garbageBin = new HashSet<>();
 
     public void addItem(AuctionItem auctionItem) {
         if (auctionItem == null) return;
         this.auctionItems.add(auctionItem);
     }
 
-    public void removeItem(UUID uuid) {
-        this.auctionItems.removeIf(item -> item.getKey().equals(uuid));
+    public void sendToGarbage(AuctionItem auctionItem) {
+        if (auctionItem == null) return;
+        this.garbageBin.add(auctionItem);
     }
 
     public void removeUnknownOwnerItems() {
@@ -40,7 +42,11 @@ public class AuctionItemManager {
     }
 
     public List<AuctionItem> getAuctionItems() {
-        return Collections.synchronizedList(this.auctionItems);
+        return this.auctionItems;
+    }
+
+    public Set<AuctionItem> getGarbageBin() {
+        return garbageBin;
     }
 
     public void loadItems(boolean useDatabase) {

@@ -118,7 +118,7 @@ public class GUIConfirmPurchase extends Gui {
                         transferFunds(e.player, this.purchaseQuantity * this.pricePerItem);
                     } else {
                         transferFunds(e.player, located.getBasePrice());
-                        AuctionHouse.getInstance().getAuctionItemManager().removeItem(located.getKey());
+                        AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
                     }
 
                     PlayerUtils.giveItem(e.player, item);
@@ -126,7 +126,7 @@ public class GUIConfirmPurchase extends Gui {
 
                 } else {
                     transferFunds(e.player, located.getBasePrice());
-                    AuctionHouse.getInstance().getAuctionItemManager().removeItem(located.getKey());
+                    AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
                     PlayerUtils.giveItem(e.player, AuctionAPI.getInstance().deserializeItem(located.getRawItem()));
                     sendMessages(e, located, false, 0);
                 }

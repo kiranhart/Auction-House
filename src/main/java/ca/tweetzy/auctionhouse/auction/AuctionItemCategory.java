@@ -15,7 +15,12 @@ public enum AuctionItemCategory {
     ARMOR("Armor"),
     BLOCKS("Blocks"),
     TOOLS("Tools"),
-    MISC("Misc");
+    WEAPONS("Weapons"),
+    SPAWNERS("Spawners"),
+    ENCHANTS("Enchants"),
+    MISC("Misc"),
+    SEARCH("Search"),
+    SELF("Self");
 
 
     private final String type;
@@ -42,6 +47,16 @@ public enum AuctionItemCategory {
                 return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.tools").getMessage();
             case MISC:
                 return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.misc").getMessage();
+            case ENCHANTS:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.enchants").getMessage();
+            case SPAWNERS:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.spawners").getMessage();
+            case WEAPONS:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.weapons").getMessage();
+            case SELF:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.self").getMessage();
+            case SEARCH:
+                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.search").getMessage();
         }
         return getType();
     }

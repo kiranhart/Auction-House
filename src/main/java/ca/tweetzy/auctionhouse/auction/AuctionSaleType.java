@@ -12,7 +12,6 @@ public enum AuctionSaleType {
 
     USED_BIDDING_SYSTEM("Biddable"),
     WITHOUT_BIDDING_SYSTEM("Not Biddable"),
-    // Didn't feel like making an entirely new enumeration, so BOTH is really only used in the auction filtering
     BOTH("All");
 
     private final String type;

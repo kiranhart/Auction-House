@@ -227,8 +227,8 @@ public class CommandSell extends AbstractCommand {
                     .processPlaceholder("amount", itemToSell.getAmount())
                     .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToSell))
                     .processPlaceholder("base_price", listingPrices.get(0) <= -1 ? AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage() : AuctionAPI.getInstance().formatNumber(listingPrices.get(0)))
-                    .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(listingPrices.get(1)))
-                    .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(listingPrices.get(2)))::sendPrefixedMessage);
+                    .processPlaceholder("start_price", isBiddingItem ? AuctionAPI.getInstance().formatNumber(listingPrices.get(1)) : 0)
+                    .processPlaceholder("increment_price", isBiddingItem ? AuctionAPI.getInstance().formatNumber(listingPrices.get(2)) : 0)::sendPrefixedMessage);
         }
         return ReturnType.SUCCESS;
     }

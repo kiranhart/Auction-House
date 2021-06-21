@@ -103,7 +103,7 @@ public class AuctionItem implements Serializable {
             lore.addAll(Settings.AUCTION_PURCHASE_CONTROL_HEADER.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
             lore.addAll(this.bidStartPrice <= 0 || this.bidIncPrice <= 0 ? Settings.AUCTION_PURCHASE_CONTROLS_BID_OFF.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()) : Settings.AUCTION_PURCHASE_CONTROLS_BID_ON.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
 
-            if (NBTEditor.contains(itemStack, "AuctionBundleItem") || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && itemStack.getType().name().contains("SHULKER_BOX")) || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14) && itemStack.getType() == XMaterial.SHULKER_BOX.parseMaterial() || itemStack.getType() == XMaterial.BARREL.parseMaterial())) {
+            if (NBTEditor.contains(itemStack, "AuctionBundleItem") || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && itemStack.getType().name().contains("SHULKER_BOX"))) {
                 lore.addAll(Settings.AUCTION_PURCHASE_CONTROLS_INSPECTION.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
             }
 
