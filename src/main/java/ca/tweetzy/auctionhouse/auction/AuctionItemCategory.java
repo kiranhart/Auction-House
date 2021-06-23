@@ -10,27 +10,33 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
  */
 public enum AuctionItemCategory {
 
-    ALL("All"),
-    FOOD("Food"),
-    ARMOR("Armor"),
-    BLOCKS("Blocks"),
-    TOOLS("Tools"),
-    WEAPONS("Weapons"),
-    SPAWNERS("Spawners"),
-    ENCHANTS("Enchants"),
-    MISC("Misc"),
-    SEARCH("Search"),
-    SELF("Self");
+    ALL("All", false),
+    FOOD("Food", true),
+    ARMOR("Armor", true),
+    BLOCKS("Blocks", true),
+    TOOLS("Tools", true),
+    WEAPONS("Weapons", true),
+    SPAWNERS("Spawners", true),
+    ENCHANTS("Enchants", true),
+    MISC("Misc", true),
+    SEARCH("Search", false),
+    SELF("Self", false);
 
 
     private final String type;
+    private final boolean whitelistAllowed;
 
-    AuctionItemCategory(String type) {
+    AuctionItemCategory(String type, boolean whitelistAllowed) {
         this.type = type;
+        this.whitelistAllowed = whitelistAllowed;
     }
 
     public String getType() {
         return type;
+    }
+
+    public boolean isWhitelistAllowed() {
+        return whitelistAllowed;
     }
 
     public String getTranslatedType() {

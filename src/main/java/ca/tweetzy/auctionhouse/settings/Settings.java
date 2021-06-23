@@ -524,6 +524,50 @@ public class Settings {
     public static final ConfigSetting GUI_FILTER_ITEMS_BLOCKS_NAME = new ConfigSetting(config, "gui.filter.items.blocks.name", "&e&lBlocks");
     public static final ConfigSetting GUI_FILTER_ITEMS_BLOCKS_LORE = new ConfigSetting(config, "gui.filter.items.blocks.lore", Collections.singletonList("&7Click to set the filter to&f: &eBlocks"));
 
+    /*  ===============================
+     *      CUSTOM ITEM FILTER GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_FILTER_WHITELIST_TITLE = new ConfigSetting(config, "gui.filter whitelist.title", "&7Auction Filter - &eWhitelist");
+    public static final ConfigSetting GUI_FILTER_WHITELIST_BG_ITEM = new ConfigSetting(config, "gui.filter whitelist.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_BLOCKS_ITEM = new ConfigSetting(config, "gui.filter whitelist.items.blocks.item", XMaterial.GRASS_BLOCK.name());
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_BLOCKS_NAME = new ConfigSetting(config, "gui.filter whitelist.items.blocks.name", "&e&lBlock Filters");
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_BLOCKS_LORE = new ConfigSetting(config, "gui.filter whitelist.items.blocks.lore", Collections.singletonList("&7Click to adjust the item whitelist for this filter"));
+
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_FOOD_ITEM = new ConfigSetting(config, "gui.filter whitelist.items.food.item", XMaterial.CAKE.name());
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_FOOD_NAME = new ConfigSetting(config, "gui.filter whitelist.items.food.name", "&e&lFood Filters");
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_FOOD_LORE = new ConfigSetting(config, "gui.filter whitelist.items.food.lore", Collections.singletonList("&7Click to adjust the item whitelist for this filter"));
+
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_ARMOR_ITEM = new ConfigSetting(config, "gui.filter whitelist.items.armor.item", XMaterial.DIAMOND_HELMET.name());
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_ARMOR_NAME = new ConfigSetting(config, "gui.filter whitelist.items.armor.name", "&e&LArmor Filters");
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_ARMOR_LORE = new ConfigSetting(config, "gui.filter whitelist.items.armor.lore", Collections.singletonList("&7Click to adjust the item whitelist for this filter"));
+
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_TOOLS_ITEM = new ConfigSetting(config, "gui.filter whitelist.items.tools.item", XMaterial.IRON_PICKAXE.name());
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_TOOLS_NAME = new ConfigSetting(config, "gui.filter whitelist.items.tools.name", "&e&lTool Filters");
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_TOOLS_LORE = new ConfigSetting(config, "gui.filter whitelist.items.tools.lore", Collections.singletonList("&7Click to adjust the item whitelist for this filter"));
+
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_ITEM = new ConfigSetting(config, "gui.filter whitelist.items.spawners.item", XMaterial.SPAWNER.name());
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_NAME = new ConfigSetting(config, "gui.filter whitelist.items.spawners.name", "&e&lSpawner Filters");
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_LORE = new ConfigSetting(config, "gui.filter whitelist.items.spawners.lore", Collections.singletonList("&7Click to adjust the item whitelist for this filter"));
+
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_ITEM = new ConfigSetting(config, "gui.filter whitelist.items.enchants.item", XMaterial.ENCHANTED_BOOK.name());
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_NAME = new ConfigSetting(config, "gui.filter whitelist.items.enchants.name", "&e&lEnchantment Filters");
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_LORE = new ConfigSetting(config, "gui.filter whitelist.items.enchants.lore", Collections.singletonList("&7Click to adjust the item whitelist for this filter"));
+
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_WEAPONS_ITEM = new ConfigSetting(config, "gui.filter whitelist.items.weapons.item", XMaterial.DIAMOND_SWORD.name());
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_WEAPONS_NAME = new ConfigSetting(config, "gui.filter whitelist.items.weapons.name", "&e&lWeapon Filters");
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_WEAPONS_LORE = new ConfigSetting(config, "gui.filter whitelist.items.weapons.lore", Collections.singletonList("&7Click to adjust the item whitelist for this filter"));
+
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_MISC_ITEM = new ConfigSetting(config, "gui.filter whitelist.items.misc.item", XMaterial.BONE_MEAL.name());
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_MISC_NAME = new ConfigSetting(config, "gui.filter whitelist.items.misc.name", "&e&lMiscellaneous Filters");
+    public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_MISC_LORE = new ConfigSetting(config, "gui.filter whitelist.items.misc.lore", Collections.singletonList("&7Click to adjust the item whitelist for this filter"));
+
+    /*  ===============================
+     *      CUSTOM ITEM FILTER GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_FILTER_WHITELIST_LIST_TITLE = new ConfigSetting(config, "gui.filter whitelist list.title", "&7Filter Whitelist - &e%filter_category%");
+    public static final ConfigSetting GUI_FILTER_WHITELIST_LIST_BG_ITEM = new ConfigSetting(config, "gui.filter whitelist list.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
 
     /*  ===============================
      *         AUCTION STACKS

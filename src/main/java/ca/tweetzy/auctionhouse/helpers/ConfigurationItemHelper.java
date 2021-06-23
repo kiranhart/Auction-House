@@ -40,6 +40,7 @@ public class ConfigurationItemHelper {
         }
 
         meta.setDisplayName(TextUtils.formatText(title));
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
         meta.setLore(lore.stream().map(TextUtils::formatText).collect(Collectors.toList()));
         stack.setItemMeta(meta);
         if (nbtData != null) {

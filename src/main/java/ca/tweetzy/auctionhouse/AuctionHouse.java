@@ -5,10 +5,12 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations._1_InitialMigration;
+import ca.tweetzy.auctionhouse.database.migrations._2_FilterWhitelistMigration;
 import ca.tweetzy.auctionhouse.listeners.AuctionListeners;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
 import ca.tweetzy.auctionhouse.managers.AuctionPlayerManager;
+import ca.tweetzy.auctionhouse.managers.FilterManager;
 import ca.tweetzy.auctionhouse.managers.TransactionManager;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -73,6 +75,9 @@ public class AuctionHouse extends TweetyPlugin {
     private TransactionManager transactionManager;
 
     @Getter
+    private FilterManager filterManager;
+
+    @Getter
     private DatabaseConnector databaseConnector;
 
     @Getter
@@ -126,7 +131,7 @@ public class AuctionHouse extends TweetyPlugin {
         if (Settings.DATABASE_USE.getBoolean()) {
             this.databaseConnector = new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean());
             this.dataManager = new DataManager(this.databaseConnector, this);
-            DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager, new _1_InitialMigration());
+            DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager, new _1_InitialMigration(), new _2_FilterWhitelistMigration());
             dataMigrationManager.runMigrations();
         }
 
@@ -137,6 +142,10 @@ public class AuctionHouse extends TweetyPlugin {
         // load transactions
         this.transactionManager = new TransactionManager();
         this.transactionManager.loadTransactions(Settings.DATABASE_USE.getBoolean());
+
+        // load the filter whitelist items
+        this.filterManager = new FilterManager();
+        this.filterManager.loadItems(Settings.DATABASE_USE.getBoolean());
 
         // gui manager
         this.guiManager.init();
@@ -154,6 +163,7 @@ public class AuctionHouse extends TweetyPlugin {
                 new CommandSettings(),
                 new CommandConvert(),
                 new CommandReload(),
+                new CommandFilter(),
                 new CommandUpload(),
                 new CommandStatus(),
                 new CommandAdmin()
@@ -177,6 +187,7 @@ public class AuctionHouse extends TweetyPlugin {
     public void onPluginDisable() {
         this.auctionItemManager.saveItems(Settings.DATABASE_USE.getBoolean(), false);
         this.transactionManager.saveTransactions(Settings.DATABASE_USE.getBoolean(), false);
+        this.filterManager.saveFilterWhitelist(Settings.DATABASE_USE.getBoolean(), false);
         instance = null;
     }
 

@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.guis;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.*;
+import ca.tweetzy.auctionhouse.guis.filter.GUIFilterSelection;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
@@ -72,7 +73,7 @@ public class GUIAuctionHouse extends Gui {
             }
 
             if (this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.ALL && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SEARCH && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SELF) {
-                this.items = this.items.stream().filter(item -> item.getCategory() == this.auctionPlayer.getSelectedFilter()).collect(Collectors.toList());
+                this.items = this.items.stream().filter(item -> checkFilterCriteria(item, this.auctionPlayer.getSelectedFilter())).collect(Collectors.toList());
             } else if (this.auctionPlayer.getSelectedFilter() == AuctionItemCategory.SELF) {
                 this.items = this.items.stream().filter(item -> item.getOwner().equals(this.auctionPlayer.getPlayer().getUniqueId())).collect(Collectors.toList());
             } else if (this.auctionPlayer.getSelectedFilter() == AuctionItemCategory.SEARCH && this.auctionPlayer.getCurrentSearchPhrase().length() != 0) {
@@ -101,6 +102,11 @@ public class GUIAuctionHouse extends Gui {
             drawPaginationButtons();
             placeItems(data);
         }).execute();
+    }
+
+    private boolean checkFilterCriteria(AuctionItem auctionItem, AuctionItemCategory category) {
+        return auctionItem.getCategory() == category ||
+                AuctionHouse.getInstance().getFilterManager().getFilterWhitelist(category).stream().anyMatch(item -> item.isSimilar(AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem())));
     }
 
     private boolean checkSearchCriteria(String phrase, AuctionItem item) {

@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
@@ -44,6 +45,7 @@ public class AuctionItemManager {
     public List<AuctionItem> getAuctionItems() {
         return this.auctionItems;
     }
+
 
     public Set<AuctionItem> getGarbageBin() {
         return garbageBin;

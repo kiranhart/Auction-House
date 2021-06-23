@@ -29,6 +29,7 @@ permissions:
       auctionhouse.cmd.upload: true
       auctionhouse.cmd.status: true
       auctionhouse.cmd.admin: true
+      auctionhouse.cmd.filter: true
   auctionhouse.cmd:
     description: Allows the user to use /ah
     default: op
@@ -61,4 +62,7 @@ permissions:
     default: op
   auctionhouse.cmd.admin:
     description: Allows the user to access admin commands
+    default: op
+  auctionhouse.cmd.filter:
+    description: Allows the user to access the filter whitelist menu
     default: op

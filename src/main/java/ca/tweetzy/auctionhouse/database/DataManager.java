@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.database;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.database.DataManagerAbstract;
@@ -66,6 +67,48 @@ public class DataManager extends DataManagerAbstract {
         }
     }
 
+    public void saveFilterWhitelist(List<AuctionFilterItem> filterItems, boolean async){
+        if (async) {
+            this.async(() -> this.databaseConnector.connect(connection -> {
+                String saveItems = "INSERT IGNORE INTO " + this.getTablePrefix() + "filter_whitelist SET data = ?";
+                String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "filter_whitelist";
+                try (PreparedStatement statement = connection.prepareStatement(truncate)) {
+                    statement.execute();
+                }
+
+                PreparedStatement statement = connection.prepareStatement(saveItems);
+                filterItems.forEach(filterItem -> {
+                    try {
+                        statement.setString(1, AuctionAPI.getInstance().convertToBase64(filterItem));
+                        statement.addBatch();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+                statement.executeBatch();
+            }));
+        } else {
+            this.databaseConnector.connect(connection -> {
+                String saveItems = "INSERT IGNORE INTO " + this.getTablePrefix() + "filter_whitelist SET data = ?";
+                String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "filter_whitelist";
+                try (PreparedStatement statement = connection.prepareStatement(truncate)) {
+                    statement.execute();
+                }
+
+                PreparedStatement statement = connection.prepareStatement(saveItems);
+                filterItems.forEach(filterItem -> {
+                    try {
+                        statement.setString(1, AuctionAPI.getInstance().convertToBase64(filterItem));
+                        statement.addBatch();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+                statement.executeBatch();
+            });
+        }
+    }
+
     public void saveTransactions(List<Transaction> transactions, boolean async) {
         if (async) {
             this.async(() -> this.databaseConnector.connect(connection -> {
@@ -120,6 +163,21 @@ public class DataManager extends DataManagerAbstract {
                 }
             }
             this.sync(() -> callback.accept(transactions));
+        }));
+    }
+
+    public void getFilterWhitelist(Consumer<ArrayList<AuctionFilterItem>> callback) {
+        ArrayList<AuctionFilterItem> filterItems = new ArrayList<>();
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            String select = "SELECT * FROM " + this.getTablePrefix() + "filter_whitelist";
+
+            try (Statement statement = connection.createStatement()) {
+                ResultSet result = statement.executeQuery(select);
+                while (result.next()) {
+                    filterItems.add((AuctionFilterItem) AuctionAPI.getInstance().convertBase64ToObject(result.getString("data")));
+                }
+            }
+            this.sync(() -> callback.accept(filterItems));
         }));
     }
 

@@ -26,6 +26,7 @@ public class LocaleSettings {
         languageNodes.put("general.blockedname", "&cThat item contains a blocked name phrase");
         languageNodes.put("general.blockedlore", "&cThat item contains a blocked lore phrase");
         languageNodes.put("general.air", "&cSorry, but you cannot sell air o.O");
+        languageNodes.put("general.filter air", "&cSorry, but you cannot add air to a filter whitelist");
         languageNodes.put("general.blocked", "&cSorry, you are not allowed to sell &e%item%");
         languageNodes.put("general.sellinglimit", "&cYou cannot sell more items, please remove/sell current active items");
         languageNodes.put("general.noroom", "&cPlease clear room in your inventory to purchase that item.");
@@ -33,7 +34,9 @@ public class LocaleSettings {
         languageNodes.put("general.endedallauctions", "&cYou force ended all active auctions");
         languageNodes.put("general.relisteditems", "&aYou relisted all expired items!");
         languageNodes.put("general.cannotsellbundleditem", "&cYou cannot sell a bundled item as a bundle.");
-        languageNodes.put("general.entersearchphrase", "&Enter a search phrase into chat");
+        languageNodes.put("general.entersearchphrase", "&aEnter a search phrase into chat");
+        languageNodes.put("general.filteritemaddedalready", "&cThat item already exists within that category's filter whitelist.");
+        languageNodes.put("general.addeditemtofilterwhitelist", "&aAdded &2%item_name%&a to the &2%filter_category%&a's whitelist");
 
 
         languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
@@ -100,6 +103,7 @@ public class LocaleSettings {
         languageNodes.put("commands.syntax.settings", "settings");
         languageNodes.put("commands.syntax.transactions", "transactions");
         languageNodes.put("commands.syntax.upload", "upload");
+        languageNodes.put("commands.syntax.filter", "filter [additem] [category]");
 
         languageNodes.put("commands.description.active", "View all your auction listings");
         languageNodes.put("commands.description.auctionhouse", "Main command for the plugin, it opens the auction window.");
@@ -111,6 +115,7 @@ public class LocaleSettings {
         languageNodes.put("commands.description.settings", "Open the in-game config editor");
         languageNodes.put("commands.description.transactions", "Used to open the transactions menu");
         languageNodes.put("commands.description.upload", "Used to upload flat file data to the database");
+        languageNodes.put("commands.description.filter", "Edit the filter whitelist items");
     }
 
     public static void setup() {
