@@ -5,7 +5,6 @@ import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.items.ItemUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

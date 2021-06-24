@@ -110,11 +110,13 @@ public class GUIAuctionHouse extends Gui {
     }
 
     private boolean checkSearchCriteria(String phrase, AuctionItem item) {
-        return AuctionAPI.getInstance().match(phrase, item.getItemName()) ||
+        ItemStack stack = AuctionAPI.getInstance().deserializeItem(item.getRawItem());
+        return AuctionAPI.getInstance().match(phrase, AuctionAPI.getInstance().getItemName(stack)) ||
                 AuctionAPI.getInstance().match(phrase, item.getCategory().getTranslatedType()) ||
+                AuctionAPI.getInstance().match(phrase, stack.getType().name()) ||
                 AuctionAPI.getInstance().match(phrase, Bukkit.getOfflinePlayer(item.getOwner()).getName()) ||
-                AuctionAPI.getInstance().match(phrase, AuctionAPI.getInstance().getItemLore(AuctionAPI.getInstance().deserializeItem(item.getRawItem()))) ||
-                AuctionAPI.getInstance().match(phrase, AuctionAPI.getInstance().getItemEnchantments(AuctionAPI.getInstance().deserializeItem(item.getRawItem())));
+                AuctionAPI.getInstance().match(phrase, AuctionAPI.getInstance().getItemLore(stack)) ||
+                AuctionAPI.getInstance().match(phrase, AuctionAPI.getInstance().getItemEnchantments(stack));
     }
 
     /*

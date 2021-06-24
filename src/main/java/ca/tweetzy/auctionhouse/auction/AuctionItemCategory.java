@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.settings.Settings;
 
 /**
  * The current file has been created by Kiran Hart
@@ -10,25 +11,27 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
  */
 public enum AuctionItemCategory {
 
-    ALL("All", false),
-    FOOD("Food", true),
-    ARMOR("Armor", true),
-    BLOCKS("Blocks", true),
-    TOOLS("Tools", true),
-    WEAPONS("Weapons", true),
-    SPAWNERS("Spawners", true),
-    ENCHANTS("Enchants", true),
-    MISC("Misc", true),
-    SEARCH("Search", false),
-    SELF("Self", false);
+    ALL("All", false, Settings.ALL_FILTER_ENABLED.getBoolean()),
+    FOOD("Food", true, Settings.FOOD_FILTER_ENABLED.getBoolean()),
+    ARMOR("Armor", true, Settings.ARMOR_FILTER_ENABLED.getBoolean()),
+    BLOCKS("Blocks", true, Settings.BLOCKS_FILTER_ENABLED.getBoolean()),
+    TOOLS("Tools", true, Settings.TOOLS_FILTER_ENABLED.getBoolean()),
+    WEAPONS("Weapons", true, Settings.WEAPONS_FILTER_ENABLED.getBoolean()),
+    SPAWNERS("Spawners", true, Settings.SPAWNERS_FILTER_ENABLED.getBoolean()),
+    ENCHANTS("Enchants", true, Settings.ENCHANTS_FILTER_ENABLED.getBoolean()),
+    MISC("Misc", true, Settings.MISC_FILTER_ENABLED.getBoolean()),
+    SEARCH("Search", false, Settings.SEARCH_FILTER_ENABLED.getBoolean()),
+    SELF("Self", false, Settings.SELF_FILTER_ENABLED.getBoolean());
 
 
     private final String type;
     private final boolean whitelistAllowed;
+    private final boolean enabled;
 
-    AuctionItemCategory(String type, boolean whitelistAllowed) {
+    AuctionItemCategory(String type, boolean whitelistAllowed, boolean enabled) {
         this.type = type;
         this.whitelistAllowed = whitelistAllowed;
+        this.enabled = enabled;
     }
 
     public String getType() {
@@ -37,6 +40,10 @@ public enum AuctionItemCategory {
 
     public boolean isWhitelistAllowed() {
         return whitelistAllowed;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public String getTranslatedType() {
@@ -68,6 +75,12 @@ public enum AuctionItemCategory {
     }
 
     public AuctionItemCategory next() {
-        return values()[(this.ordinal() + 1) % values().length];
+        int currentIndex = this.ordinal();
+        int nextIndex = currentIndex + 1;
+        while (!values()[nextIndex %= values().length].isEnabled()) {
+            nextIndex++;
+        }
+
+        return values()[nextIndex];
     }
 }

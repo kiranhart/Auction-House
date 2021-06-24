@@ -195,6 +195,7 @@ public class AuctionHouse extends TweetyPlugin {
     public void onConfigReload() {
         Settings.setup();
         setLocale(Settings.LANG.getString());
+        LocaleSettings.setup();
         this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
         this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
     }
