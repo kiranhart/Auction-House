@@ -161,6 +161,8 @@ public class Settings {
     public static final ConfigSetting DATABASE_PASSWORD = new ConfigSetting(config, "database.password", "Password1.", "What is the password to the user connecting?");
     public static final ConfigSetting DATABASE_USE_SSL = new ConfigSetting(config, "database.use ssl", true, "Should the database connection use ssl?");
 
+    public static final ConfigSetting DATABASE_UPDATE_ON_EVENT = new ConfigSetting(config, "database.update on event", true, "When an item is listed/bought/expired/cancelled should auction house update the database immediately?");
+
 
     /*  ===============================
      *         DISCORD WEBHOOK

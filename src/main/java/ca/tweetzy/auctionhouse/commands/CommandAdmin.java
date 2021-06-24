@@ -1,17 +1,20 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
-import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
+import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.utils.items.ItemUtils;
+import ca.tweetzy.core.compatibility.XMaterial;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -43,15 +46,19 @@ public class CommandAdmin extends AbstractCommand {
                 AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(sender);
                 break;
             case "cleanunknownusers":
-                // Don't tell ppl that this exists just yet
+                // Don't tell ppl that this exists
                 AuctionHouse.getInstance().getAuctionItemManager().removeUnknownOwnerItems();
                 break;
-            case "stacksize":
-                Player player = (Player) sender;
-                ItemStack item = PlayerHelper.getHeldItem(player);
-                ItemUtils.setMaxStack(item, 127);
-                item.setAmount(127);
-
+            case "clearall":
+                // Don't tell ppl that this exists
+                AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().clear();
+            case "clean":
+                // Don't tell ppl that this exists
+                AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().forEach(item -> {
+                    if (AuctionAPI.getInstance().deserializeItem(item.getRawItem()) == null || XMaterial.isAir(XMaterial.matchXMaterial(AuctionAPI.getInstance().deserializeItem(item.getRawItem())))) {
+                        AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(item);
+                    }
+                });
                 break;
         }
 

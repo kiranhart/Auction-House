@@ -73,7 +73,7 @@ public class AuctionItem implements Serializable {
     public ItemStack getDisplayStack(AuctionStackType type) {
         ItemStack itemStack = AuctionAPI.getInstance().deserializeItem(this.rawItem).clone();
         itemStack.setAmount(Math.max(itemStack.getAmount(), 1));
-        ItemMeta meta = itemStack.getItemMeta();
+        ItemMeta meta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
         List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
 
         String theSeller = (this.owner == null) ? "&eSeller Name???" : Bukkit.getOfflinePlayer(this.owner).getName();

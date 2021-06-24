@@ -82,6 +82,8 @@ public class GUIConfirmPurchase extends Gui {
         setActionForRange(this.buyingSpecificQuantity ? 9 : 0, this.buyingSpecificQuantity ? 12 : 3, ClickType.LEFT, e -> {
             // Re-select the item to ensure that it's available
             try {
+                // if the item is in the garbage then just don't continue
+                if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().stream().anyMatch(items -> items.getKey().equals(this.auctionItem.getKey()))) return;
                 AuctionItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getKey());
                 preItemChecks(e, located);
 
