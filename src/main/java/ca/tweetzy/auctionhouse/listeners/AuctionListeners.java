@@ -23,11 +23,6 @@ public class AuctionListeners implements Listener {
 
     @EventHandler
     public void onAuctionStart(AuctionStartEvent e) {
-        // TODO THIS IS GONNA BE SCUFFED
-        if (Settings.DATABASE_USE.getBoolean() && Settings.DATABASE_UPDATE_ON_EVENT.getBoolean()) {
-
-        }
-
         if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean()) {
             Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
                 Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {

@@ -6,6 +6,7 @@ import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations._1_InitialMigration;
 import ca.tweetzy.auctionhouse.database.migrations._2_FilterWhitelistMigration;
+import ca.tweetzy.auctionhouse.economy.EconomyManager;
 import ca.tweetzy.auctionhouse.listeners.AuctionListeners;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
@@ -31,9 +32,7 @@ import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import lombok.Getter;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.List;
 
@@ -52,7 +51,7 @@ public class AuctionHouse extends TweetyPlugin {
     private static AuctionHouse instance;
 
     @Getter
-    private Economy economy;
+    private EconomyManager economyManager;
 
     @Getter
     private final GuiManager guiManager = new GuiManager(this);
@@ -101,16 +100,13 @@ public class AuctionHouse extends TweetyPlugin {
             return;
         }
 
-        // Check for vault
-        if (getServer().getPluginManager().isPluginEnabled("Vault")) {
-            RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-            if (rsp != null) this.economy = rsp.getProvider();
-        }
-
         taskChainFactory = BukkitTaskChainFactory.create(this);
 
         // Settings
         Settings.setup();
+
+        // Check the economy right after the settings setup
+        this.economyManager = new EconomyManager(this);
 
         // local
         setLocale(Settings.LANG.getString());

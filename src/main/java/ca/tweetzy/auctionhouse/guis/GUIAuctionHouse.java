@@ -128,7 +128,7 @@ public class GUIAuctionHouse extends Gui {
             return;
         }
 
-        if (!AuctionHouse.getInstance().getEconomy().has(e.player, auctionItem.getBasePrice())) {
+        if (!AuctionHouse.getInstance().getEconomyManager().has(e.player, auctionItem.getBasePrice())) {
             AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
             return;
         }
@@ -164,7 +164,7 @@ public class GUIAuctionHouse extends Gui {
             return;
         }
 
-        if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getInstance().getEconomy().has(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice())) {
+        if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getInstance().getEconomyManager().has(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice())) {
             AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
             return;
         }
@@ -281,7 +281,7 @@ public class GUIAuctionHouse extends Gui {
     private void drawFixedButtons() {
         setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), new HashMap<String, Object>() {{
             put("%active_player_auctions%", auctionPlayer.getItems(false).size());
-            put("%player_balance%", AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getEconomy().getBalance(auctionPlayer.getPlayer())));
+            put("%player_balance%", AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getEconomyManager().getBalance(auctionPlayer.getPlayer())));
         }}), e -> {
             cleanup();
             e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));

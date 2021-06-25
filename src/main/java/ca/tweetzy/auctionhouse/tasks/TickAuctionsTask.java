@@ -60,7 +60,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 
                 OfflinePlayer auctionWinner = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
 
-                if (!AuctionHouse.getInstance().getEconomy().has(auctionWinner, auctionItem.getCurrentPrice())) {
+                if (!AuctionHouse.getInstance().getEconomyManager().has(auctionWinner, auctionItem.getCurrentPrice())) {
                     auctionItem.setExpired(true);
                     continue;
                 }
@@ -69,8 +69,8 @@ public class TickAuctionsTask extends BukkitRunnable {
                 AuctionHouse.getInstance().getServer().getPluginManager().callEvent(auctionEndEvent);
                 if (!auctionEndEvent.isCancelled()) continue;
 
-                AuctionHouse.getInstance().getEconomy().withdrawPlayer(auctionWinner, auctionItem.getCurrentPrice());
-                AuctionHouse.getInstance().getEconomy().depositPlayer(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionItem.getCurrentPrice());
+                AuctionHouse.getInstance().getEconomyManager().withdrawPlayer(auctionWinner, auctionItem.getCurrentPrice());
+                AuctionHouse.getInstance().getEconomyManager().depositPlayer(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionItem.getCurrentPrice());
 
                 if (Bukkit.getOfflinePlayer(auctionItem.getOwner()).isOnline()) {
                     AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")

@@ -31,7 +31,6 @@ jobs:
         run: mvn verify -B --file pom.xml
 
   transfer:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Transfer main branch to Tweetzy

@@ -20,6 +20,7 @@ public class Settings {
     static final Config config = AuctionHouse.getInstance().getCoreConfig();
 
     public static final ConfigSetting LANG = new ConfigSetting(config, "lang", "en_US", "Default language file");
+    public static final ConfigSetting ECONOMY_MODE = new ConfigSetting(config, "economy provider", "Vault", "Supported Economies:", "Vault", "PlayerPoints");
     /*  ===============================
      *          BASIC SETTINGS
      *  ===============================*/
@@ -95,6 +96,7 @@ public class Settings {
             "",
             "&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
     );
+
     public static final ConfigSetting CLICKS_NON_BID_ITEM_QTY_PURCHASE = new ConfigSetting(config, "auction setting.clicks.non bid item qty purchase", "RIGHT",
             "Valid Click Types",
             "LEFT",
@@ -116,6 +118,7 @@ public class Settings {
             "",
             "&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
     );
+
     public static final ConfigSetting CLICKS_BID_ITEM_BUY_NOW = new ConfigSetting(config, "auction setting.clicks.bid item buy now", "RIGHT",
             "Valid Click Types",
             "LEFT",
@@ -126,7 +129,6 @@ public class Settings {
             "",
             "&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
     );
-
 
     public static final ConfigSetting CLICKS_INSPECT_CONTAINER = new ConfigSetting(config, "auction setting.clicks.inspect container", "SHIFT_RIGHT",
             "Valid Click Types",
@@ -160,9 +162,6 @@ public class Settings {
     public static final ConfigSetting DATABASE_USERNAME = new ConfigSetting(config, "database.username", "root", "What is the name of the user connecting?");
     public static final ConfigSetting DATABASE_PASSWORD = new ConfigSetting(config, "database.password", "Password1.", "What is the password to the user connecting?");
     public static final ConfigSetting DATABASE_USE_SSL = new ConfigSetting(config, "database.use ssl", true, "Should the database connection use ssl?");
-
-    public static final ConfigSetting DATABASE_UPDATE_ON_EVENT = new ConfigSetting(config, "database.update on event", true, "When an item is listed/bought/expired/cancelled should auction house update the database immediately?");
-
 
     /*  ===============================
      *         DISCORD WEBHOOK
