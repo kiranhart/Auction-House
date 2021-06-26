@@ -53,7 +53,7 @@ public class TickAuctionsTask extends BukkitRunnable {
             }
 
             if (auctionItem.getRemainingTime() <= 0) {
-                if (auctionItem.getOwner().equals(auctionItem.getHighestBidder())) {
+                if (auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
                     auctionItem.setExpired(true);
                     continue;
                 }
@@ -67,7 +67,8 @@ public class TickAuctionsTask extends BukkitRunnable {
 
                 AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionWinner, auctionItem, AuctionSaleType.USED_BIDDING_SYSTEM);
                 AuctionHouse.getInstance().getServer().getPluginManager().callEvent(auctionEndEvent);
-                if (!auctionEndEvent.isCancelled()) continue;
+                if (auctionEndEvent.isCancelled()) continue;
+
 
                 AuctionHouse.getInstance().getEconomyManager().withdrawPlayer(auctionWinner, auctionItem.getCurrentPrice());
                 AuctionHouse.getInstance().getEconomyManager().depositPlayer(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionItem.getCurrentPrice());
