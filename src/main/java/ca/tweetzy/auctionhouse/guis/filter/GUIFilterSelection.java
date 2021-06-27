@@ -21,7 +21,6 @@ import java.util.HashMap;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 
-//TODO IN the main auction house, switch the filter icon to the currently selected filter
 public class GUIFilterSelection extends Gui {
 
     final AuctionPlayer auctionPlayer;
@@ -53,7 +52,6 @@ public class GUIFilterSelection extends Gui {
         setButton(1, 5, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_ITEMS_SEARCH_ITEM.getString(), Settings.GUI_FILTER_ITEMS_SEARCH_NAME.getString(), Settings.GUI_FILTER_ITEMS_SEARCH_LORE.getStringList(), new HashMap<String, Object>(){{
             put("%filter_search_phrase%", auctionPlayer.getCurrentSearchPhrase());
         }}), e -> {
-            //TODO ADD AN ACTUAL MESSAGE NODE FOR THIS
             e.gui.exit();
             ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), AuctionHouse.getInstance().getLocale().getMessage("general.entersearchphrase").getMessage(), chat -> {
                 if (chat.getMessage() != null && chat.getMessage().length() !=0) {

@@ -28,7 +28,6 @@ import java.util.UUID;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 
-// TODO CLEAN UP THE ENTIRE PRICE UPDATE THING
 public class GUISellItem extends Gui {
 
     private final AuctionPlayer auctionPlayer;
