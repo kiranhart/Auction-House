@@ -49,6 +49,10 @@ public class LocaleSettings {
         languageNodes.put("pricing.moneyremove", "&c&l- $%price%");
         languageNodes.put("pricing.moneyadd", "&a&l+ $%price%");
 
+        languageNodes.put("prompts.enter new buy now price", "&aPlease enter the new buy now price in chat:");
+        languageNodes.put("prompts.enter new starting bid", "&aPlease enter the new starting bid in chat:");
+        languageNodes.put("prompts.enter new bid increment", "&aPlease enter the new bid increment in chat:");
+
         languageNodes.put("transaction.sale_type.bid_won", "Won Auction");
         languageNodes.put("transaction.sale_type.immediate_buy", "Bought Immediately");
 
@@ -60,7 +64,6 @@ public class LocaleSettings {
         languageNodes.put("discord.sale_immediate_buy", "Bought Immediately");
         languageNodes.put("discord.is_bid_true", "true");
         languageNodes.put("discord.is_bid_false", "false");
-
 
         languageNodes.put("auction_filter.sale_types.biddable", "Biddable");
         languageNodes.put("auction_filter.sale_types.non_biddable", "Not Biddable");

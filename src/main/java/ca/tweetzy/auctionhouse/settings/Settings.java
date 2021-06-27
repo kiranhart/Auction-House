@@ -581,6 +581,53 @@ public class Settings {
     public static final ConfigSetting GUI_FILTER_WHITELIST_LIST_TITLE = new ConfigSetting(config, "gui.filter whitelist list.title", "&7Filter Whitelist - &e%filter_category%");
     public static final ConfigSetting GUI_FILTER_WHITELIST_LIST_BG_ITEM = new ConfigSetting(config, "gui.filter whitelist list.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
 
+    /*  ===============================
+     *       ITEM SELL/LIST GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_SELL_TITLE = new ConfigSetting(config, "gui.sell.title", "&7Auction House - &eSelling Itm");
+    public static final ConfigSetting GUI_SELL_BG_ITEM = new ConfigSetting(config, "gui.sell.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+    public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_ITEM = new ConfigSetting(config, "gui.sell.items.buy now.item", XMaterial.SUNFLOWER.name());
+    public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_NAME = new ConfigSetting(config, "gui.sell.items.buy now.name", "&e&lBuy Now Price");
+    public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_LORE = new ConfigSetting(config, "gui.sell.items.buy now.lore", Arrays.asList(
+            "&7The current buy now price is&f: %buy_now_price%",
+            "&7Click to edit the price"
+    ));
+
+    public static final ConfigSetting GUI_SELL_ITEMS_STARTING_BID_ITEM = new ConfigSetting(config, "gui.sell.items.starting bid.item", XMaterial.SUNFLOWER.name());
+    public static final ConfigSetting GUI_SELL_ITEMS_STARTING_BID_NAME = new ConfigSetting(config, "gui.sell.items.starting bid.name", "&e&lStarting Bid Price");
+    public static final ConfigSetting GUI_SELL_ITEMS_STARTING_BID_LORE = new ConfigSetting(config, "gui.sell.items.starting bid.lore", Arrays.asList(
+            "&7The starting bid price is&f: %starting_bid_price%",
+            "&7Click to edit the price"
+    ));
+
+    public static final ConfigSetting GUI_SELL_ITEMS_BID_INC_ITEM = new ConfigSetting(config, "gui.sell.items.bid inc.item", XMaterial.SUNFLOWER.name());
+    public static final ConfigSetting GUI_SELL_ITEMS_BID_INC_NAME = new ConfigSetting(config, "gui.sell.items.bid inc.name", "&e&lBid Increment Price");
+    public static final ConfigSetting GUI_SELL_ITEMS_BID_INC_LORE = new ConfigSetting(config, "gui.sell.items.bid inc.lore", Arrays.asList(
+            "&7The bid increment is&f: %bid_increment_price%",
+            "&7Click to edit the price"
+    ));
+
+    public static final ConfigSetting GUI_SELL_ITEMS_CONFIRM_LISTING_ITEM = new ConfigSetting(config, "gui.sell.items.confirm listing.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_SELL_ITEMS_CONFIRM_LISTING_NAME = new ConfigSetting(config, "gui.sell.items.confirm listing.name", "&a&lConfirm Listing");
+    public static final ConfigSetting GUI_SELL_ITEMS_CONFIRM_LISTING_LORE = new ConfigSetting(config, "gui.sell.items.confirm listing.lore", Collections.singletonList("&7Click to confirm the listing of this item."));
+
+    public static final ConfigSetting GUI_SELL_ITEMS_BIDDING_ENABLED_ITEM = new ConfigSetting(config, "gui.sell.items.bidding enabled.item", XMaterial.LIME_DYE.name());
+    public static final ConfigSetting GUI_SELL_ITEMS_BIDDING_ENABLED_NAME = new ConfigSetting(config, "gui.sell.items.bidding enabled.name", "&a&lBidding Enabled");
+    public static final ConfigSetting GUI_SELL_ITEMS_BIDDING_ENABLED_LORE = new ConfigSetting(config, "gui.sell.items.bidding enabled.lore", Collections.singletonList("&7Click to &cDisable &7bidding"));
+
+    public static final ConfigSetting GUI_SELL_ITEMS_BIDDING_DISABLED_ITEM = new ConfigSetting(config, "gui.sell.items.bidding disabled.item", XMaterial.RED_DYE.name());
+    public static final ConfigSetting GUI_SELL_ITEMS_BIDDING_DISABLED_NAME = new ConfigSetting(config, "gui.sell.items.bidding disabled.name", "&c&lBidding Disabled");
+    public static final ConfigSetting GUI_SELL_ITEMS_BIDDING_DISABLED_LORE = new ConfigSetting(config, "gui.sell.items.bidding disabled.lore", Collections.singletonList("&7Click to &aEnable &7bidding"));
+
+    public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_ENABLED_ITEM = new ConfigSetting(config, "gui.sell.items.buy now enabled.item", XMaterial.LIME_DYE.name());
+    public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_ENABLED_NAME = new ConfigSetting(config, "gui.sell.items.buy now enabled.name", "&a&lBuy Now Enabled");
+    public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_ENABLED_LORE = new ConfigSetting(config, "gui.sell.items.buy now enabled.lore", Collections.singletonList("&7Click to &cDisable &7buy now"));
+
+    public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_DISABLED_ITEM = new ConfigSetting(config, "gui.sell.items.buy now disabled.item", XMaterial.RED_DYE.name());
+    public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_DISABLED_NAME = new ConfigSetting(config, "gui.sell.items.buy now disabled.name", "&c&lBuy Now Disabled");
+    public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_DISABLED_LORE = new ConfigSetting(config, "gui.sell.items.buy now disabled.lore", Collections.singletonList("&7Click to &aEnable &7buy now"));
+
 
     /*  ===============================
      *         AUCTION STACKS

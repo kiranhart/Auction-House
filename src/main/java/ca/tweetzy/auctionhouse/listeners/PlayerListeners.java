@@ -48,7 +48,8 @@ public class PlayerListeners implements Listener {
         Player player = e.getPlayer();
         AuctionHouse.getInstance().getAuctionPlayerManager().removePlayer(player.getUniqueId());
         AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().remove(player.getUniqueId());
-        AuctionHouse.getInstance().getLogger().info("Removing Auction Player and Cooldown instances for user: " + player.getName());
+        AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
+        AuctionHouse.getInstance().getLogger().info("Removing Instances for user: " + player.getName());
     }
 
     @EventHandler

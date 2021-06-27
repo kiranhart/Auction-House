@@ -1,10 +1,13 @@
 package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,8 +54,19 @@ public class AuctionPlayer {
         return 0;
     }
 
-
     public boolean isAtSellLimit() {
         return getSellLimit() - 1 < getItems(false).size();
+    }
+
+    public int getAllowedSellTime() {
+        List<Integer> possibleTimes = new ArrayList<>();
+        Settings.AUCTION_TIME.getStringList().forEach(line -> {
+            String[] split = line.split(":");
+            if (player.hasPermission("auctionhouse.time." + split[0])) {
+                possibleTimes.add(Integer.parseInt(split[1]));
+            }
+        });
+
+        return possibleTimes.size() <= 0 ? Settings.DEFAULT_AUCTION_TIME.getInt() : Math.max(Settings.DEFAULT_AUCTION_TIME.getInt(), Collections.max(possibleTimes));
     }
 }
