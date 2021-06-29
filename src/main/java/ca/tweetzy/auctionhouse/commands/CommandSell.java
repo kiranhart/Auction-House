@@ -48,6 +48,27 @@ public class CommandSell extends AbstractCommand {
         ItemStack originalItem = PlayerHelper.getHeldItem(player).clone();
         ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 
+        // check if player is at their selling limit
+        if (auctionPlayer.isAtSellLimit()) {
+            AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(player);
+            return ReturnType.FAILURE;
+        }
+
+        // open the sell menu if its 0;
+        if (args.length == 0) {
+            if (itemToSell.getType() == XMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
+                AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            } else {
+                AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellItem(auctionPlayer, itemToSell));
+                AuctionHouse.getInstance().getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), itemToSell);
+                PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
+
+            }
+
+            return ReturnType.SUCCESS;
+        }
+
         if (itemToSell.getType() == XMaterial.AIR.parseMaterial()) {
             AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
             return ReturnType.FAILURE;
@@ -87,20 +108,6 @@ public class CommandSell extends AbstractCommand {
 
         // get the max allowed time for this player.
         int allowedTime = auctionPlayer.getAllowedSellTime();
-
-        // check if player is at their selling limit
-        if (auctionPlayer.isAtSellLimit()) {
-            AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
-        }
-
-        // open the sell menu if its 0;
-        if (args.length == 0) {
-            AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellItem(auctionPlayer, itemToSell));
-            AuctionHouse.getInstance().getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), itemToSell);
-            PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
-            return ReturnType.SUCCESS;
-        }
 
         // Special command arguments
         List<String> commandFlags = AuctionAPI.getInstance().getCommandFlags(args);
