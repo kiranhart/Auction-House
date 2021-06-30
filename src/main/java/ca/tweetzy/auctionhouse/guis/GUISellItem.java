@@ -146,6 +146,10 @@ public class GUISellItem extends Gui {
         }
 
         setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_ITEM.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_ITEM.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_NAME.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_NAME.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_LORE.getStringList() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_LORE.getStringList(), null), e -> {
+            if (!Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
+                return;
+            }
+
             this.isBiddingItem = !this.isBiddingItem;
             setTheItemToBeListed();
             draw();
