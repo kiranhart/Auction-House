@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -19,35 +20,34 @@ import java.util.stream.Collectors;
 
 public class AuctionItemManager {
 
-    private final ArrayList<AuctionItem> auctionItems = new ArrayList<>();
-    private final Set<AuctionItem> garbageBin = new HashSet<>();
+    private final ConcurrentHashMap<UUID, AuctionItem> auctionItems = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, AuctionItem> garbageBin = new ConcurrentHashMap<>();
 
     public void addItem(AuctionItem auctionItem) {
         if (auctionItem == null) return;
-        this.auctionItems.add(auctionItem);
+        this.auctionItems.put(auctionItem.getKey(), auctionItem);
     }
 
     public void sendToGarbage(AuctionItem auctionItem) {
         if (auctionItem == null) return;
-        this.garbageBin.add(auctionItem);
+        this.garbageBin.put(auctionItem.getKey(), auctionItem);
     }
 
     public void removeUnknownOwnerItems() {
         List<UUID> knownOfflinePlayers = Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getUniqueId).collect(Collectors.toList());
-        this.auctionItems.removeIf(item -> !knownOfflinePlayers.contains(item.getOwner()));
+        this.auctionItems.keySet().removeIf(id -> !knownOfflinePlayers.contains(id));
     }
 
     public AuctionItem getItem(UUID uuid) {
-        return this.auctionItems.stream().filter(item -> item.getKey().equals(uuid)).findFirst().orElse(null);
+        return this.auctionItems.getOrDefault(uuid, null);
     }
 
-    public List<AuctionItem> getAuctionItems() {
+    public ConcurrentHashMap<UUID, AuctionItem> getAuctionItems() {
         return this.auctionItems;
     }
 
-
-    public Set<AuctionItem> getGarbageBin() {
-        return garbageBin;
+    public ConcurrentHashMap<UUID, AuctionItem> getGarbageBin() {
+        return this.garbageBin;
     }
 
     public void loadItems(boolean useDatabase) {
@@ -67,9 +67,9 @@ public class AuctionItemManager {
 
     public void saveItems(boolean useDatabase, boolean async) {
         if (useDatabase) {
-            AuctionHouse.getInstance().getDataManager().saveItems(getAuctionItems(), async);
+            AuctionHouse.getInstance().getDataManager().saveItems(new ArrayList<>(this.getAuctionItems().values()), async);
         } else {
-            this.adjustItemsInFile(this.getAuctionItems());
+            this.adjustItemsInFile(new ArrayList<>(this.getAuctionItems().values()));
         }
     }
 

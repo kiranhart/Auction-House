@@ -9,6 +9,7 @@ import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,7 @@ public class CommandUpload extends AbstractCommand {
         AuctionHouse.getInstance().getData().set("transactions", null);
         AuctionHouse.getInstance().getData().save();
 
-        AuctionHouse.getInstance().getDataManager().saveItems(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems(), true);
+        AuctionHouse.getInstance().getDataManager().saveItems(new ArrayList<>(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().values()), true);
         AuctionHouse.getInstance().getDataManager().saveTransactions(AuctionHouse.getInstance().getTransactionManager().getTransactions(), true);
 
         AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aLoaded file items/transactions and saved them to the database.")).sendPrefixedMessage(sender);

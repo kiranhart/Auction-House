@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The current file has been created by Kiran Hart
@@ -17,14 +18,13 @@ import java.util.*;
 @Getter
 public class AuctionPlayerManager {
 
-    private final ArrayList<AuctionPlayer> auctionPlayers = new ArrayList<>();
+    private final ConcurrentHashMap<UUID, AuctionPlayer> auctionPlayers = new ConcurrentHashMap<>();
     private final HashMap<UUID, ItemStack> sellHolding = new HashMap<>();
     private final HashMap<UUID, Long> cooldowns = new HashMap<>();
 
     public void addPlayer(AuctionPlayer auctionPlayer) {
         if (auctionPlayer == null) return;
-        if (this.auctionPlayers.stream().anyMatch(player -> player.getPlayer().getUniqueId().equals(auctionPlayer.getPlayer().getUniqueId()))) return;
-        this.auctionPlayers.add(auctionPlayer);
+        this.auctionPlayers.put(auctionPlayer.getPlayer().getUniqueId(), auctionPlayer);
     }
 
     public void addItemToSellHolding(UUID uuid, ItemStack itemStack) {
@@ -37,15 +37,15 @@ public class AuctionPlayerManager {
     }
 
     public void removePlayer(UUID uuid) {
-        this.auctionPlayers.removeIf(player -> player.getPlayer().getUniqueId().equals(uuid));
+        this.auctionPlayers.remove(uuid);
     }
 
     public AuctionPlayer getPlayer(UUID uuid) {
-        return this.auctionPlayers.stream().filter(item -> item.getPlayer().getUniqueId().equals(uuid)).findFirst().orElse(null);
+        return this.auctionPlayers.getOrDefault(uuid, null);
     }
 
-    public List<AuctionPlayer> getAuctionPlayers() {
-        return Collections.unmodifiableList(auctionPlayers);
+    public ConcurrentHashMap<UUID, AuctionPlayer> getAuctionPlayers() {
+        return this.auctionPlayers;
     }
 
     public void addCooldown(UUID uuid) {

@@ -84,7 +84,8 @@ public class GUIConfirmPurchase extends Gui {
             // Re-select the item to ensure that it's available
             try {
                 // if the item is in the garbage then just don't continue
-                if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().stream().anyMatch(items -> items.getKey().equals(this.auctionItem.getKey()))) return;
+                if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(this.auctionItem.getKey()))
+                    return;
                 AuctionItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getKey());
                 preItemChecks(e, located);
 
@@ -138,6 +139,7 @@ public class GUIConfirmPurchase extends Gui {
                     AuctionHouse.getInstance().getTransactionManager().removeAllRelatedPlayers(auctionItem.getKey());
                     player.closeInventory();
                 });
+                e.gui.close();
             } catch (ItemNotFoundException exception) {
                 AuctionHouse.getInstance().getLogger().info("Tried to purchase item that was bought, or does not exist");
             }

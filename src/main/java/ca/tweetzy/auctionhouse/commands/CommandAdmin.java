@@ -2,19 +2,15 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
-import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -34,15 +30,19 @@ public class CommandAdmin extends AbstractCommand {
 
         switch (args[0].toLowerCase()) {
             case "endall":
-                AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().forEach(item -> item.setExpired(true));
+                for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().keySet()) {
+                    AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id).setExpired(true);
+                }
                 AuctionHouse.getInstance().getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(sender);
                 break;
             case "relistall":
                 int relistTime = args.length == 1 ? Settings.DEFAULT_AUCTION_TIME.getInt() : Integer.parseInt(args[1]);
-                AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(AuctionItem::isExpired).forEach(item -> {
-                    item.setRemainingTime(relistTime);
-                    item.setExpired(false);
-                });
+                for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().keySet()) {
+                    if (AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id).isExpired()) {
+                        AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id).setRemainingTime(relistTime);
+                        AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id).setExpired(false);
+                    }
+                }
                 AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(sender);
                 break;
             case "cleanunknownusers":
@@ -54,11 +54,12 @@ public class CommandAdmin extends AbstractCommand {
                 AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().clear();
             case "clean":
                 // Don't tell ppl that this exists
-                AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().forEach(item -> {
-                    if (AuctionAPI.getInstance().deserializeItem(item.getRawItem()) == null || XMaterial.isAir(XMaterial.matchXMaterial(AuctionAPI.getInstance().deserializeItem(item.getRawItem())))) {
-                        AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(item);
+                for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().keySet()) {
+                    ItemStack deserialize = AuctionAPI.getInstance().deserializeItem(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id).getRawItem());
+                    if (deserialize == null || XMaterial.isAir(XMaterial.matchXMaterial(deserialize))) {
+                        AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id));
                     }
-                });
+                }
                 break;
         }
 

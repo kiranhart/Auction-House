@@ -13,6 +13,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -36,14 +39,15 @@ public class TickAuctionsTask extends BukkitRunnable {
     @Override
     public void run() {
 
-        // check if the auction stack even has items
-        Iterator<AuctionItem> auctionItemIterator = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().listIterator();
+        Set<Map.Entry<UUID, AuctionItem>> entrySet = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().entrySet();
+        Iterator<Map.Entry<UUID, AuctionItem>> auctionItemIterator = entrySet.iterator();
 
         while (auctionItemIterator.hasNext()) {
-            AuctionItem auctionItem = auctionItemIterator.next();
+            Map.Entry<UUID, AuctionItem> entry = auctionItemIterator.next();
+            AuctionItem auctionItem = entry.getValue();
 
-            if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().contains(auctionItem)) {
-                AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().remove(auctionItem);
+            if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getKey())) {
+                AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().remove(auctionItem.getKey());
                 auctionItemIterator.remove();
                 continue;
             }
@@ -83,6 +87,7 @@ public class TickAuctionsTask extends BukkitRunnable {
                 }
 
                 if (auctionWinner.isOnline()) {
+                    assert auctionWinner.getPlayer() != null;
                     AuctionHouse.getInstance().getLocale().getMessage("auction.bidwon")
                             .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem()).getType().name().replace("_", " ")))
                             .processPlaceholder("amount", AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem()).getAmount())

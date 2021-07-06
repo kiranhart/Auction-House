@@ -69,7 +69,17 @@ public class GUIAuctionHouse extends Gui {
 
     private void drawItems() {
         AuctionHouse.newChain().asyncFirst(() -> {
-            this.items = new ArrayList<>(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems()).stream().filter(item -> !item.isExpired() && item.getRemainingTime() >= 1 && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().contains(item)).collect(Collectors.toList());
+//            this.items = new ArrayList<>(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems()).stream().filter(item -> !item.isExpired() && item.getRemainingTime() >= 1 && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().contains(item)).collect(Collectors.toList());
+            this.items = new ArrayList<>();
+
+            for (Map.Entry<UUID, AuctionItem> entry : AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().entrySet()) {
+                AuctionItem auctionItem = entry.getValue();
+                if (!auctionItem.isExpired() && auctionItem.getRemainingTime() >= 1 && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getKey())) {
+                    this.items.add(auctionItem);
+                }
+            }
+
+
             if (this.searchPhrase != null && this.searchPhrase.length() != 0) {
                 this.items = this.items.stream().filter(item -> checkSearchCriteria(this.searchPhrase, item)).collect(Collectors.toList());
             }

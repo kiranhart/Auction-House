@@ -23,11 +23,10 @@ public class CommandStatus extends AbstractCommand {
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         AuctionHouse.newChain().async(() -> {
-            List<AuctionItem> items = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems();
 
-            int totalItems = items.size();
-            int activeItems = (int) items.stream().filter(item -> !item.isExpired()).count();
-            int expiredItems = (int) items.stream().filter(AuctionItem::isExpired).count();
+            int totalItems = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().size();
+            int activeItems = (int) AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().values().stream().filter(item -> !item.isExpired()).count();
+            int expiredItems = (int) AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().values().stream().filter(AuctionItem::isExpired).count();
             int totalTransactions = AuctionHouse.getInstance().getTransactionManager().getTransactions().size();
 
             sender.sendMessage(TextUtils.formatText("&eAuction House Statistics"));

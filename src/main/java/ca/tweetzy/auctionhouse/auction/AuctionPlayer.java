@@ -35,7 +35,7 @@ public class AuctionPlayer {
     }
 
     public List<AuctionItem> getItems(boolean getExpired) {
-        return AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().stream().filter(item -> item.getOwner().equals(this.player.getUniqueId()) && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().contains(item) && item.isExpired() == getExpired).collect(Collectors.toList());
+        return AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().values().stream().filter(item -> item.getOwner().equals(this.player.getUniqueId()) && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().contains(item) && item.isExpired() == getExpired).collect(Collectors.toList());
     }
 
     public void resetFilter() {
