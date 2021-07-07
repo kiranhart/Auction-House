@@ -7,7 +7,11 @@ import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -18,24 +22,32 @@ import java.util.stream.Collectors;
  */
 public class TransactionManager {
 
-    private final ArrayList<Transaction> transactions = new ArrayList<>();
+    private final ConcurrentHashMap<UUID, Transaction> transactions = new ConcurrentHashMap<>();
     private final HashMap<Player, UUID> prePurchaseHolding = new HashMap<>();
 
     public void addTransaction(Transaction transaction) {
         if (transaction == null) return;
-        this.transactions.add(transaction);
+        this.transactions.put(transaction.getId(), transaction);
     }
 
     public void removeTransaction(UUID uuid) {
-        this.transactions.removeIf(item -> item.getId().equals(uuid));
+        this.transactions.remove(uuid);
     }
 
     public Transaction getTransaction(UUID uuid) {
-        return this.transactions.stream().filter(item -> item.getId().equals(uuid)).findFirst().orElse(null);
+        return this.transactions.getOrDefault(uuid, null);
     }
 
-    public List<Transaction> getTransactions() {
-        return Collections.unmodifiableList(this.transactions);
+    public ConcurrentHashMap<UUID, Transaction> getTransactions() {
+        return this.transactions;
+    }
+
+    public int getTotalItemsBought(UUID buyer) {
+        return (int) this.transactions.entrySet().stream().filter(set -> set.getValue().getBuyer().equals(buyer)).count();
+    }
+
+    public int getTotalItemsSold(UUID seller) {
+        return (int) this.transactions.entrySet().stream().filter(set -> set.getValue().getSeller().equals(seller)).count();
     }
 
     public void addPrePurchase(Player player, UUID uuid) {
@@ -69,9 +81,9 @@ public class TransactionManager {
 
     public void saveTransactions(boolean useDatabase, boolean async) {
         if (useDatabase) {
-            AuctionHouse.getInstance().getDataManager().saveTransactions(getTransactions(), async);
+            AuctionHouse.getInstance().getDataManager().saveTransactions(new ArrayList<>(getTransactions().values()), async);
         } else {
-            AuctionHouse.getInstance().getData().set("transactions", this.transactions.stream().map(AuctionAPI.getInstance()::convertToBase64).collect(Collectors.toList()));
+            AuctionHouse.getInstance().getData().set("transactions", this.transactions.values().stream().map(AuctionAPI.getInstance()::convertToBase64).collect(Collectors.toList()));
             AuctionHouse.getInstance().getData().save();
         }
     }

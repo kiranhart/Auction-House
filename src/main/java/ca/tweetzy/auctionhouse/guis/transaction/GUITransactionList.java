@@ -13,10 +13,7 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +31,7 @@ public class GUITransactionList extends Gui {
 
     public GUITransactionList(AuctionPlayer auctionPlayer) {
         this.auctionPlayer = auctionPlayer;
-        this.transactions = AuctionHouse.getInstance().getTransactionManager().getTransactions();
+        this.transactions = new ArrayList<>(AuctionHouse.getInstance().getTransactionManager().getTransactions().values());
         this.showOwnOnly = true;
         setTitle(TextUtils.formatText(Settings.GUI_TRANSACTIONS_TITLE.getString()));
         setRows(6);

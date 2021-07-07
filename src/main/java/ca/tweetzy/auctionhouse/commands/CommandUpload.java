@@ -47,7 +47,7 @@ public class CommandUpload extends AbstractCommand {
         AuctionHouse.getInstance().getData().save();
 
         AuctionHouse.getInstance().getDataManager().saveItems(new ArrayList<>(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().values()), true);
-        AuctionHouse.getInstance().getDataManager().saveTransactions(AuctionHouse.getInstance().getTransactionManager().getTransactions(), true);
+        AuctionHouse.getInstance().getDataManager().saveTransactions(new ArrayList<>(AuctionHouse.getInstance().getTransactionManager().getTransactions().values()), true);
 
         AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aLoaded file items/transactions and saved them to the database.")).sendPrefixedMessage(sender);
         return ReturnType.SUCCESS;

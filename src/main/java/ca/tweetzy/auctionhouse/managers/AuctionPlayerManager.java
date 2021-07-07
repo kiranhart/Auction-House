@@ -5,7 +5,8 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

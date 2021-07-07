@@ -187,7 +187,6 @@ public class AuctionHouse extends TweetyPlugin {
         this.auctionItemManager.saveItems(Settings.DATABASE_USE.getBoolean(), false);
         this.transactionManager.saveTransactions(Settings.DATABASE_USE.getBoolean(), false);
         this.filterManager.saveFilterWhitelist(Settings.DATABASE_USE.getBoolean(), false);
-        instance = null;
     }
 
     @Override

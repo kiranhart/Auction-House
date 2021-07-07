@@ -49,7 +49,7 @@ public class DataManager extends DataManagerAbstract {
                 statement.executeBatch();
             }));
         } else {
-            this.sync(() -> this.databaseConnector.connect(connection -> {
+            this.databaseConnector.connect(connection -> {
                 String saveItems = "INSERT IGNORE INTO " + this.getTablePrefix() + "items SET data = ?";
                 String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "items";
                 connection.prepareStatement(truncate).executeUpdate();
@@ -63,11 +63,11 @@ public class DataManager extends DataManagerAbstract {
                     }
                 });
                 statement.executeBatch();
-            }));
+            });
         }
     }
 
-    public void saveFilterWhitelist(List<AuctionFilterItem> filterItems, boolean async){
+    public void saveFilterWhitelist(List<AuctionFilterItem> filterItems, boolean async) {
         if (async) {
             this.async(() -> this.databaseConnector.connect(connection -> {
                 String saveItems = "INSERT IGNORE INTO " + this.getTablePrefix() + "filter_whitelist SET data = ?";
@@ -88,7 +88,7 @@ public class DataManager extends DataManagerAbstract {
                 statement.executeBatch();
             }));
         } else {
-            this.sync(() -> this.databaseConnector.connect(connection -> {
+            this.databaseConnector.connect(connection -> {
                 String saveItems = "INSERT IGNORE INTO " + this.getTablePrefix() + "filter_whitelist SET data = ?";
                 String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "filter_whitelist";
                 try (PreparedStatement statement = connection.prepareStatement(truncate)) {
@@ -105,7 +105,7 @@ public class DataManager extends DataManagerAbstract {
                     }
                 });
                 statement.executeBatch();
-            }));
+            });
         }
     }
 
@@ -130,7 +130,7 @@ public class DataManager extends DataManagerAbstract {
                 statement.executeBatch();
             }));
         } else {
-            this.sync(() -> this.databaseConnector.connect(connection -> {
+            this.databaseConnector.connect(connection -> {
                 String saveItems = "INSERT IGNORE INTO " + this.getTablePrefix() + "transactions SET data = ?";
                 String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "transactions";
                 try (PreparedStatement statement = connection.prepareStatement(truncate)) {
@@ -147,7 +147,7 @@ public class DataManager extends DataManagerAbstract {
                     }
                 });
                 statement.executeBatch();
-            }));
+            });
         }
     }
 

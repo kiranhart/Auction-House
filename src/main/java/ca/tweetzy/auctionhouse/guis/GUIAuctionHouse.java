@@ -309,8 +309,8 @@ public class GUIAuctionHouse extends Gui {
         drawFilterButton();
 
         setButton(5, 6, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList(), new HashMap<String, Object>() {{
-            put("%total_items_bought%", AuctionHouse.getInstance().getTransactionManager().getTransactions().stream().filter(transaction -> transaction.getBuyer().equals(auctionPlayer.getPlayer().getUniqueId())).count());
-            put("%total_items_sold%", AuctionHouse.getInstance().getTransactionManager().getTransactions().stream().filter(transaction -> transaction.getSeller().equals(auctionPlayer.getPlayer().getUniqueId())).count());
+            put("%total_items_bought%", AuctionHouse.getInstance().getTransactionManager().getTotalItemsBought(auctionPlayer.getPlayer().getUniqueId()));
+            put("%total_items_sold%", AuctionHouse.getInstance().getTransactionManager().getTotalItemsSold(auctionPlayer.getPlayer().getUniqueId()));
         }}), e -> e.manager.showGUI(e.player, new GUITransactionList(this.auctionPlayer)));
 
         setButton(5, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList(), null), null);
