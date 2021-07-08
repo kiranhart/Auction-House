@@ -8,6 +8,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.exception.ItemNotFoundException;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.GUIContainerInspect;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -18,9 +19,11 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -73,9 +76,20 @@ public class GUIConfirmPurchase extends Gui {
     }
 
     private void draw() {
+        ItemStack deserializeItem = AuctionAPI.getInstance().deserializeItem(this.auctionItem.getRawItem());
+
         setItems(this.buyingSpecificQuantity ? 9 : 0, this.buyingSpecificQuantity ? 12 : 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_BUY_YES_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_BUY_YES_NAME.getString()).setLore(Settings.GUI_CONFIRM_BUY_YES_LORE.getStringList()).toItemStack());
-        setItem(this.buyingSpecificQuantity ? 1 : 0, 4, AuctionAPI.getInstance().deserializeItem(this.auctionItem.getRawItem()));
+        setItem(this.buyingSpecificQuantity ? 1 : 0, 4, deserializeItem);
         setItems(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_BUY_NO_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_BUY_NO_NAME.getString()).setLore(Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList()).toItemStack());
+
+        setAction(this.buyingSpecificQuantity ? 1 : 0, 4, ClickType.LEFT, e -> {
+            if (deserializeItem.getItemMeta() instanceof BlockStateMeta) {
+                if (((BlockStateMeta) deserializeItem.getItemMeta()).getBlockState() instanceof ShulkerBox) {
+                    AuctionHouse.getInstance().getTransactionManager().getPrePurchaseHolding().remove(e.player);
+                    e.manager.showGUI(e.player, new GUIContainerInspect(e.clickedItem, this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));
+                }
+            }
+        });
 
         setActionForRange(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, ClickType.LEFT, e -> {
             e.gui.close();

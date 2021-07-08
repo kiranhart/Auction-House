@@ -7,10 +7,7 @@ import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -23,7 +20,7 @@ import java.util.stream.Collectors;
 public class TransactionManager {
 
     private final ConcurrentHashMap<UUID, Transaction> transactions = new ConcurrentHashMap<>();
-    private final HashMap<Player, UUID> prePurchaseHolding = new HashMap<>();
+    private final ConcurrentHashMap<Player, UUID> prePurchaseHolding = new ConcurrentHashMap<>();
 
     public void addTransaction(Transaction transaction) {
         if (transaction == null) return;
@@ -43,11 +40,27 @@ public class TransactionManager {
     }
 
     public int getTotalItemsBought(UUID buyer) {
-        return (int) this.transactions.entrySet().stream().filter(set -> set.getValue().getBuyer().equals(buyer)).count();
+        int total = 0;
+        Iterator<Map.Entry<UUID, Transaction>> iterator = this.transactions.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<UUID, Transaction> entry = iterator.next();
+            if (entry.getValue().getBuyer().equals(buyer)) {
+                total++;
+            }
+        }
+        return total;
     }
 
     public int getTotalItemsSold(UUID seller) {
-        return (int) this.transactions.entrySet().stream().filter(set -> set.getValue().getSeller().equals(seller)).count();
+        int total = 0;
+        Iterator<Map.Entry<UUID, Transaction>> iterator = this.transactions.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<UUID, Transaction> entry = iterator.next();
+            if (entry.getValue().getSeller().equals(seller)) {
+                total++;
+            }
+        }
+        return total;
     }
 
     public void addPrePurchase(Player player, UUID uuid) {
@@ -58,8 +71,8 @@ public class TransactionManager {
         this.prePurchaseHolding.keySet().removeIf(p -> this.prePurchaseHolding.get(p).equals(uuid));
     }
 
-    public HashMap<Player, UUID> getPrePurchaseHolding() {
-        return prePurchaseHolding;
+    public ConcurrentHashMap<Player, UUID> getPrePurchaseHolding() {
+        return this.prePurchaseHolding;
     }
 
     public List<Player> getPrePurchasePlayers(UUID uuid) {

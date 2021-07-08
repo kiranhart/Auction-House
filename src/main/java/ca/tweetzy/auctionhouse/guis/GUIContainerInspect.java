@@ -2,6 +2,9 @@ package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.auction.AuctionItem;
+import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
@@ -26,9 +29,14 @@ import java.util.stream.Collectors;
  */
 public class GUIContainerInspect extends Gui {
 
-    final int[] fillSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 46, 47, 48, 50, 51, 52, 53};
-    final ItemStack container;
-    List<ItemStack> items;
+    private final int[] fillSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 46, 47, 48, 50, 51, 52, 53};
+    private final ItemStack container;
+    private List<ItemStack> items;
+
+    private AuctionPlayer auctionPlayer;
+    private AuctionItem auctionItem;
+    private boolean buyingSpecificQuantity;
+    private boolean fromPurchaseGUI;
 
     /**
      * Used to inspect a shulker box from it's item stack.
@@ -37,6 +45,7 @@ public class GUIContainerInspect extends Gui {
      */
     public GUIContainerInspect(ItemStack container) {
         this.container = container;
+        this.fromPurchaseGUI = false;
         setTitle(TextUtils.formatText(Settings.GUI_INSPECT_TITLE.getString()));
         setDefaultItem(Settings.GUI_INSPECT_BG_ITEM.getMaterial().parseItem());
         setUseLockedCells(false);
@@ -64,6 +73,20 @@ public class GUIContainerInspect extends Gui {
         setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(close.player.getUniqueId()))));
     }
 
+    public GUIContainerInspect(ItemStack container, AuctionPlayer auctionPlayer, AuctionItem auctionItem, boolean buyingSpecificQuantity) {
+        this(container);
+        this.auctionPlayer = auctionPlayer;
+        this.auctionItem = auctionItem;
+        this.buyingSpecificQuantity = buyingSpecificQuantity;
+        this.fromPurchaseGUI = true;
+
+        // Overwrite the default close, since they are accessing the inspection from the purchase screen
+        setOnClose(close -> {
+            AuctionHouse.getInstance().getTransactionManager().addPrePurchase(close.player, auctionItem.getKey());
+            close.manager.showGUI(close.player, new GUIConfirmPurchase(this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));
+        });
+    }
+
     private void draw() {
         reset();
         pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 27L));
@@ -71,7 +94,14 @@ public class GUIContainerInspect extends Gui {
         for (int i : fillSlots) setItem(i, getDefaultItem());
 
         setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-        setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId()))));
+        setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
+            if (fromPurchaseGUI) {
+                AuctionHouse.getInstance().getTransactionManager().addPrePurchase(e.player, auctionItem.getKey());
+                e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));
+            } else {
+                e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId())));
+            }
+        });
         setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
         setOnPage(e -> draw());
 

@@ -167,6 +167,7 @@ public class GUIAuctionHouse extends Gui {
 
                 cleanup();
                 e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
+                AuctionHouse.getInstance().getTransactionManager().addPrePurchase(e.player, auctionItem.getKey());
             }
             return;
         }
