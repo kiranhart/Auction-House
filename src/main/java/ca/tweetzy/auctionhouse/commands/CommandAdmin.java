@@ -2,10 +2,14 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.guis.GUISellItem;
+import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
@@ -60,6 +64,12 @@ public class CommandAdmin extends AbstractCommand {
                         AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id));
                     }
                 }
+                break;
+            case "opensell":
+                if (args.length < 2) return ReturnType.FAILURE;
+                Player player = PlayerUtils.findPlayer(args[1]);
+                if (player == null) return ReturnType.FAILURE;
+                AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellItem(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()), PlayerHelper.getHeldItem(player)));
                 break;
         }
 

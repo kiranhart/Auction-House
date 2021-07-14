@@ -586,7 +586,7 @@ public class Settings {
     /*  ===============================
      *       ITEM SELL/LIST GUI
      *  ===============================*/
-    public static final ConfigSetting GUI_SELL_TITLE = new ConfigSetting(config, "gui.sell.title", "&7Auction House - &eSelling Itm");
+    public static final ConfigSetting GUI_SELL_TITLE = new ConfigSetting(config, "gui.sell.title", "&7Auction House - &eSelling Item");
     public static final ConfigSetting GUI_SELL_BG_ITEM = new ConfigSetting(config, "gui.sell.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
 
     public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_ITEM = new ConfigSetting(config, "gui.sell.items.buy now.item", XMaterial.SUNFLOWER.name());
@@ -629,6 +629,25 @@ public class Settings {
     public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_DISABLED_ITEM = new ConfigSetting(config, "gui.sell.items.buy now disabled.item", XMaterial.RED_DYE.name());
     public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_DISABLED_NAME = new ConfigSetting(config, "gui.sell.items.buy now disabled.name", "&c&lBuy Now Disabled");
     public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_DISABLED_LORE = new ConfigSetting(config, "gui.sell.items.buy now disabled.lore", Collections.singletonList("&7Click to &aEnable &7buy now"));
+
+
+    /*  ===============================
+     *         ITEM ADMIN GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_ITEM_ADMIN_TITLE = new ConfigSetting(config, "gui.item admin.title", "&7Auction House - &eAdmin Item");
+    public static final ConfigSetting GUI_ITEM_ADMIN_BG_ITEM = new ConfigSetting(config, "gui.item admin.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+    public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_RETURN_ITEM = new ConfigSetting(config, "gui.item admin.items.send to player.item", XMaterial.ENDER_CHEST.name());
+    public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_RETURN_NAME = new ConfigSetting(config, "gui.item admin.items.send to player.name", "&a&lReturn to player");
+    public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_RETURN_LORE = new ConfigSetting(config, "gui.item admin.items.send to player.lore", Collections.singletonList("&7Click to return this item to the seller"));
+
+    public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_CLAIM_ITEM = new ConfigSetting(config, "gui.item admin.items.claim item.item", XMaterial.HOPPER.name());
+    public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_CLAIM_NAME = new ConfigSetting(config, "gui.item admin.items.claim item.name", "&a&lClaim Item");
+    public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_CLAIM_LORE = new ConfigSetting(config, "gui.item admin.items.claim item.lore", Collections.singletonList("&7Click to claim this item as yours"));
+
+    public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_DELETE_ITEM = new ConfigSetting(config, "gui.item admin.items.delete item.item", XMaterial.BARRIER.name());
+    public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_DELETE_NAME = new ConfigSetting(config, "gui.item admin.items.delete item.name", "&a&lDelete Item");
+    public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_DELETE_LORE = new ConfigSetting(config, "gui.item admin.items.delete item.lore", Collections.singletonList("&7Click to delete this item"));
 
 
     /*  ===============================

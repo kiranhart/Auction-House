@@ -37,6 +37,7 @@ public class LocaleSettings {
         languageNodes.put("general.entersearchphrase", "&aEnter a search phrase into chat");
         languageNodes.put("general.filteritemaddedalready", "&cThat item already exists within that category's filter whitelist.");
         languageNodes.put("general.addeditemtofilterwhitelist", "&aAdded &2%item_name%&a to the &2%filter_category%&a's whitelist");
+        languageNodes.put("general.finishenteringprice", "&cPlease finish entering the new price first.");
 
 
         languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");

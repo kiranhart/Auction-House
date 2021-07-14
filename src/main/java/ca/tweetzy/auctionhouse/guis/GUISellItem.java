@@ -9,6 +9,7 @@ import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
@@ -56,6 +57,14 @@ public class GUISellItem extends Gui {
         setRows(5);
         draw();
 
+        setOnOpen(open -> {
+            // Check if they are already using a sell gui
+            if (ChatPrompt.isRegistered(open.player)) {
+                AuctionHouse.getInstance().getLocale().getMessage("general.finishenteringprice").sendPrefixedMessage(open.player);
+                open.gui.exit();
+            }
+        });
+
         setOnClose(close -> {
             ItemStack toGiveBack = AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(close.player.getUniqueId());
             if (toGiveBack != null && toGiveBack.getType() != XMaterial.AIR.parseMaterial()) {
@@ -93,6 +102,7 @@ public class GUISellItem extends Gui {
         }}), ClickType.LEFT, e -> {
             setTheItemToBeListed();
             e.gui.exit();
+
             ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new buy now price").getMessage()), chat -> {
                 String msg = chat.getMessage();
                 if (validateChatNumber(msg, Settings.MIN_AUCTION_PRICE.getDouble())) {

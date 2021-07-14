@@ -25,8 +25,11 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -273,7 +276,7 @@ public class AuctionAPI {
     /**
      * Used to match patterns
      *
-     * @param pattern is the keyword being searched for
+     * @param pattern  is the keyword being searched for
      * @param sentence is the sentence you're checking
      * @return whether the keyword is found
      */
@@ -284,9 +287,8 @@ public class AuctionAPI {
     }
 
     /**
-     *
      * @param pattern is the keyword that you're currently searching for
-     * @param lines is the lines being checked for the keyword
+     * @param lines   is the lines being checked for the keyword
      * @return whether the keyword was found in any of the lines provided
      */
     public boolean match(String pattern, List<String> lines) {
@@ -312,8 +314,8 @@ public class AuctionAPI {
     /**
      * Used to replace the last portion of a string
      *
-     * @param string is the string being edited
-     * @param substring is the to replace word/phrase
+     * @param string      is the string being edited
+     * @param substring   is the to replace word/phrase
      * @param replacement is the keyword(s) you're replacing the old substring with
      * @return the updated string
      */
@@ -343,7 +345,7 @@ public class AuctionAPI {
      * Get the total amount of an item in the player's inventory
      *
      * @param player is the player being checked
-     * @param stack is the item you want to find
+     * @param stack  is the item you want to find
      * @return the total count of the item(s)
      */
     public int getItemCountInPlayerInventory(Player player, ItemStack stack) {
@@ -383,7 +385,7 @@ public class AuctionAPI {
      * Removes a set amount of a specific item from the player inventory
      *
      * @param player is the player you want to remove the item from
-     * @param stack is the item that you want to remove
+     * @param stack  is the item that you want to remove
      * @param amount is the amount of items you want to remove.
      */
     public void removeSpecificItemQuantityFromPlayer(Player player, ItemStack stack, int amount) {
@@ -412,7 +414,7 @@ public class AuctionAPI {
 
     public ItemStack createBundledItem(ItemStack baseItem, ItemStack... items) {
         Objects.requireNonNull(items, "Cannot create a bundled item with no items");
-        ItemStack item = ConfigurationItemHelper.createConfigurationItem(Settings.ITEM_BUNDLE_ITEM.getString(), Settings.ITEM_BUNDLE_NAME.getString(), Settings.ITEM_BUNDLE_LORE.getStringList(), new HashMap<String, Object>(){{
+        ItemStack item = ConfigurationItemHelper.createConfigurationItem(Settings.ITEM_BUNDLE_ITEM.getString(), Settings.ITEM_BUNDLE_NAME.getString(), Settings.ITEM_BUNDLE_LORE.getStringList(), new HashMap<String, Object>() {{
             put("%item_name%", getItemName(baseItem));
         }});
 
@@ -426,5 +428,10 @@ public class AuctionAPI {
 
         ItemUtils.addGlow(item);
         return item;
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 }

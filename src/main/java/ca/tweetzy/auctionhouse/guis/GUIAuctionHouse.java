@@ -67,9 +67,9 @@ public class GUIAuctionHouse extends Gui {
         drawItems();
     }
 
+    // TODO FIX VISUAL BUG THAT MAKES IT LOOK THERE IS A DUPLICATED ITEM
     private void drawItems() {
         AuctionHouse.newChain().asyncFirst(() -> {
-//            this.items = new ArrayList<>(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems()).stream().filter(item -> !item.isExpired() && item.getRemainingTime() >= 1 && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().contains(item)).collect(Collectors.toList());
             this.items = new ArrayList<>();
 
             for (Map.Entry<UUID, AuctionItem> entry : AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().entrySet()) {
@@ -78,7 +78,6 @@ public class GUIAuctionHouse extends Gui {
                     this.items.add(auctionItem);
                 }
             }
-
 
             if (this.searchPhrase != null && this.searchPhrase.length() != 0) {
                 this.items = this.items.stream().filter(item -> checkSearchCriteria(this.searchPhrase, item)).collect(Collectors.toList());
@@ -205,14 +204,8 @@ public class GUIAuctionHouse extends Gui {
 
     private void handleItemRemove(AuctionItem auctionItem, GuiClickEvent e) {
         if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin")) {
-            if (Settings.SEND_REMOVED_ITEM_BACK_TO_PLAYER.getBoolean()) {
-                AuctionHouse.getInstance().getAuctionItemManager().getItem(auctionItem.getKey()).setExpired(true);
-            } else {
-                AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
-            }
-
             cleanup();
-            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+            e.manager.showGUI(e.player, new GUIAdminItem(this.auctionPlayer, auctionItem));
         }
     }
 

@@ -13,8 +13,10 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -62,7 +64,6 @@ public class CommandSell extends AbstractCommand {
                 AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellItem(auctionPlayer, itemToSell));
                 AuctionHouse.getInstance().getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), itemToSell);
                 PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
-
             }
 
             return ReturnType.SUCCESS;
