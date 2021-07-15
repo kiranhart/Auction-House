@@ -54,6 +54,7 @@ public class GUISellItem extends Gui {
         setDefaultItem(Settings.GUI_SELL_BG_ITEM.getMaterial().parseItem());
         setUseLockedCells(true);
         setAcceptsItems(true);
+        setAllowDrops(false);
         setRows(5);
         draw();
 
@@ -89,6 +90,7 @@ public class GUISellItem extends Gui {
 
         // the draw item that is being listed
         setButton(1, 4, this.itemToBeListed, e -> {
+            if (e.clickType == ClickType.RIGHT) e.event.setCancelled(true);
             // Is the user selling with an item in hand?
             if (AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().containsKey(e.player.getUniqueId())) {
                 if (AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(e.player.getUniqueId()).getType() != XMaterial.AIR.parseMaterial()) {
