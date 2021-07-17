@@ -6,6 +6,7 @@ import ca.tweetzy.auctionhouse.guis.GUISellItem;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
@@ -69,7 +70,17 @@ public class CommandAdmin extends AbstractCommand {
                 if (args.length < 2) return ReturnType.FAILURE;
                 Player player = PlayerUtils.findPlayer(args[1]);
                 if (player == null) return ReturnType.FAILURE;
-                AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellItem(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()), PlayerHelper.getHeldItem(player)));
+
+                ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
+
+                if (itemToSell.getType() == XMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
+                    AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
+                    return ReturnType.FAILURE;
+                } else {
+                    AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellItem(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()), itemToSell));
+                    AuctionHouse.getInstance().getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), itemToSell);
+                    PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
+                }
                 break;
         }
 

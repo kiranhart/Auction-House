@@ -53,7 +53,7 @@ public class GUIFilterSelection extends Gui {
             put("%filter_search_phrase%", auctionPlayer.getCurrentSearchPhrase());
         }}), e -> {
             e.gui.exit();
-            ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), AuctionHouse.getInstance().getLocale().getMessage("general.entersearchphrase").getMessage(), chat -> {
+            ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("general.entersearchphrase").getMessage()), chat -> {
                 if (chat.getMessage() != null && chat.getMessage().length() !=0) {
                     // the keyword is valid
                     this.auctionPlayer.setCurrentSearchPhrase(chat.getMessage().trim());

@@ -71,7 +71,11 @@ public class GUISellItem extends Gui {
             if (toGiveBack != null && toGiveBack.getType() != XMaterial.AIR.parseMaterial()) {
                 PlayerUtils.giveItem(close.player, toGiveBack);
             } else {
-                PlayerUtils.giveItem(close.player, getItem(1, 4));
+                if (this.itemToBeListed == null || this.itemToBeListed.getType() == XMaterial.AIR.parseMaterial()) {
+                    PlayerUtils.giveItem(close.player, getItem(1, 4));
+                } else {
+                    PlayerUtils.giveItem(close.player, this.itemToBeListed);
+                }
             }
 
             AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().remove(close.player.getUniqueId());
@@ -97,6 +101,8 @@ public class GUISellItem extends Gui {
                     e.event.setCancelled(true);
                 }
             }
+
+            this.itemToBeListed = e.clickedItem;
         });
 
         setButton(3, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_BUY_NOW_ITEM.getString(), Settings.GUI_SELL_ITEMS_BUY_NOW_NAME.getString(), Settings.GUI_SELL_ITEMS_BUY_NOW_LORE.getStringList(), new HashMap<String, Object>() {{
@@ -157,15 +163,15 @@ public class GUISellItem extends Gui {
 
         }
 
-        setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_ITEM.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_ITEM.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_NAME.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_NAME.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_LORE.getStringList() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_LORE.getStringList(), null), e -> {
-            if (!Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
-                return;
-            }
+        if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
+            setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_ITEM.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_ITEM.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_NAME.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_NAME.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_LORE.getStringList() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_LORE.getStringList(), null), e -> {
 
-            this.isBiddingItem = !this.isBiddingItem;
-            setTheItemToBeListed();
-            draw();
-        });
+
+                this.isBiddingItem = !this.isBiddingItem;
+                setTheItemToBeListed();
+                draw();
+            });
+        }
 
         setButton(3, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_CONFIRM_LISTING_ITEM.getString(), Settings.GUI_SELL_ITEMS_CONFIRM_LISTING_NAME.getString(), Settings.GUI_SELL_ITEMS_CONFIRM_LISTING_LORE.getStringList(), null), e -> {
             // if the item in the sell slot is null then stop the listing
