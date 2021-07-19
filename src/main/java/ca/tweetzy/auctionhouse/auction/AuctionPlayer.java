@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * The current file has been created by Kiran Hart
@@ -35,7 +32,15 @@ public class AuctionPlayer {
     }
 
     public List<AuctionItem> getItems(boolean getExpired) {
-        return AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().values().stream().filter(item -> item.getOwner().equals(this.player.getUniqueId()) && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().contains(item) && item.isExpired() == getExpired).collect(Collectors.toList());
+        List<AuctionItem> items = new ArrayList<>();
+
+        for (Map.Entry<UUID, AuctionItem> entry : AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().entrySet()) {
+            AuctionItem auctionItem = entry.getValue();
+            if (auctionItem.getOwner().equals(this.player.getUniqueId()) && auctionItem.isExpired() == getExpired && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getKey())) {
+                items.add(auctionItem);
+            }
+        }
+        return items;
     }
 
     public void resetFilter() {

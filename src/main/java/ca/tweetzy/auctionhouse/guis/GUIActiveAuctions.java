@@ -27,12 +27,10 @@ import java.util.stream.Collectors;
  */
 public class GUIActiveAuctions extends Gui {
 
-    final AuctionPlayer auctionPlayer;
-
+    private final AuctionPlayer auctionPlayer;
     private BukkitTask task;
-    private int taskId;
 
-    List<AuctionItem> items;
+    private List<AuctionItem> items;
 
     public GUIActiveAuctions(AuctionPlayer auctionPlayer) {
         this.auctionPlayer = auctionPlayer;
@@ -69,6 +67,7 @@ public class GUIActiveAuctions extends Gui {
                             if (((item.getBidStartPrice() > 0 || item.getBidIncPrice() > 0) && Settings.ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS.getBoolean()) || Settings.ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS.getBoolean()) {
                                 if (item.getHighestBidder().equals(e.player.getUniqueId())) {
                                     item.setExpired(true);
+                                    item.setRemainingTime(0);
                                     draw();
                                     return;
                                 }
@@ -119,18 +118,10 @@ public class GUIActiveAuctions extends Gui {
     ====================== AUTO REFRESH ======================
      */
     private void makeMess() {
-        if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
-            task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::drawItems, 0L, (long) 20 * Settings.TICK_UPDATE_GUI_TIME.getInt());
-        } else {
-            taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(AuctionHouse.getInstance(), this::drawItems, 0L, (long) 20 * Settings.TICK_UPDATE_GUI_TIME.getInt());
-        }
+        task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::drawItems, 0L, (long) 20 * Settings.TICK_UPDATE_GUI_TIME.getInt());
     }
 
     private void cleanup() {
-        if (Settings.USE_ASYNC_GUI_REFRESH.getBoolean()) {
-            task.cancel();
-        } else {
-            Bukkit.getServer().getScheduler().cancelTask(taskId);
-        }
+        task.cancel();
     }
 }

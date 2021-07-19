@@ -66,6 +66,10 @@ public class GUIConfirmPurchase extends Gui {
             this.pricePerItem = this.auctionItem.getBasePrice() / this.maxStackSize;
         }
 
+        setOnOpen(open -> {
+            AuctionHouse.getInstance().getLogger().info("Added " + open.player.getName() + " to confirmation pre purchase");
+        });
+
         setOnClose(close -> {
             AuctionHouse.getInstance().getTransactionManager().getPrePurchaseHolding().remove(close.player);
             close.manager.showGUI(close.player, new GUIAuctionHouse(this.auctionPlayer));
@@ -101,10 +105,10 @@ public class GUIConfirmPurchase extends Gui {
                 if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(this.auctionItem.getKey()))
                     return;
                 AuctionItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getKey());
-                preItemChecks(e, located);
 
-                if (located == null) {
-                    e.gui.close();
+                if (located == null || located.isExpired()) {
+                    AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(e.player);
+                    e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
                     return;
                 }
 
@@ -197,14 +201,6 @@ public class GUIConfirmPurchase extends Gui {
 
     private void drawPurchaseInfo(int amt) {
         setItem(3, 4, getPurchaseInfoItem(amt));
-    }
-
-    private void preItemChecks(GuiClickEvent e, AuctionItem located) {
-        if (located == null || located.isExpired()) {
-            AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(e.player);
-            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
-            return;
-        }
     }
 
     private ItemStack getPurchaseInfoItem(int qty) {

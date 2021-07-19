@@ -53,7 +53,6 @@ public class GUISellItem extends Gui {
         setTitle(TextUtils.formatText(Settings.GUI_SELL_TITLE.getString()));
         setDefaultItem(Settings.GUI_SELL_BG_ITEM.getMaterial().parseItem());
         setUseLockedCells(true);
-        setAcceptsItems(true);
         setAllowDrops(false);
         setRows(5);
         draw();
@@ -64,6 +63,9 @@ public class GUISellItem extends Gui {
                 AuctionHouse.getInstance().getLocale().getMessage("general.finishenteringprice").sendPrefixedMessage(open.player);
                 open.gui.exit();
             }
+
+            ItemStack held = AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(open.player.getUniqueId());
+            setAcceptsItems(held.getType() == XMaterial.AIR.parseMaterial());
         });
 
         setOnClose(close -> {
@@ -121,8 +123,8 @@ public class GUISellItem extends Gui {
                     }
 
                     this.buyNowPrice = Double.parseDouble(msg);
+                    reopen(e);
                 }
-                reopen(e);
             }).setOnCancel(() -> reopen(e)).setOnClose(() -> reopen(e));
         });
 
@@ -165,8 +167,6 @@ public class GUISellItem extends Gui {
 
         if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
             setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_ITEM.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_ITEM.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_NAME.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_NAME.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_LORE.getStringList() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_LORE.getStringList(), null), e -> {
-
-
                 this.isBiddingItem = !this.isBiddingItem;
                 setTheItemToBeListed();
                 draw();
@@ -174,6 +174,12 @@ public class GUISellItem extends Gui {
         }
 
         setButton(3, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_CONFIRM_LISTING_ITEM.getString(), Settings.GUI_SELL_ITEMS_CONFIRM_LISTING_NAME.getString(), Settings.GUI_SELL_ITEMS_CONFIRM_LISTING_LORE.getStringList(), null), e -> {
+            // are they even allowed to sell more items
+            if (this.auctionPlayer.isAtSellLimit()) {
+                AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(e.player);
+                return;
+            }
+
             // if the item in the sell slot is null then stop the listing
             if (getItem(1, 4) == null || getItem(1, 4).getType() == XMaterial.AIR.parseMaterial()) return;
             setTheItemToBeListed();

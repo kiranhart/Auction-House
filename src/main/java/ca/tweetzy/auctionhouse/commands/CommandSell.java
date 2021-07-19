@@ -57,6 +57,10 @@ public class CommandSell extends AbstractCommand {
 
         // open the sell menu if its 0;
         if (args.length == 0) {
+            if (!Settings.ALLOW_USAGE_OF_SELL_GUI.getBoolean()) {
+                return ReturnType.SYNTAX_ERROR;
+            }
+
             if (itemToSell.getType() == XMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
                 AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
