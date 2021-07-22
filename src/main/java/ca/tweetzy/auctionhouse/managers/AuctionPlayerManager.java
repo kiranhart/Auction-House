@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,11 +22,21 @@ public class AuctionPlayerManager {
 
     private final ConcurrentHashMap<UUID, AuctionPlayer> auctionPlayers = new ConcurrentHashMap<>();
     private final HashMap<UUID, ItemStack> sellHolding = new HashMap<>();
+    private final HashSet<UUID> usingSellGUI = new HashSet<>();
     private final HashMap<UUID, Long> cooldowns = new HashMap<>();
 
     public void addPlayer(AuctionPlayer auctionPlayer) {
         if (auctionPlayer == null) return;
         this.auctionPlayers.put(auctionPlayer.getPlayer().getUniqueId(), auctionPlayer);
+    }
+
+    public void addToUsingSellGUI(UUID uuid) {
+        if (uuid == null) return;
+        this.usingSellGUI.add(uuid);
+    }
+
+    public void removeFromUsingSellGUI(UUID uuid) {
+        this.usingSellGUI.remove(uuid);
     }
 
     public void addItemToSellHolding(UUID uuid, ItemStack itemStack) {

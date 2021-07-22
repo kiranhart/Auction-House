@@ -13,10 +13,9 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.core.utils.TimeUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,6 +43,11 @@ public class CommandSell extends AbstractCommand {
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         Player player = (Player) sender;
+
+        if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
+            return ReturnType.FAILURE;
+        }
+
         AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
         ItemStack originalItem = PlayerHelper.getHeldItem(player).clone();
@@ -209,6 +213,16 @@ public class CommandSell extends AbstractCommand {
                 allowedTime,
                 false
         );
+
+        if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
+            if (!AuctionHouse.getInstance().getEconomyManager().has(player, Settings.TAX_LISTING_FEE.getDouble())) {
+                AuctionHouse.getInstance().getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
+            AuctionHouse.getInstance().getEconomyManager().withdrawPlayer(player, Settings.TAX_LISTING_FEE.getDouble());
+            AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(player);
+            AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(player);
+        }
 
         AuctionStartEvent startEvent = new AuctionStartEvent(player, auctionItem);
         Bukkit.getServer().getPluginManager().callEvent(startEvent);

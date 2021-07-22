@@ -10,11 +10,13 @@ import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.core.utils.TimeUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.Bukkit;
@@ -50,8 +52,18 @@ public class GUIAuctionHouse extends Gui {
         setAllowShiftClick(false);
         draw();
 
+        setOnOpen(open -> {
+            if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(open.player)) {
+                open.gui.exit();
+                return;
+            }
+
+            if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
+                makeMess();
+            }
+        });
+
         if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
-            setOnOpen(e -> makeMess());
             setOnClose(e -> cleanup());
         }
     }

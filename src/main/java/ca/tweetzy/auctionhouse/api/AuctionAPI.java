@@ -25,11 +25,8 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -301,6 +298,18 @@ public class AuctionAPI {
     }
 
     /**
+     * Checks whether a sentence matches the format to convert it into seconds
+     *
+     * @param sentence is the string being checked
+     * @return true if the string matches the time format
+     */
+    public boolean isValidTimeString(String sentence) {
+        Pattern pattern = Pattern.compile("([0-9]){1,10}(s|m|h|d|y){1}", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(sentence);
+        return matcher.matches();
+    }
+
+    /**
      * Used to format numbers with decimals and commas
      *
      * @param number is the number you want to format
@@ -364,6 +373,13 @@ public class AuctionAPI {
         return total;
     }
 
+    /**
+     * Used to get any items that are similar to the provided stack in a player's inventory
+     *
+     * @param player is the player being checked
+     * @param stack the item stack is being looked for
+     * @return all the items that are similar to the stack
+     */
     public List<ItemStack> getSimilarItemsFromInventory(Player player, ItemStack stack) {
         List<ItemStack> items = new ArrayList<>();
         for (int i = 0; i < player.getInventory().getSize(); i++) {
@@ -412,6 +428,13 @@ public class AuctionAPI {
         }
     }
 
+    /**
+     * Used to create an item bundle
+     *
+     * @param baseItem is the base item of the bundle (original)
+     * @param items is the items that should be added to the bundle
+     * @return an item stack with all the items saved in NBT tags
+     */
     public ItemStack createBundledItem(ItemStack baseItem, ItemStack... items) {
         Objects.requireNonNull(items, "Cannot create a bundled item with no items");
         ItemStack item = ConfigurationItemHelper.createConfigurationItem(Settings.ITEM_BUNDLE_ITEM.getString(), Settings.ITEM_BUNDLE_NAME.getString(), Settings.ITEM_BUNDLE_LORE.getStringList(), new HashMap<String, Object>() {{
@@ -430,8 +453,30 @@ public class AuctionAPI {
         return item;
     }
 
-    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Set<Object> seen = ConcurrentHashMap.newKeySet();
-        return t -> seen.add(keyExtractor.apply(t));
+    /**
+     * Take a string like 5d and convert it into seconds
+     * Valid suffixes:  m, d, w, mn, y
+     *
+     * @param time is the string time that will be converted
+     * @return the total amount of seconds
+     */
+    public long getSecondsFromString(String time) {
+        time = time.toLowerCase();
+        char suffix = time.charAt(time.length() - 1);
+        int amount = Character.getNumericValue(time.charAt(time.length() - 2));
+        switch(suffix) {
+            case 's':
+                return amount;
+            case 'm':
+                return (long) amount * 60;
+            case 'h':
+                return (long) amount * 3600;
+            case 'd':
+                return (long) amount * 3600 * 24;
+            case 'y':
+                return (long) amount * 3600 * 24 * 365;
+            default:
+                return 0L;
+        }
     }
 }

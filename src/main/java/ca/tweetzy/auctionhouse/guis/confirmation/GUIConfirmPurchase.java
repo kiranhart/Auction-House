@@ -112,8 +112,11 @@ public class GUIConfirmPurchase extends Gui {
                     return;
                 }
 
+                double buyNowPrice = this.buyingSpecificQuantity ? this.purchaseQuantity * this.pricePerItem : located.getBasePrice();
+                double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * buyNowPrice : 0D;
+
                 // Check economy
-                if (!AuctionHouse.getInstance().getEconomyManager().has(e.player, this.buyingSpecificQuantity ? this.purchaseQuantity * this.pricePerItem : located.getBasePrice())) {
+                if (!AuctionHouse.getInstance().getEconomyManager().has(e.player, buyNowPrice + (Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? tax : 0D))) {
                     AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
                     SoundManager.getInstance().playSound(e.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString(), 1.0F, 1.0F);
                     e.gui.close();
@@ -135,19 +138,19 @@ public class GUIConfirmPurchase extends Gui {
                     if (item.getAmount() - this.purchaseQuantity >= 1) {
                         item.setAmount(item.getAmount() - this.purchaseQuantity);
                         located.setRawItem(AuctionAPI.getInstance().serializeItem(item));
-                        located.setBasePrice(located.getBasePrice() - this.purchaseQuantity * this.pricePerItem);
+                        located.setBasePrice(located.getBasePrice() - buyNowPrice);
                         item.setAmount(this.purchaseQuantity);
-                        transferFunds(e.player, this.purchaseQuantity * this.pricePerItem);
+                        transferFunds(e.player, buyNowPrice);
                     } else {
-                        transferFunds(e.player, located.getBasePrice());
+                        transferFunds(e.player, buyNowPrice);
                         AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
                     }
 
                     PlayerUtils.giveItem(e.player, item);
-                    sendMessages(e, located, true, this.purchaseQuantity * this.pricePerItem);
+                    sendMessages(e, located, true, buyNowPrice);
 
                 } else {
-                    transferFunds(e.player, located.getBasePrice());
+                    transferFunds(e.player, buyNowPrice);
                     AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
                     PlayerUtils.giveItem(e.player, AuctionAPI.getInstance().deserializeItem(located.getRawItem()));
                     sendMessages(e, located, false, 0);
@@ -183,19 +186,24 @@ public class GUIConfirmPurchase extends Gui {
     }
 
     private void transferFunds(Player from, double amount) {
-        AuctionHouse.getInstance().getEconomyManager().withdrawPlayer(from, amount);
-        AuctionHouse.getInstance().getEconomyManager().depositPlayer(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), amount);
+        double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * amount : 0D;
+
+        AuctionHouse.getInstance().getEconomyManager().withdrawPlayer(from, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount);
+        AuctionHouse.getInstance().getEconomyManager().depositPlayer(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax);
     }
 
     private void sendMessages(GuiClickEvent e, AuctionItem located, boolean overwritePrice, double price) {
-        AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(overwritePrice ? price : located.getBasePrice())).sendPrefixedMessage(e.player);
+        double totalPrice = overwritePrice ? price : located.getBasePrice();
+        double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * totalPrice : 0D;
+
+        AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice)).sendPrefixedMessage(e.player);
         if (Bukkit.getOfflinePlayer(located.getOwner()).isOnline()) {
             AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
                     .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(located.getRawItem()).getType().name().replace("_", " ")))
-                    .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(overwritePrice ? price : located.getBasePrice()))
+                    .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice : totalPrice - tax))
                     .processPlaceholder("buyer_name", e.player.getName())
                     .sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
-            AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(overwritePrice ? price : located.getBasePrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
+            AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice : totalPrice - tax)).sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
         }
     }
 

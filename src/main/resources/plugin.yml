@@ -30,6 +30,8 @@ permissions:
       auctionhouse.cmd.status: true
       auctionhouse.cmd.admin: true
       auctionhouse.cmd.filter: true
+      auctionhouse.cmd.ban: true
+      auctionhouse.cmd.unban: true
   auctionhouse.cmd:
     description: Allows the user to use /ah
     default: op
@@ -65,4 +67,10 @@ permissions:
     default: op
   auctionhouse.cmd.filter:
     description: Allows the user to access the filter whitelist menu
+    default: op
+  auctionhouse.cmd.ban:
+    description: Allows the user to ban players from the auction house
+    default: op
+  auctionhouse.cmd.unban:
+    description: Allows the user to unban players from the auction house
     default: op

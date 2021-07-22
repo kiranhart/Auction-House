@@ -17,6 +17,7 @@ import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.core.utils.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -54,8 +55,8 @@ public class GUISellItem extends Gui {
         setDefaultItem(Settings.GUI_SELL_BG_ITEM.getMaterial().parseItem());
         setUseLockedCells(true);
         setAllowDrops(false);
+        setAllowClose(false);
         setRows(5);
-        draw();
 
         setOnOpen(open -> {
             // Check if they are already using a sell gui
@@ -64,27 +65,40 @@ public class GUISellItem extends Gui {
                 open.gui.exit();
             }
 
+            if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(open.player)) {
+                open.gui.exit();
+                return;
+            }
+
             ItemStack held = AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(open.player.getUniqueId());
-            setAcceptsItems(held.getType() == XMaterial.AIR.parseMaterial());
+            if (held == null) {
+                setAcceptsItems(true);
+            } else {
+                setAcceptsItems(held.getType() == XMaterial.AIR.parseMaterial());
+            }
+
+            AuctionHouse.getInstance().getAuctionPlayerManager().addToUsingSellGUI(open.player.getUniqueId());
         });
 
         setOnClose(close -> {
-            ItemStack toGiveBack = AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(close.player.getUniqueId());
-            if (toGiveBack != null && toGiveBack.getType() != XMaterial.AIR.parseMaterial()) {
-                PlayerUtils.giveItem(close.player, toGiveBack);
-            } else {
-                if (this.itemToBeListed == null || this.itemToBeListed.getType() == XMaterial.AIR.parseMaterial()) {
-                    PlayerUtils.giveItem(close.player, getItem(1, 4));
+            if (!AuctionHouse.getInstance().getAuctionPlayerManager().getUsingSellGUI().contains(close.player.getUniqueId())) {
+                ItemStack toGiveBack = AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(close.player.getUniqueId());
+                if (toGiveBack != null && toGiveBack.getType() != XMaterial.AIR.parseMaterial()) {
+                    PlayerUtils.giveItem(close.player, toGiveBack);
                 } else {
-                    PlayerUtils.giveItem(close.player, this.itemToBeListed);
+                    if (this.itemToBeListed == null || this.itemToBeListed.getType() == XMaterial.AIR.parseMaterial()) {
+                        PlayerUtils.giveItem(close.player, getItem(1, 4));
+                    } else {
+                        PlayerUtils.giveItem(close.player, this.itemToBeListed);
+                    }
                 }
+                AuctionHouse.getInstance().getAuctionPlayerManager().removeItemFromSellHolding(close.player.getUniqueId());
             }
-
-            AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().remove(close.player.getUniqueId());
         });
 
         setUnlocked(1, 4);
         setUnlockedRange(45, 89);
+        draw();
     }
 
     public GUISellItem(AuctionPlayer auctionPlayer, ItemStack itemToBeListed) {
@@ -111,7 +125,8 @@ public class GUISellItem extends Gui {
             put("%buy_now_price%", AuctionAPI.getInstance().formatNumber(buyNowPrice));
         }}), ClickType.LEFT, e -> {
             setTheItemToBeListed();
-            e.gui.exit();
+            setAllowClose(true);
+            e.gui.close();
 
             ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new buy now price").getMessage()), chat -> {
                 String msg = chat.getMessage();
@@ -133,7 +148,8 @@ public class GUISellItem extends Gui {
                 put("%starting_bid_price%", AuctionAPI.getInstance().formatNumber(bidStartPrice));
             }}), ClickType.LEFT, e -> {
                 setTheItemToBeListed();
-                e.gui.exit();
+                setAllowClose(true);
+                e.gui.close();
                 ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new starting bid").getMessage()), chat -> {
                     String msg = chat.getMessage();
                     if (validateChatNumber(msg, Settings.MIN_AUCTION_START_PRICE.getDouble())) {
@@ -147,7 +163,8 @@ public class GUISellItem extends Gui {
                 put("%bid_increment_price%", AuctionAPI.getInstance().formatNumber(bidIncrementPrice));
             }}), ClickType.LEFT, e -> {
                 setTheItemToBeListed();
-                e.gui.exit();
+                setAllowClose(true);
+                e.gui.close();
                 ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new bid increment").getMessage()), chat -> {
                     String msg = chat.getMessage();
                     if (validateChatNumber(msg, Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble())) {
@@ -164,6 +181,12 @@ public class GUISellItem extends Gui {
             });
 
         }
+
+        setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
+            AuctionHouse.getInstance().getAuctionPlayerManager().removeFromUsingSellGUI(e.player.getUniqueId());
+            setAllowClose(true);
+            e.gui.close();
+        });
 
         if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
             setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_ITEM.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_ITEM.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_NAME.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_NAME.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_LORE.getStringList() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_LORE.getStringList(), null), e -> {
@@ -202,13 +225,26 @@ public class GUISellItem extends Gui {
             Bukkit.getServer().getPluginManager().callEvent(auctionStartEvent);
             if (auctionStartEvent.isCancelled()) return;
 
+            if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
+                if (!AuctionHouse.getInstance().getEconomyManager().has(e.player, Settings.TAX_LISTING_FEE.getDouble())) {
+                    AuctionHouse.getInstance().getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(e.player);
+                    return;
+                }
+                AuctionHouse.getInstance().getEconomyManager().withdrawPlayer(e.player, Settings.TAX_LISTING_FEE.getDouble());
+                AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(e.player);
+                AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(e.player);
+            }
+
             AuctionHouse.getInstance().getAuctionItemManager().addItem(auctionItem);
             SoundManager.getInstance().playSound(e.player, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
             AuctionHouse.getInstance().getAuctionPlayerManager().removeItemFromSellHolding(e.player.getUniqueId());
+            AuctionHouse.getInstance().getAuctionPlayerManager().removeFromUsingSellGUI(e.player.getUniqueId());
 
             if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+                setAllowClose(true);
                 e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
             } else {
+                setAllowClose(true);
                 e.gui.exit();
             }
 

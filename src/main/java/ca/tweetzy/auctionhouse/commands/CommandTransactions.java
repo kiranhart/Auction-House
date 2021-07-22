@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.core.utils.TimeUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -23,6 +24,11 @@ public class CommandTransactions extends AbstractCommand {
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         Player player = (Player) sender;
+
+        if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
+            return ReturnType.FAILURE;
+        }
+
         AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionList(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())));
         return ReturnType.SUCCESS;
     }

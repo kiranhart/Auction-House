@@ -19,6 +19,7 @@ public class LocaleSettings {
         languageNodes.put("general.prefix", "&8[&eAuctionHouse&8]");
         languageNodes.put("general.notanumber", "&cThe entry &4%value% &cis not a valid number!");
         languageNodes.put("general.locked", "&cThe Auction House is currently locked!");
+        languageNodes.put("general.playernotfound", "&cCould not find the player &4%player%");
         languageNodes.put("general.notenoughmoney", "&cYou do not have enough money!");
         languageNodes.put("general.cantbidonown", "&cYou cannot bid on your own item!");
         languageNodes.put("general.cantbuyown", "&cYou cannot buy your own item!");
@@ -38,6 +39,7 @@ public class LocaleSettings {
         languageNodes.put("general.filteritemaddedalready", "&cThat item already exists within that category's filter whitelist.");
         languageNodes.put("general.addeditemtofilterwhitelist", "&aAdded &2%item_name%&a to the &2%filter_category%&a's whitelist");
         languageNodes.put("general.finishenteringprice", "&cPlease finish entering the new price first.");
+        languageNodes.put("general.invalidtimestring", "&cInvalid time, use the following format, ex: 1d (valid suffixes: s,m,h,d,y)");
 
 
         languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
@@ -65,6 +67,14 @@ public class LocaleSettings {
         languageNodes.put("discord.sale_immediate_buy", "Bought Immediately");
         languageNodes.put("discord.is_bid_true", "true");
         languageNodes.put("discord.is_bid_false", "false");
+
+        languageNodes.put("bans.nobanreason", "&cPlease enter a ban reason");
+        languageNodes.put("bans.bannedplayer", "&aBanned &2%player% &afrom the auction house for &2%ban_amount%");
+        languageNodes.put("bans.playeralreadybanned", "&4%player% &cis already banned from the auction house");
+        languageNodes.put("bans.playernotbanned", "&4%player% &cis not banned from the auction house");
+        languageNodes.put("bans.playerunbanned", "&cUnbanned &4%player% &cfrom the auction house");
+        languageNodes.put("bans.remainingtime", "&cYou are banned from the auction house for &4%ban_amount%");
+        languageNodes.put("bans.unbanned", "&aYou are now unbanned from the auction house");
 
         languageNodes.put("auction_filter.sale_types.biddable", "Biddable");
         languageNodes.put("auction_filter.sale_types.non_biddable", "Not Biddable");
@@ -94,6 +104,10 @@ public class LocaleSettings {
         languageNodes.put("auction.itemnotavailable", "&cThat item is no longer available :(");
         languageNodes.put("auction.biditemwithdisabledbuynow", "&CN/A");
 
+        languageNodes.put("auction.tax.cannotpaylistingfee", "&cYou do not have enough money to pay the listing fee &f(&4$%price%&f)");
+        languageNodes.put("auction.tax.paidlistingfee", "&aPaid &2$%price%&a listing fee");
+
+
         languageNodes.put("commands.invalid_syntax", "&7The valid syntax is: &6%syntax%&7.");
         languageNodes.put("commands.no_permission", "&dYou do not have permission to do that.");
 
@@ -108,6 +122,8 @@ public class LocaleSettings {
         languageNodes.put("commands.syntax.transactions", "transactions");
         languageNodes.put("commands.syntax.upload", "upload");
         languageNodes.put("commands.syntax.filter", "filter [additem] [category]");
+        languageNodes.put("commands.syntax.ban", "ban [player] [time] [reason]");
+        languageNodes.put("commands.syntax.unban", "ban <player>");
 
         languageNodes.put("commands.description.active", "View all your auction listings");
         languageNodes.put("commands.description.auctionhouse", "Main command for the plugin, it opens the auction window.");
@@ -120,6 +136,8 @@ public class LocaleSettings {
         languageNodes.put("commands.description.transactions", "Used to open the transactions menu");
         languageNodes.put("commands.description.upload", "Used to upload flat file data to the database");
         languageNodes.put("commands.description.filter", "Edit the filter whitelist items");
+        languageNodes.put("commands.description.ban", "Ban a player from the auction house for a set amount of time.");
+        languageNodes.put("commands.description.unban", "Unban a player from the auction house");
     }
 
     public static void setup() {

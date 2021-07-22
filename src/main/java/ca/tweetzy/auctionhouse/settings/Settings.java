@@ -68,6 +68,13 @@ public class Settings {
     public static final ConfigSetting SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM = new ConfigSetting(config, "auction setting.require user to hold item when using sell menu", false, "If enabled, when running just /ah sell, the user will need to hold the item in their hand, otherwise they just add it in the gui.");
     public static final ConfigSetting OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST = new ConfigSetting(config, "auction setting.open main auction house after listing using menu", true, "Should the main auction house be opened after the user lists an item using the sell menu?");
 
+    public static final ConfigSetting TAX_ENABLED = new ConfigSetting(config, "auction setting.tax.enabled", true, "Should auction house use it's tax system?");
+    public static final ConfigSetting TAX_CHARGE_LISTING_FEE = new ConfigSetting(config, "auction setting.tax.charge listing fee", true, "Should auction house charge players to list an item?");
+    public static final ConfigSetting TAX_LISTING_FEE = new ConfigSetting(config, "auction setting.tax.listing fee", 5.0, "How much should it cost to list a new item?");
+    public static final ConfigSetting TAX_CHARGE_SALES_TAX_TO_BUYER = new ConfigSetting(config, "auction setting.tax.charge sale tax to buyer", false, "Should auction house tax the buyer instead of the seller?");
+    public static final ConfigSetting TAX_SALES_TAX_BUY_NOW_PERCENTAGE = new ConfigSetting(config, "auction setting.tax.buy now sales tax", 15.0, "Tax % that should be charged on items that are bought immediately");
+    public static final ConfigSetting TAX_SALES_TAX_AUCTION_WON_PERCENTAGE = new ConfigSetting(config, "auction setting.tax.auction won sales tax", 10.0, "Tax % that should be charged on items that are won through the auction");
+
     public static final ConfigSetting ALL_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.all", true, "Should this filter be enabled?");
     public static final ConfigSetting FOOD_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.food", true, "Should this filter be enabled?");
     public static final ConfigSetting ARMOR_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.armor", true, "Should this filter be enabled?");
@@ -171,7 +178,7 @@ public class Settings {
     public static final ConfigSetting DISCORD_ENABLED = new ConfigSetting(config, "discord.enabled", true, "Should the discord webhook feature be enabled?");
     public static final ConfigSetting DISCORD_ALERT_ON_AUCTION_START = new ConfigSetting(config, "discord.alert on auction start", true, "Should a message be sent to the discord server when someone lists a new auction item");
     public static final ConfigSetting DISCORD_ALERT_ON_AUCTION_FINISH = new ConfigSetting(config, "discord.alert on auction finish", true, "Should a message when an auction finishes?");
-    public static final ConfigSetting DISCORD_WEBHOOKS = new ConfigSetting(config, "discord.webhooks", Collections.singletonList("https://discord.com/api/webhooks/821837927444119563/Yd3cWzVB56Tk_VuN1Lv2iGgvsbZt2YV5SDyCkVo6EjRAUqJk3nA2nSG9PH_Bl6rcFNnz"), "A list of webhook urls (channels) you want a message sent to");
+    public static final ConfigSetting DISCORD_WEBHOOKS = new ConfigSetting(config, "discord.webhooks", Collections.singletonList("https://discord.com/api/webhooks/867470650112737311/kptC6U4rqVjDaJmquq-ijjsR41t1E4qxF94jwgp5zqYwLjbjo3a_Vqp_mhMWGbqYC-Ju"), "A list of webhook urls (channels) you want a message sent to");
     public static final ConfigSetting DISCORD_MSG_USERNAME = new ConfigSetting(config, "discord.user.username", "Auction House", "The name of the user who will send the message");
     public static final ConfigSetting DISCORD_MSG_PFP = new ConfigSetting(config, "discord.user.avatar picture", "https://cdn.kiranhart.com/spigot/auctionhouse/icon.png", "The avatar image of the discord user");
     public static final ConfigSetting DISCORD_MSG_USE_RANDOM_COLOUR = new ConfigSetting(config, "discord.msg.use random colour", true, "colour of the message bar");
@@ -494,6 +501,20 @@ public class Settings {
      *  ===============================*/
     public static final ConfigSetting GUI_INSPECT_TITLE = new ConfigSetting(config, "gui.inspect.title", "&7&LInspecting Container");
     public static final ConfigSetting GUI_INSPECT_BG_ITEM = new ConfigSetting(config, "gui.inspect.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+    /*  ===============================
+     *         BANS GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_BANS_TITLE = new ConfigSetting(config, "gui.bans.title", "&7&LAuction House &f- &eBans");
+    public static final ConfigSetting GUI_BANS_BG_ITEM = new ConfigSetting(config, "gui.bans.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_BANS_BAN_NAME = new ConfigSetting(config, "gui.bans.ban name", "&e%player_name%");
+    public static final ConfigSetting GUI_BANS_BAN_LORE = new ConfigSetting(config, "gui.bans.ban lore", Arrays.asList(
+            "&7Time Remaining&f: &e%ban_amount%",
+            "&7Ban Reason&f: &e%ban_reason%",
+            "",
+            "&7Right-Click to unban this user"
+    ));
+
 
     /*  ===============================
      *         FILTER GUI

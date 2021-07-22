@@ -9,10 +9,7 @@ import ca.tweetzy.auctionhouse.database.migrations._2_FilterWhitelistMigration;
 import ca.tweetzy.auctionhouse.economy.EconomyManager;
 import ca.tweetzy.auctionhouse.listeners.AuctionListeners;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
-import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
-import ca.tweetzy.auctionhouse.managers.AuctionPlayerManager;
-import ca.tweetzy.auctionhouse.managers.FilterManager;
-import ca.tweetzy.auctionhouse.managers.TransactionManager;
+import ca.tweetzy.auctionhouse.managers.*;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.tasks.AutoSaveTask;
@@ -75,6 +72,9 @@ public class AuctionHouse extends TweetyPlugin {
 
     @Getter
     private FilterManager filterManager;
+
+    @Getter
+    private AuctionBanManager auctionBanManager;
 
     @Getter
     private DatabaseConnector databaseConnector;
@@ -146,6 +146,10 @@ public class AuctionHouse extends TweetyPlugin {
         this.filterManager = new FilterManager();
         this.filterManager.loadItems(Settings.DATABASE_USE.getBoolean());
 
+        // load the bans
+        this.auctionBanManager = new AuctionBanManager();
+        this.auctionBanManager.loadBans(Settings.DATABASE_USE.getBoolean());
+
         // gui manager
         this.guiManager.init();
 
@@ -165,7 +169,9 @@ public class AuctionHouse extends TweetyPlugin {
                 new CommandFilter(),
                 new CommandUpload(),
                 new CommandStatus(),
-                new CommandAdmin()
+                new CommandAdmin(),
+                new CommandBan(),
+                new CommandUnban()
         );
 
         // start the auction tick task
@@ -187,6 +193,7 @@ public class AuctionHouse extends TweetyPlugin {
         this.auctionItemManager.saveItems(Settings.DATABASE_USE.getBoolean(), false);
         this.transactionManager.saveTransactions(Settings.DATABASE_USE.getBoolean(), false);
         this.filterManager.saveFilterWhitelist(Settings.DATABASE_USE.getBoolean(), false);
+        this.auctionBanManager.saveBans(Settings.DATABASE_USE.getBoolean(), false);
     }
 
     @Override

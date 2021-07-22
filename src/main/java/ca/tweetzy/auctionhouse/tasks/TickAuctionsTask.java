@@ -64,7 +64,10 @@ public class TickAuctionsTask extends BukkitRunnable {
 
                 OfflinePlayer auctionWinner = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
 
-                if (!AuctionHouse.getInstance().getEconomyManager().has(auctionWinner, auctionItem.getCurrentPrice())) {
+                double finalPrice = auctionItem.getCurrentPrice();
+                double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_AUCTION_WON_PERCENTAGE.getDouble() / 100) * auctionItem.getCurrentPrice() : 0D;
+
+                if (!AuctionHouse.getInstance().getEconomyManager().has(auctionWinner, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice)) {
                     auctionItem.setExpired(true);
                     continue;
                 }
@@ -74,16 +77,16 @@ public class TickAuctionsTask extends BukkitRunnable {
                 if (auctionEndEvent.isCancelled()) continue;
 
 
-                AuctionHouse.getInstance().getEconomyManager().withdrawPlayer(auctionWinner, auctionItem.getCurrentPrice());
-                AuctionHouse.getInstance().getEconomyManager().depositPlayer(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionItem.getCurrentPrice());
+                AuctionHouse.getInstance().getEconomyManager().withdrawPlayer(auctionWinner, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice);
+                AuctionHouse.getInstance().getEconomyManager().depositPlayer(Bukkit.getOfflinePlayer(auctionItem.getOwner()), Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice: finalPrice - tax);
 
                 if (Bukkit.getOfflinePlayer(auctionItem.getOwner()).isOnline()) {
                     AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
                             .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem()).getType().name().replace("_", " ")))
-                            .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice()))
+                            .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice : finalPrice - tax))
                             .processPlaceholder("buyer_name", Bukkit.getOfflinePlayer(auctionItem.getHighestBidder()).getName())
                             .sendPrefixedMessage(Bukkit.getOfflinePlayer(auctionItem.getOwner()).getPlayer());
-                    AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(Bukkit.getOfflinePlayer(auctionItem.getOwner()).getPlayer());
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice: finalPrice - tax)).sendPrefixedMessage(Bukkit.getOfflinePlayer(auctionItem.getOwner()).getPlayer());
                 }
 
                 if (auctionWinner.isOnline()) {
@@ -91,9 +94,9 @@ public class TickAuctionsTask extends BukkitRunnable {
                     AuctionHouse.getInstance().getLocale().getMessage("auction.bidwon")
                             .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem()).getType().name().replace("_", " ")))
                             .processPlaceholder("amount", AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem()).getAmount())
-                            .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice()))
+                            .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice))
                             .sendPrefixedMessage(auctionWinner.getPlayer());
-                    AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(auctionWinner.getPlayer());
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice)).sendPrefixedMessage(auctionWinner.getPlayer());
 
                     if (Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean()) {
                         PlayerUtils.giveItem(auctionWinner.getPlayer(), AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem()));

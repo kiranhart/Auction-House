@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.database;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.auction.AuctionBan;
 import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
@@ -14,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
@@ -57,6 +59,52 @@ public class DataManager extends DataManagerAbstract {
                 items.forEach(item -> {
                     try {
                         statement.setString(1, AuctionAPI.getInstance().convertToBase64(item));
+                        statement.addBatch();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+                statement.executeBatch();
+            });
+        }
+    }
+
+    public void saveBans(List<AuctionBan> bans, boolean async) {
+        if (async) {
+            this.async(() -> this.databaseConnector.connect(connection -> {
+                String saveItems = "INSERT IGNORE INTO " + this.getTablePrefix() + "bans SET user = ?, reason = ?, time = ?";
+                String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "bans";
+                try (PreparedStatement statement = connection.prepareStatement(truncate)) {
+                    statement.execute();
+                }
+
+                PreparedStatement statement = connection.prepareStatement(saveItems);
+                bans.forEach(ban -> {
+                    try {
+                        statement.setString(1, ban.getBannedPlayer().toString());
+                        statement.setString(2, ban.getReason());
+                        statement.setLong(3, ban.getTime());
+                        statement.addBatch();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+                statement.executeBatch();
+            }));
+        } else {
+            this.databaseConnector.connect(connection -> {
+                String saveItems = "INSERT IGNORE INTO " + this.getTablePrefix() + "bans SET user = ?, reason = ?, time = ?";
+                String truncate = "TRUNCATE TABLE " + this.getTablePrefix() + "bans";
+                try (PreparedStatement statement = connection.prepareStatement(truncate)) {
+                    statement.execute();
+                }
+
+                PreparedStatement statement = connection.prepareStatement(saveItems);
+                bans.forEach(ban -> {
+                    try {
+                        statement.setString(1, ban.getBannedPlayer().toString());
+                        statement.setString(2, ban.getReason());
+                        statement.setLong(3, ban.getTime());
                         statement.addBatch();
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -149,6 +197,25 @@ public class DataManager extends DataManagerAbstract {
                 statement.executeBatch();
             });
         }
+    }
+
+    public void getBans(Consumer<ArrayList<AuctionBan>> callback) {
+        ArrayList<AuctionBan> bans = new ArrayList<>();
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            String select = "SELECT * FROM " + this.getTablePrefix() + "bans";
+
+            try (Statement statement = connection.createStatement()) {
+                ResultSet result = statement.executeQuery(select);
+                while (result.next()) {
+                    bans.add(new AuctionBan(
+                            UUID.fromString(result.getString("user")),
+                            result.getString("reason"),
+                            result.getLong("time")
+                    ));
+                }
+            }
+            this.sync(() -> callback.accept(bans));
+        }));
     }
 
     public void getTransactions(Consumer<ArrayList<Transaction>> callback) {
