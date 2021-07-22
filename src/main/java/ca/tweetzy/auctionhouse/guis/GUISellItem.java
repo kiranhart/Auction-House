@@ -213,7 +213,7 @@ public class GUISellItem extends Gui {
                     this.itemToBeListed,
                     MaterialCategorizer.getMaterialCategory(itemToBeListed),
                     UUID.randomUUID(),
-                    this.isBiddingItem && !isAllowingBuyNow ? -1 : buyNowPrice,
+                    this.isBiddingItem && !isAllowingBuyNow || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? -1 : buyNowPrice,
                     this.isBiddingItem ? bidStartPrice : 0,
                     this.isBiddingItem ? bidIncrementPrice : 0,
                     this.isBiddingItem ? bidStartPrice : buyNowPrice,

@@ -80,6 +80,7 @@
                                     <include>org.slf4j:slf4j-nop</include>
                                     <include>co.aikar:taskchain-bukkit</include>
                                     <include>co.aikar:taskchain-core</include>
+                                    <include>com.sparkjava:spark-core</include>
                                 </includes>
                             </artifactSet>
                             <filters>

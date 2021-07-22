@@ -79,7 +79,7 @@ public class AuctionItem implements Serializable {
         String theSeller = (this.owner == null) ? "&eSeller Name???" : Bukkit.getOfflinePlayer(this.owner).getName();
         String highestBidder = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "" : (this.owner.equals(this.highestBidder)) ? Bukkit.getOfflinePlayer(this.owner).getName() : Bukkit.getOfflinePlayer(this.highestBidder).getName();
 
-        String basePrice = this.basePrice == -1 ? Settings.AUCTION_PURCHASE_CONTROLS_BUY_NOW_OFF_FOR_BID.getString() : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : AuctionAPI.getInstance().formatNumber(this.basePrice);// base
+        String basePrice = this.basePrice == -1 || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && this.bidStartPrice >= 1  ? Settings.AUCTION_PURCHASE_CONTROLS_BUY_NOW_OFF_FOR_BID.getString() : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : AuctionAPI.getInstance().formatNumber(this.basePrice);// base
 
         String bidIncPrice = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.bidIncPrice) : AuctionAPI.getInstance().formatNumber(this.bidIncPrice);
         String currentPrice = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "0" : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : AuctionAPI.getInstance().formatNumber(this.currentPrice);
@@ -100,7 +100,7 @@ public class AuctionItem implements Serializable {
 
         if (type == AuctionStackType.MAIN_AUCTION_HOUSE) {
             lore.addAll(Settings.AUCTION_PURCHASE_CONTROL_HEADER.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
-            lore.addAll(this.bidStartPrice <= 0 || this.bidIncPrice <= 0 ? Settings.AUCTION_PURCHASE_CONTROLS_BID_OFF.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()) : Settings.AUCTION_PURCHASE_CONTROLS_BID_ON.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
+            lore.addAll(this.bidStartPrice <= 0 || this.bidIncPrice <= 0 || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? Settings.AUCTION_PURCHASE_CONTROLS_BID_OFF.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()) : Settings.AUCTION_PURCHASE_CONTROLS_BID_ON.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
 
             if (NBTEditor.contains(itemStack, "AuctionBundleItem") || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && itemStack.getType().name().contains("SHULKER_BOX"))) {
                 lore.addAll(Settings.AUCTION_PURCHASE_CONTROLS_INSPECTION.getStringList().stream().map(TextUtils::formatText).collect(Collectors.toList()));
