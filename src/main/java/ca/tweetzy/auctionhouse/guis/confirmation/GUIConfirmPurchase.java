@@ -14,6 +14,7 @@ import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
@@ -116,7 +117,7 @@ public class GUIConfirmPurchase extends Gui {
                 double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * buyNowPrice : 0D;
 
                 // Check economy
-                if (!AuctionHouse.getInstance().getEconomyManager().has(e.player, buyNowPrice + (Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? tax : 0D))) {
+                if (!EconomyManager.hasBalance(e.player, buyNowPrice + (Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? tax : 0D))) {
                     AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
                     SoundManager.getInstance().playSound(e.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString(), 1.0F, 1.0F);
                     e.gui.close();
@@ -188,8 +189,8 @@ public class GUIConfirmPurchase extends Gui {
     private void transferFunds(Player from, double amount) {
         double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * amount : 0D;
 
-        AuctionHouse.getInstance().getEconomyManager().withdrawPlayer(from, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount);
-        AuctionHouse.getInstance().getEconomyManager().depositPlayer(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax);
+        EconomyManager.withdrawBalance(from, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount);
+        EconomyManager.deposit(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax);
     }
 
     private void sendMessages(GuiClickEvent e, AuctionItem located, boolean overwritePrice, double price) {
@@ -199,7 +200,7 @@ public class GUIConfirmPurchase extends Gui {
         AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice)).sendPrefixedMessage(e.player);
         if (Bukkit.getOfflinePlayer(located.getOwner()).isOnline()) {
             AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
-                    .processPlaceholder("item", WordUtils.capitalizeFully(AuctionAPI.getInstance().deserializeItem(located.getRawItem()).getType().name().replace("_", " ")))
+                    .processPlaceholder("item", AuctionAPI.getInstance().getItemName(AuctionAPI.getInstance().deserializeItem(this.auctionItem.getRawItem())))
                     .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice : totalPrice - tax))
                     .processPlaceholder("buyer_name", e.player.getName())
                     .sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());

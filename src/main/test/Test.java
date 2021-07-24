@@ -1,5 +1,3 @@
-import ca.tweetzy.core.utils.TimeUtils;
-
 /**
  * The current file has been created by Kiran Hart
  * Date Created: July 21 2021
@@ -9,7 +7,9 @@ import ca.tweetzy.core.utils.TimeUtils;
 public class Test {
 
     public static void main(String[] args) {
-        System.out.println(TimeUtils.makeReadable(getSecondsFromString("2y")*1000));
+//        System.out.println(TimeUtils.makeReadable(getSecondsFromString("2y")*1000));
+
+
     }
 
     public static long getSecondsFromString(String time) {

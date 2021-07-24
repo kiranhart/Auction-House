@@ -13,6 +13,7 @@ import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -96,6 +97,10 @@ public class GUISellItem extends Gui {
             }
         });
 
+        if (Settings.FORCE_AUCTION_USAGE.getBoolean()) {
+            this.isBiddingItem = true;
+        }
+
         setUnlocked(1, 4);
         setUnlockedRange(45, 89);
         draw();
@@ -121,30 +126,32 @@ public class GUISellItem extends Gui {
             this.itemToBeListed = e.clickedItem;
         });
 
-        setButton(3, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_BUY_NOW_ITEM.getString(), Settings.GUI_SELL_ITEMS_BUY_NOW_NAME.getString(), Settings.GUI_SELL_ITEMS_BUY_NOW_LORE.getStringList(), new HashMap<String, Object>() {{
-            put("%buy_now_price%", AuctionAPI.getInstance().formatNumber(buyNowPrice));
-        }}), ClickType.LEFT, e -> {
-            setTheItemToBeListed();
-            setAllowClose(true);
-            e.gui.close();
+        if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
+            setButton(3, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_BUY_NOW_ITEM.getString(), Settings.GUI_SELL_ITEMS_BUY_NOW_NAME.getString(), Settings.GUI_SELL_ITEMS_BUY_NOW_LORE.getStringList(), new HashMap<String, Object>() {{
+                put("%buy_now_price%", AuctionAPI.getInstance().formatNumber(buyNowPrice));
+            }}), ClickType.LEFT, e -> {
+                setTheItemToBeListed();
+                setAllowClose(true);
+                e.gui.close();
 
-            ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new buy now price").getMessage()), chat -> {
-                String msg = chat.getMessage();
-                if (validateChatNumber(msg, Settings.MIN_AUCTION_PRICE.getDouble())) {
-                    // check if the buy now price is higher than the bid start price
-                    if (this.isAllowingBuyNow && this.isBiddingItem && Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && Double.parseDouble(msg) < this.bidStartPrice) {
+                ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new buy now price").getMessage()), chat -> {
+                    String msg = chat.getMessage();
+                    if (validateChatNumber(msg, Settings.MIN_AUCTION_PRICE.getDouble())) {
+                        // check if the buy now price is higher than the bid start price
+                        if (this.isAllowingBuyNow && this.isBiddingItem && Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && Double.parseDouble(msg) < this.bidStartPrice) {
+                            reopen(e);
+                            return;
+                        }
+
+                        this.buyNowPrice = Double.parseDouble(msg);
                         reopen(e);
-                        return;
                     }
-
-                    this.buyNowPrice = Double.parseDouble(msg);
-                    reopen(e);
-                }
-            }).setOnCancel(() -> reopen(e)).setOnClose(() -> reopen(e));
-        });
+                }).setOnCancel(() -> reopen(e)).setOnClose(() -> reopen(e));
+            });
+        }
 
         if (this.isBiddingItem) {
-            setButton(3, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_STARTING_BID_ITEM.getString(), Settings.GUI_SELL_ITEMS_STARTING_BID_NAME.getString(), Settings.GUI_SELL_ITEMS_STARTING_BID_LORE.getStringList(), new HashMap<String, Object>() {{
+            setButton(3, Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? 2 : 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_STARTING_BID_ITEM.getString(), Settings.GUI_SELL_ITEMS_STARTING_BID_NAME.getString(), Settings.GUI_SELL_ITEMS_STARTING_BID_LORE.getStringList(), new HashMap<String, Object>() {{
                 put("%starting_bid_price%", AuctionAPI.getInstance().formatNumber(bidStartPrice));
             }}), ClickType.LEFT, e -> {
                 setTheItemToBeListed();
@@ -174,12 +181,13 @@ public class GUISellItem extends Gui {
                 }).setOnCancel(() -> reopen(e)).setOnClose(() -> reopen(e));
             });
 
-            setButton(3, 6, ConfigurationItemHelper.createConfigurationItem(this.isAllowingBuyNow ? Settings.GUI_SELL_ITEMS_BUY_NOW_ENABLED_ITEM.getString() : Settings.GUI_SELL_ITEMS_BUY_NOW_DISABLED_ITEM.getString(), this.isAllowingBuyNow ? Settings.GUI_SELL_ITEMS_BUY_NOW_ENABLED_NAME.getString() : Settings.GUI_SELL_ITEMS_BUY_NOW_DISABLED_NAME.getString(), this.isAllowingBuyNow ? Settings.GUI_SELL_ITEMS_BUY_NOW_ENABLED_LORE.getStringList() : Settings.GUI_SELL_ITEMS_BUY_NOW_DISABLED_LORE.getStringList(), null), ClickType.LEFT, e -> {
-                this.isAllowingBuyNow = !this.isAllowingBuyNow;
-                setTheItemToBeListed();
-                draw();
-            });
-
+            if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
+                setButton(3, 6, ConfigurationItemHelper.createConfigurationItem(this.isAllowingBuyNow ? Settings.GUI_SELL_ITEMS_BUY_NOW_ENABLED_ITEM.getString() : Settings.GUI_SELL_ITEMS_BUY_NOW_DISABLED_ITEM.getString(), this.isAllowingBuyNow ? Settings.GUI_SELL_ITEMS_BUY_NOW_ENABLED_NAME.getString() : Settings.GUI_SELL_ITEMS_BUY_NOW_DISABLED_NAME.getString(), this.isAllowingBuyNow ? Settings.GUI_SELL_ITEMS_BUY_NOW_ENABLED_LORE.getStringList() : Settings.GUI_SELL_ITEMS_BUY_NOW_DISABLED_LORE.getStringList(), null), ClickType.LEFT, e -> {
+                    this.isAllowingBuyNow = !this.isAllowingBuyNow;
+                    setTheItemToBeListed();
+                    draw();
+                });
+            }
         }
 
         setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
@@ -190,7 +198,9 @@ public class GUISellItem extends Gui {
 
         if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
             setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_ITEM.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_ITEM.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_NAME.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_NAME.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_LORE.getStringList() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_LORE.getStringList(), null), e -> {
-                this.isBiddingItem = !this.isBiddingItem;
+                if (!Settings.FORCE_AUCTION_USAGE.getBoolean()) {
+                    this.isBiddingItem = !this.isBiddingItem;
+                }
                 setTheItemToBeListed();
                 draw();
             });
@@ -226,11 +236,11 @@ public class GUISellItem extends Gui {
             if (auctionStartEvent.isCancelled()) return;
 
             if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
-                if (!AuctionHouse.getInstance().getEconomyManager().has(e.player, Settings.TAX_LISTING_FEE.getDouble())) {
+                if (!EconomyManager.hasBalance(e.player, Settings.TAX_LISTING_FEE.getDouble())) {
                     AuctionHouse.getInstance().getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(e.player);
                     return;
                 }
-                AuctionHouse.getInstance().getEconomyManager().withdrawPlayer(e.player, Settings.TAX_LISTING_FEE.getDouble());
+                EconomyManager.withdrawBalance(e.player, Settings.TAX_LISTING_FEE.getDouble());
                 AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(e.player);
                 AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(e.player);
             }
@@ -251,22 +261,17 @@ public class GUISellItem extends Gui {
             // TODO FIGURE OUT WHY THE HELL THIS IS NOT WORKING
             String NAX = AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage();
 
-            AuctionHouse.getInstance().getLocale().getMessage(isBiddingItem ? "auction.listed.withbid" : "auction.listed.nobid")
-                    .processPlaceholder("player", e.player.getName())
+            String msg = AuctionHouse.getInstance().getLocale().getMessage(isBiddingItem ? "auction.listed.withbid" : "auction.listed.nobid")
                     .processPlaceholder("amount", itemToBeListed.getAmount())
                     .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToBeListed))
-                    .processPlaceholder("base_price", !isAllowingBuyNow ? NAX : AuctionAPI.getInstance().formatNumber(buyNowPrice))
-                    .processPlaceholder("start_price", isBiddingItem ? AuctionAPI.getInstance().formatNumber(bidStartPrice) : 0)
-                    .processPlaceholder("increment_price", isBiddingItem ? AuctionAPI.getInstance().formatNumber(bidIncrementPrice) : 0).sendPrefixedMessage(e.player);
+                    .processPlaceholder("base_price", auctionItem.getBasePrice() <= -1 ? NAX : AuctionAPI.getInstance().formatNumber(auctionItem.getBasePrice()))
+                    .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(auctionItem.getBidStartPrice()))
+                    .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(auctionItem.getBidIncPrice())).getMessage();
+
+            AuctionHouse.getInstance().getLocale().newMessage(msg).sendPrefixedMessage(e.player);
 
             if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
-                Bukkit.getOnlinePlayers().forEach(AuctionHouse.getInstance().getLocale().getMessage(isBiddingItem ? "auction.listed.withbid" : "auction.broadcast.nobid")
-                        .processPlaceholder("player", e.player.getName())
-                        .processPlaceholder("amount", itemToBeListed.getAmount())
-                        .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToBeListed))
-                        .processPlaceholder("base_price", !isAllowingBuyNow ? NAX : AuctionAPI.getInstance().formatNumber(buyNowPrice))
-                        .processPlaceholder("start_price", isBiddingItem ? AuctionAPI.getInstance().formatNumber(bidStartPrice) : 0)
-                        .processPlaceholder("increment_price", isBiddingItem ? AuctionAPI.getInstance().formatNumber(bidIncrementPrice) : 0)::sendPrefixedMessage);
+                Bukkit.getOnlinePlayers().forEach(p -> AuctionHouse.getInstance().getLocale().newMessage(msg).processPlaceholder("player", p.getName()).sendPrefixedMessage(p));
             }
         });
     }

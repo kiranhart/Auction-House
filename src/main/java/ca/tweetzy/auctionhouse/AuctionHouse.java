@@ -6,7 +6,6 @@ import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations._1_InitialMigration;
 import ca.tweetzy.auctionhouse.database.migrations._2_FilterWhitelistMigration;
-import ca.tweetzy.auctionhouse.economy.EconomyManager;
 import ca.tweetzy.auctionhouse.listeners.AuctionListeners;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.*;
@@ -23,6 +22,7 @@ import ca.tweetzy.core.database.DataMigrationManager;
 import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
 import ca.tweetzy.core.gui.GuiManager;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.core.utils.TextUtils;
 import co.aikar.taskchain.BukkitTaskChainFactory;
@@ -46,9 +46,6 @@ public class AuctionHouse extends TweetyPlugin {
 
     private static TaskChainFactory taskChainFactory;
     private static AuctionHouse instance;
-
-    @Getter
-    private EconomyManager economyManager;
 
     @Getter
     private final GuiManager guiManager = new GuiManager(this);
@@ -102,16 +99,18 @@ public class AuctionHouse extends TweetyPlugin {
 
         taskChainFactory = BukkitTaskChainFactory.create(this);
 
+        // Load Economy
+        EconomyManager.load();
+
         // Settings
         Settings.setup();
-
-        // Check the economy right after the settings setup
-        this.economyManager = new EconomyManager(this);
 
         // local
         setLocale(Settings.LANG.getString());
         LocaleSettings.setup();
 
+        // Setup Economy
+        EconomyManager.getManager().setPreferredHook(Settings.ECONOMY_PLUGIN.getString());
 
         // listeners
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
@@ -186,6 +185,7 @@ public class AuctionHouse extends TweetyPlugin {
 
         // metrics
         this.metrics = new Metrics(this, 6806);
+
     }
 
     @Override

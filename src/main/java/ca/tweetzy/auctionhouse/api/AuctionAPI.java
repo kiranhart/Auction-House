@@ -214,7 +214,7 @@ public class AuctionAPI {
                 .addField(Settings.DISCORD_MSG_FIELD_FINAL_PRICE_NAME.getString(), isNew ? AuctionHouse.getInstance().getLocale().getMessage("discord.not_sold").getMessage() : Settings.DISCORD_MSG_FIELD_FINAL_PRICE_VALUE.getString().replace("%final_price%", this.getFriendlyNumber(isBid ? auctionItem.getCurrentPrice() : auctionItem.getBasePrice())), Settings.DISCORD_MSG_FIELD_FINAL_PRICE_INLINE.getBoolean())
                 .addField(Settings.DISCORD_MSG_FIELD_IS_BID_NAME.getString(), Settings.DISCORD_MSG_FIELD_IS_BID_VALUE.getString().replace("%is_bid%", isBid ? AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_true").getMessage() : AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_false").getMessage()), Settings.DISCORD_MSG_FIELD_IS_BID_INLINE.getBoolean())
                 .addField(Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_NAME.getString(), isNew ? AuctionHouse.getInstance().getLocale().getMessage("discord.not_bought").getMessage() : Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_VALUE.getString().replace("%purchase_type%", saleType == AuctionSaleType.USED_BIDDING_SYSTEM ? AuctionHouse.getInstance().getLocale().getMessage("discord.sale_bid_win").getMessage() : AuctionHouse.getInstance().getLocale().getMessage("discord.sale_immediate_buy").getMessage()), Settings.DISCORD_MSG_FIELD_PURCHASE_INLINE.getBoolean())
-                .addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", auctionItem.getItemName()), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean())
+                .addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", ChatColor.stripColor(getItemName(deserializeItem(auctionItem.getRawItem())))), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean())
                 .addField(Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_VALUE.getString().replace("%item_amount%", String.valueOf(this.deserializeItem(auctionItem.getRawItem()).getAmount())), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_INLINE.getBoolean())
         );
 
@@ -377,7 +377,7 @@ public class AuctionAPI {
      * Used to get any items that are similar to the provided stack in a player's inventory
      *
      * @param player is the player being checked
-     * @param stack the item stack is being looked for
+     * @param stack  the item stack is being looked for
      * @return all the items that are similar to the stack
      */
     public List<ItemStack> getSimilarItemsFromInventory(Player player, ItemStack stack) {
@@ -432,7 +432,7 @@ public class AuctionAPI {
      * Used to create an item bundle
      *
      * @param baseItem is the base item of the bundle (original)
-     * @param items is the items that should be added to the bundle
+     * @param items    is the items that should be added to the bundle
      * @return an item stack with all the items saved in NBT tags
      */
     public ItemStack createBundledItem(ItemStack baseItem, ItemStack... items) {
@@ -464,7 +464,7 @@ public class AuctionAPI {
         time = time.toLowerCase();
         char suffix = time.charAt(time.length() - 1);
         int amount = Character.getNumericValue(time.charAt(time.length() - 2));
-        switch(suffix) {
+        switch (suffix) {
             case 's':
                 return amount;
             case 'm':

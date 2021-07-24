@@ -13,6 +13,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
@@ -128,7 +129,9 @@ public class CommandSell extends AbstractCommand {
             }
         }
 
-        boolean isBiddingItem = Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? listingPrices.size() == 3 : listingPrices.size() == 2;
+        boolean isBiddingItem = listingPrices.size() == 3 || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && listingPrices.size() == 2;
+        if (Settings.FORCE_AUCTION_USAGE.getBoolean()) isBiddingItem = true;
+
 
         /*======================================================================
         ================ THE PLAYER IS NOT USING THE BID OPTION ================
@@ -159,19 +162,21 @@ public class CommandSell extends AbstractCommand {
                 return ReturnType.FAILURE;
             }
 
-            if (listingPrices.get(1) < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()) {
-                AuctionHouse.getInstance().getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
-            }
-
             if (listingPrices.get(0) > Settings.MAX_AUCTION_START_PRICE.getDouble()) {
                 AuctionHouse.getInstance().getLocale().getMessage("pricing.maxstartingprice").processPlaceholder("price", Settings.MAX_AUCTION_START_PRICE.getDouble()).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
 
-            if (listingPrices.get(1) > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
-                AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
+            if (!Settings.FORCE_AUCTION_USAGE.getBoolean()) {
+                if (listingPrices.get(1) < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()) {
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
+                    return ReturnType.FAILURE;
+                }
+
+                if (listingPrices.get(1) > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
+                    return ReturnType.FAILURE;
+                }
             }
         } else {
             if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && isBiddingItem && listingPrices.get(0) < Settings.MIN_AUCTION_PRICE.getDouble() && !(listingPrices.get(0) <= -1)) {
@@ -179,35 +184,36 @@ public class CommandSell extends AbstractCommand {
                 return ReturnType.FAILURE;
             }
 
-            if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && isBiddingItem && listingPrices.get(1) < Settings.MIN_AUCTION_START_PRICE.getDouble()) {
-                AuctionHouse.getInstance().getLocale().getMessage("pricing.minstartingprice").processPlaceholder("price", Settings.MIN_AUCTION_START_PRICE.getDouble()).sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
-            }
-
-            if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && isBiddingItem && listingPrices.get(2) < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()) {
-                AuctionHouse.getInstance().getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
-            }
-
-            // check max
             if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && isBiddingItem && listingPrices.get(0) > Settings.MAX_AUCTION_PRICE.getDouble()) {
                 AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", Settings.MAX_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
 
-            if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && isBiddingItem && listingPrices.get(1) > Settings.MAX_AUCTION_START_PRICE.getDouble()) {
-                AuctionHouse.getInstance().getLocale().getMessage("pricing.maxstartingprice").processPlaceholder("price", Settings.MAX_AUCTION_START_PRICE.getDouble()).sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
-            }
+            if (!Settings.FORCE_AUCTION_USAGE.getBoolean()) {
+                if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && isBiddingItem && listingPrices.get(1) < Settings.MIN_AUCTION_START_PRICE.getDouble()) {
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.minstartingprice").processPlaceholder("price", Settings.MIN_AUCTION_START_PRICE.getDouble()).sendPrefixedMessage(player);
+                    return ReturnType.FAILURE;
+                }
 
-            if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && isBiddingItem && listingPrices.get(2) > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
-                AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
-            }
+                if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && isBiddingItem && listingPrices.get(2) < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()) {
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
+                    return ReturnType.FAILURE;
+                }
 
-            if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && isBiddingItem && listingPrices.get(1) > listingPrices.get(0) && !(listingPrices.get(0) <= -1)) {
-                AuctionHouse.getInstance().getLocale().getMessage("pricing.basepricetoolow").sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
+                if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && isBiddingItem && listingPrices.get(1) > Settings.MAX_AUCTION_START_PRICE.getDouble()) {
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.maxstartingprice").processPlaceholder("price", Settings.MAX_AUCTION_START_PRICE.getDouble()).sendPrefixedMessage(player);
+                    return ReturnType.FAILURE;
+                }
+
+                if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && isBiddingItem && listingPrices.get(2) > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
+                    return ReturnType.FAILURE;
+                }
+
+                if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() && Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && isBiddingItem && listingPrices.get(1) > listingPrices.get(0) && !(listingPrices.get(0) <= -1)) {
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.basepricetoolow").sendPrefixedMessage(player);
+                    return ReturnType.FAILURE;
+                }
             }
         }
 
@@ -221,7 +227,7 @@ public class CommandSell extends AbstractCommand {
             isUsingBundle = true;
         }
 
-        AuctionItem auctionItem = Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? new AuctionItem(
+        AuctionItem auctionItem = Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && !Settings.FORCE_AUCTION_USAGE.getBoolean() ? new AuctionItem(
                 player.getUniqueId(),
                 player.getUniqueId(),
                 itemToSell,
@@ -241,18 +247,18 @@ public class CommandSell extends AbstractCommand {
                 UUID.randomUUID(),
                 isBiddingItem ? -1 : listingPrices.get(0),
                 isBiddingItem ? listingPrices.get(0) : 0,
-                isBiddingItem ? listingPrices.get(1) : 0,
+                isBiddingItem ? listingPrices.size() == 1 ? 1 : listingPrices.get(1) : 0,
                 listingPrices.get(0),
                 allowedTime,
                 false
         );
 
         if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
-            if (!AuctionHouse.getInstance().getEconomyManager().has(player, Settings.TAX_LISTING_FEE.getDouble())) {
+            if (!EconomyManager.hasBalance(player, Settings.TAX_LISTING_FEE.getDouble())) {
                 AuctionHouse.getInstance().getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(player);
                 return ReturnType.FAILURE;
             }
-            AuctionHouse.getInstance().getEconomyManager().withdrawPlayer(player, Settings.TAX_LISTING_FEE.getDouble());
+            EconomyManager.withdrawBalance(player, Settings.TAX_LISTING_FEE.getDouble());
             AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(player);
             AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(player);
         }
@@ -273,23 +279,19 @@ public class CommandSell extends AbstractCommand {
 
         String NAX = AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage();
 
-        AuctionHouse.getInstance().getLocale().getMessage(isBiddingItem ? "auction.listed.withbid" : "auction.listed.nobid")
+        String msg = AuctionHouse.getInstance().getLocale().getMessage(isBiddingItem ? "auction.listed.withbid" : "auction.listed.nobid")
                 .processPlaceholder("amount", itemToSell.getAmount())
                 .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToSell))
-                .processPlaceholder("base_price", listingPrices.get(0) <= -1 || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? NAX  : AuctionAPI.getInstance().formatNumber(listingPrices.get(0)))
-                .processPlaceholder("start_price", isBiddingItem ? !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? AuctionAPI.getInstance().formatNumber(listingPrices.get(0)) : AuctionAPI.getInstance().formatNumber(listingPrices.get(1)) : 0)
-                .processPlaceholder("increment_price", isBiddingItem ? !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? AuctionAPI.getInstance().formatNumber(listingPrices.get(1)) : AuctionAPI.getInstance().formatNumber(listingPrices.get(2)) : 0)
-                .sendPrefixedMessage(player);
+                .processPlaceholder("base_price", auctionItem.getBasePrice() <= -1 ? NAX : AuctionAPI.getInstance().formatNumber(auctionItem.getBasePrice()))
+                .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(auctionItem.getBidStartPrice()))
+                .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(auctionItem.getBidIncPrice())).getMessage();
+
+        AuctionHouse.getInstance().getLocale().newMessage(msg).sendPrefixedMessage(player);
 
         if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
-            Bukkit.getOnlinePlayers().forEach(AuctionHouse.getInstance().getLocale().getMessage(isBiddingItem ? "auction.listed.withbid" : "auction.broadcast.nobid")
-                    .processPlaceholder("player", player.getName())
-                    .processPlaceholder("amount", itemToSell.getAmount())
-                    .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToSell))
-                    .processPlaceholder("base_price", listingPrices.get(0) <= -1 || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? NAX : AuctionAPI.getInstance().formatNumber(listingPrices.get(0)))
-                    .processPlaceholder("start_price", isBiddingItem ? !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? AuctionAPI.getInstance().formatNumber(listingPrices.get(0)) : AuctionAPI.getInstance().formatNumber(listingPrices.get(1)) : 0)
-                    .processPlaceholder("increment_price", isBiddingItem ? !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? AuctionAPI.getInstance().formatNumber(listingPrices.get(1)) : AuctionAPI.getInstance().formatNumber(listingPrices.get(2)) : 0)::sendPrefixedMessage);
+            Bukkit.getOnlinePlayers().forEach(p -> AuctionHouse.getInstance().getLocale().newMessage(msg).processPlaceholder("player", p.getName()).sendPrefixedMessage(p));
         }
+
         return ReturnType.SUCCESS;
     }
 

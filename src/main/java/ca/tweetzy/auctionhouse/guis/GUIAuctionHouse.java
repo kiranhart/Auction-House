@@ -15,6 +15,7 @@ import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.TimeUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
@@ -150,7 +151,7 @@ public class GUIAuctionHouse extends Gui {
             return;
         }
 
-        if (!AuctionHouse.getInstance().getEconomyManager().has(e.player, auctionItem.getBasePrice())) {
+        if (!EconomyManager.hasBalance(e.player, auctionItem.getBasePrice())) {
             AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
             return;
         }
@@ -187,7 +188,7 @@ public class GUIAuctionHouse extends Gui {
             return;
         }
 
-        if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getInstance().getEconomyManager().has(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice())) {
+        if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice())) {
             AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
             return;
         }
@@ -198,7 +199,7 @@ public class GUIAuctionHouse extends Gui {
         } else {
             auctionItem.setHighestBidder(e.player.getUniqueId());
             auctionItem.setCurrentPrice(auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice());
-            if (Settings.SYNC_BASE_PRICE_TO_HIGHEST_PRICE.getBoolean() && auctionItem.getCurrentPrice() > auctionItem.getBasePrice()) {
+            if (auctionItem.getBasePrice() != -1 && Settings.SYNC_BASE_PRICE_TO_HIGHEST_PRICE.getBoolean() && auctionItem.getCurrentPrice() > auctionItem.getBasePrice()) {
                 auctionItem.setBasePrice(auctionItem.getCurrentPrice());
             }
 
@@ -298,7 +299,7 @@ public class GUIAuctionHouse extends Gui {
     private void drawFixedButtons() {
         setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), new HashMap<String, Object>() {{
             put("%active_player_auctions%", auctionPlayer.getItems(false).size());
-            put("%player_balance%", AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getEconomyManager().getBalance(auctionPlayer.getPlayer())));
+            put("%player_balance%", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(auctionPlayer.getPlayer())));
         }}), e -> {
             cleanup();
             e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
