@@ -79,7 +79,6 @@ public class LocaleSettings {
         languageNodes.put("auction_filter.sale_types.biddable", "Biddable");
         languageNodes.put("auction_filter.sale_types.non_biddable", "Not Biddable");
         languageNodes.put("auction_filter.sale_types.both", "All");
-
         languageNodes.put("auction_filter.categories.all", "All");
         languageNodes.put("auction_filter.categories.food", "Food");
         languageNodes.put("auction_filter.categories.armor", "Armor");
@@ -91,7 +90,6 @@ public class LocaleSettings {
         languageNodes.put("auction_filter.categories.weapons", "Weapons");
         languageNodes.put("auction_filter.categories.self", "Self");
         languageNodes.put("auction_filter.categories.search", "Search");
-
         languageNodes.put("auction_filter.sort_order.recent", "Recent");
         languageNodes.put("auction_filter.sort_order.price", "Price");
 
@@ -99,10 +97,16 @@ public class LocaleSettings {
         languageNodes.put("auction.listed.nobid", "&eListed &fx%amount% &6%item% &efor &a%base_price%");
         languageNodes.put("auction.broadcast.withbid", "&e%player% listed &fx%amount% &6%item% &e&lBuy Now&f: &a%base_price% &e&lStarting&f: &a%start_price% &e&lIncrement&f: &a%increment_price%");
         languageNodes.put("auction.broadcast.nobid", "&e%player% listed &fx%amount% &6%item% &efor &a%base_price%");
+
+        languageNodes.put("auction.broadcast.bid", "&e%player% increased the bid to &a$%amount% &eon &6%item%");
+        languageNodes.put("auction.broadcast.ending", "&eAuction for &6%item% &eis ending in &6%seconds%&es");
+
         languageNodes.put("auction.bidwon", "&eYou won the bid for&fx%amount% &6%item% &efor &a%price%");
         languageNodes.put("auction.itemsold", "&eYou sold &6%item% &eto &6%buyer_name% &efor &a%price%");
         languageNodes.put("auction.itemnotavailable", "&cThat item is no longer available :(");
         languageNodes.put("auction.biditemwithdisabledbuynow", "&CN/A");
+        languageNodes.put("auction.outbid", "&6%player &ehas out bid you for &6%item%");
+        languageNodes.put("auction.placedbid", "&6%player &eincreased the bid to &a$%amount% &eon &6%item%");
 
         languageNodes.put("auction.tax.cannotpaylistingfee", "&cYou do not have enough money to pay the listing fee &f(&4$%price%&f)");
         languageNodes.put("auction.tax.paidlistingfee", "&aPaid &2$%price%&a listing fee");

@@ -21,6 +21,7 @@ import ca.tweetzy.core.utils.TimeUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -197,6 +198,12 @@ public class GUIAuctionHouse extends Gui {
             cleanup();
             e.manager.showGUI(e.player, new GUIConfirmBid(this.auctionPlayer, auctionItem));
         } else {
+            ItemStack itemStack = AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem());
+
+            OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
+            OfflinePlayer owner = Bukkit.getOfflinePlayer(auctionItem.getOwner());
+
+
             auctionItem.setHighestBidder(e.player.getUniqueId());
             auctionItem.setCurrentPrice(auctionItem.getCurrentPrice() + auctionItem.getBidIncPrice());
             if (auctionItem.getBasePrice() != -1 && Settings.SYNC_BASE_PRICE_TO_HIGHEST_PRICE.getBoolean() && auctionItem.getCurrentPrice() > auctionItem.getBasePrice()) {
@@ -205,6 +212,29 @@ public class GUIAuctionHouse extends Gui {
 
             if (Settings.INCREASE_TIME_ON_BID.getBoolean()) {
                 auctionItem.setRemainingTime(auctionItem.getRemainingTime() + Settings.TIME_TO_INCREASE_BY_ON_BID.getInt());
+            }
+
+            if (oldBidder.isOnline()) {
+                AuctionHouse.getInstance().getLocale().getMessage("auction.outbid")
+                        .processPlaceholder("player", e.player.getName())
+                        .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
+                        .sendPrefixedMessage(oldBidder.getPlayer());
+            }
+
+            if (owner.isOnline()) {
+                AuctionHouse.getInstance().getLocale().getMessage("auction.placedbid")
+                        .processPlaceholder("player", e.player.getName())
+                        .processPlaceholder("amount", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice()))
+                        .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
+                        .sendPrefixedMessage(owner.getPlayer());
+            }
+
+            if (Settings.BROADCAST_AUCTION_BID.getBoolean()) {
+                Bukkit.getOnlinePlayers().forEach(player -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.bid")
+                        .processPlaceholder("player", e.player.getName())
+                        .processPlaceholder("amount", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice()))
+                        .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
+                        .sendPrefixedMessage(player));
             }
 
             if (Settings.REFRESH_GUI_WHEN_BID.getBoolean()) {

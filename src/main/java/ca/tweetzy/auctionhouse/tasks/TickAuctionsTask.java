@@ -11,6 +11,7 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Iterator;
@@ -46,6 +47,7 @@ public class TickAuctionsTask extends BukkitRunnable {
         while (auctionItemIterator.hasNext()) {
             Map.Entry<UUID, AuctionItem> entry = auctionItemIterator.next();
             AuctionItem auctionItem = entry.getValue();
+            ItemStack itemStack = AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem());
 
             if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getKey())) {
                 AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().remove(auctionItem.getKey());
@@ -55,6 +57,14 @@ public class TickAuctionsTask extends BukkitRunnable {
 
             if (!auctionItem.isExpired()) {
                 auctionItem.updateRemainingTime(Settings.TICK_UPDATE_TIME.getInt());
+                if (Settings.BROADCAST_AUCTION_ENDING.getBoolean()) {
+                    if (auctionItem.getRemainingTime() <= Settings.BROADCAST_AUCTION_ENDING_AT_TIME.getInt() && auctionItem.getRemainingTime() % 10 == 0) {
+                        Bukkit.getOnlinePlayers().forEach(player -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.ending")
+                                .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
+                                .processPlaceholder("seconds", auctionItem.getRemainingTime())
+                                .sendPrefixedMessage(player));
+                    }
+                }
             }
 
             if (auctionItem.getRemainingTime() <= 0) {

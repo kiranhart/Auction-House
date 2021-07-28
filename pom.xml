@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ca.tweetzy</groupId>
     <artifactId>auctionhouse</artifactId>
-    <version>2.23.0</version>
+    <version>2.24.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -116,8 +116,8 @@
             <url>https://maven.pkg.github.com/kiranhart/*</url>
         </repository>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>nms-repo</id>
+            <url>https://repo.codemc.org/repository/nms/</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
@@ -127,6 +127,7 @@
             <id>aikar</id>
             <url>https://repo.aikar.co/content/groups/aikar/</url>
         </repository>
+
     </repositories>
     <dependencies>
         <dependency>
@@ -138,7 +139,7 @@
         <dependency>
             <groupId>ca.tweetzy</groupId>
             <artifactId>tweetycore</artifactId>
-            <version>2.6.0</version>
+            <version>2.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

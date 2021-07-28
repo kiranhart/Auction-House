@@ -1,11 +1,13 @@
 package ca.tweetzy.auctionhouse;
 
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations._1_InitialMigration;
 import ca.tweetzy.auctionhouse.database.migrations._2_FilterWhitelistMigration;
+import ca.tweetzy.auctionhouse.database.migrations._3_BansMigration;
 import ca.tweetzy.auctionhouse.listeners.AuctionListeners;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.*;
@@ -99,6 +101,9 @@ public class AuctionHouse extends TweetyPlugin {
 
         taskChainFactory = BukkitTaskChainFactory.create(this);
 
+
+
+
         // Load Economy
         EconomyManager.load();
 
@@ -111,6 +116,11 @@ public class AuctionHouse extends TweetyPlugin {
 
         // Setup Economy
         EconomyManager.getManager().setPreferredHook(Settings.ECONOMY_PLUGIN.getString());
+        if (!EconomyManager.getManager().isEnabled()) {
+            getLogger().severe("Could not find a valid economy provider for Auction House");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // listeners
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
@@ -128,7 +138,8 @@ public class AuctionHouse extends TweetyPlugin {
             this.dataManager = new DataManager(this.databaseConnector, this);
             DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
                     new _1_InitialMigration(),
-                    new _2_FilterWhitelistMigration()
+                    new _2_FilterWhitelistMigration(),
+                    new _3_BansMigration()
             );
             dataMigrationManager.runMigrations();
         }
@@ -185,7 +196,6 @@ public class AuctionHouse extends TweetyPlugin {
 
         // metrics
         this.metrics = new Metrics(this, 6806);
-
     }
 
     @Override
@@ -198,7 +208,9 @@ public class AuctionHouse extends TweetyPlugin {
 
     @Override
     public void onConfigReload() {
+        EconomyManager.load();
         Settings.setup();
+        EconomyManager.getManager().setPreferredHook(Settings.ECONOMY_PLUGIN.getString());
         setLocale(Settings.LANG.getString());
         LocaleSettings.setup();
         this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
