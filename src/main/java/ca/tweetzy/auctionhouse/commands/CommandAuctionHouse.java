@@ -1,11 +1,12 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.TimeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,6 +30,7 @@ public class CommandAuctionHouse extends AbstractCommand {
     protected ReturnType runCommand(CommandSender sender, String... args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
+            if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
 
             if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
                 return ReturnType.FAILURE;
@@ -39,7 +41,14 @@ public class CommandAuctionHouse extends AbstractCommand {
                 AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
             }
 
-            AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+            if (args.length == 0) {
+                AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+                return ReturnType.SUCCESS;
+            }
+
+            if (args.length == 1 && AuctionHouse.getInstance().getCommandManager().getSubCommands("auctionhouse").stream().noneMatch(cmd -> cmd.equalsIgnoreCase(StringUtils.join(args, ' ').trim()))) {
+                AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()), StringUtils.join(args, ' ').trim()));
+            }
         }
         return ReturnType.SUCCESS;
     }
@@ -47,7 +56,7 @@ public class CommandAuctionHouse extends AbstractCommand {
     @Override
     protected List<String> onTab(CommandSender sender, String... args) {
         Player player = (Player) sender;
-        return AuctionHouse.getInstance().getCommandManager().getAllCommands().stream().filter(cmd -> cmd.getPermissionNode() == null ||  player.hasPermission(cmd.getPermissionNode())).map(AbstractCommand::getSyntax).collect(Collectors.toList());
+        return AuctionHouse.getInstance().getCommandManager().getAllCommands().stream().filter(cmd -> cmd.getPermissionNode() == null || player.hasPermission(cmd.getPermissionNode())).map(AbstractCommand::getSyntax).collect(Collectors.toList());
     }
 
     @Override

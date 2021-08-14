@@ -42,9 +42,10 @@ public class Settings {
     public static final ConfigSetting USE_SHORT_NUMBERS_ON_ITEMS = new ConfigSetting(config, "auction setting.use short numbers", false, "Should numbers be shortened into a prefixed form?");
     public static final ConfigSetting INCREASE_TIME_ON_BID = new ConfigSetting(config, "auction setting.increase time on bid", true, "Should the remaining time be increased when a bid is placed?");
     public static final ConfigSetting TIME_TO_INCREASE_BY_ON_BID = new ConfigSetting(config, "auction setting.time to increase by on the bid", 20, "How many seconds should be added to the remaining time?");
+
     public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
+
     public static final ConfigSetting TICK_UPDATE_GUI_TIME = new ConfigSetting(config, "auction setting.refresh gui every", 10, "How many seconds should pass before the auction gui auto refreshes?");
-    public static final ConfigSetting REFRESH_GUI_WHEN_BID = new ConfigSetting(config, "auction setting.refresh gui when bid", true, "Should the auction gui be re-opened (not redrawn) when a user places a bid, so they get the latest items?");
     public static final ConfigSetting RECORD_TRANSACTIONS = new ConfigSetting(config, "auction setting.record transactions", true, "Should every transaction be recorded (everything an auction is won or an item is bought)");
 
     public static final ConfigSetting BROADCAST_AUCTION_LIST = new ConfigSetting(config, "auction setting.broadcast auction list", false, "Should the entire server be alerted when a player lists an item?");
@@ -65,6 +66,7 @@ public class Settings {
     public static final ConfigSetting REPLACE_HOW_TO_SELL_WITH_LIST_BUTTON = new ConfigSetting(config, "auction setting.replace how to sell with list button", false, "This will replace the \"How to Sell\" button with a List Item button");
     public static final ConfigSetting ALLOW_USAGE_OF_SELL_GUI = new ConfigSetting(config, "auction setting.allow usage of sell gui", true, "Should the sell menu be enabled?");
     public static final ConfigSetting FORCE_AUCTION_USAGE = new ConfigSetting(config, "auction setting.force auction usage", false, "If enabled, all items sold on the auction house must be an auction (biddable) items");
+    public static final ConfigSetting ALLOW_INDIVIDUAL_ITEM_CLAIM = new ConfigSetting(config, "auction setting.allow individual item claim", true, "If enabled, you will be able to click individual items from the expiration menu to claim them back. Otherwise you will have to use the claim all button");
 
     public static final ConfigSetting ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS = new ConfigSetting(config, "auction setting.ask for cancel confirm on bid items", true, "Should Auction House ask the user if they want to cancel the item?");
     public static final ConfigSetting ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS = new ConfigSetting(config, "auction setting.ask for cancel confirm on non bid items", false, "Should Auction House ask the user if they want to cancel the item?");
@@ -183,6 +185,7 @@ public class Settings {
     public static final ConfigSetting DATABASE_PASSWORD = new ConfigSetting(config, "database.password", "Password1.", "What is the password to the user connecting?");
     public static final ConfigSetting DATABASE_USE_SSL = new ConfigSetting(config, "database.use ssl", true, "Should the database connection use ssl?");
 
+
     /*  ===============================
      *         DISCORD WEBHOOK
      *  ===============================*/
@@ -254,6 +257,7 @@ public class Settings {
     /*  ===============================
      *           GLOBAL ITEMS
      *  ===============================*/
+    public static final ConfigSetting GUI_BACK_BTN_SLOT = new ConfigSetting(config, "gui.global items.back button.slot", 48, "Valid Slots: 45 - 53");
     public static final ConfigSetting GUI_BACK_BTN_ITEM = new ConfigSetting(config, "gui.global items.back button.item", "ARROW", "Settings for the back button");
     public static final ConfigSetting GUI_BACK_BTN_NAME = new ConfigSetting(config, "gui.global items.back button.name", "&e<< Back");
     public static final ConfigSetting GUI_BACK_BTN_LORE = new ConfigSetting(config, "gui.global items.back button.lore", Arrays.asList("&7Click the button to go", "&7back to the previous page."));
@@ -262,10 +266,13 @@ public class Settings {
     public static final ConfigSetting GUI_CLOSE_BTN_NAME = new ConfigSetting(config, "gui.global items.close button.name", "&cClose");
     public static final ConfigSetting GUI_CLOSE_BTN_LORE = new ConfigSetting(config, "gui.global items.close button.lore", Collections.singletonList("&7Click to close this menu."));
 
+    public static final ConfigSetting GUI_NEXT_BTN_SLOT = new ConfigSetting(config, "gui.global items.next button.slot", 50, "Valid Slots: 45 - 53");
     public static final ConfigSetting GUI_NEXT_BTN_ITEM = new ConfigSetting(config, "gui.global items.next button.item", "ARROW", "Settings for the next button");
     public static final ConfigSetting GUI_NEXT_BTN_NAME = new ConfigSetting(config, "gui.global items.next button.name", "&eNext >>");
     public static final ConfigSetting GUI_NEXT_BTN_LORE = new ConfigSetting(config, "gui.global items.next button.lore", Arrays.asList("&7Click the button to go", "&7to the next page."));
 
+    public static final ConfigSetting GUI_REFRESH_BTN_ENABLED = new ConfigSetting(config, "gui.global items.refresh button.enabled", true);
+    public static final ConfigSetting GUI_REFRESH_BTN_SLOT = new ConfigSetting(config, "gui.global items.refresh button.slot", 49, "Valid Slots: 45 - 53");
     public static final ConfigSetting GUI_REFRESH_BTN_ITEM = new ConfigSetting(config, "gui.global items.refresh button.item", "CHEST", "Settings for the refresh page");
     public static final ConfigSetting GUI_REFRESH_BTN_NAME = new ConfigSetting(config, "gui.global items.refresh button.name", "&6&LRefresh Page");
     public static final ConfigSetting GUI_REFRESH_BTN_LORE = new ConfigSetting(config, "gui.global items.refresh button.lore", Arrays.asList("&7Click to refresh the currently", "&7available auction listings."));
@@ -276,6 +283,8 @@ public class Settings {
      *  ===============================*/
     public static final ConfigSetting GUI_AUCTION_HOUSE_TITLE = new ConfigSetting(config, "gui.auction house.title", "&7Auction House");
 
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_GUIDE_ENABLED = new ConfigSetting(config, "gui.auction house.items.guide.enabled", true);
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT = new ConfigSetting(config, "gui.auction house.items.guide.slot", 53, "Valid Slots: 45 - 53");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM = new ConfigSetting(config, "gui.auction house.items.guide.item", "BOOK");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME = new ConfigSetting(config, "gui.auction house.items.guide.name", "&e&lGuide");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE = new ConfigSetting(config, "gui.auction house.items.guide.lore", Arrays.asList(
@@ -294,6 +303,8 @@ public class Settings {
             "&7purchase it right away with a set price."
     ));
 
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ENABLED = new ConfigSetting(config, "gui.auction house.items.transactions.enabled", true);
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_SLOT = new ConfigSetting(config, "gui.auction house.items.transactions.slot", 51, "Valid Slots: 45 - 53");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM = new ConfigSetting(config, "gui.auction house.items.transactions.item", "PAPER");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME = new ConfigSetting(config, "gui.auction house.items.transactions.name", "&e&lTransactions");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE = new ConfigSetting(config, "gui.auction house.items.transactions.lore", Arrays.asList(
@@ -303,6 +314,8 @@ public class Settings {
             "&eTotal Items Sold&f: &a%total_items_sold%"
     ));
 
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ENABLED = new ConfigSetting(config, "gui.auction house.items.how to sell.enabled", true);
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_SLOT = new ConfigSetting(config, "gui.auction house.items.how to sell.slot", 52, "Valid Slots: 45 - 53");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ITEM = new ConfigSetting(config, "gui.auction house.items.how to sell.item", "GOLD_INGOT");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_NAME = new ConfigSetting(config, "gui.auction house.items.how to sell.name", "&e&lHow to Sell");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE = new ConfigSetting(config, "gui.auction house.items.how to sell.lore", Arrays.asList(
@@ -311,10 +324,14 @@ public class Settings {
             "&e/ah sell <buyNowPrice> [startPrice] [bidIncrement]"
     ));
 
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ENABLED = new ConfigSetting(config, "gui.auction house.items.list new item.enabled", true);
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_SLOT = new ConfigSetting(config, "gui.auction house.items.list new item.slot", 52, "Valid Slots: 45 - 53");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ITEM = new ConfigSetting(config, "gui.auction house.items.list new item.item", "CLOCK");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_NAME = new ConfigSetting(config, "gui.auction house.items.list new item.name", "&e&lList Item");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_LORE = new ConfigSetting(config, "gui.auction house.items.list new item.lore", Collections.singletonList("&7Click to list an item on the auction house."));
 
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ENABLED = new ConfigSetting(config, "gui.auction house.items.your auctions.enabled", true);
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_SLOT = new ConfigSetting(config, "gui.auction house.items.your auctions.slot", 45, "Valid Slots: 45 - 53");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM = new ConfigSetting(config, "gui.auction house.items.your auctions.item", "DIAMOND");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME = new ConfigSetting(config, "gui.auction house.items.your auctions.name", "&e&lYour Auctions");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE = new ConfigSetting(config, "gui.auction house.items.your auctions.lore", Arrays.asList(
@@ -325,6 +342,8 @@ public class Settings {
             "&e&lBalance &a$%player_balance%"
     ));
 
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ENABLED = new ConfigSetting(config, "gui.auction house.items.collection bin.enabled", true);
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT = new ConfigSetting(config, "gui.auction house.items.collection bind.slot", 46, "Valid Slots: 45 - 53");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM = new ConfigSetting(config, "gui.auction house.items.collection bin.item", "ENDER_CHEST");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME = new ConfigSetting(config, "gui.auction house.items.collection bin.name", "&e&lCollection Bin");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE = new ConfigSetting(config, "gui.auction house.items.collection bin.lore", Arrays.asList(
@@ -334,6 +353,8 @@ public class Settings {
             "&e&l%expired_player_auctions% Item(s)"
     ));
 
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_ENABLED = new ConfigSetting(config, "gui.auction house.items.filter.enabled", true);
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT = new ConfigSetting(config, "gui.auction house.items.filter.slot", 47, "Valid Slots: 45 - 53");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_ITEM = new ConfigSetting(config, "gui.auction house.items.filter.item", "NETHER_STAR");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME = new ConfigSetting(config, "gui.auction house.items.filter.name", "&e&lFilter Options");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE = new ConfigSetting(config, "gui.auction house.items.filter.lore", Arrays.asList(
@@ -347,6 +368,8 @@ public class Settings {
             "&7Middle-Click to reset filters"
     ));
 
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED = new ConfigSetting(config, "gui.auction house.items.filter menu.enabled", true);
+    public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT = new ConfigSetting(config, "gui.auction house.items.filter menu.slot", 47, "Valid Slots: 45 - 53");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ITEM = new ConfigSetting(config, "gui.auction house.items.filter menu.item", "HOPPER");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME = new ConfigSetting(config, "gui.auction house.items.filter menu.name", "&e&lCurrent Filter&f: &6%filter_category%");
     public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE = new ConfigSetting(config, "gui.auction house.items.filter menu.lore", Arrays.asList(
@@ -685,64 +708,73 @@ public class Settings {
     public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_DELETE_NAME = new ConfigSetting(config, "gui.item admin.items.delete item.name", "&a&lDelete Item");
     public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_DELETE_LORE = new ConfigSetting(config, "gui.item admin.items.delete item.lore", Collections.singletonList("&7Click to delete this item"));
 
+    /*  ===============================
+     *         BIDDING GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_BIDDING_TITLE = new ConfigSetting(config, "gui.bidding.title", "&7Auction House - &eBidding");
+    public static final ConfigSetting GUI_BIDDING_BG_ITEM = new ConfigSetting(config, "gui.bidding.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+    public static final ConfigSetting GUI_BIDDING_ITEMS_DEFAULT_ITEM = new ConfigSetting(config, "gui.bidding.items.default amount.item", XMaterial.SUNFLOWER.name());
+    public static final ConfigSetting GUI_BIDDING_ITEMS_DEFAULT_NAME = new ConfigSetting(config, "gui.bidding.items.default amount.name", "&a&LDefault Amount");
+    public static final ConfigSetting GUI_BIDDING_ITEMS_DEFAULT_LORE = new ConfigSetting(config, "gui.bidding.items.default amount.lore", Collections.singletonList("&7Click to bid default amount"));
+
+    public static final ConfigSetting GUI_BIDDING_ITEMS_CUSTOM_ITEM = new ConfigSetting(config, "gui.bidding.items.custom amount.item", XMaterial.OAK_SIGN.name());
+    public static final ConfigSetting GUI_BIDDING_ITEMS_CUSTOM_NAME = new ConfigSetting(config, "gui.bidding.items.custom amount.name", "&a&lCustom Amount");
+    public static final ConfigSetting GUI_BIDDING_ITEMS_CUSTOM_LORE = new ConfigSetting(config, "gui.bidding.items.custom amount.lore", Collections.singletonList("&7Click to bid a custom amount"));
 
     /*  ===============================
      *         AUCTION STACKS
      *  ===============================*/
-    public static final ConfigSetting AUCTION_ITEM_AUCTION_STACK = new ConfigSetting(config, "auction items.auction stack", Arrays.asList(
-            "&7-------------------------",
+    public static final ConfigSetting AUCTION_STACK_DETAILS_HEADER = new ConfigSetting(config, "auction stack.header", Collections.singletonList("&7&m-------------------------"));
+    public static final ConfigSetting AUCTION_STACK_DETAILS_SELLER = new ConfigSetting(config, "auction stack.seller lines", Arrays.asList(
             "&eSeller&f: &b%seller%",
-            "",
+            ""
+    ));
+
+    public static final ConfigSetting AUCTION_STACK_DETAILS_BUY_NOW = new ConfigSetting(config, "auction stack.buy now lines", Arrays.asList(
             "&eBuy Now: &a$%buynowprice%",
+            ""
+    ));
+
+    public static final ConfigSetting AUCTION_STACK_DETAILS_CURRENT_PRICE = new ConfigSetting(config, "auction stack.current price lines", Collections.singletonList(
+            "&eCurrent Price: &a$%currentprice%"
+    ));
+
+    public static final ConfigSetting AUCTION_STACK_DETAILS_BID_INCREMENT = new ConfigSetting(config, "auction stack.bid increment lines", Collections.singletonList(
+            "&eBid Increment: &a$%bidincrement%"
+    ));
+
+    public static final ConfigSetting AUCTION_STACK_DETAILS_HIGHEST_BIDDER = new ConfigSetting(config, "auction stack.highest bidder lines", Collections.singletonList(
+            "&eHighest Bidder: &a%highestbidder%"
+    ));
+
+    public static final ConfigSetting AUCTION_STACK_DETAILS_TIME_LEFT = new ConfigSetting(config, "auction stack.time left lines", Arrays.asList(
             "",
             "&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
-    ), "This the item stack lore that will be appended to", "auction items in /ah (lore will be applied first, then these)");
+    ));
 
-    public static final ConfigSetting AUCTION_ITEM_LISTING_STACK = new ConfigSetting(config, "auction items.listing stack", Arrays.asList(
-            "&7-------------------------",
-            "&eBuy Now: &a$%buynowprice%",
-            "&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
-    ), "This the item stack lore that will be appended to", "auction items in /ah listings (lore will be applied first, then these)");
+    public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROL_HEADER = new ConfigSetting(config, "auction stack.controls.header", Collections.singletonList("&7&m-------------------------"));
+    public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROL_FOOTER = new ConfigSetting(config, "auction stack.controls.footer", Collections.singletonList("&7&m-------------------------"));
+    public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_INSPECTION = new ConfigSetting(config, "auction stack.controls.inspection", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box/bundled item)");
+    public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_ACCEPT_BID = new ConfigSetting(config, "auction stack.controls.accept bid", Collections.singletonList("&eRight-Click to accept the current bid"), "This will only show on items within the active listings menu on biddable items.");
+    public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_ITEM = new ConfigSetting(config, "auction stack.controls.cancel item", Collections.singletonList("&eLeft-Click to cancel this listing"));
 
-    public static final ConfigSetting AUCTION_ITEM_AUCTION_STACK_WITH_BID = new ConfigSetting(config, "auction items.auction stack with bid", Arrays.asList(
-            "&7-------------------------",
-            "&eSeller&f: &b%seller%",
-            "",
-            "&eBuy Now: &a$%buynowprice%",
-            "&eCurrent Price: &a$%currentprice%",
-            "&eBid Increment: &a$%bidincrement%",
-            "&eHighest Bidder: &a%highestbidder%",
-            "",
-            "&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
-    ), "This the item stack lore that will be appended to", "auction items in /ah (lore will be applied first, then these)");
-
-    public static final ConfigSetting AUCTION_ITEM_LISTING_STACK_WITH_BID = new ConfigSetting(config, "auction items.listing stack with bid", Arrays.asList(
-            "&7-------------------------",
-            "&eBuy Now: &a$%buynowprice%",
-            "&eCurrent Price: &a$%currentprice%",
-            "&eBid Increment: &a$%bidincrement%",
-            "&eHighest Bidder: &a%highestbidder%",
-            "&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
-    ), "This the item stack lore that will be appended to", "auction items in /ah listings (lore will be applied first, then these)");
-
-    public static final ConfigSetting AUCTION_PURCHASE_CONTROL_HEADER = new ConfigSetting(config, "auction items.controls.header", Collections.singletonList("&7-------------------------"));
-    public static final ConfigSetting AUCTION_PURCHASE_CONTROL_FOOTER = new ConfigSetting(config, "auction items.controls.footer", Collections.singletonList("&7-------------------------"));
-
-    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_BID_ON = new ConfigSetting(config, "auction items.controls.using bid", Arrays.asList(
+    public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_BID_ON = new ConfigSetting(config, "auction stack.controls.using bid", Arrays.asList(
             "&eLeft-Click&f: &bBid",
             "&eRight-Click&f: &bBuy Now"
     ), "This will be appended at the end of the lore", "If the auction item is using a bid, this will show");
 
-    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_BID_OFF = new ConfigSetting(config, "auction items.controls.not using bid", Collections.singletonList(
+    public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_BID_ON_NO_BUY_NOW = new ConfigSetting(config, "auction stack.controls.using bid without buy now", Collections.singletonList(
+            "&eLeft-Click&f: &bBid"
+    ), "This will be appended at the end of the lore", "If the auction item is using a bid, this will show");
+
+
+    public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_BID_OFF = new ConfigSetting(config, "auction stack.controls.not using bid", Collections.singletonList(
             "&eLeft-Click&f: &bBuy Now"
     ), "This will be appended at the end of the lore", "If the auction item is not using a bid, this will show");
 
-    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_INSPECTION = new ConfigSetting(config, "auction items.controls.inspection", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box/bundled item)");
-    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_ACCEPT_BID = new ConfigSetting(config, "auction items.controls.accept bid", Collections.singletonList("&eRight-Click to accept the current bid"), "This will only show on items within the active listings menu on biddable items.");
-    public static final ConfigSetting AUCTION_PURCHASE_CONTROLS_BUY_NOW_OFF_FOR_BID = new ConfigSetting(config, "auction items.controls.buy now is off for bid", "&cN/A", "If they player sets the buy now price to -1 on a bid item, it will mean make the item", "a bid item, but users will not be able to use the buy now option on the item.");
-
     /*  ===============================
-     *         AUCTION STACKS
+     *         AUCTION SOUNDS
      *  ===============================*/
     public static final ConfigSetting SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE = new ConfigSetting(config, "sounds.listed item on the auction house", XSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound().name());
     public static final ConfigSetting SOUNDS_NAVIGATE_GUI_PAGES = new ConfigSetting(config, "sounds.navigated between gui pages", XSound.ENTITY_BAT_TAKEOFF.parseSound().name());

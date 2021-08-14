@@ -40,6 +40,9 @@ public class LocaleSettings {
         languageNodes.put("general.addeditemtofilterwhitelist", "&aAdded &2%item_name%&a to the &2%filter_category%&a's whitelist");
         languageNodes.put("general.finishenteringprice", "&cPlease finish entering the new price first.");
         languageNodes.put("general.invalidtimestring", "&cInvalid time, use the following format, ex: 1d (valid suffixes: s,m,h,d,y)");
+        languageNodes.put("general.something_went_wrong_while_listing", "&cSomething went wrong while listing item.");
+        languageNodes.put("general.toggled listing.on", "&aYou turned on listing messages");
+        languageNodes.put("general.toggled listing.off", "&cYou turned off listing messages");
 
 
         languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
@@ -55,6 +58,7 @@ public class LocaleSettings {
         languageNodes.put("prompts.enter new buy now price", "&aPlease enter the new buy now price in chat:");
         languageNodes.put("prompts.enter new starting bid", "&aPlease enter the new starting bid in chat:");
         languageNodes.put("prompts.enter new bid increment", "&aPlease enter the new bid increment in chat:");
+        languageNodes.put("prompts.enter bid amount", "&aPlease enter bid amount in chat:");
 
         languageNodes.put("transaction.sale_type.bid_won", "Won Auction");
         languageNodes.put("transaction.sale_type.immediate_buy", "Bought Immediately");
@@ -105,8 +109,9 @@ public class LocaleSettings {
         languageNodes.put("auction.itemsold", "&eYou sold &6%item% &eto &6%buyer_name% &efor &a%price%");
         languageNodes.put("auction.itemnotavailable", "&cThat item is no longer available :(");
         languageNodes.put("auction.biditemwithdisabledbuynow", "&CN/A");
-        languageNodes.put("auction.outbid", "&6%player &ehas out bid you for &6%item%");
-        languageNodes.put("auction.placedbid", "&6%player &eincreased the bid to &a$%amount% &eon &6%item%");
+        languageNodes.put("auction.outbid", "&6%player% &ehas out bid you for &6%item%");
+        languageNodes.put("auction.placedbid", "&6%player% &eincreased the bid to &a$%amount% &eon &6%item%");
+        languageNodes.put("auction.nobids", "&cNo Bids");
 
         languageNodes.put("auction.tax.cannotpaylistingfee", "&cYou do not have enough money to pay the listing fee &f(&4$%price%&f)");
         languageNodes.put("auction.tax.paidlistingfee", "&aPaid &2$%price%&a listing fee");
@@ -128,6 +133,7 @@ public class LocaleSettings {
         languageNodes.put("commands.syntax.filter", "filter [additem] [category]");
         languageNodes.put("commands.syntax.ban", "ban [player] [time] [reason]");
         languageNodes.put("commands.syntax.unban", "ban <player>");
+        languageNodes.put("commands.syntax.togglelistinfo", "togglelistinfo");
 
         languageNodes.put("commands.description.active", "View all your auction listings");
         languageNodes.put("commands.description.auctionhouse", "Main command for the plugin, it opens the auction window.");
@@ -142,6 +148,7 @@ public class LocaleSettings {
         languageNodes.put("commands.description.filter", "Edit the filter whitelist items");
         languageNodes.put("commands.description.ban", "Ban a player from the auction house for a set amount of time.");
         languageNodes.put("commands.description.unban", "Unban a player from the auction house");
+        languageNodes.put("commands.description.togglelistinfo", "Toggle whether auction house should message you when you list an item");
     }
 
     public static void setup() {

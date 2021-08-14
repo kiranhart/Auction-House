@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
@@ -20,9 +21,9 @@ import org.bukkit.inventory.ItemStack;
 public class GUIAdminItem extends Gui {
 
     private final AuctionPlayer auctionPlayer;
-    private final AuctionItem auctionItem;
+    private final AuctionedItem auctionItem;
 
-    public GUIAdminItem(AuctionPlayer auctionPlayer, AuctionItem auctionItem) {
+    public GUIAdminItem(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
         this.auctionPlayer = auctionPlayer;
         this.auctionItem = auctionItem;
         setTitle(TextUtils.formatText(Settings.GUI_ITEM_ADMIN_TITLE.getString()));
@@ -37,14 +38,13 @@ public class GUIAdminItem extends Gui {
 
     private void draw() {
         setButton(1, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_ITEM.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_NAME.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_LORE.getStringList(), null), e -> {
-            this.auctionItem.setRemainingTime(0);
+            this.auctionItem.setExpiresAt(System.currentTimeMillis());
             this.auctionItem.setExpired(true);
             e.gui.close();
         });
 
         setButton(1, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_ITEM.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_NAME.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_LORE.getStringList(), null), e -> {
-            ItemStack item = AuctionAPI.getInstance().deserializeItem(this.auctionItem.getRawItem());
-            PlayerUtils.giveItem(e.player, item);
+            PlayerUtils.giveItem(e.player, this.auctionItem.getItem());
             AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(this.auctionItem);
             e.gui.close();
         });

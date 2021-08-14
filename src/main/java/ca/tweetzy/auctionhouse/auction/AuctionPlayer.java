@@ -25,18 +25,19 @@ public class AuctionPlayer {
     private AuctionItemCategory selectedFilter;
     private AuctionSortType auctionSortType;
     private String currentSearchPhrase;
+    private boolean showListingInfo = true;
 
     public AuctionPlayer(Player player) {
         this.player = player;
         resetFilter();
     }
 
-    public List<AuctionItem> getItems(boolean getExpired) {
-        List<AuctionItem> items = new ArrayList<>();
+    public List<AuctionedItem> getItems(boolean getExpired) {
+        List<AuctionedItem> items = new ArrayList<>();
 
-        for (Map.Entry<UUID, AuctionItem> entry : AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().entrySet()) {
-            AuctionItem auctionItem = entry.getValue();
-            if (auctionItem.getOwner().equals(this.player.getUniqueId()) && auctionItem.isExpired() == getExpired && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getKey())) {
+        for (Map.Entry<UUID, AuctionedItem> entry : AuctionHouse.getInstance().getAuctionItemManager().getItems().entrySet()) {
+            AuctionedItem auctionItem = entry.getValue();
+            if (auctionItem.getOwner().equals(this.player.getUniqueId()) && auctionItem.isExpired() == getExpired && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
                 items.add(auctionItem);
             }
         }

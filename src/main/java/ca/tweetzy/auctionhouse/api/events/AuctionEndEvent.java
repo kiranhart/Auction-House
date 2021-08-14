@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.api.events;
 
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.OfflinePlayer;
@@ -25,10 +26,10 @@ public class AuctionEndEvent extends Event implements Cancellable {
 
     private OfflinePlayer originalOwner;
     private OfflinePlayer buyer;
-    private AuctionItem auctionItem;
+    private AuctionedItem auctionItem;
     private AuctionSaleType saleType;
 
-    public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionItem auctionItem, AuctionSaleType saleType, boolean async) {
+    public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionedItem auctionItem, AuctionSaleType saleType, boolean async) {
         super(async);
         this.originalOwner = originalOwner;
         this.buyer = buyer;
@@ -36,7 +37,7 @@ public class AuctionEndEvent extends Event implements Cancellable {
         this.saleType = saleType;
     }
 
-    public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionItem auctionItem, AuctionSaleType saleType) {
+    public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionedItem auctionItem, AuctionSaleType saleType) {
         this(originalOwner, buyer, auctionItem, saleType, true);
     }
 

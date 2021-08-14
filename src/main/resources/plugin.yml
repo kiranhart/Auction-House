@@ -5,7 +5,7 @@ main: ca.tweetzy.auctionhouse.AuctionHouse
 description: Auction House is a premium auction solution for your server.
 website: https://tweetzy.ca/
 authors: [Kiran Hart]
-softdepend: [Vault, PlayerPoints]
+softdepend: [Vault, PlayerPoints, PlaceholderAPI, MMOItems]
 
 commands:
   auctionhouse:
@@ -32,6 +32,7 @@ permissions:
       auctionhouse.cmd.filter: true
       auctionhouse.cmd.ban: true
       auctionhouse.cmd.unban: true
+      auctionhouse.cmd.togglelistinfo: true
   auctionhouse.cmd:
     description: Allows the user to use /ah
     default: op
@@ -74,3 +75,6 @@ permissions:
   auctionhouse.cmd.unban:
     description: Allows the user to unban players from the auction house
     default: op
+  auctionhouse.cmd.togglelistinfo:
+    description: Allows the user to turn off their listing messages
+    default: true

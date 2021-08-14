@@ -1,9 +1,9 @@
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionStackType;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.guis.GUIActiveAuctions;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
@@ -22,9 +22,9 @@ import java.util.Objects;
 public class GUIConfirmCancel extends Gui {
 
     final AuctionPlayer auctionPlayer;
-    final AuctionItem auctionItem;
+    final AuctionedItem auctionItem;
 
-    public GUIConfirmCancel(AuctionPlayer auctionPlayer, AuctionItem auctionItem) {
+    public GUIConfirmCancel(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
         this.auctionPlayer = auctionPlayer;
         this.auctionItem = auctionItem;
         setTitle(TextUtils.formatText(Settings.GUI_CONFIRM_CANCEL_TITLE.getString()));
@@ -41,7 +41,7 @@ public class GUIConfirmCancel extends Gui {
         setActionForRange(5, 8, ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer)));
         setActionForRange(0, 3, ClickType.LEFT, e -> {
             // Re-select the item to ensure that it's available
-            AuctionItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getKey());
+            AuctionedItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getId());
             if (located == null) {
                 e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
                 return;

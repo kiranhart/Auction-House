@@ -1,9 +1,9 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionStackType;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmCancel;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
@@ -30,7 +30,7 @@ public class GUIActiveAuctions extends Gui {
     private final AuctionPlayer auctionPlayer;
     private BukkitTask task;
 
-    private List<AuctionItem> items;
+    private List<AuctionedItem> items;
 
     public GUIActiveAuctions(AuctionPlayer auctionPlayer) {
         this.auctionPlayer = auctionPlayer;
@@ -54,20 +54,20 @@ public class GUIActiveAuctions extends Gui {
     private void drawItems() {
         AuctionHouse.newChain().asyncFirst(() -> {
             this.items = this.auctionPlayer.getItems(false);
-            return this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
+            return this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
         }).asyncLast((data) -> {
             pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));
             drawPaginationButtons();
 
             int slot = 0;
-            for (AuctionItem item : data) {
+            for (AuctionedItem item : data) {
                 setButton(slot++, item.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST), e -> {
                     switch (e.clickType) {
                         case LEFT:
-                            if (((item.getBidStartPrice() > 0 || item.getBidIncPrice() > 0) && Settings.ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS.getBoolean()) || Settings.ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS.getBoolean()) {
+                            if (((item.getBidStartingPrice() > 0 || item.getBidIncrementPrice() > 0) && Settings.ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS.getBoolean()) || Settings.ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS.getBoolean()) {
                                 if (item.getHighestBidder().equals(e.player.getUniqueId())) {
                                     item.setExpired(true);
-                                    item.setRemainingTime(0);
+                                    item.setExpiresAt(System.currentTimeMillis());
                                     draw();
                                     return;
                                 }
@@ -80,8 +80,9 @@ public class GUIActiveAuctions extends Gui {
                             draw();
                             break;
                         case RIGHT:
-                            if (Settings.ALLOW_PLAYERS_TO_ACCEPT_BID.getBoolean() && item.getBidStartPrice() != 0 && !item.getHighestBidder().equals(e.player.getUniqueId())) {
-                                item.setRemainingTime(0);
+                            if (Settings.ALLOW_PLAYERS_TO_ACCEPT_BID.getBoolean() && item.getBidStartingPrice() != 0 && !item.getHighestBidder().equals(e.player.getUniqueId())) {
+                                item.setExpired(true);
+                                item.setExpiresAt(System.currentTimeMillis());
                                 draw();
                             }
                             break;
@@ -122,6 +123,6 @@ public class GUIActiveAuctions extends Gui {
     }
 
     private void cleanup() {
-        task.cancel();
+        if (task != null) task.cancel();
     }
 }

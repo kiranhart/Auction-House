@@ -1,18 +1,17 @@
 package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The current file has been created by Kiran Hart
@@ -23,61 +22,45 @@ import java.util.stream.Collectors;
 
 public class AuctionItemManager {
 
-    private final ConcurrentHashMap<UUID, AuctionItem> auctionItems = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<UUID, AuctionItem> garbageBin = new ConcurrentHashMap<>();
+    /*
+     * If not using usingDynamicLoad, items will be loaded into this map during initialization or when a new item is added
+     */
+    @Getter
+    private final ConcurrentHashMap<UUID, AuctionedItem> items = new ConcurrentHashMap<>();
 
-    public void addItem(AuctionItem auctionItem) {
-        if (auctionItem == null) return;
-        this.auctionItems.put(auctionItem.getKey(), auctionItem);
-    }
+    @Getter
+    private final ConcurrentHashMap<AuctionedItem, Long> expiredItems = new ConcurrentHashMap<>();
 
-    public void sendToGarbage(AuctionItem auctionItem) {
-        if (auctionItem == null) return;
-        this.garbageBin.put(auctionItem.getKey(), auctionItem);
-    }
+    /**
+     * Items that are in the garbage bin are essentially marked for disposal
+     */
+    @Getter
+    private final ConcurrentHashMap<UUID, AuctionedItem> garbageBin = new ConcurrentHashMap<>();
 
-    public void removeUnknownOwnerItems() {
-        List<UUID> knownOfflinePlayers = Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getUniqueId).collect(Collectors.toList());
-        this.auctionItems.keySet().removeIf(id -> !knownOfflinePlayers.contains(id));
-    }
-
-    public AuctionItem getItem(UUID uuid) {
-        return this.auctionItems.getOrDefault(uuid, null);
-    }
-
-    public ConcurrentHashMap<UUID, AuctionItem> getAuctionItems() {
-        return this.auctionItems;
-    }
-
-    public ConcurrentHashMap<UUID, AuctionItem> getGarbageBin() {
-        return this.garbageBin;
-    }
-
-    public void loadItems(boolean useDatabase) {
-        if (useDatabase) {
-            AuctionHouse.getInstance().getDataManager().getItems(all -> all.forEach(this::addItem));
-        } else {
-            if (AuctionHouse.getInstance().getData().contains("auction items") && AuctionHouse.getInstance().getData().isList("auction items")) {
-                List<AuctionItem> items = AuctionHouse.getInstance().getData().getStringList("auction items").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (AuctionItem) object).collect(Collectors.toList());
-                long start = System.currentTimeMillis();
-                items.forEach(this::addItem);
-                AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&aLoaded &2%d &aauction items(s) in &e%d&fms", items.size(), System.currentTimeMillis() - start))).sendPrefixedMessage(Bukkit.getConsoleSender());
-                AuctionHouse.getInstance().getData().set("auction items", null);
-                AuctionHouse.getInstance().getData().save();
+    public void start() {
+        // Attempt to convert from old serialization method
+        AuctionHouse.getInstance().getDataManager().getItems((error, results) -> {
+            if (error == null) {
+                for (AuctionedItem item : results) {
+                    addAuctionItem(item);
+                }
             }
-        }
+        });
     }
 
-    public void saveItems(boolean useDatabase, boolean async) {
-        if (useDatabase) {
-            AuctionHouse.getInstance().getDataManager().saveItems(new ArrayList<>(this.getAuctionItems().values()), async);
-        } else {
-            this.adjustItemsInFile(new ArrayList<>(this.getAuctionItems().values()));
-        }
+    public void end() {
+        AuctionHouse.getInstance().getDataManager().updateItems(this.items.values(), null);
     }
 
-    public void adjustItemsInFile(List<AuctionItem> items) {
-        AuctionHouse.getInstance().getData().set("auction items", items.stream().map(AuctionAPI.getInstance()::convertToBase64).collect(Collectors.toList()));
-        AuctionHouse.getInstance().getData().save();
+    public void addAuctionItem(@NonNull AuctionedItem auctionedItem) {
+        this.items.put(auctionedItem.getId(), auctionedItem);
+    }
+
+    public void sendToGarbage(@NonNull AuctionedItem auctionedItem) {
+        this.garbageBin.put(auctionedItem.getId(), auctionedItem);
+    }
+
+    public AuctionedItem getItem(@NonNull UUID id) {
+        return this.items.getOrDefault(id, null);
     }
 }

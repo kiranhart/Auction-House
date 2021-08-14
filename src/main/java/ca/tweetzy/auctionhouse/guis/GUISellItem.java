@@ -2,29 +2,20 @@ package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
-import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
-import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
-import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.TimeUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -115,7 +106,7 @@ public class GUISellItem extends Gui {
 
         // the draw item that is being listed
         setButton(1, 4, this.itemToBeListed, e -> {
-            if (e.clickType == ClickType.RIGHT) e.event.setCancelled(true);
+            if (e.clickType == ClickType.RIGHT || e.clickType == ClickType.NUMBER_KEY) e.event.setCancelled(true);
             // Is the user selling with an item in hand?
             if (AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().containsKey(e.player.getUniqueId())) {
                 if (AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(e.player.getUniqueId()).getType() != XMaterial.AIR.parseMaterial()) {
@@ -136,7 +127,7 @@ public class GUISellItem extends Gui {
 
                 ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new buy now price").getMessage()), chat -> {
                     String msg = chat.getMessage();
-                    if (validateChatNumber(msg, Settings.MIN_AUCTION_PRICE.getDouble())) {
+                    if (validateChatNumber(msg, Settings.MIN_AUCTION_PRICE.getDouble(), false) && validateChatNumber(msg, Settings.MAX_AUCTION_PRICE.getDouble(), true)) {
                         // check if the buy now price is higher than the bid start price
                         if (this.isAllowingBuyNow && this.isBiddingItem && Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && Double.parseDouble(msg) < this.bidStartPrice) {
                             reopen(e);
@@ -159,7 +150,7 @@ public class GUISellItem extends Gui {
                 e.gui.close();
                 ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new starting bid").getMessage()), chat -> {
                     String msg = chat.getMessage();
-                    if (validateChatNumber(msg, Settings.MIN_AUCTION_START_PRICE.getDouble())) {
+                    if (validateChatNumber(msg, Settings.MIN_AUCTION_START_PRICE.getDouble(), false) && validateChatNumber(msg, Settings.MAX_AUCTION_START_PRICE.getDouble(), true)) {
                         this.bidStartPrice = Double.parseDouble(msg);
                     }
                     reopen(e);
@@ -174,7 +165,7 @@ public class GUISellItem extends Gui {
                 e.gui.close();
                 ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new bid increment").getMessage()), chat -> {
                     String msg = chat.getMessage();
-                    if (validateChatNumber(msg, Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble())) {
+                    if (validateChatNumber(msg, Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(), false) && validateChatNumber(msg, Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble(), true)) {
                         this.bidIncrementPrice = Double.parseDouble(msg);
                     }
                     reopen(e);
@@ -217,66 +208,32 @@ public class GUISellItem extends Gui {
             if (getItem(1, 4) == null || getItem(1, 4).getType() == XMaterial.AIR.parseMaterial()) return;
             setTheItemToBeListed();
 
-            AuctionItem auctionItem = new AuctionItem(
-                    e.player.getUniqueId(),
-                    e.player.getUniqueId(),
+            AuctionAPI.getInstance().listAuction(
+                    e.player,
                     this.itemToBeListed,
-                    MaterialCategorizer.getMaterialCategory(itemToBeListed),
-                    UUID.randomUUID(),
+                    this.itemToBeListed,
+                    this.auctionPlayer.getAllowedSellTime(),
                     this.isBiddingItem && !isAllowingBuyNow || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? -1 : buyNowPrice,
                     this.isBiddingItem ? bidStartPrice : 0,
                     this.isBiddingItem ? bidIncrementPrice : 0,
                     this.isBiddingItem ? bidStartPrice : buyNowPrice,
-                    this.auctionPlayer.getAllowedSellTime(),
+                    this.isBiddingItem,
                     false
             );
 
-            AuctionStartEvent auctionStartEvent = new AuctionStartEvent(e.player, auctionItem);
-            Bukkit.getServer().getPluginManager().callEvent(auctionStartEvent);
-            if (auctionStartEvent.isCancelled()) return;
-
-            if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
-                if (!EconomyManager.hasBalance(e.player, Settings.TAX_LISTING_FEE.getDouble())) {
-                    AuctionHouse.getInstance().getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(e.player);
-                    return;
-                }
-                EconomyManager.withdrawBalance(e.player, Settings.TAX_LISTING_FEE.getDouble());
-                AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(e.player);
-                AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(e.player);
-            }
-
-            AuctionHouse.getInstance().getAuctionItemManager().addItem(auctionItem);
-            SoundManager.getInstance().playSound(e.player, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
             AuctionHouse.getInstance().getAuctionPlayerManager().removeItemFromSellHolding(e.player.getUniqueId());
             AuctionHouse.getInstance().getAuctionPlayerManager().removeFromUsingSellGUI(e.player.getUniqueId());
+            setAllowClose(true);
+            e.gui.exit();
 
             if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
-                setAllowClose(true);
                 e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
-            } else {
-                setAllowClose(true);
-                e.gui.exit();
-            }
-
-            // TODO FIGURE OUT WHY THE HELL THIS IS NOT WORKING
-            String NAX = AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage();
-
-            String msg = AuctionHouse.getInstance().getLocale().getMessage(isBiddingItem ? "auction.listed.withbid" : "auction.listed.nobid")
-                    .processPlaceholder("amount", itemToBeListed.getAmount())
-                    .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToBeListed))
-                    .processPlaceholder("base_price", auctionItem.getBasePrice() <= -1 ? NAX : AuctionAPI.getInstance().formatNumber(auctionItem.getBasePrice()))
-                    .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(auctionItem.getBidStartPrice()))
-                    .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(auctionItem.getBidIncPrice())).getMessage();
-
-            AuctionHouse.getInstance().getLocale().newMessage(msg).sendPrefixedMessage(e.player);
-
-            if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
-                Bukkit.getOnlinePlayers().forEach(p -> AuctionHouse.getInstance().getLocale().newMessage(msg).processPlaceholder("player", p.getName()).sendPrefixedMessage(p));
             }
         });
     }
 
-    private boolean validateChatNumber(String input, double requirement) {
+    private boolean validateChatNumber(String input, double requirement, boolean checkMax) {
+        if (checkMax) return input != null && input.length() != 0 && NumberUtils.isDouble(input) && Double.parseDouble(input) <= requirement;
         return input != null && input.length() != 0 && NumberUtils.isDouble(input) && Double.parseDouble(input) >= requirement;
     }
 

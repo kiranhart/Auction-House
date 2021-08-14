@@ -1,9 +1,8 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -26,7 +25,8 @@ import java.util.stream.Collectors;
 public class GUIExpiredItems extends Gui {
 
     final AuctionPlayer auctionPlayer;
-    private List<AuctionItem> items;
+
+    private List<AuctionedItem> items;
 
     public GUIExpiredItems(AuctionPlayer auctionPlayer) {
         this.auctionPlayer = auctionPlayer;
@@ -43,7 +43,7 @@ public class GUIExpiredItems extends Gui {
 
         AuctionHouse.newChain().asyncFirst(() -> {
             this.items = this.auctionPlayer.getItems(true);
-            return this.items.stream().sorted(Comparator.comparingInt(AuctionItem::getRemainingTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
+            return this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
         }).asyncLast((data) -> {
             pages = (int) Math.max(1, Math.ceil(this.auctionPlayer.getItems(true).size() / (double) 45));
             setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
@@ -56,17 +56,18 @@ public class GUIExpiredItems extends Gui {
 
 
             setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_EXPIRED_AUCTIONS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList(), null), e -> {
-                for (AuctionItem auctionItem : data) {
-                    PlayerUtils.giveItem(e.player, AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem()));
+                for (AuctionedItem auctionItem : data) {
+                    PlayerUtils.giveItem(e.player, auctionItem.getItem());
                     AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
                 }
                 draw();
             });
 
             int slot = 0;
-            for (AuctionItem auctionItem : data) {
-                setButton(slot++, AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem()), e -> {
-                    PlayerUtils.giveItem(e.player, AuctionAPI.getInstance().deserializeItem(auctionItem.getRawItem()));
+            for (AuctionedItem auctionItem : data) {
+                setButton(slot++, auctionItem.getItem(), e -> {
+                    if (!Settings.ALLOW_INDIVIDUAL_ITEM_CLAIM.getBoolean()) return;
+                    PlayerUtils.giveItem(e.player, auctionItem.getItem());
                     AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
                     e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer));
                 });

@@ -57,7 +57,8 @@ public class PlayerListeners implements Listener {
         Player player = e.getPlayer();
         ItemStack heldItem = PlayerHelper.getHeldItem(player);
 
-        if (heldItem == null || (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)) return;
+        if (heldItem == null || (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK))
+            return;
         if (heldItem.getType() == XMaterial.AIR.parseMaterial()) return;
         if (!NBTEditor.contains(heldItem, "AuctionBundleItem")) return;
         e.setCancelled(true);
@@ -68,7 +69,6 @@ public class PlayerListeners implements Listener {
             items.add(AuctionAPI.getInstance().deserializeItem(NBTEditor.getByteArray(heldItem, "AuctionBundleItem-" + i)));
         }
 
-        // TODO FIX THE TWEETY CORE TAKE ACTIVE ITEM METHOD, IN THE MEAN TIME DO IT LIKE THIS
         if (heldItem.getAmount() >= 2) {
             heldItem.setAmount(heldItem.getAmount() - 1);
         } else {

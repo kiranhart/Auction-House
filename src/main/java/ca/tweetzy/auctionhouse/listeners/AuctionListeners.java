@@ -33,7 +33,7 @@ public class AuctionListeners implements Listener {
                             e.getAuctionItem(),
                             AuctionSaleType.USED_BIDDING_SYSTEM,
                             true,
-                            e.getAuctionItem().getBidStartPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble()
+                            e.getAuctionItem().isBidItem()
                     );
                 });
             }, 1L);
@@ -44,15 +44,25 @@ public class AuctionListeners implements Listener {
     public void onAuctionEnd(AuctionEndEvent e) {
         Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
             if (Settings.RECORD_TRANSACTIONS.getBoolean()) {
-                AuctionHouse.getInstance().getTransactionManager().addTransaction(new Transaction(
+
+                AuctionHouse.getInstance().getDataManager().insertTransactionAsync(new Transaction(
                         UUID.randomUUID(),
                         e.getOriginalOwner().getUniqueId(),
                         e.getBuyer().getUniqueId(),
+                        e.getAuctionItem().getOwnerName(),
+                        e.getBuyer().getName(),
                         System.currentTimeMillis(),
-                        e.getAuctionItem(),
-                        e.getSaleType()
-                ));
+                        e.getAuctionItem().getItem(),
+                        e.getSaleType(),
+                        e.getAuctionItem().getCurrentPrice()
+                ), (error, transaction) -> {
+                    if (error == null) {
+                        AuctionHouse.getInstance().getTransactionManager().addTransaction(transaction);
+                    }
+                });
+
             }
+
             if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_FINISH.getBoolean()) {
                 Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> AuctionAPI.getInstance().sendDiscordMessage(hook, e.getOriginalOwner(), e.getBuyer(), e.getAuctionItem(), e.getSaleType(), false, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM));
             }

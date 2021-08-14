@@ -1,10 +1,9 @@
 package ca.tweetzy.auctionhouse.commands;
 
-import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -16,25 +15,16 @@ import java.util.List;
  */
 public class CommandStatus extends AbstractCommand {
 
-    public CommandStatus()  {
+    public CommandStatus() {
         super(CommandType.CONSOLE_OK, "status");
     }
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
-        AuctionHouse.newChain().async(() -> {
+        if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
+        Player player = (Player) sender;
 
-            int totalItems = AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().size();
-            int activeItems = (int) AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().values().stream().filter(item -> !item.isExpired()).count();
-            int expiredItems = (int) AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().values().stream().filter(AuctionItem::isExpired).count();
-            int totalTransactions = AuctionHouse.getInstance().getTransactionManager().getTransactions().size();
 
-            sender.sendMessage(TextUtils.formatText("&eAuction House Statistics"));
-            sender.sendMessage(TextUtils.formatText(String.format("&eRunning version &a%s", AuctionHouse.getInstance().getDescription().getVersion())));
-            sender.sendMessage(TextUtils.formatText(""));
-            sender.sendMessage(TextUtils.formatText(String.format("&7Total Items&f: &e%d\n&7Total Transactions&f: &e%d\n&7Active Items&f: &e%d\n&7Expired Items&f: &e%d", totalItems, totalTransactions, activeItems, expiredItems)));
-
-        }).execute();
         return ReturnType.SUCCESS;
     }
 

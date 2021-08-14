@@ -31,7 +31,7 @@ public class GUITransactionView extends Gui {
         setUseLockedCells(Settings.GUI_TRANSACTION_VIEW_BACKGROUND_FILL.getBoolean());
 
         setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUITransactionList(auctionPlayer)));
-        setItem(1, 4, AuctionAPI.getInstance().deserializeItem(transaction.getAuctionItem().getRawItem()));
+        setItem(1, 4, transaction.getItem());
 
         setItem(3, 2, GuiUtils.createButtonItem(AuctionAPI.getInstance().getPlayerHead(Bukkit.getOfflinePlayer(transaction.getSeller()).getName()), TextUtils.formatText(Settings.GUI_TRANSACTION_VIEW_ITEM_SELLER_NAME.getString().replace("%seller_name%", Bukkit.getOfflinePlayer(transaction.getSeller()).getName())),
                 Settings.GUI_TRANSACTION_VIEW_ITEM_SELLER_LORE.getStringList().stream().map(line -> line.replace("%seller_id%", transaction.getSeller().toString())).map(TextUtils::formatText).collect(Collectors.toList())));

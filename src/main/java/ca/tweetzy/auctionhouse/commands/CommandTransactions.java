@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TimeUtils;
@@ -24,6 +25,7 @@ public class CommandTransactions extends AbstractCommand {
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         Player player = (Player) sender;
+        if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
 
         if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
             return ReturnType.FAILURE;

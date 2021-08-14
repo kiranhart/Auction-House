@@ -51,25 +51,11 @@ public class AuctionBanManager {
         return false;
     }
 
-    public void loadBans(boolean useDatabase) {
-        if (useDatabase) {
-            AuctionHouse.getInstance().getDataManager().getBans(all -> all.forEach(this::addBan));
-        } else {
-            if (AuctionHouse.getInstance().getData().contains("auction bans") && AuctionHouse.getInstance().getData().isList("auction bans")) {
-                List<AuctionBan> auctionBans = AuctionHouse.getInstance().getData().getStringList("auction bans").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (AuctionBan) object).collect(Collectors.toList());
-                long start = System.currentTimeMillis();
-                auctionBans.forEach(this::addBan);
-                AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&aLoaded &2%d &abans(s) in &e%d&fms", auctionBans.size(), System.currentTimeMillis() - start))).sendPrefixedMessage(Bukkit.getConsoleSender());
-            }
-        }
+    public void loadBans() {
+        AuctionHouse.getInstance().getDataManager().getBans(all -> all.forEach(this::addBan));
     }
 
-    public void saveBans(boolean useDatabase, boolean async) {
-        if (useDatabase) {
-            AuctionHouse.getInstance().getDataManager().saveBans(new ArrayList<>(getBans().values()), async);
-        } else {
-            AuctionHouse.getInstance().getData().set("auction bans", this.bans.values().stream().map(AuctionAPI.getInstance()::convertToBase64).collect(Collectors.toList()));
-            AuctionHouse.getInstance().getData().save();
-        }
+    public void saveBans( boolean async) {
+        AuctionHouse.getInstance().getDataManager().saveBans(new ArrayList<>(getBans().values()), async);
     }
 }

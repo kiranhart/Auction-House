@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -34,7 +35,7 @@ public class GUIContainerInspect extends Gui {
     private List<ItemStack> items;
 
     private AuctionPlayer auctionPlayer;
-    private AuctionItem auctionItem;
+    private AuctionedItem auctionItem;
     private boolean buyingSpecificQuantity;
     private boolean fromPurchaseGUI;
 
@@ -73,7 +74,7 @@ public class GUIContainerInspect extends Gui {
         setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(close.player.getUniqueId()))));
     }
 
-    public GUIContainerInspect(ItemStack container, AuctionPlayer auctionPlayer, AuctionItem auctionItem, boolean buyingSpecificQuantity) {
+    public GUIContainerInspect(ItemStack container, AuctionPlayer auctionPlayer, AuctionedItem auctionItem, boolean buyingSpecificQuantity) {
         this(container);
         this.auctionPlayer = auctionPlayer;
         this.auctionItem = auctionItem;
@@ -82,7 +83,7 @@ public class GUIContainerInspect extends Gui {
 
         // Overwrite the default close, since they are accessing the inspection from the purchase screen
         setOnClose(close -> {
-            AuctionHouse.getInstance().getTransactionManager().addPrePurchase(close.player, auctionItem.getKey());
+            AuctionHouse.getInstance().getTransactionManager().addPrePurchase(close.player, auctionItem.getId());
             close.manager.showGUI(close.player, new GUIConfirmPurchase(this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));
         });
     }
@@ -96,7 +97,7 @@ public class GUIContainerInspect extends Gui {
         setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
         setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
             if (fromPurchaseGUI) {
-                AuctionHouse.getInstance().getTransactionManager().addPrePurchase(e.player, auctionItem.getKey());
+                AuctionHouse.getInstance().getTransactionManager().addPrePurchase(e.player, auctionItem.getId());
                 e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));
             } else {
                 e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId())));

@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
@@ -23,6 +24,8 @@ public class CommandUnban extends AbstractCommand {
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         if (args.length != 1) return ReturnType.SYNTAX_ERROR;
+        if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
+
         Player target = PlayerUtils.findPlayer(args[0]);
 
         if (target == null) {

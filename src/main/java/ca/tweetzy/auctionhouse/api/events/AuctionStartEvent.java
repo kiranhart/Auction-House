@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.api.events;
 
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -18,9 +19,9 @@ public class AuctionStartEvent extends Event implements Cancellable {
     private boolean cancelled;
 
     private Player seller;
-    private AuctionItem auctionItem;
+    private AuctionedItem auctionItem;
 
-    public AuctionStartEvent(Player seller, AuctionItem auctionItem) {
+    public AuctionStartEvent(Player seller, AuctionedItem auctionItem) {
         this.seller = seller;
         this.auctionItem = auctionItem;
     }
@@ -29,7 +30,7 @@ public class AuctionStartEvent extends Event implements Cancellable {
         return seller;
     }
 
-    public AuctionItem getAuctionItem() {
+    public AuctionedItem getAuctionItem() {
         return auctionItem;
     }
 

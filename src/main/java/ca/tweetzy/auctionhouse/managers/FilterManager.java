@@ -44,31 +44,11 @@ public class FilterManager {
         return this.filterWhitelist.stream().filter(item -> item.getCategory() == category).map(item -> AuctionAPI.getInstance().deserializeItem(item.getRawItem())).collect(Collectors.toList());
     }
 
-    public void loadItems(boolean useDatabase) {
-        if (useDatabase) {
-            AuctionHouse.getInstance().getDataManager().getFilterWhitelist(all -> all.forEach(this::addFilterItem));
-        } else {
-            if (AuctionHouse.getInstance().getData().contains("auction filter whitelist") && AuctionHouse.getInstance().getData().isList("auction filter whitelist")) {
-                List<AuctionFilterItem> items = AuctionHouse.getInstance().getData().getStringList("auction filter whitelist").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (AuctionFilterItem) object).collect(Collectors.toList());
-                long start = System.currentTimeMillis();
-                items.forEach(this::addFilterItem);
-                AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&aLoaded &2%d &aauction filter items(s) in &e%d&fms", items.size(), System.currentTimeMillis() - start))).sendPrefixedMessage(Bukkit.getConsoleSender());
-                AuctionHouse.getInstance().getData().set("auction filter whitelist", null);
-                AuctionHouse.getInstance().getData().save();
-            }
-        }
+    public void loadItems() {
+        AuctionHouse.getInstance().getDataManager().getFilterWhitelist(all -> all.forEach(this::addFilterItem));
     }
 
-    public void saveFilterWhitelist(boolean useDatabase, boolean async) {
-        if (useDatabase) {
-            AuctionHouse.getInstance().getDataManager().saveFilterWhitelist(getFilterWhitelist(), async);
-        } else {
-            this.adjustItemsInFile(this.getFilterWhitelist());
-        }
-    }
-
-    public void adjustItemsInFile(List<AuctionFilterItem> items) {
-        AuctionHouse.getInstance().getData().set("auction filter whitelist", items.stream().map(AuctionAPI.getInstance()::convertToBase64).collect(Collectors.toList()));
-        AuctionHouse.getInstance().getData().save();
+    public void saveFilterWhitelist(boolean async) {
+        AuctionHouse.getInstance().getDataManager().saveFilterWhitelist(getFilterWhitelist(), async);
     }
 }

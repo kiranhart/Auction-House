@@ -1,22 +1,42 @@
 package ca.tweetzy.auctionhouse.api;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
+import ca.tweetzy.auctionhouse.api.hook.MMOItems;
+import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionItem;
+import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
+import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.hooks.EconomyManager;
+import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.ItemUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
+import io.lumine.mythic.lib.api.item.NBTItem;
+import io.lumine.mythic.lib.api.itemtype.MMOItemType;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.*;
@@ -27,6 +47,8 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -171,6 +193,37 @@ public class AuctionAPI {
         return null;
     }
 
+    // ========================================================================================
+
+    public static String encodeItem(ItemStack itemStack) {
+        YamlConfiguration config = new YamlConfiguration();
+        config.set("i", itemStack);
+        return config.saveToString();
+//        return DatatypeConverter.printBase64Binary(config.saveToString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static ItemStack decodeItem(String string) {
+        YamlConfiguration config = new YamlConfiguration();
+        try {
+            config.loadFromString(string);
+        } catch (IllegalArgumentException | InvalidConfigurationException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return config.getItemStack("i", null);
+    }
+
+    public static boolean tellMigrationStatus(CommandSender commandSender) {
+        if (AuctionHouse.getInstance().isMigrating()) {
+            AuctionHouse.getInstance().getLocale().newMessage("&cAuction House is currently migrating auction items, auction usage is disabled until it's finished").sendPrefixedMessage(commandSender);
+            return true;
+        }
+        return false;
+    }
+
+    // ========================================================================================
+
+
     /**
      * Used to create a player head
      *
@@ -195,7 +248,7 @@ public class AuctionAPI {
      * @param isNew       Is this the start of a new auction or the end of one?
      * @param isBid       Is this auction a bid enabled auction, or a single sale auction?
      */
-    public void sendDiscordMessage(String webhook, OfflinePlayer seller, OfflinePlayer buyer, AuctionItem auctionItem, AuctionSaleType saleType, boolean isNew, boolean isBid) {
+    public void sendDiscordMessage(String webhook, OfflinePlayer seller, OfflinePlayer buyer, AuctionedItem auctionItem, AuctionSaleType saleType, boolean isNew, boolean isBid) {
         DiscordWebhook hook = new DiscordWebhook(webhook);
         hook.setUsername(Settings.DISCORD_MSG_USERNAME.getString());
         hook.setAvatarUrl(Settings.DISCORD_MSG_PFP.getString());
@@ -204,6 +257,9 @@ public class AuctionAPI {
         Color colour = Settings.DISCORD_MSG_USE_RANDOM_COLOUR.getBoolean()
                 ? Color.getHSBColor(ThreadLocalRandom.current().nextFloat() * 360F, ThreadLocalRandom.current().nextFloat() * 101F, ThreadLocalRandom.current().nextFloat() * 101F)
                 : Color.getHSBColor(Float.parseFloat(possibleColours[0]) / 360, Float.parseFloat(possibleColours[1]) / 100, Float.parseFloat(possibleColours[2]) / 100);
+
+        ItemStack itemStack = auctionItem.getItem();
+        String itemName = MMOItems.isEnabled() ? MMOItems.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
 
         hook.addEmbed(new DiscordWebhook.EmbedObject()
                 .setTitle(isNew ? Settings.DISCORD_MSG_START_TITLE.getString() : Settings.DISCORD_MSG_FINISH_TITLE.getString())
@@ -214,8 +270,8 @@ public class AuctionAPI {
                 .addField(Settings.DISCORD_MSG_FIELD_FINAL_PRICE_NAME.getString(), isNew ? AuctionHouse.getInstance().getLocale().getMessage("discord.not_sold").getMessage() : Settings.DISCORD_MSG_FIELD_FINAL_PRICE_VALUE.getString().replace("%final_price%", this.getFriendlyNumber(isBid ? auctionItem.getCurrentPrice() : auctionItem.getBasePrice())), Settings.DISCORD_MSG_FIELD_FINAL_PRICE_INLINE.getBoolean())
                 .addField(Settings.DISCORD_MSG_FIELD_IS_BID_NAME.getString(), Settings.DISCORD_MSG_FIELD_IS_BID_VALUE.getString().replace("%is_bid%", isBid ? AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_true").getMessage() : AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_false").getMessage()), Settings.DISCORD_MSG_FIELD_IS_BID_INLINE.getBoolean())
                 .addField(Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_NAME.getString(), isNew ? AuctionHouse.getInstance().getLocale().getMessage("discord.not_bought").getMessage() : Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_VALUE.getString().replace("%purchase_type%", saleType == AuctionSaleType.USED_BIDDING_SYSTEM ? AuctionHouse.getInstance().getLocale().getMessage("discord.sale_bid_win").getMessage() : AuctionHouse.getInstance().getLocale().getMessage("discord.sale_immediate_buy").getMessage()), Settings.DISCORD_MSG_FIELD_PURCHASE_INLINE.getBoolean())
-                .addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", ChatColor.stripColor(getItemName(deserializeItem(auctionItem.getRawItem())))), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean())
-                .addField(Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_VALUE.getString().replace("%item_amount%", String.valueOf(this.deserializeItem(auctionItem.getRawItem()).getAmount())), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_INLINE.getBoolean())
+                .addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", itemName), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean())
+                .addField(Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_VALUE.getString().replace("%item_amount%", String.valueOf(itemStack.getAmount())), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_INLINE.getBoolean())
         );
 
         try {
@@ -264,10 +320,14 @@ public class AuctionAPI {
         Objects.requireNonNull(stack, "Item Stack cannot be null when getting enchantments");
         if (!stack.getEnchantments().isEmpty()) {
             stack.getEnchantments().forEach((k, i) -> {
-                enchantments.add(k.getName());
+                enchantments.add(k.getName() + i);
             });
         }
         return enchantments;
+    }
+
+    public String serializeLines(List<String> lines) {
+        return StringUtils.join(lines, ";=;");
     }
 
     /**
@@ -478,5 +538,127 @@ public class AuctionAPI {
             default:
                 return 0L;
         }
+    }
+
+    /**
+     * Used to insert an auction into the database
+     *
+     * @param seller        Is the player who is listing the item
+     * @param item          Is the item stack being listed to the auction house
+     * @param original      Is the original item stack (only applies if using a bundle)
+     * @param seconds       Is the total amount of seconds the item will be active for
+     * @param basePrice     Is the buy now price
+     * @param bidStartPrice Is the price the bidding will start at if the item is an auction
+     * @param bidIncPrice   Is the default price increment for an auction
+     * @param currentPrice  Is the current/start price of an item
+     * @param isBiddingItem States whether the item is an auction or bin item
+     * @param isUsingBundle States whether the item is a bundled item
+     */
+    public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle) {
+        AuctionedItem auctionedItem = new AuctionedItem();
+        auctionedItem.setId(UUID.randomUUID());
+        auctionedItem.setOwner(seller.getUniqueId());
+        auctionedItem.setHighestBidder(seller.getUniqueId());
+        auctionedItem.setOwnerName(seller.getName());
+        auctionedItem.setHighestBidderName(seller.getName());
+        auctionedItem.setItem(item);
+        auctionedItem.setCategory(MaterialCategorizer.getMaterialCategory(item));
+        auctionedItem.setExpiresAt(System.currentTimeMillis() + 1000L * seconds);
+        auctionedItem.setBidItem(isBiddingItem);
+        auctionedItem.setExpired(false);
+        auctionedItem.setBasePrice(basePrice);
+        auctionedItem.setBidStartingPrice(bidStartPrice);
+        auctionedItem.setBidIncrementPrice(bidIncPrice);
+        auctionedItem.setCurrentPrice(currentPrice);
+
+        if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
+            if (!EconomyManager.hasBalance(seller, Settings.TAX_LISTING_FEE.getDouble())) {
+                AuctionHouse.getInstance().getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
+                return;
+            }
+            EconomyManager.withdrawBalance(seller, Settings.TAX_LISTING_FEE.getDouble());
+            AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
+            AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
+        }
+
+        AuctionStartEvent startEvent = new AuctionStartEvent(seller, auctionedItem);
+        Bukkit.getServer().getPluginManager().callEvent(startEvent);
+        if (startEvent.isCancelled()) return;
+
+        ItemStack finalItemToSell = item.clone();
+        int totalOriginal = isUsingBundle ? AuctionAPI.getInstance().getItemCountInPlayerInventory(seller, original) : finalItemToSell.getAmount();
+
+        if (isUsingBundle) {
+            AuctionAPI.getInstance().removeSpecificItemQuantityFromPlayer(seller, original, totalOriginal);
+        } else {
+            PlayerUtils.takeActiveItem(seller, CompatibleHand.MAIN_HAND, totalOriginal);
+        }
+
+        SoundManager.getInstance().playSound(seller, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
+        String NAX = AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage();
+        String msg = AuctionHouse.getInstance().getLocale().getMessage(auctionedItem.isBidItem() ? "auction.listed.withbid" : "auction.listed.nobid")
+                .processPlaceholder("amount", finalItemToSell.getAmount())
+                .processPlaceholder("item", AuctionAPI.getInstance().getItemName(finalItemToSell))
+                .processPlaceholder("base_price", auctionedItem.getBasePrice() <= -1 ? NAX : AuctionAPI.getInstance().formatNumber(auctionedItem.getBasePrice()))
+                .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(auctionedItem.getBidStartingPrice()))
+                .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(auctionedItem.getBidIncrementPrice())).getMessage();
+
+        String msgToAll = AuctionHouse.getInstance().getLocale().getMessage(auctionedItem.isBidItem() ? "auction.broadcast.withbid" : "auction.broadcast.nobid")
+                .processPlaceholder("amount", finalItemToSell.getAmount())
+                .processPlaceholder("player", seller.getName())
+                .processPlaceholder("item", AuctionAPI.getInstance().getItemName(finalItemToSell))
+                .processPlaceholder("base_price", auctionedItem.getBasePrice() <= -1 ? NAX : AuctionAPI.getInstance().formatNumber(auctionedItem.getBasePrice()))
+                .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(auctionedItem.getBidStartingPrice()))
+                .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(auctionedItem.getBidIncrementPrice())).getMessage();
+
+        if (AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(seller.getUniqueId()) == null) {
+            AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + seller.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+            AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(seller));
+        }
+
+        if (AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(seller.getUniqueId()).isShowListingInfo()) {
+            AuctionHouse.getInstance().getLocale().newMessage(msg).sendPrefixedMessage(seller);
+        }
+
+
+        // Actually attempt the insertion now
+        AuctionHouse.getInstance().getDataManager().insertAuctionAsync(auctionedItem, (error, inserted) -> {
+            if (error != null) {
+                AuctionHouse.getInstance().getLocale().getMessage("general.something_went_wrong_while_listing").sendPrefixedMessage(seller);
+                ItemStack originalCopy = original.clone();
+                if (isUsingBundle) {
+                    originalCopy.setAmount(1);
+                    for (int i = 0; i < totalOriginal; i++) PlayerUtils.giveItem(seller, originalCopy);
+                } else {
+                    originalCopy.setAmount(totalOriginal);
+                    PlayerUtils.giveItem(seller, originalCopy);
+                }
+
+                // If the item could not be added for whatever reason and the tax listing fee is enabled, refund them
+                if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
+                    EconomyManager.deposit(seller, Settings.TAX_LISTING_FEE.getDouble());
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
+                }
+                return;
+            }
+
+            AuctionHouse.getInstance().getAuctionItemManager().addAuctionItem(auctionedItem);
+            if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
+                Bukkit.getOnlinePlayers().forEach(p -> AuctionHouse.getInstance().getLocale().newMessage(msgToAll).sendPrefixedMessage(p));
+            }
+        });
+    }
+
+    public void logException(@Nullable Plugin plugin, @NotNull Throwable th) {
+        logException(plugin, th, null);
+    }
+
+    public void logException(@Nullable Plugin plugin, @NotNull Throwable th, @Nullable String type) {
+        Logger logger = plugin != null ? plugin.getLogger() : Logger.getGlobal();
+        logger.log(Level.FINER, th, () -> "A " + (type == null ? "critical" : type) + " error occurred");
+    }
+
+    void x(ItemStack item) {
+        NBTItem.get(item).getType();
     }
 }

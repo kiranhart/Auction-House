@@ -75,7 +75,7 @@ public class GUITransactionList extends Gui {
                 put("%seller%", Bukkit.getOfflinePlayer(transaction.getSeller()).getName());
                 put("%buyer%", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName());
                 put("%date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
-                put("%item_name%", AuctionAPI.getInstance().getItemName(AuctionAPI.getInstance().deserializeItem(transaction.getAuctionItem().getRawItem())));
+                put("%item_name%", AuctionAPI.getInstance().getItemName(transaction.getItem()));
             }}), e -> e.manager.showGUI(e.player, new GUITransactionView(this.auctionPlayer, transaction)));
         }
     }

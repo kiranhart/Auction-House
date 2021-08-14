@@ -2,22 +2,16 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.GUISellItem;
-import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
-import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,7 +19,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +36,7 @@ public class CommandSell extends AbstractCommand {
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         Player player = (Player) sender;
+        if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
 
         if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
             return ReturnType.FAILURE;
@@ -227,70 +221,20 @@ public class CommandSell extends AbstractCommand {
             isUsingBundle = true;
         }
 
-        AuctionItem auctionItem = Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && !Settings.FORCE_AUCTION_USAGE.getBoolean() ? new AuctionItem(
-                player.getUniqueId(),
-                player.getUniqueId(),
+        final boolean buyNowAllow = Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && !Settings.FORCE_AUCTION_USAGE.getBoolean();
+
+        AuctionAPI.getInstance().listAuction(
+                player,
+                originalItem,
                 itemToSell,
-                MaterialCategorizer.getMaterialCategory(itemToSell),
-                UUID.randomUUID(),
-                isBiddingItem && listingPrices.get(0) <= -1 ? -1 : listingPrices.get(0),
-                isBiddingItem ? listingPrices.get(1) : 0,
-                isBiddingItem ? listingPrices.get(2) : 0,
-                isBiddingItem ? listingPrices.get(1) : listingPrices.get(0),
                 allowedTime,
-                false
-        ) : new AuctionItem(
-                player.getUniqueId(),
-                player.getUniqueId(),
-                itemToSell,
-                MaterialCategorizer.getMaterialCategory(itemToSell),
-                UUID.randomUUID(),
-                isBiddingItem ? -1 : listingPrices.get(0),
-                isBiddingItem ? listingPrices.get(0) : 0,
-                isBiddingItem ? listingPrices.size() == 1 ? 1 : listingPrices.get(1) : 0,
-                listingPrices.get(0),
-                allowedTime,
-                false
+                buyNowAllow ? isBiddingItem && listingPrices.get(0) <= -1 ? -1 : listingPrices.get(0) : isBiddingItem ? -1 : listingPrices.get(0),
+                buyNowAllow ? isBiddingItem ? listingPrices.get(1) : 0 : isBiddingItem ? listingPrices.get(0) : 0,
+                buyNowAllow ? isBiddingItem ? listingPrices.get(2) : 0 : isBiddingItem ? listingPrices.size() == 1 ? 1 : listingPrices.get(1) : 0,
+                buyNowAllow ? isBiddingItem ? listingPrices.get(1) : listingPrices.get(0) : listingPrices.get(0),
+                isBiddingItem,
+                isUsingBundle
         );
-
-        if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
-            if (!EconomyManager.hasBalance(player, Settings.TAX_LISTING_FEE.getDouble())) {
-                AuctionHouse.getInstance().getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(player);
-                return ReturnType.FAILURE;
-            }
-            EconomyManager.withdrawBalance(player, Settings.TAX_LISTING_FEE.getDouble());
-            AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(player);
-            AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", String.format("%,.2f", Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(player);
-        }
-
-        AuctionStartEvent startEvent = new AuctionStartEvent(player, auctionItem);
-        Bukkit.getServer().getPluginManager().callEvent(startEvent);
-        if (startEvent.isCancelled()) return ReturnType.FAILURE;
-
-        AuctionHouse.getInstance().getAuctionItemManager().addItem(auctionItem);
-
-        if (isUsingBundle) {
-            AuctionAPI.getInstance().removeSpecificItemQuantityFromPlayer(player, originalItem, AuctionAPI.getInstance().getItemCountInPlayerInventory(player, originalItem));
-        } else {
-            PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
-        }
-
-        SoundManager.getInstance().playSound(player, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
-
-        String NAX = AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage();
-
-        String msg = AuctionHouse.getInstance().getLocale().getMessage(isBiddingItem ? "auction.listed.withbid" : "auction.listed.nobid")
-                .processPlaceholder("amount", itemToSell.getAmount())
-                .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemToSell))
-                .processPlaceholder("base_price", auctionItem.getBasePrice() <= -1 ? NAX : AuctionAPI.getInstance().formatNumber(auctionItem.getBasePrice()))
-                .processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(auctionItem.getBidStartPrice()))
-                .processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(auctionItem.getBidIncPrice())).getMessage();
-
-        AuctionHouse.getInstance().getLocale().newMessage(msg).sendPrefixedMessage(player);
-
-        if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
-            Bukkit.getOnlinePlayers().forEach(p -> AuctionHouse.getInstance().getLocale().newMessage(msg).processPlaceholder("player", p.getName()).sendPrefixedMessage(p));
-        }
 
         return ReturnType.SUCCESS;
     }

@@ -32,40 +32,28 @@ public class CommandAdmin extends AbstractCommand {
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         if (args.length < 1) return ReturnType.FAILURE;
+        if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
 
         switch (args[0].toLowerCase()) {
             case "endall":
-                for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().keySet()) {
-                    AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id).setExpired(true);
+                for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
+                    AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpired(true);
                 }
                 AuctionHouse.getInstance().getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(sender);
                 break;
             case "relistall":
                 int relistTime = args.length == 1 ? Settings.DEFAULT_AUCTION_TIME.getInt() : Integer.parseInt(args[1]);
-                for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().keySet()) {
-                    if (AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id).isExpired()) {
-                        AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id).setRemainingTime(relistTime);
-                        AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id).setExpired(false);
+                for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
+                    if (AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).isExpired()) {
+                        AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpiresAt(System.currentTimeMillis() + 1000L * relistTime);
+                        AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpired(false);
                     }
                 }
                 AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(sender);
                 break;
-            case "cleanunknownusers":
-                // Don't tell ppl that this exists
-                AuctionHouse.getInstance().getAuctionItemManager().removeUnknownOwnerItems();
-                break;
             case "clearall":
                 // Don't tell ppl that this exists
-                AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().clear();
-            case "clean":
-                // Don't tell ppl that this exists
-                for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().keySet()) {
-                    ItemStack deserialize = AuctionAPI.getInstance().deserializeItem(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id).getRawItem());
-                    if (deserialize == null || XMaterial.isAir(XMaterial.matchXMaterial(deserialize))) {
-                        AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(AuctionHouse.getInstance().getAuctionItemManager().getAuctionItems().get(id));
-                    }
-                }
-                break;
+                AuctionHouse.getInstance().getAuctionItemManager().getItems().clear();
             case "opensell":
                 if (args.length < 2) return ReturnType.FAILURE;
                 Player player = PlayerUtils.findPlayer(args[1]);

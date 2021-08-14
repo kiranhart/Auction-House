@@ -1,3 +1,8 @@
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The current file has been created by Kiran Hart
  * Date Created: July 21 2021
@@ -8,8 +13,12 @@ public class Test {
 
     public static void main(String[] args) {
 //        System.out.println(TimeUtils.makeReadable(getSecondsFromString("2y")*1000));
+        List<String> enchants = new ArrayList<>();
+        enchants.add("Sharpness V");
+        enchants.add("Sharpness I");
+        enchants.add("Fire Aspect IV");
 
-
+        System.out.println(StringUtils.join(enchants, ";=;"));
     }
 
     public static long getSecondsFromString(String time) {
