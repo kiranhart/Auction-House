@@ -233,7 +233,8 @@ public class CommandSell extends AbstractCommand {
                 buyNowAllow ? isBiddingItem ? listingPrices.get(2) : 0 : isBiddingItem ? listingPrices.size() == 1 ? 1 : listingPrices.get(1) : 0,
                 buyNowAllow ? isBiddingItem ? listingPrices.get(1) : listingPrices.get(0) : listingPrices.get(0),
                 isBiddingItem,
-                isUsingBundle
+                isUsingBundle,
+                true
         );
 
         return ReturnType.SUCCESS;

@@ -43,6 +43,7 @@ public class LocaleSettings {
         languageNodes.put("general.something_went_wrong_while_listing", "&cSomething went wrong while listing item.");
         languageNodes.put("general.toggled listing.on", "&aYou turned on listing messages");
         languageNodes.put("general.toggled listing.off", "&cYou turned off listing messages");
+        languageNodes.put("general.bought_item", "&aYou bought &fx%amount% %item%&a for &a$%price%");
 
 
         languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
@@ -52,8 +53,8 @@ public class LocaleSettings {
         languageNodes.put("pricing.maxstartingprice", "&cThe maximum starting bid price is &a$%price%");
         languageNodes.put("pricing.maxbidincrementprice", "&cThe maximum bid increment is &a$%price%");
         languageNodes.put("pricing.basepricetoolow", "&cThe buy now price must be higher than the starting bid.");
-        languageNodes.put("pricing.moneyremove", "&c&l- $%price%");
-        languageNodes.put("pricing.moneyadd", "&a&l+ $%price%");
+        languageNodes.put("pricing.moneyremove", "&c&l- $%price% &7(%player_balance%)");
+        languageNodes.put("pricing.moneyadd", "&a&l+ $%price% &7(%player_balance%)");
 
         languageNodes.put("prompts.enter new buy now price", "&aPlease enter the new buy now price in chat:");
         languageNodes.put("prompts.enter new starting bid", "&aPlease enter the new starting bid in chat:");

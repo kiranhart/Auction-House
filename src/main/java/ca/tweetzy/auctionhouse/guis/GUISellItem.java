@@ -12,6 +12,7 @@ import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -210,14 +211,15 @@ public class GUISellItem extends Gui {
 
             AuctionAPI.getInstance().listAuction(
                     e.player,
-                    this.itemToBeListed,
-                    this.itemToBeListed,
+                    this.itemToBeListed.clone(),
+                    this.itemToBeListed.clone(),
                     this.auctionPlayer.getAllowedSellTime(),
                     this.isBiddingItem && !isAllowingBuyNow || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? -1 : buyNowPrice,
                     this.isBiddingItem ? bidStartPrice : 0,
                     this.isBiddingItem ? bidIncrementPrice : 0,
                     this.isBiddingItem ? bidStartPrice : buyNowPrice,
                     this.isBiddingItem,
+                    false,
                     false
             );
 

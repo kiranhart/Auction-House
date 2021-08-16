@@ -28,7 +28,7 @@ public class _5_TransactionChangeMigration extends DataMigration {
                     "seller_name VARCHAR(16) NOT NULL, " +
                     "buyer VARCHAR(36) NOT NULL," +
                     "buyer_name VARCHAR(16) NOT NULL," +
-                    "transaction_time TinyInt NOT NULL, " +
+                    "transaction_time BigInt NOT NULL, " +
                     "item TEXT NOT NULL, " +
                     "auction_sale_type VARCHAR(32) NOT NULL, " +
                     "final_price DOUBLE NOT NULL " +

@@ -3,8 +3,6 @@ package ca.tweetzy.auctionhouse.api;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.api.hook.MMOItems;
-import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPI;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -20,7 +18,6 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.ItemUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import io.lumine.mythic.lib.api.item.NBTItem;
-import io.lumine.mythic.lib.api.itemtype.MMOItemType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -554,7 +551,7 @@ public class AuctionAPI {
      * @param isBiddingItem States whether the item is an auction or bin item
      * @param isUsingBundle States whether the item is a bundled item
      */
-    public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle) {
+    public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove) {
         AuctionedItem auctionedItem = new AuctionedItem();
         auctionedItem.setId(UUID.randomUUID());
         auctionedItem.setOwner(seller.getUniqueId());
@@ -578,7 +575,7 @@ public class AuctionAPI {
             }
             EconomyManager.withdrawBalance(seller, Settings.TAX_LISTING_FEE.getDouble());
             AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
-            AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
+            AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
         }
 
         AuctionStartEvent startEvent = new AuctionStartEvent(seller, auctionedItem);
@@ -591,7 +588,8 @@ public class AuctionAPI {
         if (isUsingBundle) {
             AuctionAPI.getInstance().removeSpecificItemQuantityFromPlayer(seller, original, totalOriginal);
         } else {
-            PlayerUtils.takeActiveItem(seller, CompatibleHand.MAIN_HAND, totalOriginal);
+            if (requiresHandRemove)
+                PlayerUtils.takeActiveItem(seller, CompatibleHand.MAIN_HAND, totalOriginal);
         }
 
         SoundManager.getInstance().playSound(seller, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
@@ -637,7 +635,7 @@ public class AuctionAPI {
                 // If the item could not be added for whatever reason and the tax listing fee is enabled, refund them
                 if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
                     EconomyManager.deposit(seller, Settings.TAX_LISTING_FEE.getDouble());
-                    AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
                 }
                 return;
             }
