@@ -17,7 +17,7 @@ import java.sql.Statement;
 public class _7_TransactionBigIntMigration extends DataMigration {
 
     public _7_TransactionBigIntMigration() {
-        super(6);
+        super(7);
     }
 
     @Override

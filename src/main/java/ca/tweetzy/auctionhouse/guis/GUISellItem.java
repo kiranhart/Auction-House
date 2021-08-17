@@ -12,7 +12,6 @@ import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -75,16 +74,16 @@ public class GUISellItem extends Gui {
 
         setOnClose(close -> {
             if (!AuctionHouse.getInstance().getAuctionPlayerManager().getUsingSellGUI().contains(close.player.getUniqueId())) {
+
                 ItemStack toGiveBack = AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(close.player.getUniqueId());
-                if (toGiveBack != null && toGiveBack.getType() != XMaterial.AIR.parseMaterial()) {
-                    PlayerUtils.giveItem(close.player, toGiveBack);
-                } else {
-                    if (this.itemToBeListed == null || this.itemToBeListed.getType() == XMaterial.AIR.parseMaterial()) {
+                PlayerUtils.giveItem(close.player, toGiveBack); // this could give them air
+
+                if (toGiveBack.getType() == XMaterial.AIR.parseMaterial()) {
+                    if (getItem(1, 4) != null && getItem(1, 4).getType() != XMaterial.AIR.parseMaterial()) {
                         PlayerUtils.giveItem(close.player, getItem(1, 4));
-                    } else {
-                        PlayerUtils.giveItem(close.player, this.itemToBeListed);
                     }
                 }
+
                 AuctionHouse.getInstance().getAuctionPlayerManager().removeItemFromSellHolding(close.player.getUniqueId());
             }
         });
@@ -235,7 +234,8 @@ public class GUISellItem extends Gui {
     }
 
     private boolean validateChatNumber(String input, double requirement, boolean checkMax) {
-        if (checkMax) return input != null && input.length() != 0 && NumberUtils.isDouble(input) && Double.parseDouble(input) <= requirement;
+        if (checkMax)
+            return input != null && input.length() != 0 && NumberUtils.isDouble(input) && Double.parseDouble(input) <= requirement;
         return input != null && input.length() != 0 && NumberUtils.isDouble(input) && Double.parseDouble(input) >= requirement;
     }
 
