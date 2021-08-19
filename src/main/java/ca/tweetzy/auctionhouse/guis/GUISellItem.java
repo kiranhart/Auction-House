@@ -184,6 +184,10 @@ public class GUISellItem extends Gui {
         setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
             AuctionHouse.getInstance().getAuctionPlayerManager().removeFromUsingSellGUI(e.player.getUniqueId());
             setAllowClose(true);
+            if (Settings.SELL_MENU_CLOSE_SENDS_TO_LISTING.getBoolean()) {
+                e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                return;
+            }
             e.gui.close();
         });
 

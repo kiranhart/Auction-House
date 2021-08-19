@@ -7,6 +7,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.input.PlayerChatInput;
@@ -62,6 +63,11 @@ public class GUIBid extends Gui {
             builder.onCancel(p -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
             builder.setValue((p, value) -> Double.parseDouble(value));
             builder.onFinish((p, value) -> {
+                if (value > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
+                    AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(e.player);
+                    return;
+                }
+
                 if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, auctionItem.getCurrentPrice() + value)) {
                     AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
                     return;

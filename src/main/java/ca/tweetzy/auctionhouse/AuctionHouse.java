@@ -218,11 +218,18 @@ public class AuctionHouse extends TweetyPlugin {
                 getLogger().severe("You are not running Java 16, Auction House will be updated to use Java 16 in the coming months. If you do not update, you will not be able to use Auction House.");
             }
 
-            if (USER.equals("%%__USER__%%")) {
+            final String uIDPartOne = "%%__US";
+            final String uIDPartTwo = "ER__%%";
+
+            if (USER.contains(uIDPartOne) && USER.contains(uIDPartTwo)) {
                 getLogger().severe("Could not detect user ID, are you running a cracked / self-compiled copy of auction house?");
             } else {
+                getConsole().sendMessage(TextUtils.formatText("&e&m--------------------------------------------------------"));
+                getConsole().sendMessage(TextUtils.formatText(""));
                 getConsole().sendMessage(TextUtils.formatText("&aThank you for purchasing Auction House, it means a lot"));
                 getConsole().sendMessage(TextUtils.formatText("&7 - Kiran Hart"));
+                getConsole().sendMessage(TextUtils.formatText(""));
+                getConsole().sendMessage(TextUtils.formatText("&e&m--------------------------------------------------------"));
             }
         }, 1L);
     }

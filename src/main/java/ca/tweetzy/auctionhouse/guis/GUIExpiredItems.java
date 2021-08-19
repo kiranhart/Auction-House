@@ -10,6 +10,7 @@ import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.Comparator;
 import java.util.List;
@@ -27,6 +28,7 @@ public class GUIExpiredItems extends Gui {
     final AuctionPlayer auctionPlayer;
 
     private List<AuctionedItem> items;
+    private Long lastClicked = null;
 
     public GUIExpiredItems(AuctionPlayer auctionPlayer) {
         this.auctionPlayer = auctionPlayer;
@@ -34,6 +36,11 @@ public class GUIExpiredItems extends Gui {
         setRows(6);
         setAcceptsItems(false);
         draw();
+    }
+
+    public GUIExpiredItems(AuctionPlayer auctionPlayer, Long lastClicked) {
+        this(auctionPlayer);
+        this.lastClicked = lastClicked;
     }
 
     private void draw() {
@@ -65,11 +72,19 @@ public class GUIExpiredItems extends Gui {
 
             int slot = 0;
             for (AuctionedItem auctionItem : data) {
-                setButton(slot++, auctionItem.getItem(), e -> {
+                setButton(slot++, auctionItem.getItem(), ClickType.LEFT, e -> {
                     if (!Settings.ALLOW_INDIVIDUAL_ITEM_CLAIM.getBoolean()) return;
+                    if (this.lastClicked == null) {
+                        this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
+                    } else if (this.lastClicked > System.currentTimeMillis()) {
+                        return;
+                    } else {
+                        this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
+                    }
+
                     PlayerUtils.giveItem(e.player, auctionItem.getItem());
                     AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
-                    e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer));
+                    e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer, this.lastClicked));
                 });
             }
 
