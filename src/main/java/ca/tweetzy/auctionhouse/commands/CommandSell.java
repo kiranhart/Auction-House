@@ -54,6 +54,10 @@ public class CommandSell extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
+        if (!auctionPlayer.canListItem()) {
+            return ReturnType.FAILURE;
+        }
+
         // open the sell menu if its 0;
         if (args.length == 0) {
             if (!Settings.ALLOW_USAGE_OF_SELL_GUI.getBoolean()) {

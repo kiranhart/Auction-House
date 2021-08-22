@@ -1,7 +1,9 @@
 package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.utils.TimeUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
@@ -26,10 +28,27 @@ public class AuctionPlayer {
     private AuctionSortType auctionSortType;
     private String currentSearchPhrase;
     private boolean showListingInfo = true;
+    private long lastListedItem = -1;
 
     public AuctionPlayer(Player player) {
         this.player = player;
         resetFilter();
+    }
+
+
+    public boolean canListItem() {
+        if (Settings.LIST_ITEM_DELAY.getInt() == -1) {
+            return true;
+        }
+
+        if (this.lastListedItem == -1 || System.currentTimeMillis() >= this.lastListedItem) {
+            this.lastListedItem = System.currentTimeMillis() + 1000L * Settings.LIST_ITEM_DELAY.getInt();
+            return true;
+        }
+
+        AuctionHouse.getInstance().getLocale().getMessage("general.wait_to_list").processPlaceholder("time", (this.lastListedItem - System.currentTimeMillis()) / 1000).sendPrefixedMessage(this.player);
+
+        return false;
     }
 
     public List<AuctionedItem> getItems(boolean getExpired) {

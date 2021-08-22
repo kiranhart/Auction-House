@@ -44,6 +44,7 @@ public class LocaleSettings {
         languageNodes.put("general.toggled listing.on", "&aYou turned on listing messages");
         languageNodes.put("general.toggled listing.off", "&cYou turned off listing messages");
         languageNodes.put("general.bought_item", "&aYou bought &fx%amount% %item%&a for &a$%price%");
+        languageNodes.put("general.wait_to_list", "&cPlease wait &4%time%&cs before listing another item");
 
 
         languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
