@@ -207,6 +207,7 @@ public class GUIAuctionHouse extends Gui {
             PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
             builder.isValidInput((p, str) -> NumberUtils.isDouble(str) && Double.parseDouble(str) >= auctionItem.getBidIncrementPrice());
             builder.sendValueMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter bid amount").getMessage()));
+            builder.invalidInputMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter valid bid amount").getMessage()));
             builder.toCancel("cancel");
             builder.onCancel(p -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
             builder.setValue((p, value) -> Double.parseDouble(value));

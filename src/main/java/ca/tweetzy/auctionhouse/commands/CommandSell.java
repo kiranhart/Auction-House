@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -242,6 +243,7 @@ public class CommandSell extends AbstractCommand {
 
     @Override
     protected List<String> onTab(CommandSender sender, String... args) {
+        if (args.length <= 3) return Arrays.asList("1", "2", "3", "4", "5");
         return null;
     }
 

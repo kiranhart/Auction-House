@@ -95,6 +95,7 @@ public class TickAuctionsTask extends BukkitRunnable {
                 if (Bukkit.getOfflinePlayer(auctionItem.getOwner()).isOnline()) {
                     AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
                             .processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
+                            .processPlaceholder("amount", itemStack.getAmount())
                             .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice : finalPrice - tax))
                             .processPlaceholder("buyer_name", Bukkit.getOfflinePlayer(auctionItem.getHighestBidder()).getName())
                             .sendPrefixedMessage(Bukkit.getOfflinePlayer(auctionItem.getOwner()).getPlayer());

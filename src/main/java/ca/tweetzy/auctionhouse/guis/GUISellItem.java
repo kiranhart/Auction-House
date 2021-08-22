@@ -74,7 +74,6 @@ public class GUISellItem extends Gui {
 
         setOnClose(close -> {
             if (!AuctionHouse.getInstance().getAuctionPlayerManager().getUsingSellGUI().contains(close.player.getUniqueId())) {
-
                 ItemStack toGiveBack = AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(close.player.getUniqueId());
                 PlayerUtils.giveItem(close.player, toGiveBack); // this could give them air
 
@@ -85,6 +84,9 @@ public class GUISellItem extends Gui {
                 }
 
                 AuctionHouse.getInstance().getAuctionPlayerManager().removeItemFromSellHolding(close.player.getUniqueId());
+                if (Settings.SELL_MENU_CLOSE_SENDS_TO_LISTING.getBoolean()) {
+                    close.manager.showGUI(close.player, new GUIAuctionHouse(this.auctionPlayer));
+                }
             }
         });
 
@@ -157,20 +159,22 @@ public class GUISellItem extends Gui {
                 }).setOnCancel(() -> reopen(e)).setOnClose(() -> reopen(e));
             });
 
-            setButton(3, 3, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_BID_INC_ITEM.getString(), Settings.GUI_SELL_ITEMS_BID_INC_NAME.getString(), Settings.GUI_SELL_ITEMS_BID_INC_LORE.getStringList(), new HashMap<String, Object>() {{
-                put("%bid_increment_price%", AuctionAPI.getInstance().formatNumber(bidIncrementPrice));
-            }}), ClickType.LEFT, e -> {
-                setTheItemToBeListed();
-                setAllowClose(true);
-                e.gui.close();
-                ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new bid increment").getMessage()), chat -> {
-                    String msg = chat.getMessage();
-                    if (validateChatNumber(msg, Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(), false) && validateChatNumber(msg, Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble(), true)) {
-                        this.bidIncrementPrice = Double.parseDouble(msg);
-                    }
-                    reopen(e);
-                }).setOnCancel(() -> reopen(e)).setOnClose(() -> reopen(e));
-            });
+            if (!Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean()) {
+                setButton(3, 3, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_BID_INC_ITEM.getString(), Settings.GUI_SELL_ITEMS_BID_INC_NAME.getString(), Settings.GUI_SELL_ITEMS_BID_INC_LORE.getStringList(), new HashMap<String, Object>() {{
+                    put("%bid_increment_price%", AuctionAPI.getInstance().formatNumber(bidIncrementPrice));
+                }}), ClickType.LEFT, e -> {
+                    setTheItemToBeListed();
+                    setAllowClose(true);
+                    e.gui.close();
+                    ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new bid increment").getMessage()), chat -> {
+                        String msg = chat.getMessage();
+                        if (validateChatNumber(msg, Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(), false) && validateChatNumber(msg, Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble(), true)) {
+                            this.bidIncrementPrice = Double.parseDouble(msg);
+                        }
+                        reopen(e);
+                    }).setOnCancel(() -> reopen(e)).setOnClose(() -> reopen(e));
+                });
+            }
 
             if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
                 setButton(3, 6, ConfigurationItemHelper.createConfigurationItem(this.isAllowingBuyNow ? Settings.GUI_SELL_ITEMS_BUY_NOW_ENABLED_ITEM.getString() : Settings.GUI_SELL_ITEMS_BUY_NOW_DISABLED_ITEM.getString(), this.isAllowingBuyNow ? Settings.GUI_SELL_ITEMS_BUY_NOW_ENABLED_NAME.getString() : Settings.GUI_SELL_ITEMS_BUY_NOW_DISABLED_NAME.getString(), this.isAllowingBuyNow ? Settings.GUI_SELL_ITEMS_BUY_NOW_ENABLED_LORE.getStringList() : Settings.GUI_SELL_ITEMS_BUY_NOW_DISABLED_LORE.getStringList(), null), ClickType.LEFT, e -> {
@@ -182,12 +186,8 @@ public class GUISellItem extends Gui {
         }
 
         setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
-            AuctionHouse.getInstance().getAuctionPlayerManager().removeFromUsingSellGUI(e.player.getUniqueId());
+            AuctionHouse.getInstance().getAuctionPlayerManager().getUsingSellGUI().remove(e.player.getUniqueId());
             setAllowClose(true);
-            if (Settings.SELL_MENU_CLOSE_SENDS_TO_LISTING.getBoolean()) {
-                e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
-                return;
-            }
             e.gui.close();
         });
 
@@ -219,7 +219,7 @@ public class GUISellItem extends Gui {
                     this.auctionPlayer.getAllowedSellTime(),
                     this.isBiddingItem && !isAllowingBuyNow || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? -1 : buyNowPrice,
                     this.isBiddingItem ? bidStartPrice : 0,
-                    this.isBiddingItem ? bidIncrementPrice : 0,
+                    Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean() ? 1 : this.isBiddingItem ? bidIncrementPrice : 0,
                     this.isBiddingItem ? bidStartPrice : buyNowPrice,
                     this.isBiddingItem,
                     false,

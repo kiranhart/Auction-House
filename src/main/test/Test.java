@@ -13,12 +13,19 @@ public class Test {
 
     public static void main(String[] args) {
 //        System.out.println(TimeUtils.makeReadable(getSecondsFromString("2y")*1000));
-        List<String> enchants = new ArrayList<>();
-        enchants.add("Sharpness V");
-        enchants.add("Sharpness I");
-        enchants.add("Fire Aspect IV");
+//        List<String> enchants = new ArrayList<>();
+//        enchants.add("Sharpness V");
+//        enchants.add("Sharpness I");
+//        enchants.add("Fire Aspect IV");
 
-        System.out.println(StringUtils.join(enchants, ";=;"));
+//        System.out.println(StringUtils.join(enchants, ";=;"));
+
+        final String uIDPartOne = "%%__US";
+        final String uIDPartTwo = "ER__%%";
+
+        final String UID = "%%__USER_%%";
+
+        System.out.println(UID.contains(uIDPartOne) && UID.contains(uIDPartTwo));
     }
 
     public static long getSecondsFromString(String time) {

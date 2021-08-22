@@ -8,12 +8,16 @@ import ca.tweetzy.auctionhouse.guis.GUIBans;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TimeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -50,10 +54,18 @@ public class CommandBan extends AbstractCommand {
             reason.append(args[i]).append(" ");
         }
 
+        OfflinePlayer offlinePlayer = null;
+
         if (target == null) {
-            AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
-            return ReturnType.FAILURE;
+            // try and look for an offline player
+            offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
+            if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
+                AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
+                return ReturnType.FAILURE;
+            }
         }
+
+        UUID toBan = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
 
         if (!AuctionAPI.getInstance().isValidTimeString(timeString)) {
             AuctionHouse.getInstance().getLocale().getMessage("general.invalidtimestring").sendPrefixedMessage(player);
@@ -65,27 +77,36 @@ public class CommandBan extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
-        if (AuctionHouse.getInstance().getAuctionBanManager().getBans().containsKey(target.getUniqueId())) {
+        if (AuctionHouse.getInstance().getAuctionBanManager().getBans().containsKey(toBan)) {
             AuctionHouse.getInstance().getLocale().getMessage("bans.playeralreadybanned").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
             return ReturnType.FAILURE;
         }
 
         long bannedSeconds = AuctionAPI.getInstance().getSecondsFromString(timeString);
 
-        AuctionBanPlayerEvent auctionBanPlayerEvent = new AuctionBanPlayerEvent(player, target.getUniqueId(), reason.toString().trim(), bannedSeconds, false);
+        AuctionBanPlayerEvent auctionBanPlayerEvent = new AuctionBanPlayerEvent(player, toBan, reason.toString().trim(), bannedSeconds, false);
         Bukkit.getServer().getPluginManager().callEvent(auctionBanPlayerEvent);
         if (auctionBanPlayerEvent.isCancelled()) return ReturnType.FAILURE;
 
-        AuctionBan auctionBan = new AuctionBan(target.getUniqueId(), reason.toString().trim(), System.currentTimeMillis() + bannedSeconds * 1000);
+        AuctionBan auctionBan = new AuctionBan(toBan, reason.toString().trim(), System.currentTimeMillis() + bannedSeconds * 1000);
         AuctionHouse.getInstance().getAuctionBanManager().addBan(auctionBan);
         AuctionHouse.getInstance().getLocale().getMessage("bans.bannedplayer").processPlaceholder("player", args[0]).processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(player);
-        AuctionHouse.getInstance().getLocale().getMessage("bans.remainingtime").processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(target);
+
+        if (target != null) {
+            AuctionHouse.getInstance().getLocale().getMessage("bans.remainingtime").processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(target);
+        }
+
         return ReturnType.SUCCESS;
     }
 
     @Override
     protected List<String> onTab(CommandSender sender, String... args) {
-        if (args.length == 1) return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+        if (args.length == 1) {
+            List<String> players = Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+            players.addAll(Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList()));
+            return players;
+        }
+
         if (args.length == 2) return Arrays.asList("1m", "1h", "1d", "1y");
         return null;
     }

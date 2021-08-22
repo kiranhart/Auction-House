@@ -201,7 +201,8 @@ public class GUIConfirmPurchase extends Gui {
 
         if (Bukkit.getOfflinePlayer(located.getOwner()).isOnline()) {
             AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
-                    .processPlaceholder("item", AuctionAPI.getInstance().getItemName(this.auctionItem.getItem()))
+                    .processPlaceholder("item", AuctionAPI.getInstance().getItemName(located.getItem()))
+                    .processPlaceholder("amount", located.getItem().getAmount())
                     .processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice : totalPrice - tax))
                     .processPlaceholder("buyer_name", e.player.getName())
                     .sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());

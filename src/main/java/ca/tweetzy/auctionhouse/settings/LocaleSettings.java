@@ -60,6 +60,7 @@ public class LocaleSettings {
         languageNodes.put("prompts.enter new starting bid", "&aPlease enter the new starting bid in chat:");
         languageNodes.put("prompts.enter new bid increment", "&aPlease enter the new bid increment in chat:");
         languageNodes.put("prompts.enter bid amount", "&aPlease enter bid amount in chat:");
+        languageNodes.put("prompts.enter valid bid amount", "&cBid either too low or too high");
 
         languageNodes.put("transaction.sale_type.bid_won", "Won Auction");
         languageNodes.put("transaction.sale_type.immediate_buy", "Bought Immediately");
@@ -133,7 +134,7 @@ public class LocaleSettings {
         languageNodes.put("commands.syntax.upload", "upload");
         languageNodes.put("commands.syntax.filter", "filter [additem] [category]");
         languageNodes.put("commands.syntax.ban", "ban [player] [time] [reason]");
-        languageNodes.put("commands.syntax.unban", "ban <player>");
+        languageNodes.put("commands.syntax.unban", "unban <player>");
         languageNodes.put("commands.syntax.togglelistinfo", "togglelistinfo");
 
         languageNodes.put("commands.description.active", "View all your auction listings");
