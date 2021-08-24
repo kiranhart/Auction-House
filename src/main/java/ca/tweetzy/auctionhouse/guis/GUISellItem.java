@@ -116,19 +116,20 @@ public class GUISellItem extends Gui {
 		reset();
 
 		// the draw item that is being listed
-		setButton(1, 4, this.itemToBeListed, e -> {
-			if (e.clickType == ClickType.RIGHT || e.clickType == ClickType.NUMBER_KEY) e.event.setCancelled(true);
-			// Is the user selling with an item in hand?
-			if (AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().containsKey(e.player.getUniqueId())) {
-				if (AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(e.player.getUniqueId()).getType() != XMaterial.AIR.parseMaterial()) {
-					e.event.setCancelled(true);
+			setButton(1, 4, this.itemToBeListed, e -> {
+				if (e.clickType == ClickType.RIGHT || e.clickType == ClickType.NUMBER_KEY) e.event.setCancelled(true);
+				// Is the user selling with an item in hand?
+				if (AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().containsKey(e.player.getUniqueId())) {
+					if (AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(e.player.getUniqueId()).getType() != XMaterial.AIR.parseMaterial()) {
+						e.event.setCancelled(true);
+					}
 				}
-			}
 
-			this.itemToBeListed = e.clickedItem;
-		});
+				this.itemToBeListed = e.clickedItem;
+			});
 
-		if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
+
+		if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && this.isAllowingBuyNow) {
 			setButton(3, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_BUY_NOW_ITEM.getString(), Settings.GUI_SELL_ITEMS_BUY_NOW_NAME.getString(), Settings.GUI_SELL_ITEMS_BUY_NOW_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%buy_now_price%", AuctionAPI.getInstance().formatNumber(buyNowPrice));
 			}}), ClickType.LEFT, e -> {
@@ -153,7 +154,7 @@ public class GUISellItem extends Gui {
 		}
 
 		if (this.isBiddingItem) {
-			setButton(3, Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean() ? 3 : Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? 2 : 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_STARTING_BID_ITEM.getString(), Settings.GUI_SELL_ITEMS_STARTING_BID_NAME.getString(), Settings.GUI_SELL_ITEMS_STARTING_BID_LORE.getStringList(), new HashMap<String, Object>() {{
+			setButton(3, Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean() ? 2 : Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? 2 : 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_STARTING_BID_ITEM.getString(), Settings.GUI_SELL_ITEMS_STARTING_BID_NAME.getString(), Settings.GUI_SELL_ITEMS_STARTING_BID_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%starting_bid_price%", AuctionAPI.getInstance().formatNumber(bidStartPrice));
 			}}), ClickType.LEFT, e -> {
 				setTheItemToBeListed();
@@ -217,7 +218,7 @@ public class GUISellItem extends Gui {
 				return;
 			}
 
-			if (this.isBiddingItem && this.buyNowPrice <= this.bidStartPrice && Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean()) {
+			if (this.isAllowingBuyNow && this.isBiddingItem && this.buyNowPrice <= this.bidStartPrice && Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean()) {
 				AuctionHouse.getInstance().getLocale().getMessage("pricing.basepricetoolow").sendPrefixedMessage(e.player);
 				return;
 			}

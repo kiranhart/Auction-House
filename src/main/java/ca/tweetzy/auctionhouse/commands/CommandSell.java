@@ -12,11 +12,13 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
+import com.sun.prism.shader.Texture_ImagePattern_Loader;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -82,9 +84,17 @@ public final class CommandSell extends AbstractCommand {
 		}
 
 		// Check for block items
-		if (Settings.BLOCKED_ITEMS.getStringList().contains(itemToSell.getType().name())) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
+
+		if (Settings.MAKE_BLOCKED_ITEMS_A_WHITELIST.getBoolean()) {
+			if (!Settings.BLOCKED_ITEMS.getStringList().contains(itemToSell.getType().name())) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
+				return ReturnType.FAILURE;
+			}
+		} else {
+			if (Settings.BLOCKED_ITEMS.getStringList().contains(itemToSell.getType().name())) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
+				return ReturnType.FAILURE;
+			}
 		}
 
 		boolean blocked = false;
@@ -126,18 +136,27 @@ public final class CommandSell extends AbstractCommand {
 		Double bidIncrement = null;
 		boolean isBundle = false;
 
-		for (String arg : args) {
-			if (NumberUtils.isDouble(arg)) {
+
+		for (int i = 0; i < args.length; i++) {
+			if (NumberUtils.isDouble(args[i])) {
 				if (buyNowPrice == null)
-					buyNowPrice = Double.parseDouble(arg);
+					buyNowPrice = Double.parseDouble(args[i]);
 				else if (startingBid == null)
-					startingBid = Double.parseDouble(arg);
+					startingBid = Double.parseDouble(args[i]);
 				else
-					bidIncrement = Double.parseDouble(arg);
+					bidIncrement = Double.parseDouble(args[i]);
 			}
 
-			if (arg.equalsIgnoreCase("-b"))
+			if (args[i].equalsIgnoreCase("-b") || args[i].equalsIgnoreCase("-bundle"))
 				isBundle = true;
+
+			if (args[i].toLowerCase().startsWith("-t") && Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
+				if (i + 2 < args.length) {
+					int customTime = (int) AuctionAPI.toTicks(args[i + 1] + " " + args[i + 2]);
+					if (customTime <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt())
+						allowedTime = customTime;
+				}
+			}
 		}
 
 		boolean isBiddingItem = Settings.FORCE_AUCTION_USAGE.getBoolean() || buyNowPrice != null && startingBid != null && Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean();
@@ -231,8 +250,12 @@ public final class CommandSell extends AbstractCommand {
 
 	@Override
 	protected List<String> onTab(CommandSender sender, String... args) {
-		if (args.length <= 3) return Arrays.asList("1", "2", "3", "4", "5");
-		if (args.length == 4) return Collections.singletonList("-b");
+		if (args.length == 1)
+			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion one").getMessage().split(" "));
+		if (args.length == 2)
+			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion two").getMessage().split(" "));
+		if (args.length == 3)
+			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion three").getMessage().split(" "));
 		return null;
 	}
 

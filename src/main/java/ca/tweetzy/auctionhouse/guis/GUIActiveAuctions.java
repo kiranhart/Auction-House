@@ -54,6 +54,12 @@ public class GUIActiveAuctions extends Gui {
     private void drawItems() {
         AuctionHouse.newChain().asyncFirst(() -> {
             this.items = this.auctionPlayer.getItems(false);
+
+            // per world check
+            if (Settings.PER_WORLD_ITEMS.getBoolean()) {
+                this.items = this.items.stream().filter(item -> item.getListedWorld() == null || this.auctionPlayer.getPlayer().getWorld().getName().equals(item.getListedWorld())).collect(Collectors.toList());
+            }
+
             return this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
         }).asyncLast((data) -> {
             pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));

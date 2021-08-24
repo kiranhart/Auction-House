@@ -98,7 +98,13 @@ public class GUIAuctionHouse extends Gui {
             for (Map.Entry<UUID, AuctionedItem> entry : AuctionHouse.getInstance().getAuctionItemManager().getItems().entrySet()) {
                 AuctionedItem auctionItem = entry.getValue();
                 if (!auctionItem.isExpired() && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
-                    this.items.add(auctionItem);
+                    if (Settings.PER_WORLD_ITEMS.getBoolean()) {
+                        if (auctionItem.getListedWorld() == null || this.auctionPlayer.getPlayer().getWorld().getName().equals(auctionItem.getListedWorld())) {
+                            this.items.add(auctionItem);
+                        }
+                    } else {
+                        this.items.add(auctionItem);
+                    }
                 }
             }
 

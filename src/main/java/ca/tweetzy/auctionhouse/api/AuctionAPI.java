@@ -19,6 +19,7 @@ import ca.tweetzy.core.utils.items.ItemUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -575,6 +576,7 @@ public class AuctionAPI {
         auctionedItem.setBidStartingPrice(bidStartPrice);
         auctionedItem.setBidIncrementPrice(bidIncPrice);
         auctionedItem.setCurrentPrice(currentPrice);
+        auctionedItem.setListedWorld(seller.getWorld().getName());
 
         if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
             if (!EconomyManager.hasBalance(seller, Settings.TAX_LISTING_FEE.getDouble())) {
@@ -664,7 +666,71 @@ public class AuctionAPI {
         logger.log(Level.FINER, th, () -> "A " + (type == null ? "critical" : type) + " error occurred");
     }
 
-    void x(ItemStack item) {
-        NBTItem.get(item).getType();
+    /**
+     * Converts the time from a human readable format like "10 minutes"
+     * to seconds.
+     *
+     * @param humanReadableTime the human readable time format: {time} {period}
+     *                          example: 5 seconds, 10 ticks, 7 minutes, 12 hours etc..
+     * @return the converted human time to seconds
+     */
+    public static long toTicks(final String humanReadableTime) {
+        if (humanReadableTime == null) return 0;
+
+        long seconds = 0L;
+
+        final String[] split = humanReadableTime.split(" ");
+
+        if (!(split.length > 1)) {
+            return 0;
+        }
+
+        for (int i = 1; i < split.length; i++) {
+            final String sub = split[i].toLowerCase();
+            int multiplier = 0; // e.g 2 hours = 2
+            long unit = 0; // e.g hours = 3600
+            boolean isTicks = false;
+
+            try {
+                multiplier = Integer.parseInt(split[i - 1]);
+            } catch (final NumberFormatException e) {
+                continue;
+            }
+
+            // attempt to match the unit time
+            if (sub.startsWith("tick"))
+                isTicks = true;
+
+            else if (sub.startsWith("second"))
+                unit = 1;
+
+            else if (sub.startsWith("minute"))
+                unit = 60;
+
+            else if (sub.startsWith("hour"))
+                unit = 3600;
+
+            else if (sub.startsWith("day"))
+                unit = 86400;
+
+            else if (sub.startsWith("week"))
+                unit = 604800;
+
+            else if (sub.startsWith("month"))
+                unit = 2629743;
+
+            else if (sub.startsWith("year"))
+                unit = 31556926;
+
+            else if (sub.startsWith("potato"))
+                unit = 1337;
+
+            else
+                throw new IllegalArgumentException("Must define date type! Example: '1 second' (Got '" + sub + "')");
+
+            seconds += multiplier * (isTicks ? 1 : unit);
+        }
+
+        return seconds;
     }
 }

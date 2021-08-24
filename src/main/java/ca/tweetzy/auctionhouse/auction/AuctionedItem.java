@@ -47,6 +47,8 @@ public class AuctionedItem {
     private boolean expired;
     private long expiresAt;
 
+    private String listedWorld = null;
+
     public AuctionedItem() {}
 
     public AuctionedItem(

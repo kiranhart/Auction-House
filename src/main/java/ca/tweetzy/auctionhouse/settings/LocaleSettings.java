@@ -122,6 +122,9 @@ public class LocaleSettings {
 
         languageNodes.put("commands.invalid_syntax", "&7The valid syntax is: &6%syntax%&7.");
         languageNodes.put("commands.no_permission", "&dYou do not have permission to do that.");
+        languageNodes.put("commands.sell.args.suggestion one", "100");
+        languageNodes.put("commands.sell.args.suggestion two", "50 -b");
+        languageNodes.put("commands.sell.args.suggestion three", "10 -b");
 
         languageNodes.put("commands.syntax.active", "active");
         languageNodes.put("commands.syntax.auctionhouse", "/ah");

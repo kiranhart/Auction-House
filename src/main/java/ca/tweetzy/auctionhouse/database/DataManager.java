@@ -248,7 +248,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void insertAuction(AuctionedItem item, Callback<AuctionedItem> callback) {
         this.databaseConnector.connect(connection -> {
-            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
 
                 fetch.setString(1, item.getId().toString());
@@ -269,6 +269,7 @@ public class DataManager extends DataManagerAbstract {
                 statement.setString(15, AuctionAPI.getInstance().serializeLines(AuctionAPI.getInstance().getItemLore(item.getItem())));
                 statement.setString(16, AuctionAPI.getInstance().serializeLines(AuctionAPI.getInstance().getItemEnchantments(item.getItem())));
                 statement.setString(17, AuctionAPI.encodeItem(item.getItem()));
+                statement.setString(18, item.getListedWorld());
                 statement.executeUpdate();
 
                 if (callback != null) {
@@ -415,7 +416,7 @@ public class DataManager extends DataManagerAbstract {
     }
 
     private AuctionedItem extractAuctionedItem(ResultSet resultSet) throws SQLException {
-        return new AuctionedItem(
+        AuctionedItem auctionItem = new AuctionedItem(
                 UUID.fromString(resultSet.getString("id")),
                 UUID.fromString(resultSet.getString("owner")),
                 UUID.fromString(resultSet.getString("highest_bidder")),
@@ -431,6 +432,10 @@ public class DataManager extends DataManagerAbstract {
                 resultSet.getBoolean("expired"),
                 resultSet.getLong("expires_at")
         );
+
+        auctionItem.setListedWorld(resultSet.getString("listed_world"));
+
+        return auctionItem;
     }
 
     private Transaction extractTransaction(ResultSet resultSet) throws SQLException {
