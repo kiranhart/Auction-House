@@ -62,6 +62,8 @@ public class LocaleSettings {
         languageNodes.put("prompts.enter new bid increment", "&aPlease enter the new bid increment in chat:");
         languageNodes.put("prompts.enter bid amount", "&aPlease enter bid amount in chat:");
         languageNodes.put("prompts.enter valid bid amount", "&cBid either too low or too high");
+        languageNodes.put("prompts.enter listing time", "&aPlease enter listing time (ex. 1 day):");
+        languageNodes.put("prompts.enter valid listing time", "&cPlease enter a valid listing time.");
 
         languageNodes.put("transaction.sale_type.bid_won", "Won Auction");
         languageNodes.put("transaction.sale_type.immediate_buy", "Bought Immediately");

@@ -677,6 +677,13 @@ public class Settings {
             "&7Click to edit the price"
     ));
 
+    public static final ConfigSetting GUI_SELL_ITEMS_LIST_TIME_ITEM = new ConfigSetting(config, "gui.sell.items.list time.item", XMaterial.CLOCK.name());
+    public static final ConfigSetting GUI_SELL_ITEMS_LIST_TIME_NAME = new ConfigSetting(config, "gui.sell.items.list time.name", "&e&lListing Time");
+    public static final ConfigSetting GUI_SELL_ITEMS_LIST_TIME_LORE = new ConfigSetting(config, "gui.sell.items.list time.lore", Arrays.asList(
+            "&7The listing time is&f: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%&fs",
+            "&7Click to edit the listing time"
+    ));
+
     public static final ConfigSetting GUI_SELL_ITEMS_CONFIRM_LISTING_ITEM = new ConfigSetting(config, "gui.sell.items.confirm listing.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
     public static final ConfigSetting GUI_SELL_ITEMS_CONFIRM_LISTING_NAME = new ConfigSetting(config, "gui.sell.items.confirm listing.name", "&a&lConfirm Listing");
     public static final ConfigSetting GUI_SELL_ITEMS_CONFIRM_LISTING_LORE = new ConfigSetting(config, "gui.sell.items.confirm listing.lore", Collections.singletonList("&7Click to confirm the listing of this item."));
