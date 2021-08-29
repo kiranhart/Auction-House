@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.settings;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.core.configuration.Config;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 
 /**
@@ -166,7 +167,7 @@ public class LocaleSettings {
             config.setDefault(key, languageNodes.get(key));
         });
 
-        config.setAutoremove(true).setAutosave(true);
+        config.setAutoremove(false).setAutosave(true);
         config.saveChanges();
     }
 }

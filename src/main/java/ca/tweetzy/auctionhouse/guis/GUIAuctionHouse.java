@@ -223,13 +223,24 @@ public class GUIAuctionHouse extends Gui {
                     return;
                 }
 
-                if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, auctionItem.getCurrentPrice() + value)) {
+                double newBiddingAmount = 0;
+                if (Settings.USE_REALISTIC_BIDDING.getBoolean()) {
+                    if (value > auctionItem.getCurrentPrice()) {
+                        newBiddingAmount = value;
+                    } else {
+                        newBiddingAmount = auctionItem.getCurrentPrice() + value;
+                    }
+                } else {
+                    newBiddingAmount = auctionItem.getCurrentPrice() + value;
+                }
+
+                if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, newBiddingAmount)) {
                     AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
                     return;
                 }
 
                 if (Settings.ASK_FOR_BID_CONFIRMATION.getBoolean()) {
-                    e.manager.showGUI(e.player, new GUIConfirmBid(this.auctionPlayer, auctionItem, value));
+                    e.manager.showGUI(e.player, new GUIConfirmBid(this.auctionPlayer, auctionItem, newBiddingAmount));
                     return;
                 }
 
@@ -240,7 +251,7 @@ public class GUIAuctionHouse extends Gui {
 
                 auctionItem.setHighestBidder(e.player.getUniqueId());
                 auctionItem.setHighestBidderName(e.player.getName());
-                auctionItem.setCurrentPrice(auctionItem.getCurrentPrice() + value);
+                auctionItem.setCurrentPrice(newBiddingAmount);
                 if (auctionItem.getBasePrice() != -1 && Settings.SYNC_BASE_PRICE_TO_HIGHEST_PRICE.getBoolean() && auctionItem.getCurrentPrice() > auctionItem.getBasePrice()) {
                     auctionItem.setBasePrice(auctionItem.getCurrentPrice());
                 }

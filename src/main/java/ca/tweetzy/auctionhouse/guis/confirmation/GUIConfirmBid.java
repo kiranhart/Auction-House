@@ -59,7 +59,19 @@ public class GUIConfirmBid extends Gui {
 
             double toIncrementBy = this.bidAmount == -1 ? auctionItem.getBidIncrementPrice() : this.bidAmount;
 
-            if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, auctionItem.getCurrentPrice() + toIncrementBy)) {
+
+            double newBiddingAmount = 0;
+            if (Settings.USE_REALISTIC_BIDDING.getBoolean()) {
+                if (toIncrementBy > this.auctionItem.getCurrentPrice()) {
+                    newBiddingAmount = toIncrementBy;
+                } else {
+                    newBiddingAmount = this.auctionItem.getCurrentPrice() + toIncrementBy;
+                }
+            } else {
+                newBiddingAmount = this.auctionItem.getCurrentPrice() + toIncrementBy;
+            }
+
+            if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, newBiddingAmount)) {
                 AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
                 return;
             }
@@ -71,7 +83,7 @@ public class GUIConfirmBid extends Gui {
 
             auctionItem.setHighestBidder(e.player.getUniqueId());
             auctionItem.setHighestBidderName(e.player.getName());
-            auctionItem.setCurrentPrice(auctionItem.getCurrentPrice() + toIncrementBy);
+            auctionItem.setCurrentPrice(newBiddingAmount);
             if (auctionItem.getBasePrice() != -1 && Settings.SYNC_BASE_PRICE_TO_HIGHEST_PRICE.getBoolean() && Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && auctionItem.getCurrentPrice() > auctionItem.getBasePrice()) {
                 auctionItem.setBasePrice(auctionItem.getCurrentPrice());
             }
