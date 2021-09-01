@@ -228,6 +228,12 @@ public class GUIAuctionHouse extends Gui {
                     if (value > auctionItem.getCurrentPrice()) {
                         newBiddingAmount = value;
                     } else {
+                        if (Settings.BID_MUST_BE_HIGHER_THAN_PREVIOUS.getBoolean()) {
+                            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                            AuctionHouse.getInstance().getLocale().getMessage("pricing.bidmusthigherthanprevious").processPlaceholder("current_bid", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(e.player);
+                            return;
+                        }
+
                         newBiddingAmount = auctionItem.getCurrentPrice() + value;
                     }
                 } else {

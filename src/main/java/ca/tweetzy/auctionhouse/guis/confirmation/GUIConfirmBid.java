@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Objects;
 
@@ -25,9 +26,10 @@ import java.util.Objects;
  */
 public class GUIConfirmBid extends Gui {
 
-    final AuctionPlayer auctionPlayer;
-    final AuctionedItem auctionItem;
-    final double bidAmount;
+    private final AuctionPlayer auctionPlayer;
+    private final AuctionedItem auctionItem;
+    private final double bidAmount;
+    private BukkitTask bukkitTask;
 
     public GUIConfirmBid(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
         this(auctionPlayer, auctionItem, -1);
@@ -41,30 +43,57 @@ public class GUIConfirmBid extends Gui {
         setAcceptsItems(false);
         setRows(1);
         draw();
+
+        setOnOpen(open -> {
+            if (Settings.USE_LIVE_BID_NUMBER_IN_CONFIRM_GUI.getBoolean()) {
+                this.bukkitTask = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::placeAuctionItem, 0L, (long) 20 * Settings.LIVE_BID_NUMBER_IN_CONFIRM_GUI_RATE.getInt());
+            }
+        });
+
+        setOnClose(close -> cleanup());
+    }
+
+    private void placeAuctionItem() {
+        setItem(0, 4, this.auctionItem.getBidStack());
+    }
+
+    private void cleanup() {
+        if (bukkitTask != null) {
+            bukkitTask.cancel();
+        }
     }
 
     private void draw() {
         setItems(0, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_BID_YES_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_BID_YES_NAME.getString()).setLore(Settings.GUI_CONFIRM_BID_YES_LORE.getStringList()).toItemStack());
-        setItem(0, 4, this.auctionItem.getItem());
+        placeAuctionItem();
         setItems(5, 8, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_BID_NO_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_BID_NO_NAME.getString()).setLore(Settings.GUI_CONFIRM_BID_NO_LORE.getStringList()).toItemStack());
 
-        setActionForRange(5, 8, ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
+        setActionForRange(5, 8, ClickType.LEFT, e -> {
+            cleanup();
+            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+        });
         setActionForRange(0, 3, ClickType.LEFT, e -> {
             // Re-select the item to ensure that it's available
             AuctionedItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getId());
             if (located == null) {
+                cleanup();
                 e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
                 return;
             }
 
             double toIncrementBy = this.bidAmount == -1 ? auctionItem.getBidIncrementPrice() : this.bidAmount;
 
-
             double newBiddingAmount = 0;
             if (Settings.USE_REALISTIC_BIDDING.getBoolean()) {
                 if (toIncrementBy > this.auctionItem.getCurrentPrice()) {
                     newBiddingAmount = toIncrementBy;
                 } else {
+                    if (Settings.BID_MUST_BE_HIGHER_THAN_PREVIOUS.getBoolean()) {
+                        e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                        AuctionHouse.getInstance().getLocale().getMessage("pricing.bidmusthigherthanprevious").processPlaceholder("current_bid", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(e.player);
+                        return;
+                    }
+
                     newBiddingAmount = this.auctionItem.getCurrentPrice() + toIncrementBy;
                 }
             } else {
@@ -115,6 +144,7 @@ public class GUIConfirmBid extends Gui {
                         .sendPrefixedMessage(owner.getPlayer());
             }
 
+            cleanup();
             e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
         });
     }

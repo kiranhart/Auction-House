@@ -1,6 +1,9 @@
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import org.apache.commons.lang.StringUtils;
 
+import java.rmi.server.UID;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -20,12 +23,18 @@ public class Test {
 
 //        System.out.println(StringUtils.join(enchants, ";=;"));
 
-        final String uIDPartOne = "%%__US";
-        final String uIDPartTwo = "ER__%%";
+//        final String uIDPartOne = "%%__US";
+//        final String uIDPartTwo = "ER__%%";
+//
+//        final String UID = "%%__USER_%%";
 
-        final String UID = "%%__USER_%%";
+//        System.out.println(UID.contains(uIDPartOne) && UID.contains(uIDPartTwo));
 
-        System.out.println(UID.contains(uIDPartOne) && UID.contains(uIDPartTwo));
+//        System.out.println(AuctionAPI.toTicks("1 day"));
+
+        String arguments = "50 -b";
+
+        Arrays.asList(arguments.split(" ")).forEach(System.out::println);
     }
 
     public static long getSecondsFromString(String time) {

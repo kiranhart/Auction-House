@@ -1,6 +1,8 @@
 package ca.tweetzy.auctionhouse.commands;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.guis.GUIStats;
 import ca.tweetzy.core.commands.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,15 +18,14 @@ import java.util.List;
 public class CommandStatus extends AbstractCommand {
 
     public CommandStatus() {
-        super(CommandType.CONSOLE_OK, "status");
+        super(CommandType.PLAYER_ONLY, "status", "stats");
     }
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
         Player player = (Player) sender;
-
-
+        AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIStats(player));
         return ReturnType.SUCCESS;
     }
 
@@ -40,7 +41,7 @@ public class CommandStatus extends AbstractCommand {
 
     @Override
     public String getDescription() {
-        return "Return plugin statistics";
+        return "Open the auction house statistics";
     }
 
     @Override

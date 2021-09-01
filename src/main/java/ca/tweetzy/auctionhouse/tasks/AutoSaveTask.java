@@ -27,6 +27,7 @@ public class AutoSaveTask extends BukkitRunnable {
     @Override
     public void run() {
         AuctionHouse.getInstance().getDataManager().updateItems(AuctionHouse.getInstance().getAuctionItemManager().getItems().values(), null);
+        AuctionHouse.getInstance().getDataManager().updateStats(AuctionHouse.getInstance().getAuctionStatManager().getStats(), null);
         AuctionHouse.getInstance().getFilterManager().saveFilterWhitelist(true);
         AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aAuto saved auction items & transactions")).sendPrefixedMessage(Bukkit.getConsoleSender());
     }

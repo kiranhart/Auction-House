@@ -57,6 +57,7 @@ public class LocaleSettings {
         languageNodes.put("pricing.basepricetoolow", "&cThe buy now price must be higher than the starting bid.");
         languageNodes.put("pricing.moneyremove", "&c&l- $%price% &7(%player_balance%)");
         languageNodes.put("pricing.moneyadd", "&a&l+ $%price% &7(%player_balance%)");
+        languageNodes.put("pricing.bidmusthigherthanprevious", "&cYour bid must be higher than &4%current_bid%");
 
         languageNodes.put("prompts.enter new buy now price", "&aPlease enter the new buy now price in chat:");
         languageNodes.put("prompts.enter new starting bid", "&aPlease enter the new starting bid in chat:");

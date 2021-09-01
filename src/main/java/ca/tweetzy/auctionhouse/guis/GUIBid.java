@@ -73,6 +73,12 @@ public class GUIBid extends Gui {
                     if (value > this.auctionItem.getCurrentPrice()) {
                         newBiddingAmount = value;
                     } else {
+                        if (Settings.BID_MUST_BE_HIGHER_THAN_PREVIOUS.getBoolean()) {
+                            e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+                            AuctionHouse.getInstance().getLocale().getMessage("pricing.bidmusthigherthanprevious").processPlaceholder("current_bid", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(e.player);
+                            return;
+                        }
+
                         newBiddingAmount = this.auctionItem.getCurrentPrice() + value;
                     }
                 } else {

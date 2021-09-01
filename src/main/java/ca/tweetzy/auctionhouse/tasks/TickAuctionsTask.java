@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
+import ca.tweetzy.auctionhouse.auction.AuctionStat;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
@@ -68,9 +69,14 @@ public class TickAuctionsTask extends BukkitRunnable {
                 }
             }
 
-            if (timeRemaining <= 0) {
+            if (timeRemaining <= 0 && !auctionItem.isExpired()) {
                 if (auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
                     auctionItem.setExpired(true);
+                    if (auctionItem.isExpired()) {
+                        AuctionHouse.getInstance().getAuctionStatManager().insertOrUpdate(Bukkit.getOfflinePlayer(auctionItem.getOwner()), new AuctionStat<>(
+                                0, 0, 1, 0D, 0D
+                        ));
+                    }
                     continue;
                 }
 

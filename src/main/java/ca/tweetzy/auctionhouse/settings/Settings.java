@@ -55,6 +55,10 @@ public class Settings {
     public static final ConfigSetting BROADCAST_AUCTION_ENDING_AT_TIME = new ConfigSetting(config, "auction setting.broadcast auction ending at time", 20, "When the time on the auction item reaches this amount of seconds left, the broadcast ending will take affect ");
 
     public static final ConfigSetting USE_REALISTIC_BIDDING = new ConfigSetting(config, "auction setting.use realistic bidding", false, "If true auction house will use a more realistic bidding approach. Ex. the previous bid is 400, and if a player bids 500, rather than making the new bid 900, it will be set to 500.");
+    public static final ConfigSetting BID_MUST_BE_HIGHER_THAN_PREVIOUS = new ConfigSetting(config, "auction setting.bid must be higher than previous", true, "Only applies if use realistic bidding is true, this will make it so that they must bid higher than the current bid.");
+    public static final ConfigSetting USE_LIVE_BID_NUMBER_IN_CONFIRM_GUI = new ConfigSetting(config, "auction setting.live bid number in confirm gui.use", true, "If true, the bid confirmation menu will auto update every 1 second by default");
+    public static final ConfigSetting LIVE_BID_NUMBER_IN_CONFIRM_GUI_RATE = new ConfigSetting(config, "auction setting.live bid number in confirm gui.rate", 1, "How often the confirm gui for bids will update");
+
     public static final ConfigSetting PLAYER_NEEDS_TOTAL_PRICE_TO_BID = new ConfigSetting(config, "auction setting.bidder must have funds in account", false, "Should the player who is placing a bid on an item have the money in their account to cover the cost?");
     public static final ConfigSetting ALLOW_USAGE_OF_BID_SYSTEM = new ConfigSetting(config, "auction setting.allow bid system usage", true, "Should players be allowed to use the bid option cmd params?");
     public static final ConfigSetting ALLOW_USAGE_OF_BUY_NOW_SYSTEM = new ConfigSetting(config, "auction setting.allow buy now system usage", true, "Should players be allowed to use the right-click buy now feature on biddable items?");
@@ -704,6 +708,36 @@ public class Settings {
     public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_DISABLED_ITEM = new ConfigSetting(config, "gui.sell.items.buy now disabled.item", XMaterial.RED_DYE.name());
     public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_DISABLED_NAME = new ConfigSetting(config, "gui.sell.items.buy now disabled.name", "&c&lBuy Now Disabled");
     public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_DISABLED_LORE = new ConfigSetting(config, "gui.sell.items.buy now disabled.lore", Collections.singletonList("&7Click to &aEnable &7buy now"));
+
+    /*  ===============================
+     *         AH STATS GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_STATS_TITLE = new ConfigSetting(config, "gui.stats.title", "&7Auction House - &eStatistics");
+    public static final ConfigSetting GUI_STATS_BG_ITEM = new ConfigSetting(config, "gui.stats.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+    public static final ConfigSetting GUI_STATS_ITEMS_PERSONAL_USE_HEAD = new ConfigSetting(config, "gui.stats.items.personal.use head", true);
+    public static final ConfigSetting GUI_STATS_ITEMS_PERSONAL_ITEM = new ConfigSetting(config, "gui.stats.items.personal.item", XMaterial.DIAMOND.name());
+    public static final ConfigSetting GUI_STATS_ITEMS_PERSONAL_NAME = new ConfigSetting(config, "gui.stats.items.personal.name", "&9&lPersonal Stats");
+    public static final ConfigSetting GUI_STATS_ITEMS_PERSONAL_LORE = new ConfigSetting(config, "gui.stats.items.personal.lore", Arrays.asList(
+            "",
+            "&7Auctions Created: &e%auctions_created%",
+            "&7Auctions Sold: &e%auctions_sold%",
+            "&7Auctions Expired: &e%auctions_expired%",
+            "",
+            "&7Money Earned: &a$%auctions_money_earned%",
+            "&7Money Spent: &a$%auctions_money_spent%"
+    ));
+
+    public static final ConfigSetting GUI_STATS_ITEMS_GLOBAL_ITEM = new ConfigSetting(config, "gui.stats.items.global.item", XMaterial.NETHER_STAR.name());
+    public static final ConfigSetting GUI_STATS_ITEMS_GLOBAL_NAME = new ConfigSetting(config, "gui.stats.items.global.name", "&6&LGlobal Stats");
+    public static final ConfigSetting GUI_STATS_ITEMS_GLOBAL_LORE = new ConfigSetting(config, "gui.stats.items.global.lore", Arrays.asList(
+            "",
+            "&7Auctions Created: &e%auctions_created%",
+            "&7Auctions Sold: &e%auctions_sold%",
+            "&7Auctions Expired: &e%auctions_expired%",
+            "",
+            "&7Money Spent: &a$%auctions_money_spent%"
+    ));
 
 
     /*  ===============================

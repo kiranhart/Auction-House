@@ -13,11 +13,14 @@ import ca.tweetzy.core.input.PlayerChatInput;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -246,6 +249,48 @@ public class GUISellItem extends Gui {
 		}
 
 		setButton(3, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_ITEMS_CONFIRM_LISTING_ITEM.getString(), Settings.GUI_SELL_ITEMS_CONFIRM_LISTING_NAME.getString(), Settings.GUI_SELL_ITEMS_CONFIRM_LISTING_LORE.getStringList(), null), e -> {
+			// if the item in the sell slot is null then stop the listing
+			if (getItem(1, 4) == null || getItem(1, 4).getType() == XMaterial.AIR.parseMaterial()) return;
+			setTheItemToBeListed();
+
+			if (Settings.MAKE_BLOCKED_ITEMS_A_WHITELIST.getBoolean()) {
+				if (!Settings.BLOCKED_ITEMS.getStringList().contains(this.itemToBeListed.getType().name())) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", this.itemToBeListed.getType().name()).sendPrefixedMessage(e.player);
+					return;
+				}
+			} else {
+				if (Settings.BLOCKED_ITEMS.getStringList().contains(this.itemToBeListed.getType().name())) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", this.itemToBeListed.getType().name()).sendPrefixedMessage(e.player);
+					return;
+				}
+			}
+
+			boolean blocked = false;
+
+			String itemName = ChatColor.stripColor(AuctionAPI.getInstance().getItemName(this.itemToBeListed).toLowerCase());
+			List<String> itemLore = AuctionAPI.getInstance().getItemLore(this.itemToBeListed).stream().map(line -> ChatColor.stripColor(line.toLowerCase())).collect(Collectors.toList());
+
+			// Check for blocked names and lore
+			for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
+				if (AuctionAPI.getInstance().match(s, itemName)) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.blockedname").sendPrefixedMessage(e.player);
+					blocked = true;
+				}
+			}
+
+			if (!itemLore.isEmpty() && !blocked) {
+				for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
+					for (String line : itemLore) {
+						if (AuctionAPI.getInstance().match(s, line)) {
+							AuctionHouse.getInstance().getLocale().getMessage("general.blockedlore").sendPrefixedMessage(e.player);
+							blocked = true;
+						}
+					}
+				}
+			}
+
+			if (blocked) return;
+
 			// are they even allowed to sell more items
 			if (this.auctionPlayer.isAtSellLimit()) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(e.player);
@@ -256,10 +301,6 @@ public class GUISellItem extends Gui {
 				AuctionHouse.getInstance().getLocale().getMessage("pricing.basepricetoolow").sendPrefixedMessage(e.player);
 				return;
 			}
-
-			// if the item in the sell slot is null then stop the listing
-			if (getItem(1, 4) == null || getItem(1, 4).getType() == XMaterial.AIR.parseMaterial()) return;
-			setTheItemToBeListed();
 
 			AuctionAPI.getInstance().listAuction(
 					e.player,

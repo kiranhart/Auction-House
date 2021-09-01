@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse;
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
 import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.AuctionStat;
 import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations.*;
@@ -81,6 +82,9 @@ public class AuctionHouse extends TweetyPlugin {
     private AuctionBanManager auctionBanManager;
 
     @Getter
+    private AuctionStatManager auctionStatManager;
+
+    @Getter
     private DatabaseConnector databaseConnector;
 
     @Getter
@@ -146,7 +150,8 @@ public class AuctionHouse extends TweetyPlugin {
                 new _5_TransactionChangeMigration(),
                 new _6_BigIntMigration(),
                 new _7_TransactionBigIntMigration(),
-                new _8_ItemPerWorldMigration()
+                new _8_ItemPerWorldMigration(),
+                new _9_StatsMigration()
         );
 
         dataMigrationManager.runMigrations();
@@ -166,6 +171,9 @@ public class AuctionHouse extends TweetyPlugin {
         // load the bans
         this.auctionBanManager = new AuctionBanManager();
         this.auctionBanManager.loadBans();
+
+        this.auctionStatManager = new AuctionStatManager();
+        this.auctionStatManager.loadStats();
 
         // gui manager
         this.guiManager.init();
@@ -241,6 +249,7 @@ public class AuctionHouse extends TweetyPlugin {
             this.auctionItemManager.end();
             this.filterManager.saveFilterWhitelist(false);
             this.auctionBanManager.saveBans(false);
+            this.auctionStatManager.saveStats();
             this.dataManager.close();
         }
 

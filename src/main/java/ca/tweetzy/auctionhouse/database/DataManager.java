@@ -18,10 +18,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -182,7 +180,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void getItems(Callback<ArrayList<AuctionedItem>> callback) {
         ArrayList<AuctionedItem> items = new ArrayList<>();
-        this.databaseConnector.connect(connection -> {
+        this.async(() -> this.databaseConnector.connect(connection -> {
             try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions")) {
                 ResultSet resultSet = statement.executeQuery();
                 while (resultSet.next()) {
@@ -193,12 +191,12 @@ public class DataManager extends DataManagerAbstract {
             } catch (Exception e) {
                 resolveCallback(callback, e);
             }
-        });
+        }));
     }
 
     public void getTransactions(Callback<ArrayList<Transaction>> callback) {
         ArrayList<Transaction> transactions = new ArrayList<>();
-        this.databaseConnector.connect(connection -> {
+        this.async(() -> this.databaseConnector.connect(connection -> {
             try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions")) {
                 ResultSet resultSet = statement.executeQuery();
                 while (resultSet.next()) {
@@ -209,7 +207,7 @@ public class DataManager extends DataManagerAbstract {
             } catch (Exception e) {
                 resolveCallback(callback, e);
             }
-        });
+        }));
     }
 
     public void insertTransaction(Transaction transaction, Callback<Transaction> callback) {
@@ -282,6 +280,63 @@ public class DataManager extends DataManagerAbstract {
                 e.printStackTrace();
                 resolveCallback(callback, e);
             }
+        });
+    }
+
+    public void getStats(Callback<Map<UUID, AuctionStat<Integer, Integer, Integer, Double, Double>>> callback) {
+        Map<UUID, AuctionStat<Integer, Integer, Integer, Double, Double>> stats = new HashMap<>();
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "stats")) {
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    stats.put(UUID.fromString(resultSet.getString("id")), new AuctionStat<>(
+                            resultSet.getInt("auctions_created"),
+                            resultSet.getInt("auctions_sold"),
+                            resultSet.getInt("auctions_expired"),
+                            resultSet.getDouble("money_earned"),
+                            resultSet.getDouble("money_spent")
+                    ));
+                }
+
+                callback.accept(null, stats);
+            } catch (Exception e) {
+                resolveCallback(callback, e);
+            }
+        }));
+    }
+
+    public void updateStats(Map<UUID, AuctionStat<Integer, Integer, Integer, Double, Double>> stats, UpdateCallback callback) {
+        this.databaseConnector.connect(connection -> {
+            connection.setAutoCommit(false);
+            SQLException error = null;
+
+            PreparedStatement statement = connection.prepareStatement("REPLACE into " + this.getTablePrefix() + "stats (id, auctions_created, auctions_sold, auctions_expired, money_earned, money_spent) VALUES(?,?,?,?,?,?)");
+            for (Map.Entry<UUID, AuctionStat<Integer, Integer, Integer, Double, Double>> value: stats.entrySet()) {
+                try {
+                    statement.setString(1, value.getKey().toString());
+                    statement.setInt(2, value.getValue().getCreated());
+                    statement.setInt(3, value.getValue().getSold());
+                    statement.setInt(4, value.getValue().getExpired());
+                    statement.setDouble(5, value.getValue().getEarned());
+                    statement.setDouble(6, value.getValue().getSpent());
+                    statement.addBatch();
+                } catch (SQLException e) {
+                    error = e;
+                    break;
+                }
+            }
+
+            statement.executeBatch();
+
+            if (error == null) {
+                connection.commit();
+                resolveUpdateCallback(callback, null);
+            } else {
+                connection.rollback();
+                resolveUpdateCallback(callback, error);
+            }
+
+            connection.setAutoCommit(true);
         });
     }
 

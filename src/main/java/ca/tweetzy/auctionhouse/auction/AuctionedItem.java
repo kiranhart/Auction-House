@@ -83,6 +83,31 @@ public class AuctionedItem {
         this.expiresAt = expiresAt;
     }
 
+    public ItemStack getBidStack() {
+        ItemStack itemStack = this.item.clone();
+        itemStack.setAmount(Math.max(this.item.getAmount(), 1));
+        ItemMeta meta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
+        List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
+        lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HEADER.getStringList()));
+        lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_SELLER.getStringList().stream().map(s -> s.replace("%seller%", this.ownerName)).collect(Collectors.toList())));
+        lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_CURRENT_PRICE.getStringList().stream().map(s -> s.replace("%currentprice%", Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : AuctionAPI.getInstance().formatNumber(this.currentPrice))).collect(Collectors.toList())));
+        lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HIGHEST_BIDDER.getStringList().stream().map(s -> s.replace("%highestbidder%", this.highestBidder.equals(this.owner) ? AuctionHouse.getInstance().getLocale().getMessage("auction.nobids").getMessage() : this.highestBidderName)).collect(Collectors.toList())));
+
+        long[] times = AuctionAPI.getInstance().getRemainingTimeValues((this.expiresAt - System.currentTimeMillis()) / 1000);
+        lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_TIME_LEFT.getStringList().stream().map(s -> s
+                .replace("%remaining_days%", String.valueOf(times[0]))
+                .replace("%remaining_hours%", String.valueOf(times[1]))
+                .replace("%remaining_minutes%", String.valueOf(times[2]))
+                .replace("%remaining_seconds%", String.valueOf(times[3]))
+        ).collect(Collectors.toList())));
+
+        lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_FOOTER.getStringList()));
+
+        meta.setLore(lore);
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
     public ItemStack getDisplayStack(AuctionStackType type) {
         ItemStack itemStack = this.item.clone();
         itemStack.setAmount(Math.max(this.item.getAmount(), 1));

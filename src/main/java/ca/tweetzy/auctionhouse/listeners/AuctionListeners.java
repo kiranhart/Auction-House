@@ -5,6 +5,7 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
+import ca.tweetzy.auctionhouse.auction.AuctionStat;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import org.bukkit.Bukkit;
@@ -23,6 +24,10 @@ public class AuctionListeners implements Listener {
 
     @EventHandler
     public void onAuctionStart(AuctionStartEvent e) {
+        AuctionHouse.getInstance().getAuctionStatManager().insertOrUpdate(e.getSeller(), new AuctionStat<>(
+                1, 0, 0, 0D, 0D
+        ));
+
         if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean()) {
             Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
                 Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
@@ -42,6 +47,22 @@ public class AuctionListeners implements Listener {
 
     @EventHandler
     public void onAuctionEnd(AuctionEndEvent e) {
+        AuctionHouse.getInstance().getAuctionStatManager().insertOrUpdate(e.getOriginalOwner(), new AuctionStat<>(
+                0,
+                1,
+                0,
+                e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? e.getAuctionItem().getCurrentPrice() : e.getAuctionItem().getBasePrice(),
+                0D
+        ));
+
+        AuctionHouse.getInstance().getAuctionStatManager().insertOrUpdate(e.getBuyer(), new AuctionStat<>(
+                0,
+                0,
+                0,
+               0D,
+                e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? e.getAuctionItem().getCurrentPrice() : e.getAuctionItem().getBasePrice()
+        ));
+
         Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
             if (Settings.RECORD_TRANSACTIONS.getBoolean()) {
 
