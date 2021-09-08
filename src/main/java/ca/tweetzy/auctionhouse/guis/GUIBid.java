@@ -58,7 +58,7 @@ public class GUIBid extends Gui {
             e.gui.exit();
             PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
             builder.isValidInput((p, str) -> NumberUtils.isDouble(str) && Double.parseDouble(str) >= this.auctionItem.getBidIncrementPrice());
-            builder.sendValueMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter bid amount").getMessage()));
+            builder.sendValueMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter bid amount").processPlaceholder("current_bid", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).getMessage()));
             builder.toCancel("cancel");
             builder.onCancel(p -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
             builder.setValue((p, value) -> Double.parseDouble(value));

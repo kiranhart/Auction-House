@@ -131,6 +131,7 @@ public class TickAuctionsTask extends BukkitRunnable {
                 }
 
                 auctionItem.setOwner(auctionWinner.getUniqueId());
+                auctionItem.setHighestBidder(auctionWinner.getUniqueId());
                 auctionItem.setExpired(true);
             }
         }

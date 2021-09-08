@@ -526,10 +526,12 @@ public class AuctionAPI {
      * @param time is the string time that will be converted
      * @return the total amount of seconds
      */
-    public long getSecondsFromString(String time) {
+    public static long getSecondsFromString(String time) {
         time = time.toLowerCase();
-        char suffix = time.charAt(time.length() - 1);
-        int amount = Character.getNumericValue(time.charAt(time.length() - 2));
+        String[] tokens = time.split("(?<=\\d)(?=\\D)|(?=\\d)(?<=\\D)");
+        char suffix =  tokens[1].charAt(0);
+        int amount = Integer.parseInt(tokens[0]);
+
         switch (suffix) {
             case 's':
                 return amount;

@@ -5,6 +5,8 @@ import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The current file has been created by Kiran Hart
@@ -32,16 +34,18 @@ public class Test {
 
 //        System.out.println(AuctionAPI.toTicks("1 day"));
 
-        String arguments = "50 -b";
+        String arguments = "3d";
 
-        Arrays.asList(arguments.split(" ")).forEach(System.out::println);
+        System.out.println(getSecondsFromString(arguments));
     }
 
     public static long getSecondsFromString(String time) {
         time = time.toLowerCase();
-        char suffix = time.charAt(time.length() - 1);
-        int amount = Character.getNumericValue(time.charAt(time.length() - 2));
-        switch(suffix) {
+        String[] tokens = time.split("(?<=\\d)(?=\\D)|(?=\\d)(?<=\\D)");
+        char suffix =  tokens[1].charAt(0);
+        int amount = Integer.parseInt(tokens[0]);
+
+        switch (suffix) {
             case 's':
                 return amount;
             case 'm':

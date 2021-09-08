@@ -46,6 +46,7 @@ public class LocaleSettings {
         languageNodes.put("general.toggled listing.off", "&cYou turned off listing messages");
         languageNodes.put("general.bought_item", "&aYou bought &fx%amount% %item%&a for &a$%price%");
         languageNodes.put("general.wait_to_list", "&cPlease wait &4%time%&cs before listing another item");
+        languageNodes.put("general.please_enter_at_least_one_number", "&cPlease enter at least 1 valid number!");
 
 
         languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
@@ -62,8 +63,10 @@ public class LocaleSettings {
         languageNodes.put("prompts.enter new buy now price", "&aPlease enter the new buy now price in chat:");
         languageNodes.put("prompts.enter new starting bid", "&aPlease enter the new starting bid in chat:");
         languageNodes.put("prompts.enter new bid increment", "&aPlease enter the new bid increment in chat:");
-        languageNodes.put("prompts.enter bid amount", "&aPlease enter bid amount in chat:");
+
+        languageNodes.put("prompts.enter bid amount", "&7Huidig bod: #FDEA83€ %current_bid%\n&7Typ hoeveel je wilt bieden: (Typ #FDEA83''cancel'' &7om de interactie te annuleren.)");
         languageNodes.put("prompts.enter valid bid amount", "&cBid either too low or too high");
+
         languageNodes.put("prompts.enter listing time", "&aPlease enter listing time (ex. 1 day):");
         languageNodes.put("prompts.enter valid listing time", "&cPlease enter a valid listing time.");
 

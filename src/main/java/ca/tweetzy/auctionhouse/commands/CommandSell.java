@@ -158,6 +158,11 @@ public final class CommandSell extends AbstractCommand {
 				}
 			}
 		}
+		// check buy now price null
+		if (buyNowPrice == null) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.please_enter_at_least_one_number").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
 		boolean isBiddingItem = Settings.FORCE_AUCTION_USAGE.getBoolean() || buyNowPrice != null && startingBid != null && Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean();
 
