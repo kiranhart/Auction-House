@@ -306,7 +306,6 @@ public class GUIAuctionHouse extends Gui {
 	}
 
 	private void handleContainerInspect(GuiClickEvent e) {
-		if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) return;
 		ItemStack clicked = e.clickedItem;
 
 		if (NBTEditor.contains(clicked, "AuctionBundleItem")) {
@@ -315,6 +314,7 @@ public class GUIAuctionHouse extends Gui {
 			return;
 		}
 
+		if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) return;
 		if (e.player.isOp() || e.player.hasPermission("auctionhouse.admin") || e.player.hasPermission("auctionhouse.inspectshulker")) {
 			if (!(clicked.getItemMeta() instanceof BlockStateMeta)) return;
 

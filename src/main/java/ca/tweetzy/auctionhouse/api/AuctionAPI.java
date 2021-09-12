@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.api;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.api.hook.MMOItems;
+import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -546,6 +547,10 @@ public class AuctionAPI {
             default:
                 return 0L;
         }
+    }
+
+    public void listAuction(Player seller, AuctionedItem item, boolean bundle, boolean requiresHandRemove) {
+        listAuction(seller, item.getItem(), item.getItem(), (int) ((item.getExpiresAt() - System.currentTimeMillis()) / 1000), item.getBasePrice(), item.getBidStartingPrice(), item.getBidIncrementPrice(), item.getCurrentPrice(), item.isBidItem(), bundle, requiresHandRemove);
     }
 
     /**

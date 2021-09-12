@@ -34,9 +34,13 @@ public class Test {
 
 //        System.out.println(AuctionAPI.toTicks("1 day"));
 
-        String arguments = "3d";
+//        String arguments = "3d";
+//
+//        System.out.println(getSecondsFromString(arguments));
 
-        System.out.println(getSecondsFromString(arguments));
+        long future = System.currentTimeMillis() + 1000L * 10;
+
+        System.out.println((future - System.currentTimeMillis()) / 1000);
     }
 
     public static long getSecondsFromString(String time) {

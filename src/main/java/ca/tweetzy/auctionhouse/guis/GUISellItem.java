@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.guis;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmListing;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;

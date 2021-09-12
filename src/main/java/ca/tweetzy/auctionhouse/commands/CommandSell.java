@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.GUISellItem;
+import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmListing;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
@@ -222,19 +223,34 @@ public final class CommandSell extends AbstractCommand {
 			return ReturnType.SYNTAX_ERROR;
 		}
 
-		AuctionAPI.getInstance().listAuction(
-				player,
-				originalItem,
-				itemToSell,
-				allowedTime,
-				/* buy now price */ buyNowAllow ? buyNowPrice : -1,
-				/* start bid price */ isBiddingItem ? startingBid : 0,
-				/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : 1 : 0,
-				/* current price */ isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice,
-				isBiddingItem,
-				isBundle,
-				true
-		);
+		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
+			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIConfirmListing(
+					player,
+					originalItem,
+					itemToSell,
+					allowedTime,
+					/* buy now price */ buyNowAllow ? buyNowPrice : -1,
+					/* start bid price */ isBiddingItem ? startingBid : 0,
+					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : 1 : 0,
+					isBiddingItem,
+					isBundle,
+					true
+			));
+		} else {
+			AuctionAPI.getInstance().listAuction(
+					player,
+					originalItem,
+					itemToSell,
+					allowedTime,
+					/* buy now price */ buyNowAllow ? buyNowPrice : -1,
+					/* start bid price */ isBiddingItem ? startingBid : 0,
+					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : 1 : 0,
+					/* current price */ isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice,
+					isBiddingItem,
+					isBundle,
+					true
+			);
+		}
 
 		return ReturnType.SUCCESS;
 	}
