@@ -23,14 +23,14 @@ import java.util.stream.Collectors;
  */
 public class GUITransactionView extends Gui {
 
-    public GUITransactionView(AuctionPlayer auctionPlayer, Transaction transaction) {
+    public GUITransactionView(AuctionPlayer auctionPlayer, Transaction transaction, boolean showAll) {
         setTitle(TextUtils.formatText(Settings.GUI_TRANSACTION_VIEW_TITLE.getString()));
         setRows(6);
         setAcceptsItems(false);
         setDefaultItem(Settings.GUI_TRANSACTION_VIEW_BACKGROUND_ITEM.getMaterial().parseItem());
         setUseLockedCells(Settings.GUI_TRANSACTION_VIEW_BACKGROUND_FILL.getBoolean());
 
-        setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUITransactionList(auctionPlayer)));
+        setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUITransactionList(auctionPlayer.getPlayer(), showAll)));
         setItem(1, 4, transaction.getItem());
 
         setItem(3, 2, GuiUtils.createButtonItem(AuctionAPI.getInstance().getPlayerHead(Bukkit.getOfflinePlayer(transaction.getSeller()).getName()), TextUtils.formatText(Settings.GUI_TRANSACTION_VIEW_ITEM_SELLER_NAME.getString().replace("%seller_name%", Bukkit.getOfflinePlayer(transaction.getSeller()).getName())),

@@ -508,18 +508,27 @@ public class Settings {
             "&7Click here to claim all of your expired auctions"
     ));
 
+
+    /*  ===============================
+     *      TRANSACTIONS TYPE GUI
+     *  ===============================*/
+   public static final ConfigSetting GUI_TRANSACTIONS_TYPE_TITLE = new ConfigSetting(config, "gui.transactions type.title", "&7&LTransactions");
+   public static final ConfigSetting GUI_TRANSACTIONS_TYPE_BG_ITEM = new ConfigSetting(config, "gui.transactions type.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+   public static final ConfigSetting GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_ITEM = new ConfigSetting(config, "gui.transactions type.items.all transactions.item", XMaterial.PAPER.name());
+   public static final ConfigSetting GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_NAME = new ConfigSetting(config, "gui.transactions type.items.all transactions.name", "&eAll Transactions");
+   public static final ConfigSetting GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_LORE = new ConfigSetting(config, "gui.transactions type.items.all transactions.lore", Collections.singletonList("&7Click to view all transactions"));
+
+    public static final ConfigSetting GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_ITEM = new ConfigSetting(config, "gui.transactions type.items.self transactions.item", XMaterial.DIAMOND.name());
+    public static final ConfigSetting GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_NAME = new ConfigSetting(config, "gui.transactions type.items.self transactions.name", "&eYour Transactions");
+    public static final ConfigSetting GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_LORE = new ConfigSetting(config, "gui.transactions type.items.self transactions.lore", Collections.singletonList("&7Click to view all your transactions"));
+
+
     /*  ===============================
      *      TRANSACTIONS LIST GUI
      *  ===============================*/
-    public static final ConfigSetting GUI_TRANSACTIONS_TITLE = new ConfigSetting(config, "gui.transactions.title", "&7&LTransaction History");
-
-    public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TOGGLE_OWN_ITEM = new ConfigSetting(config, "gui.transactions.items.toggle own.item", "NETHER_STAR");
-    public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TOGGLE_OWN_NAME = new ConfigSetting(config, "gui.transactions.items.toggle own.name", "&e&LToggle Your Transactions");
-    public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TOGGLE_OWN_LORE = new ConfigSetting(config, "gui.transactions.items.toggle own.lore", Arrays.asList(
-            "&7Click to toggle whether you see",
-            "&7only your transactions or all",
-            "&7the transactions ever made."
-    ));
+    public static final ConfigSetting GUI_TRANSACTIONS_TITLE = new ConfigSetting(config, "gui.transactions.title", "&7&LYour Transactions");
+    public static final ConfigSetting GUI_TRANSACTIONS_TITLE_ALL = new ConfigSetting(config, "gui.transactions.title all", "&7&LAll Transactions");
 
     public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TRANSACTION_ITEM = new ConfigSetting(config, "gui.transactions.items.transaction.item", "PAPER");
     public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME = new ConfigSetting(config, "gui.transactions.items.transaction.name", "&e%transaction_id%");

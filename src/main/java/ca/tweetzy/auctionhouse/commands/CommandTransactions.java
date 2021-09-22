@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
+import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TimeUtils;
 import org.bukkit.command.CommandSender;
@@ -31,7 +32,7 @@ public class CommandTransactions extends AbstractCommand {
             return ReturnType.FAILURE;
         }
 
-        AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionList(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+        AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionType());
         return ReturnType.SUCCESS;
     }
 
