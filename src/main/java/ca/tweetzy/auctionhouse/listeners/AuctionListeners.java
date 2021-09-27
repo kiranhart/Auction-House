@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.listeners;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
@@ -88,5 +89,13 @@ public class AuctionListeners implements Listener {
                 Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> AuctionAPI.getInstance().sendDiscordMessage(hook, e.getOriginalOwner(), e.getBuyer(), e.getAuctionItem(), e.getSaleType(), false, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM));
             }
         }, 1L);
+    }
+
+    @EventHandler
+    public void onAuctionBid(AuctionBidEvent e) {
+        if (!Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_BID.getBoolean()) return;
+        Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
+            AuctionAPI.getInstance().sendDiscordBidMessage(hook, e.getAuctionedItem(), e.getNewBidAmount());
+        }), 1L);
     }
 }

@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.guis.transaction;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
@@ -15,7 +17,7 @@ public final class GUITransactionType extends Gui {
 
 	public GUITransactionType() {
 		setTitle(TextUtils.formatText(Settings.GUI_TRANSACTIONS_TYPE_TITLE.getString()));
-		setRows(3);
+		setRows(5);
 		setAcceptsItems(false);
 		setUseLockedCells(true);
 		setDefaultItem(Settings.GUI_TRANSACTIONS_TYPE_BG_ITEM.getMaterial().parseItem());
@@ -31,5 +33,7 @@ public final class GUITransactionType extends Gui {
 		setButton(15, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_ITEM.getString(), Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_NAME.getString(), Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_LORE.getStringList(), null), e -> {
 			e.manager.showGUI(e.player, new GUITransactionList(e.player, false));
 		});
+
+		setButton(4, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BACK_BTN_ITEM.getString(), Settings.GUI_BACK_BTN_NAME.getString(), Settings.GUI_BACK_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId()))));
 	}
 }

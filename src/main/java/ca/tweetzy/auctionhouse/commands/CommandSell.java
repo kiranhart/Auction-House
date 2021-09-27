@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.guis.GUISellItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmListing;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
@@ -125,7 +126,7 @@ public final class CommandSell extends AbstractCommand {
 		if (blocked) return ReturnType.FAILURE;
 
 		// get the max allowed time for this player.
-		int allowedTime = auctionPlayer.getAllowedSellTime();
+		int allowedTime = 0;
 
 		/*
 		================== BEGIN GATHERING NUMBERS / ARGUMENTS ==================
@@ -168,12 +169,12 @@ public final class CommandSell extends AbstractCommand {
 		boolean isBiddingItem = Settings.FORCE_AUCTION_USAGE.getBoolean() || buyNowPrice != null && startingBid != null && Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean();
 
 		// NOT USING THE BIDDING SYSTEM
-		if (!isBiddingItem && buyNowPrice != null) {
+		if (!isBiddingItem /* && buyNowPrice != null */) {
 			// Check the if the price meets the min/max criteria
 			if (!checkBasePrice(player, buyNowPrice, false)) return ReturnType.FAILURE;
 		}
 
-		if (isBiddingItem && buyNowPrice != null && startingBid != null) {
+		if (isBiddingItem && /* buyNowPrice != null && */ startingBid != null) {
 			if (!checkBasePrice(player, buyNowPrice, true)) return ReturnType.FAILURE;
 			// check the starting bid values
 			if (startingBid < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()) {
@@ -208,7 +209,9 @@ public final class CommandSell extends AbstractCommand {
 			}
 		}
 
-		if (Settings.ALLOW_ITEM_BUNDLES.getBoolean() && isBundle) {
+		if (!Settings.ALLOW_ITEM_BUNDLES.getBoolean() && isBundle) {
+			return ReturnType.FAILURE;
+		} else {
 			if (NBTEditor.contains(itemToSell, "AuctionBundleItem")) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.cannotsellbundleditem").sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
@@ -223,6 +226,10 @@ public final class CommandSell extends AbstractCommand {
 			return ReturnType.SYNTAX_ERROR;
 		}
 
+		// update the listing time to the max allowed time if it wasn't set using the command flag
+		allowedTime = auctionPlayer.getAllowedSellTime(isBiddingItem ? AuctionSaleType.USED_BIDDING_SYSTEM : AuctionSaleType.WITHOUT_BIDDING_SYSTEM);
+
+
 		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
 			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIConfirmListing(
 					player,
@@ -231,7 +238,7 @@ public final class CommandSell extends AbstractCommand {
 					allowedTime,
 					/* buy now price */ buyNowAllow ? buyNowPrice : -1,
 					/* start bid price */ isBiddingItem ? startingBid : 0,
-					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : 1 : 0,
+					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 1,
 					isBiddingItem,
 					isBundle,
 					true
@@ -243,10 +250,10 @@ public final class CommandSell extends AbstractCommand {
 					itemToSell,
 					allowedTime,
 					/* buy now price */ buyNowAllow ? buyNowPrice : -1,
-					/* start bid price */ isBiddingItem ? startingBid : 0,
-					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : 1 : 0,
+					/* start bid price */ isBiddingItem ? startingBid : !buyNowAllow ? buyNowPrice : 0,
+					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 1,
 					/* current price */ isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice,
-					isBiddingItem,
+					isBiddingItem || !buyNowAllow,
 					isBundle,
 					true
 			);

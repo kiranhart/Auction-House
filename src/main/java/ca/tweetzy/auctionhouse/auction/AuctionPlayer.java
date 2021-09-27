@@ -83,7 +83,7 @@ public class AuctionPlayer {
         return getSellLimit() - 1 < getItems(false).size();
     }
 
-    public int getAllowedSellTime() {
+    public int getAllowedSellTime(AuctionSaleType auctionSaleType) {
         List<Integer> possibleTimes = new ArrayList<>();
         Settings.AUCTION_TIME.getStringList().forEach(line -> {
             String[] split = line.split(":");
@@ -92,6 +92,8 @@ public class AuctionPlayer {
             }
         });
 
-        return possibleTimes.size() <= 0 ? Settings.DEFAULT_AUCTION_TIME.getInt() : Math.max(Settings.DEFAULT_AUCTION_TIME.getInt(), Collections.max(possibleTimes));
+        int defaultTime = auctionSaleType == AuctionSaleType.USED_BIDDING_SYSTEM ? Settings.DEFAULT_AUCTION_LISTING_TIME.getInt() : Settings.DEFAULT_BIN_LISTING_TIME.getInt();
+
+        return possibleTimes.size() <= 0 ? defaultTime : Math.max(defaultTime, Collections.max(possibleTimes));
     }
 }

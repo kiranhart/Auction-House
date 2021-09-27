@@ -42,9 +42,10 @@ public class CommandAdmin extends AbstractCommand {
                 AuctionHouse.getInstance().getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(sender);
                 break;
             case "relistall":
-                int relistTime = args.length == 1 ? Settings.DEFAULT_AUCTION_TIME.getInt() : Integer.parseInt(args[1]);
                 for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
                     if (AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).isExpired()) {
+                        int relistTime = args.length == 1 ? AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).isBidItem() ? Settings.DEFAULT_AUCTION_LISTING_TIME.getInt() : Settings.DEFAULT_BIN_LISTING_TIME.getInt() : Integer.parseInt(args[1]);
+
                         AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpiresAt(System.currentTimeMillis() + 1000L * relistTime);
                         AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpired(false);
                     }

@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.configuration.editor.PluginConfigGui;
 import org.bukkit.command.CommandSender;
@@ -23,6 +24,8 @@ public class CommandSettings extends AbstractCommand {
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
+        if (!Settings.ALLOW_USAGE_OF_IN_GAME_EDITOR.getBoolean()) return ReturnType.FAILURE;
+
         Player player = (Player) sender;
         if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
 

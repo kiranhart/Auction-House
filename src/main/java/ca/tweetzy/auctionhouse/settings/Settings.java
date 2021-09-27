@@ -26,10 +26,15 @@ public class Settings {
             "Which economy should auction house use?",
             "You have the following supported economy plugins installed: \"" + EconomyManager.getManager().getPossiblePlugins().stream().collect(Collectors.joining("\", \"")) + "\"."
     );
+
+    public static final ConfigSetting ALLOW_USAGE_OF_IN_GAME_EDITOR = new ConfigSetting(config, "Allow Usage Of This Menu In Game", true, "Once you set this to true, you will no longer be able to access it unless you enable it within the actual config.yml");
+
+
     /*  ===============================
      *          BASIC SETTINGS
      *  ===============================*/
-    public static final ConfigSetting DEFAULT_AUCTION_TIME = new ConfigSetting(config, "auction setting.default auction house", 604800, "The default auction time before an item expires (in seconds)");
+    public static final ConfigSetting DEFAULT_BIN_LISTING_TIME = new ConfigSetting(config, "auction setting.listings times.bin item", 86400, "The default listing time for bin items (buy only items) before they expire");
+    public static final ConfigSetting DEFAULT_AUCTION_LISTING_TIME = new ConfigSetting(config, "auction setting.listings times.auction item", 604800, "The default listing time for auction items before they expire");
     public static final ConfigSetting MAX_AUCTION_PRICE = new ConfigSetting(config, "auction setting.pricing.max auction price", 1000000000, "The max price for buy only / buy now items");
     public static final ConfigSetting MAX_AUCTION_START_PRICE = new ConfigSetting(config, "auction setting.pricing.max auction start price", 1000000000, "The max price starting a bidding auction");
     public static final ConfigSetting MAX_AUCTION_INCREMENT_PRICE = new ConfigSetting(config, "auction setting.pricing.max auction increment price", 1000000000, "The max amount for incrementing a bid.");
@@ -132,7 +137,7 @@ public class Settings {
             "&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
     );
 
-    public static final ConfigSetting CLICKS_NON_BID_ITEM_QTY_PURCHASE = new ConfigSetting(config, "auction setting.clicks.non bid item qty purchase", "RIGHT",
+    public static final ConfigSetting CLICKS_NON_BID_ITEM_QTY_PURCHASE = new ConfigSetting(config, "auction setting.clicks.non bid item qty purchase", "SHIFT_LEFT",
             "Valid Click Types",
             "LEFT",
             "RIGHT",
@@ -204,14 +209,16 @@ public class Settings {
      *  ===============================*/
     public static final ConfigSetting DISCORD_ENABLED = new ConfigSetting(config, "discord.enabled", true, "Should the discord webhook feature be enabled?");
     public static final ConfigSetting DISCORD_ALERT_ON_AUCTION_START = new ConfigSetting(config, "discord.alert on auction start", true, "Should a message be sent to the discord server when someone lists a new auction item");
-    public static final ConfigSetting DISCORD_ALERT_ON_AUCTION_FINISH = new ConfigSetting(config, "discord.alert on auction finish", true, "Should a message when an auction finishes?");
+    public static final ConfigSetting DISCORD_ALERT_ON_AUCTION_FINISH = new ConfigSetting(config, "discord.alert on auction finish", true, "Should a message be sent when an auction finishes?");
+    public static final ConfigSetting DISCORD_ALERT_ON_AUCTION_BID = new ConfigSetting(config, "discord.alert on auction bid", true, "Should a message be sent when a new bid is placed on an item?");
     public static final ConfigSetting DISCORD_WEBHOOKS = new ConfigSetting(config, "discord.webhooks", Collections.singletonList("https://discord.com/api/webhooks/867470650112737311/kptC6U4rqVjDaJmquq-ijjsR41t1E4qxF94jwgp5zqYwLjbjo3a_Vqp_mhMWGbqYC-Ju"), "A list of webhook urls (channels) you want a message sent to");
     public static final ConfigSetting DISCORD_MSG_USERNAME = new ConfigSetting(config, "discord.user.username", "Auction House", "The name of the user who will send the message");
     public static final ConfigSetting DISCORD_MSG_PFP = new ConfigSetting(config, "discord.user.avatar picture", "https://cdn.kiranhart.com/spigot/auctionhouse/icon.png", "The avatar image of the discord user");
     public static final ConfigSetting DISCORD_MSG_USE_RANDOM_COLOUR = new ConfigSetting(config, "discord.msg.use random colour", true, "colour of the message bar");
     public static final ConfigSetting DISCORD_MSG_DEFAULT_COLOUR = new ConfigSetting(config, "discord.msg.default colour", "137-100-100", "The color of the embed, it needs to be in hsb format.", "Separate the numbers with a -");
     public static final ConfigSetting DISCORD_MSG_START_TITLE = new ConfigSetting(config, "discord.msg.auction start title", "New Auction Available", "The title of the message when a new auction is made");
-    public static final ConfigSetting DISCORD_MSG_FINISH_TITLE = new ConfigSetting(config, "discord.msg.auction finish title", "Auction Finished", "The title of th message when an auction finishes");
+    public static final ConfigSetting DISCORD_MSG_FINISH_TITLE = new ConfigSetting(config, "discord.msg.auction finish title", "Auction Finished", "The title of the message when an auction finishes");
+    public static final ConfigSetting DISCORD_MSG_BID_TITLE = new ConfigSetting(config, "discord.msg.auction bid title", "New Bid Placed", "The title of the message when a new bid is placed");
 
     public static final ConfigSetting DISCORD_MSG_FIELD_SELLER_NAME = new ConfigSetting(config, "discord.msg.seller.name", "Seller");
     public static final ConfigSetting DISCORD_MSG_FIELD_SELLER_VALUE = new ConfigSetting(config, "discord.msg.seller.value", "%seller%");
@@ -220,6 +227,14 @@ public class Settings {
     public static final ConfigSetting DISCORD_MSG_FIELD_BUYER_NAME = new ConfigSetting(config, "discord.msg.buyer.name", "Buyer");
     public static final ConfigSetting DISCORD_MSG_FIELD_BUYER_VALUE = new ConfigSetting(config, "discord.msg.buyer.value", "%buyer%");
     public static final ConfigSetting DISCORD_MSG_FIELD_BUYER_INLINE = new ConfigSetting(config, "discord.msg.buyer.inline", true);
+
+    public static final ConfigSetting DISCORD_MSG_FIELD_BIDDER_NAME = new ConfigSetting(config, "discord.msg.bidder.name", "Bidder");
+    public static final ConfigSetting DISCORD_MSG_FIELD_BIDDER_VALUE = new ConfigSetting(config, "discord.msg.bidder.value", "%bidder%");
+    public static final ConfigSetting DISCORD_MSG_FIELD_BIDDER_INLINE = new ConfigSetting(config, "discord.msg.bidder.inline", true);
+
+    public static final ConfigSetting DISCORD_MSG_FIELD_BID_PRICE_NAME = new ConfigSetting(config, "discord.msg.bid price.name", "Amount Bid");
+    public static final ConfigSetting DISCORD_MSG_FIELD_BID_PRICE_VALUE = new ConfigSetting(config, "discord.msg.bid price.value", "%bid_price%");
+    public static final ConfigSetting DISCORD_MSG_FIELD_BID_PRICE_INLINE = new ConfigSetting(config, "discord.msg.bid price.inline", true);
 
     public static final ConfigSetting DISCORD_MSG_FIELD_BUY_NOW_PRICE_NAME = new ConfigSetting(config, "discord.msg.buy now price.name", "Buy Now Price");
     public static final ConfigSetting DISCORD_MSG_FIELD_BUY_NOW_PRICE_VALUE = new ConfigSetting(config, "discord.msg.buy now price.value", "$%buy_now_price%");

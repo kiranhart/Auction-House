@@ -56,7 +56,7 @@ public class GUITransactionList extends Gui {
         setOnPage(e -> draw());
 
         // Other Buttons
-        setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
+        setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BACK_BTN_ITEM.getString(), Settings.GUI_BACK_BTN_NAME.getString(), Settings.GUI_BACK_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUITransactionType()));
 
         int slot = 0;
         List<Transaction> data = this.transactions.stream().sorted(Comparator.comparingLong(Transaction::getTransactionTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());

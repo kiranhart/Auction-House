@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.auction.*;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
@@ -253,6 +254,10 @@ public class GUIAuctionHouse extends Gui {
 
 				OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
 				OfflinePlayer owner = Bukkit.getOfflinePlayer(auctionItem.getOwner());
+
+				AuctionBidEvent auctionBidEvent = new AuctionBidEvent(e.player, auctionItem, newBiddingAmount);
+				Bukkit.getServer().getPluginManager().callEvent(auctionBidEvent);
+				if (auctionBidEvent.isCancelled()) return;
 
 				auctionItem.setHighestBidder(e.player.getUniqueId());
 				auctionItem.setHighestBidderName(e.player.getName());

@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.guis;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmListing;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -107,13 +108,17 @@ public class GUISellItem extends Gui {
 			this.isBiddingItem = true;
 		}
 
+		if (!Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
+			this.isBiddingItem = true;
+		}
+
 		setUnlocked(1, 4);
 		setUnlockedRange(54, 89);
 		draw();
 	}
 
 	public GUISellItem(AuctionPlayer auctionPlayer, ItemStack itemToBeListed) {
-		this(auctionPlayer, itemToBeListed, Settings.MIN_AUCTION_PRICE.getDouble(), Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(), Settings.MIN_AUCTION_START_PRICE.getDouble(), false, true, auctionPlayer.getAllowedSellTime());
+		this(auctionPlayer, itemToBeListed, Settings.MIN_AUCTION_PRICE.getDouble(), Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(), Settings.MIN_AUCTION_START_PRICE.getDouble(), false, true, auctionPlayer.getAllowedSellTime(AuctionSaleType.WITHOUT_BIDDING_SYSTEM));
 	}
 
 	private void draw() {
@@ -233,16 +238,12 @@ public class GUISellItem extends Gui {
 			}
 		}
 
-		setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
-			AuctionHouse.getInstance().getAuctionPlayerManager().getUsingSellGUI().remove(e.player.getUniqueId());
-			setAllowClose(true);
-			e.gui.close();
-		});
-
-		if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
+		if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean() || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
 			setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_ITEM.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_ITEM.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_NAME.getString() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_NAME.getString(), this.isBiddingItem ? Settings.GUI_SELL_ITEMS_BIDDING_ENABLED_LORE.getStringList() : Settings.GUI_SELL_ITEMS_BIDDING_DISABLED_LORE.getStringList(), null), e -> {
 				if (!Settings.FORCE_AUCTION_USAGE.getBoolean()) {
-					this.isBiddingItem = !this.isBiddingItem;
+					if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
+						this.isBiddingItem = !this.isBiddingItem;
+					}
 				}
 				setTheItemToBeListed();
 				draw();
@@ -298,7 +299,7 @@ public class GUISellItem extends Gui {
 				return;
 			}
 
-			if (this.isAllowingBuyNow && this.isBiddingItem && this.buyNowPrice <= this.bidStartPrice && Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean()) {
+			if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && this.isAllowingBuyNow && this.isBiddingItem && this.buyNowPrice <= this.bidStartPrice && Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean()) {
 				AuctionHouse.getInstance().getLocale().getMessage("pricing.basepricetoolow").sendPrefixedMessage(e.player);
 				return;
 			}
@@ -326,6 +327,13 @@ public class GUISellItem extends Gui {
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			}
 		});
+
+		setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
+			AuctionHouse.getInstance().getAuctionPlayerManager().getUsingSellGUI().remove(e.player.getUniqueId());
+			setAllowClose(true);
+			e.gui.close();
+		});
+
 	}
 
 	private boolean validateChatNumber(String input, double requirement, boolean checkMax) {
