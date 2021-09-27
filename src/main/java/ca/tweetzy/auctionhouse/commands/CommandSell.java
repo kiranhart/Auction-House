@@ -14,15 +14,12 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
-import com.sun.prism.shader.Texture_ImagePattern_Loader;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -212,12 +209,14 @@ public final class CommandSell extends AbstractCommand {
 		if (!Settings.ALLOW_ITEM_BUNDLES.getBoolean() && isBundle) {
 			return ReturnType.FAILURE;
 		} else {
-			if (NBTEditor.contains(itemToSell, "AuctionBundleItem")) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.cannotsellbundleditem").sendPrefixedMessage(player);
-				return ReturnType.FAILURE;
-			}
+			if (isBundle) {
+				if (NBTEditor.contains(itemToSell, "AuctionBundleItem")) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.cannotsellbundleditem").sendPrefixedMessage(player);
+					return ReturnType.FAILURE;
+				}
 
-			itemToSell = AuctionAPI.getInstance().createBundledItem(itemToSell, AuctionAPI.getInstance().getSimilarItemsFromInventory(player, itemToSell).toArray(new ItemStack[0]));
+				itemToSell = AuctionAPI.getInstance().createBundledItem(itemToSell, AuctionAPI.getInstance().getSimilarItemsFromInventory(player, itemToSell).toArray(new ItemStack[0]));
+			}
 		}
 
 		final boolean buyNowAllow = Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean();

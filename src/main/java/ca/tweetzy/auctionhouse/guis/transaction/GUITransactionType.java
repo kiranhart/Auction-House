@@ -17,7 +17,7 @@ public final class GUITransactionType extends Gui {
 
 	public GUITransactionType() {
 		setTitle(TextUtils.formatText(Settings.GUI_TRANSACTIONS_TYPE_TITLE.getString()));
-		setRows(5);
+		setRows(4);
 		setAcceptsItems(false);
 		setUseLockedCells(true);
 		setDefaultItem(Settings.GUI_TRANSACTIONS_TYPE_BG_ITEM.getMaterial().parseItem());
@@ -34,6 +34,6 @@ public final class GUITransactionType extends Gui {
 			e.manager.showGUI(e.player, new GUITransactionList(e.player, false));
 		});
 
-		setButton(4, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BACK_BTN_ITEM.getString(), Settings.GUI_BACK_BTN_NAME.getString(), Settings.GUI_BACK_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId()))));
+		setButton(3, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BACK_BTN_ITEM.getString(), Settings.GUI_BACK_BTN_NAME.getString(), Settings.GUI_BACK_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId()))));
 	}
 }
