@@ -419,7 +419,8 @@ public class AuctionAPI {
      */
     public String formatNumber(double number) {
         String formatted = String.format("%,.2f", number);
-        return Settings.USE_ALTERNATE_CURRENCY_FORMAT.getBoolean() ? replaceLast(formatted.replace(",", "."), ".", ",") : formatted;
+        String preDecimal = Settings.USE_ALTERNATE_CURRENCY_FORMAT.getBoolean() ? replaceLast(formatted.replace(",", "."), ".", ",") : formatted;
+        return Settings.USE_FLAT_NUMBER_FORMAT.getBoolean() ? preDecimal.replace(".", "").replace(",", "") : preDecimal;
     }
 
     /**

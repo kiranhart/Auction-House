@@ -33,7 +33,7 @@ public final class AuctionBidEvent extends Event implements Cancellable {
 	}
 
 	public AuctionBidEvent(OfflinePlayer bidder, AuctionedItem auctionedItem, double newBidAmount) {
-		this(bidder, auctionedItem, newBidAmount, true);
+		this(bidder, auctionedItem, newBidAmount, false);
 	}
 
 	public HandlerList getHandlers() {

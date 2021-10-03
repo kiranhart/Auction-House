@@ -87,7 +87,6 @@ public class GUIActiveAuctions extends Gui {
                             break;
                         case RIGHT:
                             if (Settings.ALLOW_PLAYERS_TO_ACCEPT_BID.getBoolean() && item.getBidStartingPrice() != 0 && !item.getHighestBidder().equals(e.player.getUniqueId())) {
-                                item.setExpired(true);
                                 item.setExpiresAt(System.currentTimeMillis());
                                 draw();
                             }
