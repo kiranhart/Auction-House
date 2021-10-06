@@ -1,9 +1,9 @@
 package ca.tweetzy.auctionhouse;
 
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
-import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPI;
+import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
+import ca.tweetzy.auctionhouse.api.hook.UltraEconomyHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import ca.tweetzy.auctionhouse.auction.AuctionStat;
 import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations.*;
@@ -26,6 +26,8 @@ import ca.tweetzy.core.database.MySQLConnector;
 import ca.tweetzy.core.database.SQLiteConnector;
 import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.hooks.EconomyManager;
+import ca.tweetzy.core.hooks.PluginHook;
+import ca.tweetzy.core.hooks.economies.Economy;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.core.utils.TextUtils;
 import co.aikar.taskchain.BukkitTaskChainFactory;
@@ -50,6 +52,7 @@ public class AuctionHouse extends TweetyPlugin {
 
     private static TaskChainFactory taskChainFactory;
     private static AuctionHouse instance;
+    private PluginHook ultraEconomyHook;
 
     @Getter
     @Setter
@@ -110,18 +113,26 @@ public class AuctionHouse extends TweetyPlugin {
 
         taskChainFactory = BukkitTaskChainFactory.create(this);
 
-        // Load Economy
-        EconomyManager.load();
-
         // Settings
         Settings.setup();
+
+        this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
+
+        // Load Economy
+        EconomyManager.load();
 
         // local
         setLocale(Settings.LANG.getString());
         LocaleSettings.setup();
 
         // Setup Economy
-        EconomyManager.getManager().setPreferredHook(Settings.ECONOMY_PLUGIN.getString());
+        final String ECO_PLUGIN =Settings.ECONOMY_PLUGIN.getString();
+        if (ECO_PLUGIN.startsWith("UltraEconomy")) {
+            EconomyManager.getManager().setPreferredHook(this.ultraEconomyHook);
+        } else {
+            EconomyManager.getManager().setPreferredHook(ECO_PLUGIN);
+        }
+
         if (!EconomyManager.getManager().isEnabled()) {
             getLogger().severe("Could not find a valid economy provider for Auction House");
             getServer().getPluginManager().disablePlugin(this);
@@ -200,8 +211,8 @@ public class AuctionHouse extends TweetyPlugin {
         );
 
         // Placeholder API
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderAPI(this).register();
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPIHook") != null) {
+            new PlaceholderAPIHook(this).register();
         }
 
         // start the auction tick task

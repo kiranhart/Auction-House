@@ -17,10 +17,10 @@ import org.bukkit.inventory.ItemStack;
  */
 
 @UtilityClass
-public class MMOItems {
+public class MMOItemsHook {
 
     public boolean isEnabled() {
-        return Bukkit.getPluginManager().getPlugin("MMOItems") != null;
+        return Bukkit.getPluginManager().getPlugin("MMOItemsHook") != null;
     }
 
     private boolean hasType(@NonNull final NBTItem itemStack) {

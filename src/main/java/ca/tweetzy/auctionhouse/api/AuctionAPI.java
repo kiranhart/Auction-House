@@ -2,8 +2,7 @@ package ca.tweetzy.auctionhouse.api;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
-import ca.tweetzy.auctionhouse.api.hook.MMOItems;
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
+import ca.tweetzy.auctionhouse.api.hook.MMOItemsHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -18,21 +17,17 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.ItemUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
-import io.lumine.mythic.lib.api.item.NBTItem;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BundleMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
@@ -262,7 +257,7 @@ public class AuctionAPI {
                 : Color.getHSBColor(Float.parseFloat(possibleColours[0]) / 360, Float.parseFloat(possibleColours[1]) / 100, Float.parseFloat(possibleColours[2]) / 100);
 
         ItemStack itemStack = auctionItem.getItem();
-        String itemName = MMOItems.isEnabled() ? MMOItems.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
+        String itemName = MMOItemsHook.isEnabled() ? MMOItemsHook.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
 
         DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
         embedObject.setTitle(isNew ? Settings.DISCORD_MSG_START_TITLE.getString() : Settings.DISCORD_MSG_FINISH_TITLE.getString());
@@ -304,7 +299,7 @@ public class AuctionAPI {
                 : Color.getHSBColor(Float.parseFloat(possibleColours[0]) / 360, Float.parseFloat(possibleColours[1]) / 100, Float.parseFloat(possibleColours[2]) / 100);
 
         ItemStack itemStack = auctionItem.getItem();
-        String itemName = MMOItems.isEnabled() ? MMOItems.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
+        String itemName = MMOItemsHook.isEnabled() ? MMOItemsHook.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
 
         DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
         embedObject.setTitle(Settings.DISCORD_MSG_BID_TITLE.getString());

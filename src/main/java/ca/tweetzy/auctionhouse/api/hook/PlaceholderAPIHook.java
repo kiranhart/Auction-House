@@ -2,7 +2,6 @@ package ca.tweetzy.auctionhouse.api.hook;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import io.lumine.mythic.lib.comp.PlaceholderAPIHook;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -13,11 +12,11 @@ import org.jetbrains.annotations.NotNull;
  * Time Created: 6:36 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class PlaceholderAPI extends PlaceholderExpansion {
+public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     private final AuctionHouse plugin;
 
-    public PlaceholderAPI(AuctionHouse plugin) {
+    public PlaceholderAPIHook(AuctionHouse plugin) {
         this.plugin = plugin;
     }
 
