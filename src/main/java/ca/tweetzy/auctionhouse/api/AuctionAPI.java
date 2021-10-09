@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.api;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.api.hook.MMOItemsHook;
+import ca.tweetzy.auctionhouse.api.hook.McMMOHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -603,6 +604,11 @@ public class AuctionAPI {
      * @param isUsingBundle States whether the item is a bundled item
      */
     public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove) {
+        if (McMMOHook.isUsingAbility(seller)) {
+            AuctionHouse.getInstance().getLocale().getMessage("general.mcmmo_ability_active").sendPrefixedMessage(seller);
+            return;
+        }
+
         AuctionedItem auctionedItem = new AuctionedItem();
         auctionedItem.setId(UUID.randomUUID());
         auctionedItem.setOwner(seller.getUniqueId());

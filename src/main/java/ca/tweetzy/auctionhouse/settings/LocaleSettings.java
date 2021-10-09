@@ -47,6 +47,7 @@ public class LocaleSettings {
         languageNodes.put("general.bought_item", "&aYou bought &fx%amount% %item%&a for &a$%price%");
         languageNodes.put("general.wait_to_list", "&cPlease wait &4%time%&cs before listing another item");
         languageNodes.put("general.please_enter_at_least_one_number", "&cPlease enter at least 1 valid number!");
+        languageNodes.put("general.mcmmo_ability_active", "&cCannot list item when mcMMO ability is active!");
 
 
         languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
