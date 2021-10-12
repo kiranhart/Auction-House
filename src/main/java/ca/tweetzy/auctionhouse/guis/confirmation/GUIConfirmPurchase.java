@@ -188,8 +188,8 @@ public class GUIConfirmPurchase extends Gui {
     private void transferFunds(Player from, double amount) {
         double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * amount : 0D;
 
-        EconomyManager.withdrawBalance(from, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount);
-        EconomyManager.deposit(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax);
+        AuctionAPI.getInstance().withdrawBalance(from, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount);
+        AuctionAPI.getInstance().depositBalance(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax);
     }
 
     private void sendMessages(GuiClickEvent e, AuctionedItem located, boolean overwritePrice, double price) {
