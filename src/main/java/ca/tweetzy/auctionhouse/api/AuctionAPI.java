@@ -784,17 +784,27 @@ public class AuctionAPI {
 
 	public void withdrawBalance(OfflinePlayer player, double amount) {
 		if (Settings.PAYMENT_HANDLE_USE_CMD.getBoolean()) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.PAYMENT_HANDLE_WITHDRAW_CMD.getString().replace("%player%", player.getName()).replace("%price%", String.valueOf(amount)));
+			AuctionHouse.newChain().sync(() -> {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.PAYMENT_HANDLE_WITHDRAW_CMD.getString().replace("%player%", player.getName()).replace("%price%", String.valueOf(amount)));
+			}).execute();
 		} else {
-			EconomyManager.withdrawBalance(player, amount);
+			if (Settings.FORCE_SYNC_MONEY_ACTIONS.getBoolean())
+				AuctionHouse.newChain().sync(() -> EconomyManager.withdrawBalance(player, amount)).execute();
+			else
+				EconomyManager.withdrawBalance(player, amount);
 		}
 	}
 
 	public void depositBalance(OfflinePlayer player, double amount) {
 		if (Settings.PAYMENT_HANDLE_USE_CMD.getBoolean()) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.PAYMENT_HANDLE_DEPOSIT_CMD.getString().replace("%player%", player.getName()).replace("%price%", String.valueOf(amount)));
+			AuctionHouse.newChain().sync(() -> {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.PAYMENT_HANDLE_DEPOSIT_CMD.getString().replace("%player%", player.getName()).replace("%price%", String.valueOf(amount)));
+			}).execute();
 		} else {
-			EconomyManager.deposit(player, amount);
+			if (Settings.FORCE_SYNC_MONEY_ACTIONS.getBoolean())
+				AuctionHouse.newChain().sync(() -> EconomyManager.deposit(player, amount)).execute();
+			else
+				EconomyManager.deposit(player, amount);
 		}
 	}
 }
