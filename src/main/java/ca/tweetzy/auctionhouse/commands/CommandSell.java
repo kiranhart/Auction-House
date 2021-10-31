@@ -237,7 +237,7 @@ public final class CommandSell extends AbstractCommand {
 					allowedTime,
 					/* buy now price */ buyNowAllow ? buyNowPrice : -1,
 					/* start bid price */ isBiddingItem ? startingBid : 0,
-					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 1,
+					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0,
 					isBiddingItem,
 					isBundle,
 					true
@@ -250,7 +250,7 @@ public final class CommandSell extends AbstractCommand {
 					allowedTime,
 					/* buy now price */ buyNowAllow ? buyNowPrice : -1,
 					/* start bid price */ isBiddingItem ? startingBid : !buyNowAllow ? buyNowPrice : 0,
-					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 1,
+					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0,
 					/* current price */ isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice,
 					isBiddingItem || !buyNowAllow,
 					isBundle,

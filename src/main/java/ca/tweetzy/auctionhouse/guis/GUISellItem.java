@@ -149,7 +149,7 @@ public class GUISellItem extends Gui {
 				e.gui.close();
 				PlayerChatInput.PlayerChatInputBuilder<Long> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
 				builder.isValidInput((p, str) -> {
-					String[] parts = str.split(" ");
+					String[] parts = ChatColor.stripColor(str).split(" ");
 					if (parts.length == 2) {
 						 if (NumberUtils.isInt(parts[0]) && Arrays.asList("second", "minute", "hour", "day", "week", "month", "year").contains(parts[1].toLowerCase())) {
 							return AuctionAPI.toTicks(str) <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt();
@@ -161,7 +161,7 @@ public class GUISellItem extends Gui {
 				builder.invalidInputMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter valid listing time").getMessage()));
 				builder.toCancel("cancel");
 				builder.onCancel(p -> reopen(e));
-				builder.setValue((p, value) -> AuctionAPI.toTicks(value));
+				builder.setValue((p, value) -> AuctionAPI.toTicks(ChatColor.stripColor(value)));
 				builder.onFinish((p, value) -> {
 					this.auctionTime = value.intValue();
 					reopen(e);
@@ -180,19 +180,25 @@ public class GUISellItem extends Gui {
 				setAllowClose(true);
 				e.gui.close();
 
-				ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new buy now price").getMessage()), chat -> {
-					String msg = chat.getMessage();
-					if (validateChatNumber(msg, Settings.MIN_AUCTION_PRICE.getDouble(), false) && validateChatNumber(msg, Settings.MAX_AUCTION_PRICE.getDouble(), true)) {
-						// check if the buy now price is higher than the bid start price
-						if (this.isAllowingBuyNow && this.isBiddingItem && Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && Double.parseDouble(msg) < this.bidStartPrice) {
-							reopen(e);
-							return;
-						}
-
-						this.buyNowPrice = Double.parseDouble(msg);
-						reopen(e);
+				PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
+				builder.isValidInput((p, str) -> {
+					if (validateChatNumber(str, Settings.MIN_AUCTION_PRICE.getDouble(), false) && validateChatNumber(str, Settings.MAX_AUCTION_PRICE.getDouble(), true)) {
+						return !this.isAllowingBuyNow || !this.isBiddingItem || !Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() || !(Double.parseDouble(str) < this.bidStartPrice);
 					}
-				}).setOnCancel(() -> reopen(e)).setOnClose(() -> reopen(e));
+					return false;
+				});
+
+				builder.sendValueMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new buy now price").getMessage()));
+				builder.toCancel("cancel");
+				builder.onCancel(p -> reopen(e));
+				builder.setValue((p, value) -> Double.parseDouble(ChatColor.stripColor(value)));
+				builder.onFinish((p, value) -> {
+					this.buyNowPrice = value;
+					reopen(e);
+				});
+
+				PlayerChatInput<Double> input = builder.build();
+				input.start();
 			});
 		}
 
@@ -203,13 +209,23 @@ public class GUISellItem extends Gui {
 				setTheItemToBeListed();
 				setAllowClose(true);
 				e.gui.close();
-				ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new starting bid").getMessage()), chat -> {
-					String msg = chat.getMessage();
-					if (validateChatNumber(msg, Settings.MIN_AUCTION_START_PRICE.getDouble(), false) && validateChatNumber(msg, Settings.MAX_AUCTION_START_PRICE.getDouble(), true)) {
-						this.bidStartPrice = Double.parseDouble(msg);
-					}
+
+				PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
+				builder.isValidInput((p, str) -> {
+					return validateChatNumber(str, Settings.MIN_AUCTION_START_PRICE.getDouble(), false) && validateChatNumber(str, Settings.MAX_AUCTION_START_PRICE.getDouble(), true);
+				});
+
+				builder.sendValueMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new starting bid").getMessage()));
+				builder.toCancel("cancel");
+				builder.onCancel(p -> reopen(e));
+				builder.setValue((p, value) -> Double.parseDouble(ChatColor.stripColor(value)));
+				builder.onFinish((p, value) -> {
+					this.bidStartPrice = value;
 					reopen(e);
-				}).setOnCancel(() -> reopen(e)).setOnClose(() -> reopen(e));
+				});
+
+				PlayerChatInput<Double> input = builder.build();
+				input.start();
 			});
 
 			if (!Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean()) {
@@ -219,13 +235,23 @@ public class GUISellItem extends Gui {
 					setTheItemToBeListed();
 					setAllowClose(true);
 					e.gui.close();
-					ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new bid increment").getMessage()), chat -> {
-						String msg = chat.getMessage();
-						if (validateChatNumber(msg, Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(), false) && validateChatNumber(msg, Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble(), true)) {
-							this.bidIncrementPrice = Double.parseDouble(msg);
-						}
+
+					PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
+					builder.isValidInput((p, str) -> {
+						return validateChatNumber(str, Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(), false) && validateChatNumber(str, Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble(), true);
+					});
+
+					builder.sendValueMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new bid increment").getMessage()));
+					builder.toCancel("cancel");
+					builder.onCancel(p -> reopen(e));
+					builder.setValue((p, value) -> Double.parseDouble(ChatColor.stripColor(value)));
+					builder.onFinish((p, value) -> {
+						this.bidIncrementPrice = value;
 						reopen(e);
-					}).setOnCancel(() -> reopen(e)).setOnClose(() -> reopen(e));
+					});
+
+					PlayerChatInput<Double> input = builder.build();
+					input.start();
 				});
 			}
 
@@ -337,9 +363,10 @@ public class GUISellItem extends Gui {
 	}
 
 	private boolean validateChatNumber(String input, double requirement, boolean checkMax) {
+		String val = ChatColor.stripColor(input);
 		if (checkMax)
-			return input != null && input.length() != 0 && NumberUtils.isDouble(input) && Double.parseDouble(input) <= requirement;
-		return input != null && input.length() != 0 && NumberUtils.isDouble(input) && Double.parseDouble(input) >= requirement;
+			return val != null && val.length() != 0 && NumberUtils.isDouble(val) && Double.parseDouble(val) <= requirement;
+		return val != null && val.length() != 0 && NumberUtils.isDouble(val) && Double.parseDouble(val) >= requirement;
 	}
 
 	private void reopen(GuiClickEvent e) {

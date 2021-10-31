@@ -187,7 +187,7 @@ public class GUIAuctionHouse extends Gui {
 
 	private void handleBidItem(AuctionedItem auctionItem, GuiClickEvent e, boolean buyNow) {
 		if (buyNow) {
-			if (auctionItem.getBidStartingPrice() >= Settings.MIN_AUCTION_START_PRICE.getDouble()) {
+			if (auctionItem.isBidItem()) {
 				if (!Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) return;
 				if (auctionItem.getBasePrice() <= -1) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.buynowdisabledonitem").sendPrefixedMessage(e.player);
