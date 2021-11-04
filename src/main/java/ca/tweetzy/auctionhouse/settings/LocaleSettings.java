@@ -65,7 +65,7 @@ public class LocaleSettings {
         languageNodes.put("prompts.enter new starting bid", "&aPlease enter the new starting bid in chat:");
         languageNodes.put("prompts.enter new bid increment", "&aPlease enter the new bid increment in chat:");
 
-        languageNodes.put("prompts.enter bid amount", "&7Huidig bod: #FDEA83€ %current_bid%\n&7Typ hoeveel je wilt bieden: (Typ #FDEA83''cancel'' &7om de interactie te annuleren.)");
+        languageNodes.put("prompts.enter bid amount", "&7Current Bid &e%current_bid% &7Type '&ccancel&7' to cancel placing bid");
         languageNodes.put("prompts.enter valid bid amount", "&cBid either too low or too high");
 
         languageNodes.put("prompts.enter listing time", "&aPlease enter listing time (ex. 1 day):");
