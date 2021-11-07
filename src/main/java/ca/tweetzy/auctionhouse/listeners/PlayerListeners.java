@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -31,54 +32,66 @@ import java.util.List;
  */
 public class PlayerListeners implements Listener {
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
-            AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
-            AuctionHouse.getInstance().getLogger().info("Adding player: " + player.getName() + " to Auction Player list.");
-            if (AuctionHouse.getInstance().getStatus() == UpdateChecker.UpdateStatus.UNRELEASED_VERSION && player.isOp()) {
-                AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", AuctionHouse.getInstance().getDescription().getVersion()))).sendPrefixedMessage(player);
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent e) {
+		Player player = e.getPlayer();
+		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
+			AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+			AuctionHouse.getInstance().getLogger().info("Adding player: " + player.getName() + " to Auction Player list.");
+			if (AuctionHouse.getInstance().getStatus() == UpdateChecker.UpdateStatus.UNRELEASED_VERSION && player.isOp()) {
+				AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", AuctionHouse.getInstance().getDescription().getVersion()))).sendPrefixedMessage(player);
+			}
+		}, 20);
+	}
+
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent e) {
+		Player player = e.getPlayer();
+		AuctionHouse.getInstance().getAuctionPlayerManager().removePlayer(player.getUniqueId());
+		AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().remove(player.getUniqueId());
+		AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
+		AuctionHouse.getInstance().getLogger().info("Removing Instances for user: " + player.getName());
+	}
+
+	@EventHandler
+	public void onCraftWithBundle(PrepareItemCraftEvent event) {
+		final ItemStack[] craftingItems = event.getInventory().getMatrix();
+
+		for (ItemStack item : craftingItems) {
+            if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
+            if (NBTEditor.contains(item, "AuctionBundleItem")) {
+                event.getInventory().setResult(XMaterial.AIR.parseItem());
             }
-        }, 20);
-    }
+		}
+	}
 
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e) {
-        Player player = e.getPlayer();
-        AuctionHouse.getInstance().getAuctionPlayerManager().removePlayer(player.getUniqueId());
-        AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().remove(player.getUniqueId());
-        AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
-        AuctionHouse.getInstance().getLogger().info("Removing Instances for user: " + player.getName());
-    }
+	@EventHandler
+	public void onBundleClick(PlayerInteractEvent e) {
+		Player player = e.getPlayer();
+		ItemStack heldItem = PlayerHelper.getHeldItem(player);
 
-    @EventHandler
-    public void onBundleClick(PlayerInteractEvent e) {
-        Player player = e.getPlayer();
-        ItemStack heldItem = PlayerHelper.getHeldItem(player);
+		if (heldItem == null || (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK))
+			return;
+		if (heldItem.getType() == XMaterial.AIR.parseMaterial()) return;
+		if (!NBTEditor.contains(heldItem, "AuctionBundleItem")) return;
+		e.setCancelled(true);
 
-        if (heldItem == null || (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK))
-            return;
-        if (heldItem.getType() == XMaterial.AIR.parseMaterial()) return;
-        if (!NBTEditor.contains(heldItem, "AuctionBundleItem")) return;
-        e.setCancelled(true);
+		List<ItemStack> items = new ArrayList<>();
 
-        List<ItemStack> items = new ArrayList<>();
+		for (int i = 0; i < NBTEditor.getInt(heldItem, "AuctionBundleItem"); i++) {
+			items.add(AuctionAPI.getInstance().deserializeItem(NBTEditor.getByteArray(heldItem, "AuctionBundleItem-" + i)));
+		}
 
-        for (int i = 0; i < NBTEditor.getInt(heldItem, "AuctionBundleItem"); i++) {
-            items.add(AuctionAPI.getInstance().deserializeItem(NBTEditor.getByteArray(heldItem, "AuctionBundleItem-" + i)));
-        }
+		if (heldItem.getAmount() >= 2) {
+			heldItem.setAmount(heldItem.getAmount() - 1);
+		} else {
+			if (ServerVersion.isServerVersionAbove(ServerVersion.V1_8)) {
+				player.getInventory().setItemInMainHand(XMaterial.AIR.parseItem());
+			} else {
+				player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+			}
+		}
 
-        if (heldItem.getAmount() >= 2) {
-            heldItem.setAmount(heldItem.getAmount() - 1);
-        } else {
-            if (ServerVersion.isServerVersionAbove(ServerVersion.V1_8)) {
-                player.getInventory().setItemInMainHand(XMaterial.AIR.parseItem());
-            } else {
-                player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
-            }
-        }
-
-        PlayerUtils.giveItem(player, items);
-    }
+		PlayerUtils.giveItem(player, items);
+	}
 }

@@ -720,7 +720,7 @@ public class AuctionAPI {
 	 *
 	 * @param humanReadableTime the human readable time format: {time} {period}
 	 *                          example: 5 seconds, 10 ticks, 7 minutes, 12 hours etc..
-	 * @return the converted human time to seconds
+	 * @return the converted human time to secondsd
 	 */
 	public static long toTicks(final String humanReadableTime) {
 		if (humanReadableTime == null) return 0;
