@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
+import ca.tweetzy.auctionhouse.guis.GUIBundleCreation;
 import ca.tweetzy.auctionhouse.guis.GUISellItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmListing;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
@@ -228,6 +229,18 @@ public final class CommandSell extends AbstractCommand {
 		// update the listing time to the max allowed time if it wasn't set using the command flag
 		allowedTime = auctionPlayer.getAllowedSellTime(isBiddingItem ? AuctionSaleType.USED_BIDDING_SYSTEM : AuctionSaleType.WITHOUT_BIDDING_SYSTEM);
 
+		if (isBundle) {
+			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIBundleCreation(
+					auctionPlayer,
+					allowedTime,
+					buyNowAllow,
+					isBiddingItem,
+					buyNowAllow ? buyNowPrice : -1,
+					isBiddingItem ? startingBid : 0,
+					isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0
+			));
+			return ReturnType.SUCCESS;
+		}
 
 		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
 			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIConfirmListing(

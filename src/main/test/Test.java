@@ -38,9 +38,9 @@ public class Test {
 //
 //        System.out.println(getSecondsFromString(arguments));
 
-        long future = System.currentTimeMillis() + 1000L * 10;
+//        long future = System.currentTimeMillis() + 1000L * 10;
 
-        System.out.println((future - System.currentTimeMillis()) / 1000);
+        System.out.println("16".compareTo(System.getProperty("java.version")) <= 0);
     }
 
     public static long getSecondsFromString(String time) {

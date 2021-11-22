@@ -45,8 +45,10 @@ public class Settings {
     public static final ConfigSetting OWNER_CAN_BID_OWN_ITEM = new ConfigSetting(config, "auction setting.purchase.owner can bid on own item", false, "Should the owner of an auction be able to bid on it?", "This probably should be set to false...");
     public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGES = new ConfigSetting(config, "auction setting.auto refresh auction pages", true, "Should auction pages auto refresh?");
     public static final ConfigSetting USE_SHORT_NUMBERS_ON_ITEMS = new ConfigSetting(config, "auction setting.use short numbers", false, "Should numbers be shortened into a prefixed form?");
+    public static final ConfigSetting USE_SHORT_NUMBERS_ON_PLAYER_BALANCE = new ConfigSetting(config, "auction setting.use short numbers on balance", false, "Should numbers be shortened into a prefixed form for the player balance?");
     public static final ConfigSetting INCREASE_TIME_ON_BID = new ConfigSetting(config, "auction setting.increase time on bid", true, "Should the remaining time be increased when a bid is placed?");
     public static final ConfigSetting TIME_TO_INCREASE_BY_ON_BID = new ConfigSetting(config, "auction setting.time to increase by on the bid", 20, "How many seconds should be added to the remaining time?");
+    public static final ConfigSetting ALLOW_SALE_OF_DAMAGED_ITEMS = new ConfigSetting(config, "auction setting.allow sale of damaged items", true, "If true, player's can sell items that are damaged (not max durability)");
 
     public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
     public static final ConfigSetting CLAIM_MS_DELAY = new ConfigSetting(config, "auction setting.item claim delay", 100, "How many ms should a player wait before being allowed to claim an item?, Ideally you don't wanna change this. It's meant to prevent auto clicker dupe claims");
@@ -88,7 +90,10 @@ public class Settings {
 
     public static final ConfigSetting BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START = new ConfigSetting(config, "auction setting.base price must be higher than bid start", true, "Should the base price (buy now price) be higher than the initial bid starting price?");
     public static final ConfigSetting SYNC_BASE_PRICE_TO_HIGHEST_PRICE = new ConfigSetting(config, "auction setting.sync the base price to the current price", true, "Ex. If the buy now price was 100, and the current price exceeds 100 to say 200, the buy now price will become 200.");
+
     public static final ConfigSetting CURRENCY_FORMAT = new ConfigSetting(config, "auction setting.currency format", "%,.2f");
+//    public static final ConfigSetting CURRENCY_DECIMAL_FORMAT = new ConfigSetting(config, "auction setting.currency decimal format", "#,###.#", "Primarily used for the short number format");
+
     public static final ConfigSetting USE_ALTERNATE_CURRENCY_FORMAT = new ConfigSetting(config, "auction setting.use alternate currency format", false, "If true, $123,456.78 will become $123.456,78");
     public static final ConfigSetting USE_FLAT_NUMBER_FORMAT = new ConfigSetting(config, "auction setting.use flat number format", false, "If true, $123,456.78 will become $12345678");
     public static final ConfigSetting DATE_FORMAT = new ConfigSetting(config, "auction setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
@@ -818,6 +823,14 @@ public class Settings {
     public static final ConfigSetting GUI_BIDDING_ITEMS_CUSTOM_ITEM = new ConfigSetting(config, "gui.bidding.items.custom amount.item", XMaterial.OAK_SIGN.name());
     public static final ConfigSetting GUI_BIDDING_ITEMS_CUSTOM_NAME = new ConfigSetting(config, "gui.bidding.items.custom amount.name", "&a&lCustom Amount");
     public static final ConfigSetting GUI_BIDDING_ITEMS_CUSTOM_LORE = new ConfigSetting(config, "gui.bidding.items.custom amount.lore", Collections.singletonList("&7Click to bid a custom amount"));
+
+    /*  ===============================
+     *         BUNDLES GUI
+     *  ===============================*/
+    public static final ConfigSetting GUI_CREATE_BUNDLE_TITLE = new ConfigSetting(config, "gui.create bundle.title", "&7Auction House - &eBundle Items");
+    public static final ConfigSetting GUI_CREATE_BUNDLE_CONFIRM_ITEM = new ConfigSetting(config, "gui.create bundle.items.confirm.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+    public static final ConfigSetting GUI_CREATE_BUNDLE_CONFIRM_NAME = new ConfigSetting(config, "gui.create bundle.items.confirm.name", "&a&LConfirm");
+    public static final ConfigSetting GUI_CREATE_BUNDLE_CONFIRM_LORE = new ConfigSetting(config, "gui.create bundle.items.confirm.lore", Collections.singletonList("&7Click to confirm listing"));
 
     /*  ===============================
      *         AUCTION STACKS

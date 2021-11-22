@@ -12,6 +12,7 @@ import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.CompatibleHand;
+import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -29,6 +30,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
@@ -76,6 +78,8 @@ public class AuctionAPI {
 	 * @return a user friendly number to read
 	 */
 	public String getFriendlyNumber(double value) {
+		if (value <= 0) return "0";
+
 		int power;
 		String suffix = " KMBTQ";
 		String formattedNumber = "";
@@ -585,6 +589,18 @@ public class AuctionAPI {
 		}
 	}
 
+	public boolean isDamaged(final ItemStack item) {
+		if (item.hasItemMeta() && item.getItemMeta() instanceof Damageable) {
+			final Damageable damageable = (Damageable) item.getItemMeta();
+
+			if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)) {
+				return damageable.getDamage() > 0;
+			}
+			return damageable.hasDamage();
+		}
+		return false;
+	}
+
 	public void listAuction(Player seller, AuctionedItem item, boolean bundle, boolean requiresHandRemove) {
 		listAuction(seller, item.getItem(), item.getItem(), (int) ((item.getExpiresAt() - System.currentTimeMillis()) / 1000), item.getBasePrice(), item.getBidStartingPrice(), item.getBidIncrementPrice(), item.getCurrentPrice(), item.isBidItem(), bundle, requiresHandRemove);
 	}
@@ -606,6 +622,11 @@ public class AuctionAPI {
 	public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove) {
 		if (McMMOHook.isUsingAbility(seller)) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.mcmmo_ability_active").sendPrefixedMessage(seller);
+			return;
+		}
+
+		if (!Settings.ALLOW_SALE_OF_DAMAGED_ITEMS.getBoolean() && isDamaged(item)) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.cannot list damaged item").sendPrefixedMessage(seller);
 			return;
 		}
 
@@ -643,12 +664,14 @@ public class AuctionAPI {
 		ItemStack finalItemToSell = item.clone();
 		int totalOriginal = isUsingBundle ? AuctionAPI.getInstance().getItemCountInPlayerInventory(seller, original) : finalItemToSell.getAmount();
 
-		if (isUsingBundle) {
-			AuctionAPI.getInstance().removeSpecificItemQuantityFromPlayer(seller, original, totalOriginal);
-		} else {
-			if (requiresHandRemove)
-				PlayerUtils.takeActiveItem(seller, CompatibleHand.MAIN_HAND, totalOriginal);
-		}
+//		if (isUsingBundle) {
+//			AuctionAPI.getInstance().removeSpecificItemQuantityFromPlayer(seller, original, totalOriginal);
+//		} else {
+//		}
+
+		if (requiresHandRemove)
+			PlayerUtils.takeActiveItem(seller, CompatibleHand.MAIN_HAND, totalOriginal);
+
 
 		SoundManager.getInstance().playSound(seller, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
 		String NAX = AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage();

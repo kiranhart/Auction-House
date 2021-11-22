@@ -9,6 +9,7 @@ import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -55,6 +56,9 @@ public class CommandAdmin extends AbstractCommand {
             case "clearall":
                 // Don't tell ppl that this exists
                 AuctionHouse.getInstance().getAuctionItemManager().getItems().clear();
+            case "durabilitystatus":
+                Bukkit.broadcastMessage("damaged: " + AuctionAPI.getInstance().isDamaged(PlayerHelper.getHeldItem((Player) sender)));
+                break;
             case "opensell":
                 if (args.length < 2) return ReturnType.FAILURE;
                 Player player = PlayerUtils.findPlayer(args[1]);
