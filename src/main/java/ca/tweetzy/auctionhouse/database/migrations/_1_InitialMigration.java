@@ -16,22 +16,22 @@ import java.sql.Statement;
  */
 public class _1_InitialMigration extends DataMigration {
 
-    public _1_InitialMigration() {
-        super(1);
-    }
+	public _1_InitialMigration() {
+		super(1);
+	}
 
-    @Override
-    public void migrate(Connection connection, String tablePrefix) throws SQLException {
-        String autoIncrement = AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
+	@Override
+	public void migrate(Connection connection, String tablePrefix) throws SQLException {
+		String autoIncrement = AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
 
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE " + tablePrefix + "items (" +
-                    "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
-                    "data LONGTEXT NOT NULL )");
+		try (Statement statement = connection.createStatement()) {
+			statement.execute("CREATE TABLE " + tablePrefix + "items (" +
+					"id INTEGER PRIMARY KEY" + autoIncrement + ", " +
+					"data LONGTEXT NOT NULL )");
 
-            statement.execute("CREATE TABLE " + tablePrefix + "transactions (" +
-                    "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
-                    "data LONGTEXT NOT NULL )");
-        }
-    }
+			statement.execute("CREATE TABLE " + tablePrefix + "transactions (" +
+					"id INTEGER PRIMARY KEY" + autoIncrement + ", " +
+					"data LONGTEXT NOT NULL )");
+		}
+	}
 }

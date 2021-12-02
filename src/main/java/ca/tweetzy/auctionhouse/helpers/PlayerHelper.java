@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class PlayerHelper {
 
-    public static ItemStack getHeldItem(Player player) {
-        return ServerVersion.isServerVersionAbove(ServerVersion.V1_8) ? player.getInventory().getItemInMainHand() : player.getInventory().getItemInHand();
-    }
+	public static ItemStack getHeldItem(Player player) {
+		return ServerVersion.isServerVersionAbove(ServerVersion.V1_8) ? player.getInventory().getItemInMainHand() : player.getInventory().getItemInHand();
+	}
 }

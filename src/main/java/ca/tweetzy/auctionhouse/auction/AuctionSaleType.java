@@ -10,33 +10,33 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
  */
 public enum AuctionSaleType {
 
-    USED_BIDDING_SYSTEM("Biddable"),
-    WITHOUT_BIDDING_SYSTEM("Not Biddable"),
-    BOTH("All");
+	USED_BIDDING_SYSTEM("Biddable"),
+	WITHOUT_BIDDING_SYSTEM("Not Biddable"),
+	BOTH("All");
 
-    private final String type;
+	private final String type;
 
-    AuctionSaleType(String type) {
-        this.type = type;
-    }
+	AuctionSaleType(String type) {
+		this.type = type;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public String getTranslatedType() {
-        switch (this) {
-            case USED_BIDDING_SYSTEM:
-                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sale_types.biddable").getMessage();
-            case WITHOUT_BIDDING_SYSTEM:
-                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sale_types.non_biddable").getMessage();
-            case BOTH:
-                return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sale_types.both").getMessage();
-        }
-        return getType();
-    }
+	public String getTranslatedType() {
+		switch (this) {
+			case USED_BIDDING_SYSTEM:
+				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sale_types.biddable").getMessage();
+			case WITHOUT_BIDDING_SYSTEM:
+				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sale_types.non_biddable").getMessage();
+			case BOTH:
+				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sale_types.both").getMessage();
+		}
+		return getType();
+	}
 
-    public AuctionSaleType next() {
-        return values()[(this.ordinal() + 1) % values().length];
-    }
+	public AuctionSaleType next() {
+		return values()[(this.ordinal() + 1) % values().length];
+	}
 }

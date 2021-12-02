@@ -14,25 +14,25 @@ import java.sql.Statement;
  */
 public class _5_TransactionChangeMigration extends DataMigration {
 
-    public _5_TransactionChangeMigration() {
-        super(5);
-    }
+	public _5_TransactionChangeMigration() {
+		super(5);
+	}
 
-    @Override
-    public void migrate(Connection connection, String tablePrefix) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("DROP TABLE " + tablePrefix + "transactions");
-            statement.execute("CREATE TABLE " + tablePrefix + "transactions (" +
-                    "id VARCHAR(36) PRIMARY KEY, " +
-                    "seller VARCHAR(36) NOT NULL, " +
-                    "seller_name VARCHAR(16) NOT NULL, " +
-                    "buyer VARCHAR(36) NOT NULL," +
-                    "buyer_name VARCHAR(16) NOT NULL," +
-                    "transaction_time BigInt NOT NULL, " +
-                    "item TEXT NOT NULL, " +
-                    "auction_sale_type VARCHAR(32) NOT NULL, " +
-                    "final_price DOUBLE NOT NULL " +
-                    " )");
-        }
-    }
+	@Override
+	public void migrate(Connection connection, String tablePrefix) throws SQLException {
+		try (Statement statement = connection.createStatement()) {
+			statement.execute("DROP TABLE " + tablePrefix + "transactions");
+			statement.execute("CREATE TABLE " + tablePrefix + "transactions (" +
+					"id VARCHAR(36) PRIMARY KEY, " +
+					"seller VARCHAR(36) NOT NULL, " +
+					"seller_name VARCHAR(16) NOT NULL, " +
+					"buyer VARCHAR(36) NOT NULL," +
+					"buyer_name VARCHAR(16) NOT NULL," +
+					"transaction_time BigInt NOT NULL, " +
+					"item TEXT NOT NULL, " +
+					"auction_sale_type VARCHAR(32) NOT NULL, " +
+					"final_price DOUBLE NOT NULL " +
+					" )");
+		}
+	}
 }

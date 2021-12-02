@@ -1,13 +1,3 @@
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import org.apache.commons.lang.StringUtils;
-
-import java.rmi.server.UID;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * The current file has been created by Kiran Hart
  * Date Created: July 21 2021
@@ -16,7 +6,7 @@ import java.util.regex.Pattern;
  */
 public class Test {
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 //        System.out.println(TimeUtils.makeReadable(getSecondsFromString("2y")*1000));
 //        List<String> enchants = new ArrayList<>();
 //        enchants.add("Sharpness V");
@@ -40,28 +30,28 @@ public class Test {
 
 //        long future = System.currentTimeMillis() + 1000L * 10;
 
-        System.out.println("16".compareTo(System.getProperty("java.version")) <= 0);
-    }
+		System.out.println("16".compareTo(System.getProperty("java.version")) <= 0);
+	}
 
-    public static long getSecondsFromString(String time) {
-        time = time.toLowerCase();
-        String[] tokens = time.split("(?<=\\d)(?=\\D)|(?=\\d)(?<=\\D)");
-        char suffix =  tokens[1].charAt(0);
-        int amount = Integer.parseInt(tokens[0]);
+	public static long getSecondsFromString(String time) {
+		time = time.toLowerCase();
+		String[] tokens = time.split("(?<=\\d)(?=\\D)|(?=\\d)(?<=\\D)");
+		char suffix = tokens[1].charAt(0);
+		int amount = Integer.parseInt(tokens[0]);
 
-        switch (suffix) {
-            case 's':
-                return amount;
-            case 'm':
-                return (long) amount * 60;
-            case 'h':
-                return (long) amount * 3600;
-            case 'd':
-                return (long) amount * 3600 * 24;
-            case 'y':
-                return (long) amount * 3600 * 24 * 365;
-            default:
-                return 0L;
-        }
-    }
+		switch (suffix) {
+			case 's':
+				return amount;
+			case 'm':
+				return (long) amount * 60;
+			case 'h':
+				return (long) amount * 3600;
+			case 'd':
+				return (long) amount * 3600 * 24;
+			case 'y':
+				return (long) amount * 3600 * 24 * 365;
+			default:
+				return 0L;
+		}
+	}
 }

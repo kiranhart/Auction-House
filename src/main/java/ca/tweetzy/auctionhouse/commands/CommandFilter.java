@@ -25,72 +25,72 @@ import java.util.stream.Collectors;
  */
 public class CommandFilter extends AbstractCommand {
 
-    public CommandFilter() {
-        super(CommandType.PLAYER_ONLY, "filter");
-    }
+	public CommandFilter() {
+		super(CommandType.PLAYER_ONLY, "filter");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        Player player = (Player) sender;
-        if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		Player player = (Player) sender;
+		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
 
-        if (args.length == 0) {
-            AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIFilterWhitelist());
-            return ReturnType.SUCCESS;
-        }
+		if (args.length == 0) {
+			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIFilterWhitelist());
+			return ReturnType.SUCCESS;
+		}
 
-        if (args.length == 2 && args[0].equalsIgnoreCase("additem")) {
-            boolean isValid = false;
-            for (AuctionItemCategory value : AuctionItemCategory.values()) {
-                if (args[1].toUpperCase().equals(value.name())) {
-                    isValid = true;
-                    break;
-                }
-            }
+		if (args.length == 2 && args[0].equalsIgnoreCase("additem")) {
+			boolean isValid = false;
+			for (AuctionItemCategory value : AuctionItemCategory.values()) {
+				if (args[1].toUpperCase().equals(value.name())) {
+					isValid = true;
+					break;
+				}
+			}
 
-            if (isValid && AuctionItemCategory.valueOf(args[1].toUpperCase()).isWhitelistAllowed()) {
+			if (isValid && AuctionItemCategory.valueOf(args[1].toUpperCase()).isWhitelistAllowed()) {
 
-                ItemStack held = PlayerHelper.getHeldItem(player);
-                if (held.getType() == XMaterial.AIR.parseMaterial()) {
-                    AuctionHouse.getInstance().getLocale().getMessage("general.filter air").sendPrefixedMessage(player);
-                    return ReturnType.FAILURE;
-                }
+				ItemStack held = PlayerHelper.getHeldItem(player);
+				if (held.getType() == XMaterial.AIR.parseMaterial()) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.filter air").sendPrefixedMessage(player);
+					return ReturnType.FAILURE;
+				}
 
 
-                if (AuctionHouse.getInstance().getFilterManager().getFilteredItem(held) != null && AuctionHouse.getInstance().getFilterManager().getFilteredItem(held).getCategory() == AuctionItemCategory.valueOf(args[1].toUpperCase())) {
-                    AuctionHouse.getInstance().getLocale().getMessage("general.filteritemaddedalready").sendPrefixedMessage(player);
-                    return ReturnType.FAILURE;
-                }
+				if (AuctionHouse.getInstance().getFilterManager().getFilteredItem(held) != null && AuctionHouse.getInstance().getFilterManager().getFilteredItem(held).getCategory() == AuctionItemCategory.valueOf(args[1].toUpperCase())) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.filteritemaddedalready").sendPrefixedMessage(player);
+					return ReturnType.FAILURE;
+				}
 
-                AuctionFilterItem filterItem = new AuctionFilterItem(held, AuctionItemCategory.valueOf(args[1].toUpperCase()));
-                AuctionHouse.getInstance().getFilterManager().addFilterItem(filterItem);
-                AuctionHouse.getInstance().getLocale().getMessage("general.addeditemtofilterwhitelist").processPlaceholder("item_name", AuctionAPI.getInstance().getItemName(held)).processPlaceholder("filter_category", args[1]).sendPrefixedMessage(player);
-            }
-        }
+				AuctionFilterItem filterItem = new AuctionFilterItem(held, AuctionItemCategory.valueOf(args[1].toUpperCase()));
+				AuctionHouse.getInstance().getFilterManager().addFilterItem(filterItem);
+				AuctionHouse.getInstance().getLocale().getMessage("general.addeditemtofilterwhitelist").processPlaceholder("item_name", AuctionAPI.getInstance().getItemName(held)).processPlaceholder("filter_category", args[1]).sendPrefixedMessage(player);
+			}
+		}
 
-        return ReturnType.SUCCESS;
-    }
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "auctionhouse.cmd.filter";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "auctionhouse.cmd.filter";
+	}
 
-    @Override
-    public String getSyntax() {
-        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.filter").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.filter").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.filter").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.filter").getMessage();
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        if (args.length == 1) return Collections.singletonList("additem");
-        if (args.length == 2)
-            return Arrays.stream(AuctionItemCategory.values()).filter(AuctionItemCategory::isWhitelistAllowed).map(AuctionItemCategory::getTranslatedType).collect(Collectors.toList());
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		if (args.length == 1) return Collections.singletonList("additem");
+		if (args.length == 2)
+			return Arrays.stream(AuctionItemCategory.values()).filter(AuctionItemCategory::isWhitelistAllowed).map(AuctionItemCategory::getTranslatedType).collect(Collectors.toList());
+		return null;
+	}
 }

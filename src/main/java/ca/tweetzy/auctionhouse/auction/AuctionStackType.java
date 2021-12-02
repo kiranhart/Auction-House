@@ -8,7 +8,7 @@ package ca.tweetzy.auctionhouse.auction;
  */
 public enum AuctionStackType {
 
-    MAIN_AUCTION_HOUSE,
-    ACTIVE_AUCTIONS_LIST;
+	MAIN_AUCTION_HOUSE,
+	ACTIVE_AUCTIONS_LIST;
 
 }

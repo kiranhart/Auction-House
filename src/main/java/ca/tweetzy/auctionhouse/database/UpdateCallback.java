@@ -10,6 +10,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface UpdateCallback {
 
-    void accept(@Nullable Exception ex);
+	void accept(@Nullable Exception ex);
 
 }

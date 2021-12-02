@@ -8,7 +8,6 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.PlayerUtils;
-import me.TechsCode.UltraEconomy.base.legacy.Common;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 

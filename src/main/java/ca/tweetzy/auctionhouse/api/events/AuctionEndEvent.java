@@ -1,6 +1,5 @@
 package ca.tweetzy.auctionhouse.api.events;
 
-import ca.tweetzy.auctionhouse.auction.AuctionItem;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import lombok.Getter;
@@ -21,31 +20,31 @@ import org.bukkit.event.HandlerList;
 @Getter
 public class AuctionEndEvent extends Event implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
-    private boolean cancelled;
+	private static final HandlerList handlers = new HandlerList();
+	private boolean cancelled;
 
-    private OfflinePlayer originalOwner;
-    private OfflinePlayer buyer;
-    private AuctionedItem auctionItem;
-    private AuctionSaleType saleType;
+	private OfflinePlayer originalOwner;
+	private OfflinePlayer buyer;
+	private AuctionedItem auctionItem;
+	private AuctionSaleType saleType;
 
-    public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionedItem auctionItem, AuctionSaleType saleType, boolean async) {
-        super(async);
-        this.originalOwner = originalOwner;
-        this.buyer = buyer;
-        this.auctionItem = auctionItem;
-        this.saleType = saleType;
-    }
+	public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionedItem auctionItem, AuctionSaleType saleType, boolean async) {
+		super(async);
+		this.originalOwner = originalOwner;
+		this.buyer = buyer;
+		this.auctionItem = auctionItem;
+		this.saleType = saleType;
+	}
 
-    public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionedItem auctionItem, AuctionSaleType saleType) {
-        this(originalOwner, buyer, auctionItem, saleType, true);
-    }
+	public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionedItem auctionItem, AuctionSaleType saleType) {
+		this(originalOwner, buyer, auctionItem, saleType, true);
+	}
 
-    public HandlerList getHandlers() {
-        return handlers;
-    }
+	public HandlerList getHandlers() {
+		return handlers;
+	}
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

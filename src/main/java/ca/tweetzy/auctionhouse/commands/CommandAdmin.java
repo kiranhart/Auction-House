@@ -26,79 +26,79 @@ import java.util.UUID;
  */
 public class CommandAdmin extends AbstractCommand {
 
-    public CommandAdmin() {
-        super(CommandType.CONSOLE_OK, "admin");
-    }
+	public CommandAdmin() {
+		super(CommandType.CONSOLE_OK, "admin");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (args.length < 1) return ReturnType.FAILURE;
-        if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (args.length < 1) return ReturnType.FAILURE;
+		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
 
-        switch (args[0].toLowerCase()) {
-            case "endall":
-                for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
-                    AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpired(true);
-                }
-                AuctionHouse.getInstance().getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(sender);
-                break;
-            case "relistall":
-                for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
-                    if (AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).isExpired()) {
-                        int relistTime = args.length == 1 ? AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).isBidItem() ? Settings.DEFAULT_AUCTION_LISTING_TIME.getInt() : Settings.DEFAULT_BIN_LISTING_TIME.getInt() : Integer.parseInt(args[1]);
+		switch (args[0].toLowerCase()) {
+			case "endall":
+				for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
+					AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpired(true);
+				}
+				AuctionHouse.getInstance().getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(sender);
+				break;
+			case "relistall":
+				for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
+					if (AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).isExpired()) {
+						int relistTime = args.length == 1 ? AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).isBidItem() ? Settings.DEFAULT_AUCTION_LISTING_TIME.getInt() : Settings.DEFAULT_BIN_LISTING_TIME.getInt() : Integer.parseInt(args[1]);
 
-                        AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpiresAt(System.currentTimeMillis() + 1000L * relistTime);
-                        AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpired(false);
-                    }
-                }
-                AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(sender);
-                break;
-            case "clearall":
-                // Don't tell ppl that this exists
-                AuctionHouse.getInstance().getAuctionItemManager().getItems().clear();
-            case "durabilitystatus":
-                Bukkit.broadcastMessage("damaged: " + AuctionAPI.getInstance().isDamaged(PlayerHelper.getHeldItem((Player) sender)));
-                break;
-            case "opensell":
-                if (args.length < 2) return ReturnType.FAILURE;
-                Player player = PlayerUtils.findPlayer(args[1]);
-                if (player == null) return ReturnType.FAILURE;
+						AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpiresAt(System.currentTimeMillis() + 1000L * relistTime);
+						AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpired(false);
+					}
+				}
+				AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(sender);
+				break;
+			case "clearall":
+				// Don't tell ppl that this exists
+				AuctionHouse.getInstance().getAuctionItemManager().getItems().clear();
+			case "durabilitystatus":
+				Bukkit.broadcastMessage("damaged: " + AuctionAPI.getInstance().isDamaged(PlayerHelper.getHeldItem((Player) sender)));
+				break;
+			case "opensell":
+				if (args.length < 2) return ReturnType.FAILURE;
+				Player player = PlayerUtils.findPlayer(args[1]);
+				if (player == null) return ReturnType.FAILURE;
 
-                ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
+				ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 
-                if (itemToSell.getType() == XMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
-                    AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
-                    return ReturnType.FAILURE;
-                } else {
-                    AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellItem(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()), itemToSell));
-                    AuctionHouse.getInstance().getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), itemToSell);
-                    PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
-                }
-                break;
-        }
+				if (itemToSell.getType() == XMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
+					return ReturnType.FAILURE;
+				} else {
+					AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellItem(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()), itemToSell));
+					AuctionHouse.getInstance().getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), itemToSell);
+					PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
+				}
+				break;
+		}
 
-        return ReturnType.SUCCESS;
-    }
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        if (args.length == 1) return Arrays.asList("endall", "relistall");
-        if (args.length == 2 && args[0].equalsIgnoreCase("relistAll")) return Arrays.asList("1", "2", "3", "4", "5");
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		if (args.length == 1) return Arrays.asList("endall", "relistall");
+		if (args.length == 2 && args[0].equalsIgnoreCase("relistAll")) return Arrays.asList("1", "2", "3", "4", "5");
+		return null;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "auctionhouse.cmd.admin";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "auctionhouse.cmd.admin";
+	}
 
-    @Override
-    public String getSyntax() {
-        return "admin <endall|relistAll> [value]";
-    }
+	@Override
+	public String getSyntax() {
+		return "admin <endall|relistAll> [value]";
+	}
 
-    @Override
-    public String getDescription() {
-        return "Admin options for auction house.";
-    }
+	@Override
+	public String getDescription() {
+		return "Admin options for auction house.";
+	}
 }

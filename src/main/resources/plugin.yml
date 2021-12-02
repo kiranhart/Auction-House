@@ -4,13 +4,13 @@ api-version: 1.13
 main: ca.tweetzy.auctionhouse.AuctionHouse
 description: Auction House is a premium auction solution for your server.
 website: https://tweetzy.ca/
-authors: [Kiran Hart]
-softdepend: [Vault, PlayerPoints, PlaceholderAPIHook, MMOItemsHook, UltraEconomy]
+authors: [ Kiran Hart ]
+softdepend: [ Vault, PlayerPoints, PlaceholderAPIHook, MMOItemsHook, UltraEconomy ]
 
 commands:
   auctionhouse:
     description: Main command for the auction house plugin
-    aliases: [ah, auctions, auctionhouses, ahgui, auctiongui]
+    aliases: [ ah, auctions, auctionhouses, ahgui, auctiongui ]
     default: true
     usage: /ah
 

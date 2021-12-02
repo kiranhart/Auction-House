@@ -20,31 +20,31 @@ import java.util.UUID;
 @Setter
 public class AuctionBanPlayerEvent extends Event implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
-    private boolean cancelled;
+	private static final HandlerList handlers = new HandlerList();
+	private boolean cancelled;
 
-    private Player banner;
-    private UUID bannedPlayerUUID;
-    private String reason;
-    private long seconds;
+	private Player banner;
+	private UUID bannedPlayerUUID;
+	private String reason;
+	private long seconds;
 
-    public AuctionBanPlayerEvent(Player banner, UUID bannedPlayerUUID, String reason, long seconds, boolean async) {
-        super(async);
-        this.banner = banner;
-        this.bannedPlayerUUID = bannedPlayerUUID;
-        this.reason = reason;
-        this.seconds = seconds;
-    }
+	public AuctionBanPlayerEvent(Player banner, UUID bannedPlayerUUID, String reason, long seconds, boolean async) {
+		super(async);
+		this.banner = banner;
+		this.bannedPlayerUUID = bannedPlayerUUID;
+		this.reason = reason;
+		this.seconds = seconds;
+	}
 
-    public AuctionBanPlayerEvent(Player banner, UUID bannedPlayerUUID, String reason, long seconds) {
-        this(banner, bannedPlayerUUID, reason, seconds, true);
-    }
+	public AuctionBanPlayerEvent(Player banner, UUID bannedPlayerUUID, String reason, long seconds) {
+		this(banner, bannedPlayerUUID, reason, seconds, true);
+	}
 
-    public HandlerList getHandlers() {
-        return handlers;
-    }
+	public HandlerList getHandlers() {
+		return handlers;
+	}
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 }

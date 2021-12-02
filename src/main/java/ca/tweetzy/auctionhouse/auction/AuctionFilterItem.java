@@ -18,15 +18,15 @@ import java.io.Serializable;
 @Setter
 public class AuctionFilterItem implements Serializable {
 
-    private byte[] rawItem;
-    private AuctionItemCategory category;
+	private byte[] rawItem;
+	private AuctionItemCategory category;
 
-    public AuctionFilterItem(ItemStack item, AuctionItemCategory category) {
-        this.rawItem = AuctionAPI.getInstance().serializeItem(item);
-        this.category = category;
-    }
+	public AuctionFilterItem(ItemStack item, AuctionItemCategory category) {
+		this.rawItem = AuctionAPI.getInstance().serializeItem(item);
+		this.category = category;
+	}
 
-    public ItemStack getItemStack() {
-        return AuctionAPI.getInstance().deserializeItem(this.rawItem);
-    }
+	public ItemStack getItemStack() {
+		return AuctionAPI.getInstance().deserializeItem(this.rawItem);
+	}
 }

@@ -4,8 +4,6 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
 import ca.tweetzy.auctionhouse.auction.AuctionItemCategory;
-import ca.tweetzy.core.utils.TextUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -20,35 +18,35 @@ import java.util.stream.Collectors;
  */
 public class FilterManager {
 
-    private final List<AuctionFilterItem> filterWhitelist = new ArrayList<>();
+	private final List<AuctionFilterItem> filterWhitelist = new ArrayList<>();
 
-    public void addFilterItem(AuctionFilterItem auctionFilterItem) {
-        if (auctionFilterItem == null) return;
-        this.filterWhitelist.add(auctionFilterItem);
-    }
+	public void addFilterItem(AuctionFilterItem auctionFilterItem) {
+		if (auctionFilterItem == null) return;
+		this.filterWhitelist.add(auctionFilterItem);
+	}
 
-    public void removeFilterItem(AuctionFilterItem auctionFilterItem) {
-        if (auctionFilterItem == null) return;
-        this.filterWhitelist.remove(auctionFilterItem);
-    }
+	public void removeFilterItem(AuctionFilterItem auctionFilterItem) {
+		if (auctionFilterItem == null) return;
+		this.filterWhitelist.remove(auctionFilterItem);
+	}
 
-    public AuctionFilterItem getFilteredItem(ItemStack itemStack) {
-        return this.filterWhitelist.stream().filter(items -> items.getItemStack().isSimilar(itemStack)).findFirst().orElse(null);
-    }
+	public AuctionFilterItem getFilteredItem(ItemStack itemStack) {
+		return this.filterWhitelist.stream().filter(items -> items.getItemStack().isSimilar(itemStack)).findFirst().orElse(null);
+	}
 
-    public List<AuctionFilterItem> getFilterWhitelist() {
-        return this.filterWhitelist;
-    }
+	public List<AuctionFilterItem> getFilterWhitelist() {
+		return this.filterWhitelist;
+	}
 
-    public List<ItemStack> getFilterWhitelist(AuctionItemCategory category) {
-        return this.filterWhitelist.stream().filter(item -> item.getCategory() == category).map(item -> AuctionAPI.getInstance().deserializeItem(item.getRawItem())).collect(Collectors.toList());
-    }
+	public List<ItemStack> getFilterWhitelist(AuctionItemCategory category) {
+		return this.filterWhitelist.stream().filter(item -> item.getCategory() == category).map(item -> AuctionAPI.getInstance().deserializeItem(item.getRawItem())).collect(Collectors.toList());
+	}
 
-    public void loadItems() {
-        AuctionHouse.getInstance().getDataManager().getFilterWhitelist(all -> all.forEach(this::addFilterItem));
-    }
+	public void loadItems() {
+		AuctionHouse.getInstance().getDataManager().getFilterWhitelist(all -> all.forEach(this::addFilterItem));
+	}
 
-    public void saveFilterWhitelist(boolean async) {
-        AuctionHouse.getInstance().getDataManager().saveFilterWhitelist(getFilterWhitelist(), async);
-    }
+	public void saveFilterWhitelist(boolean async) {
+		AuctionHouse.getInstance().getDataManager().saveFilterWhitelist(getFilterWhitelist(), async);
+	}
 }

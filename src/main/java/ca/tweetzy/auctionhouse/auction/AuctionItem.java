@@ -1,11 +1,6 @@
 package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.auction.AuctionItemCategory;
-import ca.tweetzy.auctionhouse.auction.AuctionStackType;
-import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.ServerVersion;
-import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +14,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -31,59 +25,60 @@ import java.util.stream.Collectors;
 @Setter
 public class AuctionItem implements Serializable {
 
-    private static final long serialVersionUID = 5679289273658775560L;
+	private static final long serialVersionUID = 5679289273658775560L;
 
-    private UUID owner;
-    private UUID highestBidder;
+	private UUID owner;
+	private UUID highestBidder;
 
-    private byte[] rawItem;
-    private AuctionItemCategory category;
-    private UUID key;
+	private byte[] rawItem;
+	private AuctionItemCategory category;
+	private UUID key;
 
-    private double basePrice;
-    private double bidStartPrice;
-    private double bidIncPrice;
-    private double currentPrice;
+	private double basePrice;
+	private double bidStartPrice;
+	private double bidIncPrice;
+	private double currentPrice;
 
-    private boolean expired;
-    private int remainingTime;
+	private boolean expired;
+	private int remainingTime;
 
-    public AuctionItem() {}
+	public AuctionItem() {
+	}
 
-    public AuctionItem(UUID owner, UUID highestBidder, ItemStack originalItem, AuctionItemCategory category, UUID key, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, int remainingTime, boolean expired) {
-        this.owner = owner;
-        this.highestBidder = highestBidder;
-        this.rawItem = AuctionAPI.getInstance().serializeItem(originalItem);
-        this.category = category;
-        this.key = key;
-        this.basePrice = basePrice;
-        this.bidStartPrice = bidStartPrice;
-        this.bidIncPrice = bidIncPrice;
-        this.currentPrice = currentPrice;
-        this.remainingTime = remainingTime;
-        this.expired = expired;
-    }
+	public AuctionItem(UUID owner, UUID highestBidder, ItemStack originalItem, AuctionItemCategory category, UUID key, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, int remainingTime, boolean expired) {
+		this.owner = owner;
+		this.highestBidder = highestBidder;
+		this.rawItem = AuctionAPI.getInstance().serializeItem(originalItem);
+		this.category = category;
+		this.key = key;
+		this.basePrice = basePrice;
+		this.bidStartPrice = bidStartPrice;
+		this.bidIncPrice = bidIncPrice;
+		this.currentPrice = currentPrice;
+		this.remainingTime = remainingTime;
+		this.expired = expired;
+	}
 
-    public void updateRemainingTime(int removeAmount) {
-        this.remainingTime = Math.max(this.remainingTime - removeAmount, 0);
-        if (this.remainingTime <= 0) this.expired = true;
-    }
+	public void updateRemainingTime(int removeAmount) {
+		this.remainingTime = Math.max(this.remainingTime - removeAmount, 0);
+		if (this.remainingTime <= 0) this.expired = true;
+	}
 
-    public String getItemName() {
-        ItemStack stack = AuctionAPI.getInstance().deserializeItem(this.rawItem);
-        if (stack == null) return "Invalid Item";
-        if (!stack.hasItemMeta()) return WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " "));
-        return stack.getItemMeta().hasDisplayName() ? ChatColor.stripColor(stack.getItemMeta().getDisplayName()) : WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " "));
-    }
+	public String getItemName() {
+		ItemStack stack = AuctionAPI.getInstance().deserializeItem(this.rawItem);
+		if (stack == null) return "Invalid Item";
+		if (!stack.hasItemMeta()) return WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " "));
+		return stack.getItemMeta().hasDisplayName() ? ChatColor.stripColor(stack.getItemMeta().getDisplayName()) : WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " "));
+	}
 
-    public ItemStack getDisplayStack(AuctionStackType type) {
-        ItemStack itemStack = AuctionAPI.getInstance().deserializeItem(this.rawItem).clone();
-        itemStack.setAmount(Math.max(itemStack.getAmount(), 1));
-        ItemMeta meta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
-        List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
+	public ItemStack getDisplayStack(AuctionStackType type) {
+		ItemStack itemStack = AuctionAPI.getInstance().deserializeItem(this.rawItem).clone();
+		itemStack.setAmount(Math.max(itemStack.getAmount(), 1));
+		ItemMeta meta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
+		List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
 
-        String theSeller = (this.owner == null) ? "&eSeller Name???" : Bukkit.getOfflinePlayer(this.owner).getName();
-        String highestBidder = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "" : (this.owner.equals(this.highestBidder)) ? Bukkit.getOfflinePlayer(this.owner).getName() : Bukkit.getOfflinePlayer(this.highestBidder).getName();
+		String theSeller = (this.owner == null) ? "&eSeller Name???" : Bukkit.getOfflinePlayer(this.owner).getName();
+		String highestBidder = (this.bidStartPrice <= 0 || this.bidIncPrice <= 0) ? "" : (this.owner.equals(this.highestBidder)) ? Bukkit.getOfflinePlayer(this.owner).getName() : Bukkit.getOfflinePlayer(this.highestBidder).getName();
 
 //        String basePrice = this.basePrice == -1 || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && this.bidStartPrice >= 1  ? Settings.AUCTION_PURCHASE_CONTROLS_BUY_NOW_OFF_FOR_BID.getString() : Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : AuctionAPI.getInstance().formatNumber(this.basePrice);// base
 //
@@ -121,9 +116,9 @@ public class AuctionItem implements Serializable {
 //            }
 //        }
 
-        meta.setLore(lore);
-        itemStack.setItemMeta(meta);
-        itemStack = NBTEditor.set(itemStack, getKey().toString(), "AuctionItemKey");
-        return itemStack;
-    }
+		meta.setLore(lore);
+		itemStack.setItemMeta(meta);
+		itemStack = NBTEditor.set(itemStack, getKey().toString(), "AuctionItemKey");
+		return itemStack;
+	}
 }

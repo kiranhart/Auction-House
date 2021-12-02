@@ -17,35 +17,35 @@ import java.util.List;
  */
 public class CommandStatus extends AbstractCommand {
 
-    public CommandStatus() {
-        super(CommandType.PLAYER_ONLY, "status", "stats");
-    }
+	public CommandStatus() {
+		super(CommandType.PLAYER_ONLY, "status", "stats");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
-        Player player = (Player) sender;
-        AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIStats(player));
-        return ReturnType.SUCCESS;
-    }
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
+		Player player = (Player) sender;
+		AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIStats(player));
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "auctionhouse.cmd.status";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "auctionhouse.cmd.status";
+	}
 
-    @Override
-    public String getSyntax() {
-        return "status";
-    }
+	@Override
+	public String getSyntax() {
+		return "status";
+	}
 
-    @Override
-    public String getDescription() {
-        return "Open the auction house statistics";
-    }
+	@Override
+	public String getDescription() {
+		return "Open the auction house statistics";
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		return null;
+	}
 }

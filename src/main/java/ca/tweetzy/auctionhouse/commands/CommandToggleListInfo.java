@@ -18,44 +18,44 @@ import java.util.List;
  */
 public class CommandToggleListInfo extends AbstractCommand {
 
-    public CommandToggleListInfo() {
-        super(CommandType.PLAYER_ONLY, "togglelistinfo");
-    }
+	public CommandToggleListInfo() {
+		super(CommandType.PLAYER_ONLY, "togglelistinfo");
+	}
 
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        Player player = (Player) sender;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		Player player = (Player) sender;
 
-        if (AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-            AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
-            AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
-        }
+		if (AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
+			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+		}
 
-        AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
-        auctionPlayer.setShowListingInfo(!auctionPlayer.isShowListingInfo());
-        AuctionHouse.getInstance().getLocale().getMessage("general.toggled listing." + (auctionPlayer.isShowListingInfo() ? "on" : "off")).sendPrefixedMessage(player);
+		AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
+		auctionPlayer.setShowListingInfo(!auctionPlayer.isShowListingInfo());
+		AuctionHouse.getInstance().getLocale().getMessage("general.toggled listing." + (auctionPlayer.isShowListingInfo() ? "on" : "off")).sendPrefixedMessage(player);
 
-        return ReturnType.SUCCESS;
-    }
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		return null;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "auctionhouse.cmds.togglelistinfo";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "auctionhouse.cmds.togglelistinfo";
+	}
 
-    @Override
-    public String getSyntax() {
-        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.togglelistinfo").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.togglelistinfo").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.togglelistinfo").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.togglelistinfo").getMessage();
+	}
 }

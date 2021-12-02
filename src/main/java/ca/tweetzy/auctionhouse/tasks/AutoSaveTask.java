@@ -14,21 +14,21 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class AutoSaveTask extends BukkitRunnable {
 
-    private static AutoSaveTask instance;
+	private static AutoSaveTask instance;
 
-    public static AutoSaveTask startTask() {
-        if (instance == null) {
-            instance = new AutoSaveTask();
-            instance.runTaskTimerAsynchronously(AuctionHouse.getInstance(), 20 * 5, (long) 20 * Settings.AUTO_SAVE_EVERY.getInt());
-        }
-        return instance;
-    }
+	public static AutoSaveTask startTask() {
+		if (instance == null) {
+			instance = new AutoSaveTask();
+			instance.runTaskTimerAsynchronously(AuctionHouse.getInstance(), 20 * 5, (long) 20 * Settings.AUTO_SAVE_EVERY.getInt());
+		}
+		return instance;
+	}
 
-    @Override
-    public void run() {
-        AuctionHouse.getInstance().getDataManager().updateItems(AuctionHouse.getInstance().getAuctionItemManager().getItems().values(), null);
-        AuctionHouse.getInstance().getDataManager().updateStats(AuctionHouse.getInstance().getAuctionStatManager().getStats(), null);
-        AuctionHouse.getInstance().getFilterManager().saveFilterWhitelist(true);
-        AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aAuto saved auction items & transactions")).sendPrefixedMessage(Bukkit.getConsoleSender());
-    }
+	@Override
+	public void run() {
+		AuctionHouse.getInstance().getDataManager().updateItems(AuctionHouse.getInstance().getAuctionItemManager().getItems().values(), null);
+		AuctionHouse.getInstance().getDataManager().updateStats(AuctionHouse.getInstance().getAuctionStatManager().getStats(), null);
+		AuctionHouse.getInstance().getFilterManager().saveFilterWhitelist(true);
+		AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aAuto saved auction items & transactions")).sendPrefixedMessage(Bukkit.getConsoleSender());
+	}
 }

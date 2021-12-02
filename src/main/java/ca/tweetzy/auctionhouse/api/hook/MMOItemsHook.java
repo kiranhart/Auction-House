@@ -19,18 +19,18 @@ import org.bukkit.inventory.ItemStack;
 @UtilityClass
 public class MMOItemsHook {
 
-    public boolean isEnabled() {
-        return Bukkit.getPluginManager().getPlugin("MMOItemsHook") != null;
-    }
+	public boolean isEnabled() {
+		return Bukkit.getPluginManager().getPlugin("MMOItemsHook") != null;
+	}
 
-    private boolean hasType(@NonNull final NBTItem itemStack) {
-        return itemStack.hasType();
-    }
+	private boolean hasType(@NonNull final NBTItem itemStack) {
+		return itemStack.hasType();
+	}
 
-    public String getItemType(@NonNull final ItemStack itemStack) {
-        NBTItem nbtItem = NBTItem.get(itemStack);
-        if (nbtItem == null) return ChatColor.stripColor(AuctionAPI.getInstance().getItemName(itemStack));
-        if (!hasType(nbtItem)) return ChatColor.stripColor(AuctionAPI.getInstance().getItemName(itemStack));
-        return WordUtils.capitalize(nbtItem.getType().toLowerCase().replace("_", " "));
-    }
+	public String getItemType(@NonNull final ItemStack itemStack) {
+		NBTItem nbtItem = NBTItem.get(itemStack);
+		if (nbtItem == null) return ChatColor.stripColor(AuctionAPI.getInstance().getItemName(itemStack));
+		if (!hasType(nbtItem)) return ChatColor.stripColor(AuctionAPI.getInstance().getItemName(itemStack));
+		return WordUtils.capitalize(nbtItem.getType().toLowerCase().replace("_", " "));
+	}
 }

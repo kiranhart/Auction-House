@@ -50,258 +50,262 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class AuctionHouse extends TweetyPlugin {
 
-    private static TaskChainFactory taskChainFactory;
-    private static AuctionHouse instance;
-    private PluginHook ultraEconomyHook;
+	private static TaskChainFactory taskChainFactory;
+	private static AuctionHouse instance;
+	private PluginHook ultraEconomyHook;
 
-    @Getter
-    @Setter
-    private boolean migrating = false;
+	@Getter
+	@Setter
+	private boolean migrating = false;
 
-    @Getter
-    private final GuiManager guiManager = new GuiManager(this);
+	@Getter
+	private final GuiManager guiManager = new GuiManager(this);
 
-    @Getter
-    private final Config data = new Config(this, "data.yml");
+	@Getter
+	private final Config data = new Config(this, "data.yml");
 
-    protected Metrics metrics;
+	protected Metrics metrics;
 
-    @Getter
-    private CommandManager commandManager;
+	@Getter
+	private CommandManager commandManager;
 
-    @Getter
-    private AuctionPlayerManager auctionPlayerManager;
+	@Getter
+	private AuctionPlayerManager auctionPlayerManager;
 
-    @Getter
-    private AuctionItemManager auctionItemManager;
+	@Getter
+	private AuctionItemManager auctionItemManager;
 
-    @Getter
-    private TransactionManager transactionManager;
+	@Getter
+	private TransactionManager transactionManager;
 
-    @Getter
-    private FilterManager filterManager;
+	@Getter
+	private FilterManager filterManager;
 
-    @Getter
-    private AuctionBanManager auctionBanManager;
+	@Getter
+	private AuctionBanManager auctionBanManager;
 
-    @Getter
-    private AuctionStatManager auctionStatManager;
+	@Getter
+	private AuctionStatManager auctionStatManager;
 
-    @Getter
-    private DatabaseConnector databaseConnector;
+	@Getter
+	private DatabaseConnector databaseConnector;
 
-    @Getter
-    private DataManager dataManager;
+	@Getter
+	private DataManager dataManager;
 
-    @Getter
-    private UpdateChecker.UpdateStatus status;
+	@Getter
+	private UpdateChecker.UpdateStatus status;
 
-    @Override
-    public void onPluginLoad() {
-        instance = this;
-    }
+	@Override
+	public void onPluginLoad() {
+		instance = this;
+	}
 
-    @Override
-    public void onPluginEnable() {
-        TweetyCore.registerPlugin(this, 1, "CHEST");
+	@Override
+	public void onPluginEnable() {
+		TweetyCore.registerPlugin(this, 1, "CHEST");
 
-        // Check server version
-        if (ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_7)) {
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+		// Check server version
+		if (ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_7)) {
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 
-        taskChainFactory = BukkitTaskChainFactory.create(this);
+		taskChainFactory = BukkitTaskChainFactory.create(this);
 
-        // Settings
-        Settings.setup();
+		// Settings
+		Settings.setup();
 
-        this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
+		this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
 
-        // Load Economy
-        EconomyManager.load();
+		// Load Economy
+		EconomyManager.load();
 
-        // local
-        setLocale(Settings.LANG.getString());
-        LocaleSettings.setup();
+		// local
+		setLocale(Settings.LANG.getString());
+		LocaleSettings.setup();
 
-        // Setup Economy
-        final String ECO_PLUGIN =Settings.ECONOMY_PLUGIN.getString();
-        if (ECO_PLUGIN.startsWith("UltraEconomy")) {
-            EconomyManager.getManager().setPreferredHook(this.ultraEconomyHook);
-        } else {
-            EconomyManager.getManager().setPreferredHook(ECO_PLUGIN);
-        }
+		// Setup Economy
+		final String ECO_PLUGIN = Settings.ECONOMY_PLUGIN.getString();
+		if (ECO_PLUGIN.startsWith("UltraEconomy")) {
+			EconomyManager.getManager().setPreferredHook(this.ultraEconomyHook);
+		} else {
+			EconomyManager.getManager().setPreferredHook(ECO_PLUGIN);
+		}
 
-        if (!EconomyManager.getManager().isEnabled()) {
-            getLogger().severe("Could not find a valid economy provider for Auction House");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+		if (!EconomyManager.getManager().isEnabled()) {
+			getLogger().severe("Could not find a valid economy provider for Auction House");
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 
-        // listeners
-        Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new AuctionListeners(), this);
+		// listeners
+		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
+		Bukkit.getServer().getPluginManager().registerEvents(new AuctionListeners(), this);
 
-        this.data.load();
+		this.data.load();
 
-        // auction players
-        this.auctionPlayerManager = new AuctionPlayerManager();
-        Bukkit.getOnlinePlayers().forEach(p -> this.auctionPlayerManager.addPlayer(new AuctionPlayer(p)));
+		// auction players
+		this.auctionPlayerManager = new AuctionPlayerManager();
+		Bukkit.getOnlinePlayers().forEach(p -> this.auctionPlayerManager.addPlayer(new AuctionPlayer(p)));
 
-        // Setup the database if enabled
-        this.databaseConnector = Settings.DATABASE_USE.getBoolean() ? new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean()) : new SQLiteConnector(this);
-        this.dataManager = new DataManager(this.databaseConnector, this);
+		// Setup the database if enabled
+		this.databaseConnector = Settings.DATABASE_USE.getBoolean() ? new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean()) : new SQLiteConnector(this);
+		this.dataManager = new DataManager(this.databaseConnector, this);
 
-        DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
-                new _1_InitialMigration(),
-                new _2_FilterWhitelistMigration(),
-                new _3_BansMigration(),
-                new _4_ItemsChangeMigration(),
-                new _5_TransactionChangeMigration(),
-                new _6_BigIntMigration(),
-                new _7_TransactionBigIntMigration(),
-                new _8_ItemPerWorldMigration(),
-                new _9_StatsMigration()
-        );
+		DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
+				new _1_InitialMigration(),
+				new _2_FilterWhitelistMigration(),
+				new _3_BansMigration(),
+				new _4_ItemsChangeMigration(),
+				new _5_TransactionChangeMigration(),
+				new _6_BigIntMigration(),
+				new _7_TransactionBigIntMigration(),
+				new _8_ItemPerWorldMigration(),
+				new _9_StatsMigration()
+		);
 
-        dataMigrationManager.runMigrations();
+		dataMigrationManager.runMigrations();
 
-        // load auction items
-        this.auctionItemManager = new AuctionItemManager();
-        this.auctionItemManager.start();
+		// load auction items
+		this.auctionItemManager = new AuctionItemManager();
+		this.auctionItemManager.start();
 
-        // load transactions
-        this.transactionManager = new TransactionManager();
-        this.transactionManager.loadTransactions();
+		// load transactions
+		this.transactionManager = new TransactionManager();
+		this.transactionManager.loadTransactions();
 
-        // load the filter whitelist items
-        this.filterManager = new FilterManager();
-        this.filterManager.loadItems();
+		// load the filter whitelist items
+		this.filterManager = new FilterManager();
+		this.filterManager.loadItems();
 
-        // load the bans
-        this.auctionBanManager = new AuctionBanManager();
-        this.auctionBanManager.loadBans();
+		// load the bans
+		this.auctionBanManager = new AuctionBanManager();
+		this.auctionBanManager.loadBans();
 
-        this.auctionStatManager = new AuctionStatManager();
-        this.auctionStatManager.loadStats();
+		this.auctionStatManager = new AuctionStatManager();
+		this.auctionStatManager.loadStats();
 
-        // gui manager
-        this.guiManager.init();
+		// gui manager
+		this.guiManager.init();
 
-        // commands
-        this.commandManager = new CommandManager(this);
-        this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
-        this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
-        this.commandManager.addCommand(new CommandAuctionHouse()).addSubCommands(
-                new CommandSell(),
-                new CommandActive(),
-                new CommandExpired(),
-                new CommandTransactions(),
-                new CommandSearch(),
-                new CommandSettings(),
-                new CommandToggleListInfo(),
-                new CommandMigrate(),
-                new CommandReload(),
-                new CommandFilter(),
-                new CommandStatus(),
-                new CommandAdmin(),
-                new CommandBan(),
-                new CommandUnban()
-        );
+		// commands
+		this.commandManager = new CommandManager(this);
+		this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
+		this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
+		this.commandManager.addCommand(new CommandAuctionHouse()).addSubCommands(
+				new CommandSell(),
+				new CommandActive(),
+				new CommandExpired(),
+				new CommandTransactions(),
+				new CommandSearch(),
+				new CommandSettings(),
+				new CommandToggleListInfo(),
+				new CommandMigrate(),
+				new CommandReload(),
+				new CommandFilter(),
+				new CommandStatus(),
+				new CommandAdmin(),
+				new CommandBan(),
+				new CommandUnban()
+		);
 
-        // Placeholder API
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPIHook") != null) {
-            new PlaceholderAPIHook(this).register();
-        }
+		// Placeholder API
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPIHook") != null) {
+			new PlaceholderAPIHook(this).register();
+		}
 
-        // start the auction tick task
-        TickAuctionsTask.startTask();
-        // auto save task
-        if (Settings.AUTO_SAVE_ENABLED.getBoolean()) {
-            AutoSaveTask.startTask();
-        }
+		// start the auction tick task
+		TickAuctionsTask.startTask();
+		// auto save task
+		if (Settings.AUTO_SAVE_ENABLED.getBoolean()) {
+			AutoSaveTask.startTask();
+		}
 
-        // update check
-        getServer().getScheduler().runTaskLaterAsynchronously(this, () -> this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus(), 1L);
+		// update check
+		getServer().getScheduler().runTaskLaterAsynchronously(this, () -> this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus(), 1L);
 
-        // metrics
-        this.metrics = new Metrics(this, 6806);
+		// metrics
+		this.metrics = new Metrics(this, 6806);
 
-        getServer().getScheduler().runTaskLater(this, () -> {
-            if (!ServerProject.isServer(ServerProject.SPIGOT, ServerProject.PAPER)) {
-                getLogger().severe("You're running Auction House on a non-supported Jar");
-                getLogger().severe("You will not receive any support while using a non-supported jar, support jars: Spigot or Paper");
-            }
+		getServer().getScheduler().runTaskLater(this, () -> {
+			if (!ServerProject.isServer(ServerProject.SPIGOT, ServerProject.PAPER)) {
+				getLogger().severe("You're running Auction House on a non-supported Jar");
+				getLogger().severe("You will not receive any support while using a non-supported jar, support jars: Spigot or Paper");
+			}
 
-            if (!System.getProperty("java.version").startsWith("16")) {
-                getLogger().severe("You are not running Java 16, Auction House will be updated to use Java 16 in the coming months. If you do not update, you will not be able to use Auction House.");
-            }
+			if (ServerVersion.isServerVersionBelow(ServerVersion.V1_16)) {
+				getLogger().severe("You are receiving this message because you're running Auction House on a Minecraft version older than 1.16. As a heads up, Auction House 3.0 is going to be for 1.16+ only");
+			}
 
-            final String uIDPartOne = "%%__US";
-            final String uIDPartTwo = "ER__%%";
+			if (!ServerProject.isServer(ServerProject.PAPER, ServerProject.SPIGOT)) {
+				getLogger().warning("You're running Auction House on a non supported server jar, although small, there's a chance somethings will not work or just entirely break.");
+			}
 
-            if (USER.contains(uIDPartOne) && USER.contains(uIDPartTwo)) {
-                getLogger().severe("Could not detect user ID, are you running a cracked / self-compiled copy of auction house?");
-            } else {
-                getConsole().sendMessage(TextUtils.formatText("&e&m--------------------------------------------------------"));
-                getConsole().sendMessage(TextUtils.formatText(""));
-                getConsole().sendMessage(TextUtils.formatText("&aThank you for purchasing Auction House, it means a lot"));
-                getConsole().sendMessage(TextUtils.formatText("&7 - Kiran Hart"));
-                getConsole().sendMessage(TextUtils.formatText(""));
-                getConsole().sendMessage(TextUtils.formatText("&e&m--------------------------------------------------------"));
-            }
-        }, 1L);
-    }
+			final String uIDPartOne = "%%__US";
+			final String uIDPartTwo = "ER__%%";
 
-    @Override
-    public void onPluginDisable() {
-        if (this.dataManager != null) {
-            this.auctionItemManager.end();
-            this.filterManager.saveFilterWhitelist(false);
-            this.auctionBanManager.saveBans(false);
-            this.auctionStatManager.saveStats();
-            this.dataManager.close();
-        }
+			if (USER.contains(uIDPartOne) && USER.contains(uIDPartTwo)) {
+				getLogger().severe("Could not detect user ID, are you running a cracked / self-compiled copy of auction house?");
+			} else {
+				getConsole().sendMessage(TextUtils.formatText("&e&m--------------------------------------------------------"));
+				getConsole().sendMessage(TextUtils.formatText(""));
+				getConsole().sendMessage(TextUtils.formatText("&aThank you for purchasing Auction House, it means a lot"));
+				getConsole().sendMessage(TextUtils.formatText("&7 - Kiran Hart"));
+				getConsole().sendMessage(TextUtils.formatText(""));
+				getConsole().sendMessage(TextUtils.formatText("&e&m--------------------------------------------------------"));
+			}
+		}, 1L);
+	}
 
-        getServer().getScheduler().cancelTasks(this);
-    }
+	@Override
+	public void onPluginDisable() {
+		if (this.dataManager != null) {
+			this.auctionItemManager.end();
+			this.filterManager.saveFilterWhitelist(false);
+			this.auctionBanManager.saveBans(false);
+			this.auctionStatManager.saveStats();
+			this.dataManager.close();
+		}
 
-    @Override
-    public void onConfigReload() {
-        EconomyManager.load();
-        Settings.setup();
-        EconomyManager.getManager().setPreferredHook(Settings.ECONOMY_PLUGIN.getString());
-        setLocale(Settings.LANG.getString());
-        LocaleSettings.setup();
-        this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
-        this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
-    }
+		getServer().getScheduler().cancelTasks(this);
+	}
 
-    @Override
-    public List<Config> getExtraConfig() {
-        return null;
-    }
+	@Override
+	public void onConfigReload() {
+		EconomyManager.load();
+		Settings.setup();
+		EconomyManager.getManager().setPreferredHook(Settings.ECONOMY_PLUGIN.getString());
+		setLocale(Settings.LANG.getString());
+		LocaleSettings.setup();
+		this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
+		this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
+	}
 
-    public static AuctionHouse getInstance() {
-        return instance;
-    }
+	@Override
+	public List<Config> getExtraConfig() {
+		return null;
+	}
 
-    public static <T> TaskChain<T> newChain() {
-        return taskChainFactory.newChain();
-    }
+	public static AuctionHouse getInstance() {
+		return instance;
+	}
 
-    public static <T> TaskChain<T> newSharedChain(String name) {
-        return taskChainFactory.newSharedChain(name);
-    }
+	public static <T> TaskChain<T> newChain() {
+		return taskChainFactory.newChain();
+	}
+
+	public static <T> TaskChain<T> newSharedChain(String name) {
+		return taskChainFactory.newSharedChain(name);
+	}
 
 
-    String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
-    String SONGODA_NODE = "%%__SONGODA_NODE__%%";
-    String TIMESTAMP = "%%__TIMESTAMP__%%";
-    String USER = "%%__USER__%%";
-    String USERNAME = "%%__USERNAME__%%";
-    String RESOURCE = "%%__RESOURCE__%%";
-    String NONCE = "%%__NONCE__%%";
+	String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
+	String SONGODA_NODE = "%%__SONGODA_NODE__%%";
+	String TIMESTAMP = "%%__TIMESTAMP__%%";
+	String USER = "%%__USER__%%";
+	String USERNAME = "%%__USERNAME__%%";
+	String RESOURCE = "%%__RESOURCE__%%";
+	String NONCE = "%%__NONCE__%%";
 
 }

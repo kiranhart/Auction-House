@@ -8,7 +8,7 @@ package ca.tweetzy.auctionhouse.exception;
  */
 public class ItemNotFoundException extends NullPointerException {
 
-    public ItemNotFoundException(String errorMessage) {
-        super(errorMessage);
-    }
+	public ItemNotFoundException(String errorMessage) {
+		super(errorMessage);
+	}
 }

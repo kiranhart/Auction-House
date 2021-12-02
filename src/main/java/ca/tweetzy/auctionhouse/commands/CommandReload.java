@@ -16,35 +16,35 @@ import java.util.List;
  */
 public class CommandReload extends AbstractCommand {
 
-    public CommandReload() {
-        super(CommandType.CONSOLE_OK, "reload");
-    }
+	public CommandReload() {
+		super(CommandType.CONSOLE_OK, "reload");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
-        AuctionHouse.getInstance().reloadConfig();
-        AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aReloaded files")).sendPrefixedMessage(sender);
-        return ReturnType.SUCCESS;
-    }
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
+		AuctionHouse.getInstance().reloadConfig();
+		AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aReloaded files")).sendPrefixedMessage(sender);
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		return null;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "auctionhouse.cmds.reload";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "auctionhouse.cmds.reload";
+	}
 
-    @Override
-    public String getSyntax() {
-        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.reload").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.reload").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.reload").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.reload").getMessage();
+	}
 }

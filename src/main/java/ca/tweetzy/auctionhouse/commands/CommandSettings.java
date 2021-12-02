@@ -18,38 +18,38 @@ import java.util.List;
  */
 public class CommandSettings extends AbstractCommand {
 
-    public CommandSettings() {
-        super(CommandType.PLAYER_ONLY, "settings");
-    }
+	public CommandSettings() {
+		super(CommandType.PLAYER_ONLY, "settings");
+	}
 
-    @Override
-    protected ReturnType runCommand(CommandSender sender, String... args) {
-        if (!Settings.ALLOW_USAGE_OF_IN_GAME_EDITOR.getBoolean()) return ReturnType.FAILURE;
+	@Override
+	protected ReturnType runCommand(CommandSender sender, String... args) {
+		if (!Settings.ALLOW_USAGE_OF_IN_GAME_EDITOR.getBoolean()) return ReturnType.FAILURE;
 
-        Player player = (Player) sender;
-        if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
+		Player player = (Player) sender;
+		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
 
-        AuctionHouse.getInstance().getGuiManager().showGUI(player, new PluginConfigGui(AuctionHouse.getInstance(), AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage()));
-        return ReturnType.SUCCESS;
-    }
+		AuctionHouse.getInstance().getGuiManager().showGUI(player, new PluginConfigGui(AuctionHouse.getInstance(), AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage()));
+		return ReturnType.SUCCESS;
+	}
 
-    @Override
-    protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
-    }
+	@Override
+	protected List<String> onTab(CommandSender sender, String... args) {
+		return null;
+	}
 
-    @Override
-    public String getPermissionNode() {
-        return "auctionhouse.cmd.settings";
-    }
+	@Override
+	public String getPermissionNode() {
+		return "auctionhouse.cmd.settings";
+	}
 
-    @Override
-    public String getSyntax() {
-        return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.settings").getMessage();
-    }
+	@Override
+	public String getSyntax() {
+		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.settings").getMessage();
+	}
 
-    @Override
-    public String getDescription() {
-        return AuctionHouse.getInstance().getLocale().getMessage("commands.description.settings").getMessage();
-    }
+	@Override
+	public String getDescription() {
+		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.settings").getMessage();
+	}
 }

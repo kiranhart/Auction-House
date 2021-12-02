@@ -4,7 +4,6 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
-import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmListing;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
@@ -151,7 +150,7 @@ public class GUISellItem extends Gui {
 				builder.isValidInput((p, str) -> {
 					String[] parts = ChatColor.stripColor(str).split(" ");
 					if (parts.length == 2) {
-						 if (NumberUtils.isInt(parts[0]) && Arrays.asList("second", "minute", "hour", "day", "week", "month", "year").contains(parts[1].toLowerCase())) {
+						if (NumberUtils.isInt(parts[0]) && Arrays.asList("second", "minute", "hour", "day", "week", "month", "year").contains(parts[1].toLowerCase())) {
 							return AuctionAPI.toTicks(str) <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt();
 						}
 					}

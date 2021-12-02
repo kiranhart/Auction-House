@@ -17,13 +17,13 @@ import java.util.UUID;
 @Setter
 public class AuctionBan implements Serializable {
 
-    private UUID bannedPlayer;
-    private String reason;
-    private long time;
+	private UUID bannedPlayer;
+	private String reason;
+	private long time;
 
-    public AuctionBan(UUID bannedPlayer, String reason, long time) {
-        this.bannedPlayer = bannedPlayer;
-        this.reason = reason;
-        this.time = time;
-    }
+	public AuctionBan(UUID bannedPlayer, String reason, long time) {
+		this.bannedPlayer = bannedPlayer;
+		this.reason = reason;
+		this.time = time;
+	}
 }

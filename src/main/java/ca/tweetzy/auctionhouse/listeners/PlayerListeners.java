@@ -58,10 +58,10 @@ public class PlayerListeners implements Listener {
 		final ItemStack[] craftingItems = event.getInventory().getMatrix();
 
 		for (ItemStack item : craftingItems) {
-            if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
-            if (NBTEditor.contains(item, "AuctionBundleItem")) {
-                event.getInventory().setResult(XMaterial.AIR.parseItem());
-            }
+			if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
+			if (NBTEditor.contains(item, "AuctionBundleItem")) {
+				event.getInventory().setResult(XMaterial.AIR.parseItem());
+			}
 		}
 	}
 

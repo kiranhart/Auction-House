@@ -10,8 +10,6 @@ import ca.tweetzy.core.gui.Gui;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The current file has been created by Kiran Hart
