@@ -48,6 +48,9 @@ public class LocaleSettings {
 		languageNodes.put("general.please_enter_at_least_one_number", "&cPlease enter at least 1 valid number!");
 		languageNodes.put("general.mcmmo_ability_active", "&cCannot list item when mcMMO ability is active!");
 		languageNodes.put("general.cannot list damaged item", "&cCannot list a damaged item!");
+		languageNodes.put("general.marked chest", "&aYou marked that chest as an Auction chest");
+		languageNodes.put("general.unmarked chest", "&cYou unmarked that chest as an Auction chest");
+		languageNodes.put("general.visit auction chest", "&cVisit an Auction chest to use Auction House.");
 
 
 		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
@@ -148,6 +151,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.syntax.ban", "ban [player] [time] [reason]");
 		languageNodes.put("commands.syntax.unban", "unban <player>");
 		languageNodes.put("commands.syntax.togglelistinfo", "togglelistinfo");
+		languageNodes.put("commands.syntax.markchest", "markchest");
 
 		languageNodes.put("commands.description.active", "View all your auction listings");
 		languageNodes.put("commands.description.auctionhouse", "Main command for the plugin, it opens the auction window.");
@@ -163,6 +167,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.description.ban", "Ban a player from the auction house for a set amount of time.");
 		languageNodes.put("commands.description.unban", "Unban a player from the auction house");
 		languageNodes.put("commands.description.togglelistinfo", "Toggle whether auction house should message you when you list an item");
+		languageNodes.put("commands.description.markchest", "Toggles whether a chest is an auction chest");
 	}
 
 	public static void setup() {

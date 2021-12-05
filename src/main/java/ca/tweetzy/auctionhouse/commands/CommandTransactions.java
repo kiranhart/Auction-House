@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,6 +26,11 @@ public class CommandTransactions extends AbstractCommand {
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		Player player = (Player) sender;
 		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
+
+		if (Settings.USE_AUCTION_CHEST_MODE.getBoolean()) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.visit auction chest").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
 
 		if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
 			return ReturnType.FAILURE;

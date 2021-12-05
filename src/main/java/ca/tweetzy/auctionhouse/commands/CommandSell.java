@@ -41,6 +41,11 @@ public final class CommandSell extends AbstractCommand {
 		Player player = (Player) sender;
 		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
 
+		if (Settings.USE_AUCTION_CHEST_MODE.getBoolean()) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.visit auction chest").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
+
 		if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
 			return ReturnType.FAILURE;
 		}

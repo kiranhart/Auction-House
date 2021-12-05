@@ -207,7 +207,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new CommandStatus(),
 				new CommandAdmin(),
 				new CommandBan(),
-				new CommandUnban()
+				new CommandUnban(),
+				new CommandMarkChest()
 		);
 
 		// Placeholder API
