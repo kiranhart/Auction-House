@@ -51,6 +51,7 @@ public class Settings {
 	public static final ConfigSetting ALLOW_SALE_OF_DAMAGED_ITEMS = new ConfigSetting(config, "auction setting.allow sale of damaged items", true, "If true, player's can sell items that are damaged (not max durability)");
 	public static final ConfigSetting ALLOW_FLOODGATE_PLAYERS = new ConfigSetting(config, "auction setting.allow flood gate players", false, "If true, player's who connected using floodgate (bedrock players) won't be able to use the auction house");
 	public static final ConfigSetting RESTRICT_ALL_TRANSACTIONS_TO_PERM = new ConfigSetting(config, "auction setting.restrict viewing all transactions", false, "If true, player's will need the perm: auctionhouse.transactions.viewall to view all transactions");
+	public static final ConfigSetting BLOCKED_WORLDS = new ConfigSetting(config, "auction setting.blocked worlds", Collections.singletonList("creative"), "A list of worlds that Auction House will be disabled in");
 
 	public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
 	public static final ConfigSetting CLAIM_MS_DELAY = new ConfigSetting(config, "auction setting.item claim delay", 100, "How many ms should a player wait before being allowed to claim an item?, Ideally you don't wanna change this. It's meant to prevent auto clicker dupe claims");
