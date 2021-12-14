@@ -28,16 +28,7 @@ public class CommandExpired extends AbstractCommand {
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		Player player = (Player) sender;
-		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
-
-		if (Settings.USE_AUCTION_CHEST_MODE.getBoolean()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.visit auction chest").sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
-		}
-
-		if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
-			return ReturnType.FAILURE;
-		}
+		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
 		if (AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
 			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());

@@ -33,7 +33,7 @@ public class CommandBan extends AbstractCommand {
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		Player player = (Player) sender;
-		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
+		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
 		if (args.length == 0) {
 			// Open the bans menu

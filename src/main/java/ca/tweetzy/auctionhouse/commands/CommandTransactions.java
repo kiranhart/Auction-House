@@ -25,16 +25,8 @@ public class CommandTransactions extends AbstractCommand {
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		Player player = (Player) sender;
-		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
 
-		if (Settings.USE_AUCTION_CHEST_MODE.getBoolean()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.visit auction chest").sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
-		}
-
-		if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
-			return ReturnType.FAILURE;
-		}
+		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
 		AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionType());
 		return ReturnType.SUCCESS;

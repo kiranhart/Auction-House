@@ -23,8 +23,9 @@ public class CommandStatus extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
-		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
 		Player player = (Player) sender;
+		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
+
 		AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIStats(player));
 		return ReturnType.SUCCESS;
 	}

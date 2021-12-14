@@ -29,16 +29,8 @@ public class CommandSearch extends AbstractCommand {
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		if (args.length <= 0) return ReturnType.SYNTAX_ERROR;
 		Player player = (Player) sender;
-		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
 
-		if (Settings.USE_AUCTION_CHEST_MODE.getBoolean()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.visit auction chest").sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
-		}
-
-		if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
-			return ReturnType.FAILURE;
-		}
+		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
 		StringBuilder builder = new StringBuilder();
 		for (String arg : args) {
