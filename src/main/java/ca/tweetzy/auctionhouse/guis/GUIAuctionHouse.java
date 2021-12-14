@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.guis;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.events.AuctionBidEvent;
+import ca.tweetzy.auctionhouse.api.hook.FloodGateHook;
 import ca.tweetzy.auctionhouse.auction.*;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
@@ -422,6 +423,11 @@ public class GUIAuctionHouse extends Gui {
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ENABLED.getBoolean()) {
 				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_LORE.getStringList(), null), e -> {
 					// using this will ignore the "SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM" setting
+					if (FloodGateHook.isFloodGateUser(e.player)) {
+						AuctionHouse.getInstance().getLocale().getMessage("commands.no_permission").sendPrefixedMessage(e.player);
+						return;
+					}
+
 					AuctionHouse.getInstance().getGuiManager().showGUI(e.player, new GUISellItem(auctionPlayer, XMaterial.AIR.parseItem()));
 					AuctionHouse.getInstance().getAuctionPlayerManager().addItemToSellHolding(e.player.getUniqueId(), XMaterial.AIR.parseItem());
 				});
