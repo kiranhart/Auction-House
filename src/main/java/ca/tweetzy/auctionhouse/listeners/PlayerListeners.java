@@ -73,6 +73,8 @@ public class PlayerListeners implements Listener {
 
 	@EventHandler
 	public void onAuctionChestClick(PlayerInteractEvent e) {
+		if (ServerVersion.isServerVersionBelow(ServerVersion.V1_14)) return;
+
 		final Player player = e.getPlayer();
 		final Block block = e.getClickedBlock();
 
