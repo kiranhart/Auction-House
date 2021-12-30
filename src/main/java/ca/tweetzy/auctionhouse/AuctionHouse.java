@@ -36,7 +36,10 @@ import co.aikar.taskchain.TaskChainFactory;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -115,6 +118,19 @@ public class AuctionHouse extends TweetyPlugin {
 
 		// Settings
 		Settings.setup();
+
+		if (Settings.AUTO_BSTATS.getBoolean()) {
+			final File file = new File("plugins" + File.separator + "bStats" + File.separator + "config.yml");
+			if (file.exists()) {
+				final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+				configuration.set("enabled", true);
+				try {
+					configuration.save(file);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 
 		this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
 

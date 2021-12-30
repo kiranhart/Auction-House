@@ -601,6 +601,10 @@ public class AuctionAPI {
 		return false;
 	}
 
+	public boolean isRepaired(final ItemStack item) {
+		return NBTEditor.contains(item, "AuctionHouseRepaired");
+	}
+
 	public void listAuction(Player seller, AuctionedItem item, boolean bundle, boolean requiresHandRemove) {
 		listAuction(seller, item.getItem(), item.getItem(), (int) ((item.getExpiresAt() - System.currentTimeMillis()) / 1000), item.getBasePrice(), item.getBidStartingPrice(), item.getBidIncrementPrice(), item.getCurrentPrice(), item.isBidItem(), bundle, requiresHandRemove);
 	}
@@ -627,6 +631,11 @@ public class AuctionAPI {
 
 		if (!Settings.ALLOW_SALE_OF_DAMAGED_ITEMS.getBoolean() && isDamaged(item)) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.cannot list damaged item").sendPrefixedMessage(seller);
+			return;
+		}
+
+		if (Settings.PREVENT_SALE_OF_REPAIRED_ITEMS.getBoolean() && isRepaired(item)) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.cannot list repaired item").sendPrefixedMessage(seller);
 			return;
 		}
 
@@ -663,11 +672,6 @@ public class AuctionAPI {
 
 		ItemStack finalItemToSell = item.clone();
 		int totalOriginal = isUsingBundle ? AuctionAPI.getInstance().getItemCountInPlayerInventory(seller, original) : finalItemToSell.getAmount();
-
-//		if (isUsingBundle) {
-//			AuctionAPI.getInstance().removeSpecificItemQuantityFromPlayer(seller, original, totalOriginal);
-//		} else {
-//		}
 
 		if (requiresHandRemove)
 			PlayerUtils.takeActiveItem(seller, CompatibleHand.MAIN_HAND, totalOriginal);

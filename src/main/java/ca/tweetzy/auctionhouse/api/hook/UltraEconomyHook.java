@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.api.hook;
 import ca.tweetzy.auctionhouse.exception.UltraEconomyCurrencyException;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.economies.Economy;
+import ca.tweetzy.core.utils.TextUtils;
 import me.TechsCode.UltraEconomy.UltraEconomy;
 import me.TechsCode.UltraEconomy.objects.Account;
 import me.TechsCode.UltraEconomy.objects.Currency;
@@ -17,10 +18,22 @@ import org.bukkit.OfflinePlayer;
  */
 public final class UltraEconomyHook extends Economy {
 
-	private final Currency currency;
+	private Currency currency;
 
 	public UltraEconomyHook() {
+		if (!isEnabled()) {
+			Bukkit.getConsoleSender().sendMessage(TextUtils.formatText("&bUltraEconomy &7hook cannot be created&f: &cUltraEconomy not installed"));
+			return;
+		}
+
 		final String[] ultraEconomyCurrencyName = Settings.ECONOMY_PLUGIN.getString().split(":");
+
+		if (ultraEconomyCurrencyName.length < 2 && ultraEconomyCurrencyName[0].equalsIgnoreCase("UltraEconomy")) {
+			Bukkit.getConsoleSender().sendMessage(TextUtils.formatText("&cInvalid UltraEconomy format, use -> &bUltraEconomy&f:&bTheCurrencyName &cinstead"));
+			return;
+		}
+
+		if (!ultraEconomyCurrencyName[0].equalsIgnoreCase("UltraEconomy")) return;
 
 		this.currency = UltraEconomy.getAPI().getCurrencies().name(ultraEconomyCurrencyName[1]).orElse(null);
 

@@ -59,6 +59,9 @@ public class CommandAdmin extends AbstractCommand {
 			case "durabilitystatus":
 				Bukkit.broadcastMessage("damaged: " + AuctionAPI.getInstance().isDamaged(PlayerHelper.getHeldItem((Player) sender)));
 				break;
+			case "repairstatus":
+				Bukkit.broadcastMessage("repair: " + AuctionAPI.getInstance().isRepaired(PlayerHelper.getHeldItem((Player) sender)));
+				break;
 			case "opensell":
 				if (args.length < 2) return ReturnType.FAILURE;
 				Player player = PlayerUtils.findPlayer(args[1]);

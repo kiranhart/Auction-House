@@ -182,7 +182,7 @@ public class GUISellItem extends Gui {
 				PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
 				builder.isValidInput((p, str) -> {
 					if (validateChatNumber(str, Settings.MIN_AUCTION_PRICE.getDouble(), false) && validateChatNumber(str, Settings.MAX_AUCTION_PRICE.getDouble(), true)) {
-						return !this.isAllowingBuyNow || !this.isBiddingItem || !Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() || !(Double.parseDouble(str) < this.bidStartPrice);
+						return !this.isAllowingBuyNow || !this.isBiddingItem || !Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() || !(Double.parseDouble(ChatColor.stripColor(str)) < this.bidStartPrice);
 					}
 					return false;
 				});

@@ -48,6 +48,7 @@ public class LocaleSettings {
 		languageNodes.put("general.please_enter_at_least_one_number", "&cPlease enter at least 1 valid number!");
 		languageNodes.put("general.mcmmo_ability_active", "&cCannot list item when mcMMO ability is active!");
 		languageNodes.put("general.cannot list damaged item", "&cCannot list a damaged item!");
+		languageNodes.put("general.cannot list repaired item", "&cCannot list a repaired item!");
 		languageNodes.put("general.marked chest", "&aYou marked that chest as an Auction chest");
 		languageNodes.put("general.unmarked chest", "&cYou unmarked that chest as an Auction chest");
 		languageNodes.put("general.visit auction chest", "&cVisit an Auction chest to use Auction House.");

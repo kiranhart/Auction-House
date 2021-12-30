@@ -20,6 +20,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -122,5 +123,14 @@ public class PlayerListeners implements Listener {
 		}
 
 		PlayerUtils.giveItem(player, items);
+	}
+
+	@EventHandler
+	public void onInventoryClick(PrepareAnvilEvent event) {
+		ItemStack stack = event.getResult();
+		if (stack == null) return;
+
+		stack = NBTEditor.set(stack, "AUCTION_REPAIRED", "AuctionHouseRepaired");
+		event.setResult(stack);
 	}
 }
