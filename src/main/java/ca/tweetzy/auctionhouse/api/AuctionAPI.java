@@ -689,6 +689,7 @@ public class AuctionAPI {
 		String msgToAll = AuctionHouse.getInstance().getLocale().getMessage(auctionedItem.isBidItem() ? "auction.broadcast.withbid" : "auction.broadcast.nobid")
 				.processPlaceholder("amount", finalItemToSell.getAmount())
 				.processPlaceholder("player", seller.getName())
+				.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(seller))
 				.processPlaceholder("item", AuctionAPI.getInstance().getItemName(finalItemToSell))
 				.processPlaceholder("base_price", auctionedItem.getBasePrice() <= -1 ? NAX : AuctionAPI.getInstance().formatNumber(auctionedItem.getBasePrice()))
 				.processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(auctionedItem.getBidStartingPrice()))
@@ -833,5 +834,20 @@ public class AuctionAPI {
 			else
 				EconomyManager.deposit(player, amount);
 		}
+	}
+
+	public String getDisplayName(OfflinePlayer player) {
+		if (!player.isOnline())
+			return player.getName();
+
+		Player found = player.getPlayer();
+		if (found != null)
+			try {
+				return found.getDisplayName();
+			} catch (NullPointerException e) {
+				return player.getName();
+			}
+
+		return player.getName();
 	}
 }

@@ -119,6 +119,7 @@ public class GUIBid extends Gui {
 				if (oldBidder.isOnline()) {
 					AuctionHouse.getInstance().getLocale().getMessage("auction.outbid")
 							.processPlaceholder("player", e.player.getName())
+							.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(e.player))
 							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
 							.sendPrefixedMessage(oldBidder.getPlayer());
 				}
@@ -126,6 +127,7 @@ public class GUIBid extends Gui {
 				if (owner.isOnline()) {
 					AuctionHouse.getInstance().getLocale().getMessage("auction.placedbid")
 							.processPlaceholder("player", e.player.getName())
+							.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(e.player))
 							.processPlaceholder("amount", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice()))
 							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
 							.sendPrefixedMessage(owner.getPlayer());
@@ -134,6 +136,7 @@ public class GUIBid extends Gui {
 				if (Settings.BROADCAST_AUCTION_BID.getBoolean()) {
 					Bukkit.getOnlinePlayers().forEach(player -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.bid")
 							.processPlaceholder("player", e.player.getName())
+							.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(e.player))
 							.processPlaceholder("amount", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice()))
 							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
 							.sendPrefixedMessage(player));

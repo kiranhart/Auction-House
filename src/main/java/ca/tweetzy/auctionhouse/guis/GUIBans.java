@@ -64,13 +64,14 @@ public class GUIBans extends Gui {
 				OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ban.getBannedPlayer());
 				setButton(slot++, ConfigurationItemHelper.createConfigurationItem(AuctionAPI.getInstance().getPlayerHead(offlinePlayer.getName()), Settings.GUI_BANS_BAN_NAME.getString(), Settings.GUI_BANS_BAN_LORE.getStringList(), new HashMap<String, Object>() {{
 					put("%player_name%", offlinePlayer.getName());
+					put("%player_displayname%", AuctionAPI.getInstance().getDisplayName(offlinePlayer));
 					put("%ban_reason%", ban.getReason());
 					put("%ban_amount%", TimeUtils.makeReadable(ban.getTime() - System.currentTimeMillis()));
 				}}), ClickType.RIGHT, e -> {
 					AuctionHouse.getInstance().getAuctionBanManager().removeBan(ban.getBannedPlayer());
-					AuctionHouse.getInstance().getLocale().getMessage("bans.playerunbanned").processPlaceholder("player", offlinePlayer.getName()).sendPrefixedMessage(e.player);
+					AuctionHouse.getInstance().getLocale().getMessage("bans.playerunbanned").processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(offlinePlayer)).processPlaceholder("player", offlinePlayer.getName()).sendPrefixedMessage(e.player);
 					if (offlinePlayer.isOnline()) {
-						AuctionHouse.getInstance().getLocale().getMessage("bans.unbanned").processPlaceholder("player", offlinePlayer.getName()).sendPrefixedMessage(offlinePlayer.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("bans.unbanned").processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(offlinePlayer)).processPlaceholder("player", offlinePlayer.getName()).sendPrefixedMessage(offlinePlayer.getPlayer());
 					}
 					draw();
 				});

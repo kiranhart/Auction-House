@@ -103,15 +103,15 @@ public final class GUIBundleCreation extends Gui {
 
 			AuctionAPI.getInstance().listAuction(
 					player.getPlayer(),
-					firstItem,
-					bundle,
+					validItems.size() > 1 ? firstItem : validItems.get(0),
+					validItems.size() > 1 ? bundle : validItems.get(0),
 					allowedTime,
 					/* buy now price */ buyNowAllow ? buyNowPrice : -1,
 					/* start bid price */ isBiddingItem ? startingBid : !buyNowAllow ? buyNowPrice : 0,
 					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0,
 					/* current price */ isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice,
 					isBiddingItem || !buyNowAllow,
-					true,
+					validItems.size() > 1,
 					false
 			);
 

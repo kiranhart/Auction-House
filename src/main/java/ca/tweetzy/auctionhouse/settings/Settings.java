@@ -52,7 +52,7 @@ public class Settings {
 	public static final ConfigSetting ALLOW_FLOODGATE_PLAYERS = new ConfigSetting(config, "auction setting.allow flood gate players", false, "If true, player's who connected using floodgate (bedrock players) won't be able to use the auction house");
 	public static final ConfigSetting RESTRICT_ALL_TRANSACTIONS_TO_PERM = new ConfigSetting(config, "auction setting.restrict viewing all transactions", false, "If true, player's will need the perm: auctionhouse.transactions.viewall to view all transactions");
 	public static final ConfigSetting BLOCKED_WORLDS = new ConfigSetting(config, "auction setting.blocked worlds", Collections.singletonList("creative"), "A list of worlds that Auction House will be disabled in");
-	public static final ConfigSetting PREVENT_SALE_OF_REPAIRED_ITEMS = new ConfigSetting(config, "auction setting.prevent sale of repaired items", true, "Items repaired before this setting is turned on will still be able to be listed.");
+	public static final ConfigSetting PREVENT_SALE_OF_REPAIRED_ITEMS = new ConfigSetting(config, "auction setting.prevent sale of repaired items", false, "Items repaired before this setting is turned on will still be able to be listed.");
 
 	public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
 	public static final ConfigSetting CLAIM_MS_DELAY = new ConfigSetting(config, "auction setting.item claim delay", 100, "How many ms should a player wait before being allowed to claim an item?, Ideally you don't wanna change this. It's meant to prevent auto clicker dupe claims");
@@ -62,6 +62,7 @@ public class Settings {
 
 	public static final ConfigSetting BROADCAST_AUCTION_LIST = new ConfigSetting(config, "auction setting.broadcast auction list", false, "Should the entire server be alerted when a player lists an item?");
 	public static final ConfigSetting BROADCAST_AUCTION_BID = new ConfigSetting(config, "auction setting.broadcast auction bid", false, "Should the entire server be alerted when a player bids on an item?");
+	public static final ConfigSetting BROADCAST_AUCTION_SALE = new ConfigSetting(config, "auction setting.broadcast auction sale", false, "Should the entire server be alerted when an auction is sold");
 	public static final ConfigSetting BROADCAST_AUCTION_ENDING = new ConfigSetting(config, "auction setting.broadcast auction ending", false, "Should the entire server be alerted when an auction is about to end?");
 	public static final ConfigSetting BROADCAST_AUCTION_ENDING_AT_TIME = new ConfigSetting(config, "auction setting.broadcast auction ending at time", 20, "When the time on the auction item reaches this amount of seconds left, the broadcast ending will take affect ");
 
@@ -197,7 +198,7 @@ public class Settings {
 			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
 	);
 
-	public static final ConfigSetting CLICKS_REMOVE_ITEM = new ConfigSetting(config, "auction setting.clicks.remove item", "MIDDLE",
+	public static final ConfigSetting CLICKS_REMOVE_ITEM = new ConfigSetting(config, "auction setting.clicks.remove item", "DROP",
 			"Valid Click Types",
 			"LEFT",
 			"RIGHT",
@@ -410,7 +411,7 @@ public class Settings {
 			"&7Left-Click to change item category",
 			"&7Right-Click to change change auction type",
 			"&7Shift Right-Click to change sort order",
-			"&7Middle-Click to reset filters"
+			"&7Press Drop to reset filters"
 	));
 
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED = new ConfigSetting(config, "gui.auction house.items.filter menu.enabled", true);
@@ -425,7 +426,7 @@ public class Settings {
 			"&7Left-Click to change item category",
 			"&7Right-Click to change change auction type",
 			"&7Shift Right-Click to change sort order",
-			"&7Middle-Click to reset filters"
+			"&7Press Drop to reset filters"
 	));
 
 	/*  ===============================

@@ -156,6 +156,17 @@ public class GUIConfirmPurchase extends Gui {
 					sendMessages(e, located, false, 0);
 				}
 
+				if (Settings.BROADCAST_AUCTION_SALE.getBoolean()) {
+					Bukkit.getOnlinePlayers().forEach(player -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.sold")
+							.processPlaceholder("player", e.player.getName())
+							.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(e.player))
+							.processPlaceholder("amount", auctionItem.getItem().getAmount())
+							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(auctionItem.getItem()))
+							.processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice()))
+							.sendPrefixedMessage(player));
+				}
+
+
 				AuctionHouse.getInstance().getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(player -> {
 					AuctionHouse.getInstance().getTransactionManager().removeAllRelatedPlayers(auctionItem.getId());
 					player.closeInventory();
