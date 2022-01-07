@@ -8,6 +8,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
@@ -82,6 +83,11 @@ public final class GUIBundleCreation extends Gui {
 							}
 						}
 					}
+				}
+
+				if (NBTEditor.contains(item, "AuctionBundleItem")) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.cannotsellbundleditem").sendPrefixedMessage(e.player);
+					blocked = true;
 				}
 
 				if (blocked) continue;

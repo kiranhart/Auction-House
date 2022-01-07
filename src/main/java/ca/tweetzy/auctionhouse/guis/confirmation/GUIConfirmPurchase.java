@@ -19,6 +19,7 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -157,9 +158,13 @@ public class GUIConfirmPurchase extends Gui {
 				}
 
 				if (Settings.BROADCAST_AUCTION_SALE.getBoolean()) {
+					final OfflinePlayer seller = Bukkit.getOfflinePlayer(auctionItem.getOwner());
+
 					Bukkit.getOnlinePlayers().forEach(player -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.sold")
 							.processPlaceholder("player", e.player.getName())
 							.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(e.player))
+							.processPlaceholder("seller", auctionItem.getOwnerName())
+							.processPlaceholder("seller_displayname", AuctionAPI.getInstance().getDisplayName(seller))
 							.processPlaceholder("amount", auctionItem.getItem().getAmount())
 							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(auctionItem.getItem()))
 							.processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice()))
