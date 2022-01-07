@@ -45,6 +45,8 @@ public final class GUIBundleCreation extends Gui {
 			ItemStack firstItem = null;
 			List<ItemStack> validItems = new ArrayList<>();
 
+			boolean containsBundle = false;
+
 			for (int i = 0; i < 44; i++) {
 				final ItemStack item = getItem(i);
 				if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
@@ -86,8 +88,8 @@ public final class GUIBundleCreation extends Gui {
 				}
 
 				if (NBTEditor.contains(item, "AuctionBundleItem")) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.cannotsellbundleditem").sendPrefixedMessage(e.player);
 					blocked = true;
+					containsBundle = true;
 				}
 
 				if (blocked) continue;
@@ -101,6 +103,11 @@ public final class GUIBundleCreation extends Gui {
 			// are they even allowed to sell more items
 			if (player.isAtSellLimit()) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(e.player);
+				return;
+			}
+
+			if (containsBundle) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.cannotsellbundleditem").sendPrefixedMessage(e.player);
 				return;
 			}
 
