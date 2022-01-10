@@ -31,6 +31,7 @@ public class LocaleSettings {
 		languageNodes.put("general.blocked", "&cSorry, you are not allowed to sell &e%item%");
 		languageNodes.put("general.sellinglimit", "&cYou cannot sell more items, please remove/sell current active items");
 		languageNodes.put("general.noroom", "&cPlease clear room in your inventory to purchase that item.");
+		languageNodes.put("general.noroomclaim", "&cYou do not have enough space in your inventory");
 		languageNodes.put("general.buynowdisabledonitem", "&cBuy now is disabled on this item.");
 		languageNodes.put("general.endedallauctions", "&cYou force ended all active auctions");
 		languageNodes.put("general.relisteditems", "&aYou relisted all expired items!");

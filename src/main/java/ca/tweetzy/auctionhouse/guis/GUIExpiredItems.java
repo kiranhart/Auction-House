@@ -68,10 +68,17 @@ public class GUIExpiredItems extends Gui {
 
 
 			setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_EXPIRED_AUCTIONS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList(), null), e -> {
+
 				for (AuctionedItem auctionItem : data) {
+					if (e.player.getInventory().firstEmpty() == -1) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.noroomclaim").sendPrefixedMessage(e.player);
+						break;
+					}
+
 					PlayerUtils.giveItem(e.player, auctionItem.getItem());
 					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
 				}
+
 				draw();
 			});
 
