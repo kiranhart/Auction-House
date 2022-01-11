@@ -8,6 +8,7 @@ import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations.*;
 import ca.tweetzy.auctionhouse.listeners.AuctionListeners;
+import ca.tweetzy.auctionhouse.listeners.CMIListener;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.*;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
@@ -158,6 +159,10 @@ public class AuctionHouse extends TweetyPlugin {
 		// listeners
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new AuctionListeners(), this);
+
+		if (getServer().getPluginManager().isPluginEnabled("CMI"))
+			Bukkit.getServer().getPluginManager().registerEvents(new CMIListener(), this);
+
 
 		this.data.load();
 
