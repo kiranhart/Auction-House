@@ -817,6 +817,10 @@ public class Settings {
 	public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_DELETE_NAME = new ConfigSetting(config, "gui.item admin.items.delete item.name", "&a&lDelete Item");
 	public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_DELETE_LORE = new ConfigSetting(config, "gui.item admin.items.delete item.lore", Collections.singletonList("&7Click to delete this item"));
 
+	public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_COPY_ITEM = new ConfigSetting(config, "gui.item admin.items.copy item.item", XMaterial.REPEATER.name());
+	public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_COPY_NAME = new ConfigSetting(config, "gui.item admin.items.copy item.name", "&a&LCopy Item");
+	public static final ConfigSetting GUI_ITEM_ADMIN_ITEMS_COPY_LORE = new ConfigSetting(config, "gui.item admin.items.copy item.lore", Collections.singletonList("&7Click to copy this item"));
+
 	/*  ===============================
 	 *         BIDDING GUI
 	 *  ===============================*/
