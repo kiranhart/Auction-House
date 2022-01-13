@@ -29,9 +29,10 @@ public class GUIConfirmListing extends Gui {
 	private final boolean isBiddingItem;
 	private final boolean isBundle;
 	private final boolean requiresHandRemove;
+	private final boolean isInfinite;
 
 
-	public GUIConfirmListing(Player player, ItemStack originalItem, ItemStack itemToSell, int allowedTime, double basePrice, double startingBid, double bidIncrement, boolean isBiddingItem, boolean bundle, boolean requiresHandRemove) {
+	public GUIConfirmListing(Player player, ItemStack originalItem, ItemStack itemToSell, int allowedTime, double basePrice, double startingBid, double bidIncrement, boolean isBiddingItem, boolean bundle, boolean requiresHandRemove, boolean isInfinite) {
 		this.player = player;
 		this.originalItem = originalItem;
 		this.itemToSell = itemToSell;
@@ -42,7 +43,7 @@ public class GUIConfirmListing extends Gui {
 		this.isBiddingItem = isBiddingItem;
 		this.isBundle = bundle;
 		this.requiresHandRemove = requiresHandRemove;
-
+		this.isInfinite = isInfinite;
 
 		setTitle(TextUtils.formatText(Settings.GUI_CONFIRM_LISTING_TITLE.getString()));
 		setAcceptsItems(false);
@@ -75,7 +76,8 @@ public class GUIConfirmListing extends Gui {
 					/* current price */ this.isBiddingItem ? this.startingBid : this.basePrice <= -1 ? this.startingBid : this.basePrice,
 					this.isBiddingItem,
 					this.isBundle,
-					this.requiresHandRemove
+					this.requiresHandRemove,
+					this.isInfinite
 			);
 			e.gui.close();
 		});

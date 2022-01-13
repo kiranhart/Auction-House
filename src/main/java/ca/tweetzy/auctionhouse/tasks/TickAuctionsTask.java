@@ -59,6 +59,8 @@ public class TickAuctionsTask extends BukkitRunnable {
 				continue;
 			}
 
+			if (auctionItem.isInfinite()) continue;
+
 			long timeRemaining = (auctionItem.getExpiresAt() - System.currentTimeMillis()) / 1000;
 
 			if (!auctionItem.isExpired()) {

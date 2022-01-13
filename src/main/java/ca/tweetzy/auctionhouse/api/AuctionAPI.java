@@ -605,25 +605,25 @@ public class AuctionAPI {
 		return NBTEditor.contains(item, "AuctionHouseRepaired");
 	}
 
-	public void listAuction(Player seller, AuctionedItem item, boolean bundle, boolean requiresHandRemove) {
-		listAuction(seller, item.getItem(), item.getItem(), (int) ((item.getExpiresAt() - System.currentTimeMillis()) / 1000), item.getBasePrice(), item.getBidStartingPrice(), item.getBidIncrementPrice(), item.getCurrentPrice(), item.isBidItem(), bundle, requiresHandRemove);
+	public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove) {
+		listAuction(seller, original, item, seconds, basePrice, bidStartPrice, bidIncPrice, currentPrice, isBiddingItem, isUsingBundle, requiresHandRemove, false);
 	}
 
-	/**
-	 * Used to insert an auction into the database
-	 *
-	 * @param seller        Is the player who is listing the item
-	 * @param item          Is the item stack being listed to the auction house
-	 * @param original      Is the original item stack (only applies if using a bundle)
-	 * @param seconds       Is the total amount of seconds the item will be active for
-	 * @param basePrice     Is the buy now price
-	 * @param bidStartPrice Is the price the bidding will start at if the item is an auction
-	 * @param bidIncPrice   Is the default price increment for an auction
-	 * @param currentPrice  Is the current/start price of an item
-	 * @param isBiddingItem States whether the item is an auction or bin item
-	 * @param isUsingBundle States whether the item is a bundled item
-	 */
-	public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove) {
+		/**
+		 * Used to insert an auction into the database
+		 *
+		 * @param seller        Is the player who is listing the item
+		 * @param item          Is the item stack being listed to the auction house
+		 * @param original      Is the original item stack (only applies if using a bundle)
+		 * @param seconds       Is the total amount of seconds the item will be active for
+		 * @param basePrice     Is the buy now price
+		 * @param bidStartPrice Is the price the bidding will start at if the item is an auction
+		 * @param bidIncPrice   Is the default price increment for an auction
+		 * @param currentPrice  Is the current/start price of an item
+		 * @param isBiddingItem States whether the item is an auction or bin item
+		 * @param isUsingBundle States whether the item is a bundled item
+		 */
+	public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove, boolean isInfinite) {
 		if (McMMOHook.isUsingAbility(seller)) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.mcmmo_ability_active").sendPrefixedMessage(seller);
 			return;
@@ -655,6 +655,7 @@ public class AuctionAPI {
 		auctionedItem.setBidIncrementPrice(bidIncPrice);
 		auctionedItem.setCurrentPrice(currentPrice);
 		auctionedItem.setListedWorld(seller.getWorld().getName());
+		auctionedItem.setInfinite(isInfinite);
 
 		if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
 			if (!EconomyManager.hasBalance(seller, Settings.TAX_LISTING_FEE.getDouble())) {

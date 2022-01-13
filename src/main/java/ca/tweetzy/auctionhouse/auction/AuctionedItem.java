@@ -48,6 +48,7 @@ public class AuctionedItem {
 	private long expiresAt;
 
 	private String listedWorld = null;
+	private boolean infinite = false;
 
 	public AuctionedItem() {
 	}
@@ -94,13 +95,17 @@ public class AuctionedItem {
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_CURRENT_PRICE.getStringList().stream().map(s -> s.replace("%currentprice%", Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : AuctionAPI.getInstance().formatNumber(this.currentPrice))).collect(Collectors.toList())));
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HIGHEST_BIDDER.getStringList().stream().map(s -> s.replace("%highestbidder%", this.highestBidder.equals(this.owner) ? AuctionHouse.getInstance().getLocale().getMessage("auction.nobids").getMessage() : this.highestBidderName)).collect(Collectors.toList())));
 
-		long[] times = AuctionAPI.getInstance().getRemainingTimeValues((this.expiresAt - System.currentTimeMillis()) / 1000);
-		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_TIME_LEFT.getStringList().stream().map(s -> s
-				.replace("%remaining_days%", String.valueOf(times[0]))
-				.replace("%remaining_hours%", String.valueOf(times[1]))
-				.replace("%remaining_minutes%", String.valueOf(times[2]))
-				.replace("%remaining_seconds%", String.valueOf(times[3]))
-		).collect(Collectors.toList())));
+		if (this.infinite) {
+			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_INFINITE.getStringList()));
+		} else {
+			long[] times = AuctionAPI.getInstance().getRemainingTimeValues((this.expiresAt - System.currentTimeMillis()) / 1000);
+			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_TIME_LEFT.getStringList().stream().map(s -> s
+					.replace("%remaining_days%", String.valueOf(times[0]))
+					.replace("%remaining_hours%", String.valueOf(times[1]))
+					.replace("%remaining_minutes%", String.valueOf(times[2]))
+					.replace("%remaining_seconds%", String.valueOf(times[3]))
+			).collect(Collectors.toList())));
+		}
 
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_FOOTER.getStringList()));
 
@@ -130,13 +135,17 @@ public class AuctionedItem {
 			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HIGHEST_BIDDER.getStringList().stream().map(s -> s.replace("%highestbidder%", this.highestBidder.equals(this.owner) ? AuctionHouse.getInstance().getLocale().getMessage("auction.nobids").getMessage() : this.highestBidderName)).collect(Collectors.toList())));
 		}
 
-		long[] times = AuctionAPI.getInstance().getRemainingTimeValues((this.expiresAt - System.currentTimeMillis()) / 1000);
-		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_TIME_LEFT.getStringList().stream().map(s -> s
-				.replace("%remaining_days%", String.valueOf(times[0]))
-				.replace("%remaining_hours%", String.valueOf(times[1]))
-				.replace("%remaining_minutes%", String.valueOf(times[2]))
-				.replace("%remaining_seconds%", String.valueOf(times[3]))
-		).collect(Collectors.toList())));
+		if (this.infinite) {
+			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_INFINITE.getStringList()));
+		} else {
+			long[] times = AuctionAPI.getInstance().getRemainingTimeValues((this.expiresAt - System.currentTimeMillis()) / 1000);
+			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_TIME_LEFT.getStringList().stream().map(s -> s
+					.replace("%remaining_days%", String.valueOf(times[0]))
+					.replace("%remaining_hours%", String.valueOf(times[1]))
+					.replace("%remaining_minutes%", String.valueOf(times[2]))
+					.replace("%remaining_seconds%", String.valueOf(times[3]))
+			).collect(Collectors.toList())));
+		}
 
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_HEADER.getStringList()));
 

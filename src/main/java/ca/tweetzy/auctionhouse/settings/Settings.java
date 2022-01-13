@@ -874,6 +874,12 @@ public class Settings {
 			"&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
 	));
 
+	public static final ConfigSetting AUCTION_STACK_DETAILS_INFINITE = new ConfigSetting(config, "auction stack.infinite lines", Arrays.asList(
+			"",
+			"&eTime Left: &bNo Expiration"
+	), "this will be used instead of the time left if the item is infinite");
+
+
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROL_HEADER = new ConfigSetting(config, "auction stack.controls.header", Collections.singletonList("&7&m-------------------------"));
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROL_FOOTER = new ConfigSetting(config, "auction stack.controls.footer", Collections.singletonList("&7&m-------------------------"));
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_INSPECTION = new ConfigSetting(config, "auction stack.controls.inspection", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box/bundled item)");

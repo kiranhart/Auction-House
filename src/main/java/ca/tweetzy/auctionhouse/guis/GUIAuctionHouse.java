@@ -136,6 +136,8 @@ public class GUIAuctionHouse extends Gui {
 				this.items = this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).collect(Collectors.toList());
 			}
 
+			this.items = this.items.stream().sorted(Comparator.comparing(AuctionedItem::isInfinite).reversed()).collect(Collectors.toList());
+
 			return this.items.stream().skip((page - 1) * 45L).limit(45L).collect(Collectors.toList());
 		}).asyncLast((data) -> {
 			pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));

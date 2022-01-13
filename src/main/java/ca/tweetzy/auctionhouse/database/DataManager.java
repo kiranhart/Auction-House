@@ -14,10 +14,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -246,7 +243,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void insertAuction(AuctionedItem item, Callback<AuctionedItem> callback) {
 		this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
 
 				fetch.setString(1, item.getId().toString());
@@ -268,6 +265,7 @@ public class DataManager extends DataManagerAbstract {
 				statement.setString(16, AuctionAPI.getInstance().serializeLines(AuctionAPI.getInstance().getItemEnchantments(item.getItem())));
 				statement.setString(17, AuctionAPI.encodeItem(item.getItem()));
 				statement.setString(18, item.getListedWorld());
+				statement.setBoolean(19, item.isInfinite());
 				statement.executeUpdate();
 
 				if (callback != null) {
@@ -491,7 +489,7 @@ public class DataManager extends DataManagerAbstract {
 		);
 
 		auctionItem.setListedWorld(resultSet.getString("listed_world"));
-
+		auctionItem.setInfinite(hasColumn(resultSet, "infinite") && resultSet.getBoolean("infinite"));
 		return auctionItem;
 	}
 
@@ -523,5 +521,16 @@ public class DataManager extends DataManagerAbstract {
 		} else {
 			AuctionAPI.getInstance().logException(this.plugin, ex, "SQLite");
 		}
+	}
+
+	private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int columns = rsmd.getColumnCount();
+		for (int x = 1; x <= columns; x++) {
+			if (columnName.equals(rsmd.getColumnName(x))) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

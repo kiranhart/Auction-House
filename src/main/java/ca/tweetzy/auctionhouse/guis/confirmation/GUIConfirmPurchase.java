@@ -138,13 +138,18 @@ public class GUIConfirmPurchase extends Gui {
 
 					if (item.getAmount() - this.purchaseQuantity >= 1) {
 						item.setAmount(item.getAmount() - this.purchaseQuantity);
-						located.setItem(item);
-						located.setBasePrice(located.getBasePrice() - buyNowPrice);
+
+						if (!located.isInfinite()) {
+							located.setItem(item);
+							located.setBasePrice(located.getBasePrice() - buyNowPrice);
+						}
+
 						item.setAmount(this.purchaseQuantity);
 						transferFunds(e.player, buyNowPrice);
 					} else {
 						transferFunds(e.player, buyNowPrice);
-						AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
+						if (!located.isInfinite())
+							AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
 					}
 
 					PlayerUtils.giveItem(e.player, item);
@@ -152,7 +157,9 @@ public class GUIConfirmPurchase extends Gui {
 
 				} else {
 					transferFunds(e.player, buyNowPrice);
-					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
+					if (!located.isInfinite())
+						AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
+
 					PlayerUtils.giveItem(e.player, located.getItem());
 					sendMessages(e, located, false, 0);
 				}
