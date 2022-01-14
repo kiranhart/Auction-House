@@ -226,7 +226,7 @@
         <dependency>
             <groupId>com.gmail.nossr50.mcMMO</groupId>
             <artifactId>mcMMO</artifactId>
-            <version>2.1.202</version>
+            <version>2.1.208</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
