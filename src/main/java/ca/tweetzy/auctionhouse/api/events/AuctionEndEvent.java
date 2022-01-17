@@ -1,6 +1,6 @@
 package ca.tweetzy.auctionhouse.api.events;
 
-import ca.tweetzy.auctionhouse.auction.AuctionSaleType;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import lombok.Getter;
 import lombok.Setter;

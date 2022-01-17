@@ -1,4 +1,4 @@
-package ca.tweetzy.auctionhouse.auction;
+package ca.tweetzy.auctionhouse.auction.enums;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 

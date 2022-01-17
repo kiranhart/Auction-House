@@ -1,6 +1,6 @@
 package ca.tweetzy.auctionhouse.guis.filter;
 
-import ca.tweetzy.auctionhouse.auction.AuctionItemCategory;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;

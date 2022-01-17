@@ -1,4 +1,4 @@
-package ca.tweetzy.auctionhouse.auction;
+package ca.tweetzy.auctionhouse.auction.enums;
 
 /**
  * The current file has been created by Kiran Hart

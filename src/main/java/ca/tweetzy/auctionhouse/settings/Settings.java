@@ -55,6 +55,7 @@ public class Settings {
 	public static final ConfigSetting PREVENT_SALE_OF_REPAIRED_ITEMS = new ConfigSetting(config, "auction setting.prevent sale of repaired items", false, "Items repaired before this setting is turned on will still be able to be listed.");
 	public static final ConfigSetting SYNCHRONIZE_ITEM_ADD = new ConfigSetting(config, "auction setting.synchronize item add", false, "If an item is being added to a player's inventory, the process will be ran synchronously");
 	public static final ConfigSetting ITEM_COPY_REQUIRES_GMC = new ConfigSetting(config, "auction setting.admin copy requires creative", false, "If true when using the admin copy option the player must be in creative");
+	public static final ConfigSetting LOG_ADMIN_ACTIONS = new ConfigSetting(config, "auction setting.log admin actions", true, "If true, any admin actions made will be logged");
 
 	public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
 	public static final ConfigSetting CLAIM_MS_DELAY = new ConfigSetting(config, "auction setting.item claim delay", 100, "How many ms should a player wait before being allowed to claim an item?, Ideally you don't wanna change this. It's meant to prevent auto clicker dupe claims");

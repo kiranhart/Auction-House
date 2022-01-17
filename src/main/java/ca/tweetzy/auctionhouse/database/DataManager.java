@@ -3,6 +3,8 @@ package ca.tweetzy.auctionhouse.database;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.*;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.database.DataManagerAbstract;
@@ -390,83 +392,6 @@ public class DataManager extends DataManagerAbstract {
 			}
 
 			statement.executeBatch();
-		}));
-	}
-
-	public void migrateFromSerializationFormat(Consumer<List<AuctionedItem>> callback) {
-		AuctionHouse.getInstance().setMigrating(true);
-		ArrayList<AuctionItem> items = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			if (Settings.DATABASE_USE.getBoolean()) {
-				String select = "SELECT * FROM " + this.getTablePrefix() + "items";
-				try (Statement statement = connection.createStatement()) {
-					ResultSet result = statement.executeQuery(select);
-					while (result.next()) {
-						items.add((AuctionItem) AuctionAPI.getInstance().convertBase64ToObject(result.getString("data")));
-					}
-				}
-			} else {
-				if (AuctionHouse.getInstance().getData().contains("auction items") && AuctionHouse.getInstance().getData().isList("auction items")) {
-					items.addAll(AuctionHouse.getInstance().getData().getStringList("auction items").stream().map(AuctionAPI.getInstance()::convertBase64ToObject).map(object -> (AuctionItem) object).collect(Collectors.toList()));
-					AuctionHouse.getInstance().getData().set("auction items", null);
-					AuctionHouse.getInstance().getData().save();
-				}
-			}
-
-			List<AuctionedItem> newItems = new ArrayList<>();
-			items.forEach(item -> {
-				OfflinePlayer owner = Bukkit.getOfflinePlayer(item.getOwner());
-				OfflinePlayer highestBidder = Bukkit.getOfflinePlayer(item.getHighestBidder());
-				newItems.add(new AuctionedItem(
-						item.getKey(),
-						item.getOwner(),
-						item.getHighestBidder(),
-						owner.getName() != null ? owner.getName() : "Unknown",
-						highestBidder.getName() != null ? highestBidder.getName() : "Unknown",
-						item.getCategory(),
-						AuctionAPI.getInstance().deserializeItem(item.getRawItem()),
-						item.getBasePrice(),
-						item.getBidStartPrice(),
-						item.getBidIncPrice(),
-						item.getCurrentPrice(),
-						item.getBidStartPrice() >= 1 || item.getBidIncPrice() >= 1,
-						item.isExpired(),
-						System.currentTimeMillis() + 1000L * item.getRemainingTime()
-				));
-			});
-
-			String saveItems = "INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			PreparedStatement statement = connection.prepareStatement(saveItems);
-			newItems.forEach(item -> {
-				try {
-					statement.setString(1, item.getId().toString());
-					statement.setString(2, item.getOwner().toString());
-					statement.setString(3, item.getHighestBidder().toString());
-					statement.setString(4, item.getOwnerName());
-					statement.setString(5, item.getHighestBidderName());
-					statement.setString(6, item.getCategory().name());
-					statement.setDouble(7, item.getBasePrice());
-					statement.setDouble(8, item.getBidStartingPrice());
-					statement.setDouble(9, item.getBidIncrementPrice());
-					statement.setDouble(10, item.getCurrentPrice());
-					statement.setBoolean(11, item.isExpired());
-					statement.setLong(12, item.getExpiresAt());
-					statement.setString(13, item.getItem().getType().name());
-					statement.setString(14, AuctionAPI.getInstance().getItemName(item.getItem()));
-					statement.setString(15, AuctionAPI.getInstance().serializeLines(AuctionAPI.getInstance().getItemLore(item.getItem())));
-					statement.setString(16, AuctionAPI.getInstance().serializeLines(AuctionAPI.getInstance().getItemEnchantments(item.getItem())));
-					statement.setString(17, AuctionAPI.encodeItem(item.getItem()));
-					statement.addBatch();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			});
-			statement.executeBatch();
-			this.sync(() -> {
-				AuctionHouse.getInstance().setMigrating(false);
-				newItems.forEach(item -> AuctionHouse.getInstance().getAuctionItemManager().addAuctionItem(item));
-				callback.accept(newItems);
-			});
 		}));
 	}
 

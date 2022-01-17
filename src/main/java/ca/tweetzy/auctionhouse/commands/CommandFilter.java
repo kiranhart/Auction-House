@@ -3,7 +3,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
-import ca.tweetzy.auctionhouse.auction.AuctionItemCategory;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.guis.filter.GUIFilterWhitelist;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.core.commands.AbstractCommand;

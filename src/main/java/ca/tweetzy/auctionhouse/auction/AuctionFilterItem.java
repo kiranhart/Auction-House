@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.inventory.ItemStack;

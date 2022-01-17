@@ -135,6 +135,10 @@ public class LocaleSettings {
 		languageNodes.put("auction.tax.cannotpaylistingfee", "&cYou do not have enough money to pay the listing fee &f(&4$%price%&f)");
 		languageNodes.put("auction.tax.paidlistingfee", "&aPaid &2$%price%&a listing fee");
 
+		languageNodes.put("admin action.return", "Returned");
+		languageNodes.put("admin action.claim", "Claimed");
+		languageNodes.put("admin action.delete", "Deleted");
+		languageNodes.put("admin action.copy", "Copied");
 
 		languageNodes.put("commands.invalid_syntax", "&7The valid syntax is: &6%syntax%&7.");
 		languageNodes.put("commands.no_permission", "&dYou do not have permission to do that.");

@@ -1,6 +1,6 @@
 package ca.tweetzy.auctionhouse.helpers;
 
-import ca.tweetzy.auctionhouse.auction.AuctionItemCategory;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.core.compatibility.XMaterial;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
