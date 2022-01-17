@@ -81,7 +81,7 @@ public class AuctionAPI {
 		if (value <= 0) return "0";
 
 		int power;
-		String suffix = " KMBTQ";
+		String suffix = " KMBTQPEZY";
 		String formattedNumber = "";
 
 		NumberFormat formatter = new DecimalFormat("#,###.#");
