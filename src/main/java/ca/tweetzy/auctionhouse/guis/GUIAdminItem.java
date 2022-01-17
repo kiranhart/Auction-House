@@ -8,6 +8,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import org.bukkit.GameMode;
 
 /**
  * The current file has been created by Kiran Hart
@@ -52,6 +53,11 @@ public class GUIAdminItem extends Gui {
 		});
 
 		setButton(1, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_ITEMS_COPY_ITEM.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_COPY_NAME.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_COPY_LORE.getStringList(), null), e -> {
+			if (Settings.ITEM_COPY_REQUIRES_GMC.getBoolean() && e.player.getGameMode() != GameMode.CREATIVE) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.requires creative").sendPrefixedMessage(e.player);
+				return;
+			}
+
 			PlayerUtils.giveItem(e.player, this.auctionItem.getItem());
 			e.gui.close();
 		});

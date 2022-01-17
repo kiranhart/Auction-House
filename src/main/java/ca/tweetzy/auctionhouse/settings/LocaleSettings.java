@@ -54,6 +54,7 @@ public class LocaleSettings {
 		languageNodes.put("general.unmarked chest", "&cYou unmarked that chest as an Auction chest");
 		languageNodes.put("general.visit auction chest", "&cVisit an Auction chest to use Auction House.");
 		languageNodes.put("general.disabled in world", "&cAuction House is disabled in this world.");
+		languageNodes.put("general.requires creative", "&cThat action requires you to be in creative mode");
 
 
 		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
