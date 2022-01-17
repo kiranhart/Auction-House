@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.auction;
 import ca.tweetzy.auctionhouse.auction.enums.AdminAction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
@@ -16,12 +17,11 @@ import java.util.UUID;
 @Getter
 public final class AuctionAdminLog {
 
-	private final int id;
 	private final UUID admin;
 	private final String adminName;
 	private final UUID target;
 	private final String targetName;
-	private final String itemName;
+	private final ItemStack item;
 	private final UUID itemId;
 	private final AdminAction adminAction;
 	private final long time;

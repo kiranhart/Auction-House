@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.listeners;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.events.AuctionAdminEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
@@ -11,6 +12,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.UUID;
@@ -97,5 +99,11 @@ public class AuctionListeners implements Listener {
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
 			AuctionAPI.getInstance().sendDiscordBidMessage(hook, e.getAuctionedItem(), e.getNewBidAmount());
 		}), 1L);
+	}
+
+	@EventHandler
+	public void onAdminAction(AuctionAdminEvent event) {
+		if (!Settings.LOG_ADMIN_ACTIONS.getBoolean()) return;
+		AuctionHouse.getInstance().getDataManager().insertLogAsync(event.getAuctionAdminLog());
 	}
 }

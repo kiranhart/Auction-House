@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.GUISellItem;
+import ca.tweetzy.auctionhouse.guis.admin.GUIAdminLogs;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
@@ -36,6 +37,17 @@ public class CommandAdmin extends AbstractCommand {
 		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
 
 		switch (args[0].toLowerCase()) {
+			case "logs":
+				if (!(sender instanceof Player)) break;
+				Player player = (Player) sender;
+
+				AuctionHouse.getInstance().getDataManager().getAdminLogs((error, logs) -> {
+					if (error == null)
+						AuctionHouse.newChain().sync(() -> AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAdminLogs(logs))).execute();
+					else
+						error.printStackTrace();
+				});
+				break;
 			case "endall":
 				for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
 					AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpired(true);
@@ -64,7 +76,7 @@ public class CommandAdmin extends AbstractCommand {
 				break;
 			case "opensell":
 				if (args.length < 2) return ReturnType.FAILURE;
-				Player player = PlayerUtils.findPlayer(args[1]);
+				player = PlayerUtils.findPlayer(args[1]);
 				if (player == null) return ReturnType.FAILURE;
 
 				ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
@@ -85,7 +97,7 @@ public class CommandAdmin extends AbstractCommand {
 
 	@Override
 	protected List<String> onTab(CommandSender sender, String... args) {
-		if (args.length == 1) return Arrays.asList("endall", "relistall");
+		if (args.length == 1) return Arrays.asList("endall", "relistall", "logs");
 		if (args.length == 2 && args[0].equalsIgnoreCase("relistAll")) return Arrays.asList("1", "2", "3", "4", "5");
 		return null;
 	}

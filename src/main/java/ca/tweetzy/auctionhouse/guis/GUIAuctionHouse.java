@@ -9,6 +9,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
+import ca.tweetzy.auctionhouse.guis.admin.GUIAdminItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
 import ca.tweetzy.auctionhouse.guis.filter.GUIFilterSelection;

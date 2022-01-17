@@ -26,13 +26,13 @@ public final class _11_AdminLogMigration extends DataMigration {
 			String autoIncrement = AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
 
 
-			statement.execute("CREATE TABLE " + tablePrefix + "admin_logs (" +
+			statement.execute("CREATE TABLE IF NOT EXISTS " + tablePrefix + "admin_logs (" +
 					"id INTEGER PRIMARY KEY" + autoIncrement + ", " +
 					"admin VARCHAR(36) NOT NULL, " +
 					"admin_name VARCHAR(16) NOT NULL, " +
 					"target VARCHAR(36) NOT NULL, " +
 					"target_name VARCHAR(16) NOT NULL, " +
-					"item_name TEXT NOT NULL, " +
+					"item TEXT NOT NULL, " +
 					"item_id VARCHAR(36) NOT NULL, " +
 					"action VARCHAR(36) NOT NULL, " +
 					"time BigInt NOT NULL" +

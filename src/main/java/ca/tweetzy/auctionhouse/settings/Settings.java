@@ -560,6 +560,18 @@ public class Settings {
 
 
 	/*  ===============================
+	 *    		LOGS LIST GUI
+	 *  ===============================*/
+	public static final ConfigSetting GUI_LOGS_TITLE = new ConfigSetting(config, "gui.admin logs.title", "&7&LAdmin Logs");
+	public static final ConfigSetting GUI_LOGS_LORE = new ConfigSetting(config, "gui.admin logs.lore", Arrays.asList(
+			"&7Admin&F: &e%admin%",
+			"&7Target&F: &e%target%",
+			"&7Item ID&F: %item_id%",
+			"&7Action&F: &e%admin_action%",
+			"&7Date&F: &e%admin_log_date%"
+	));
+
+	/*  ===============================
 	 *      TRANSACTIONS LIST GUI
 	 *  ===============================*/
 	public static final ConfigSetting GUI_TRANSACTIONS_TITLE = new ConfigSetting(config, "gui.transactions.title", "&7&LYour Transactions");

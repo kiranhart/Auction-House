@@ -23,7 +23,7 @@ public class _12_SerializeFormatDropMigration extends DataMigration {
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("DROP TABLE " + tablePrefix + "items");
+			statement.execute("DROP TABLE IF EXISTS " + tablePrefix + "items");
 		}
 	}
 }

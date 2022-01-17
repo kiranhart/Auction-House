@@ -3,15 +3,13 @@ package ca.tweetzy.auctionhouse.database;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.*;
+import ca.tweetzy.auctionhouse.auction.enums.AdminAction;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
-import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.database.DataManagerAbstract;
 import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +20,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -193,6 +190,22 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void getAdminLogs(Callback<ArrayList<AuctionAdminLog>> callback) {
+		ArrayList<AuctionAdminLog> logs = new ArrayList<>();
+		this.async(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "admin_logs")) {
+				ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					logs.add(extractAdminLog(resultSet));
+				}
+
+				callback.accept(null, logs);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
 	public void getTransactions(Callback<ArrayList<Transaction>> callback) {
 		ArrayList<Transaction> transactions = new ArrayList<>();
 		this.async(() -> this.databaseConnector.connect(connection -> {
@@ -237,6 +250,29 @@ public class DataManager extends DataManagerAbstract {
 				resolveCallback(callback, e);
 			}
 		});
+	}
+
+	public void insertLog(AuctionAdminLog adminLog) {
+		this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "admin_logs(admin, admin_name, target, target_name, item, item_id, action, time) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")) {
+
+				statement.setString(1, adminLog.getAdmin().toString());
+				statement.setString(2, adminLog.getAdminName());
+				statement.setString(3, adminLog.getTarget().toString());
+				statement.setString(4, adminLog.getTargetName());
+				statement.setString(5, AuctionAPI.encodeItem(adminLog.getItem()));
+				statement.setString(6, adminLog.getItemId().toString());
+				statement.setString(7, adminLog.getAdminAction().name());
+				statement.setLong(8, adminLog.getTime());
+				statement.executeUpdate();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
+	public void insertLogAsync(AuctionAdminLog adminLog) {
+		this.thread.execute(() -> insertLog(adminLog));
 	}
 
 	public void insertTransactionAsync(Transaction transaction, Callback<Transaction> callback) {
@@ -429,6 +465,19 @@ public class DataManager extends DataManagerAbstract {
 				AuctionAPI.decodeItem(resultSet.getString("item")),
 				AuctionSaleType.valueOf(resultSet.getString("auction_sale_type")),
 				resultSet.getDouble("final_price")
+		);
+	}
+
+	private AuctionAdminLog extractAdminLog(ResultSet resultSet) throws SQLException {
+		return new AuctionAdminLog(
+				UUID.fromString(resultSet.getString("admin")),
+				resultSet.getString("admin_name"),
+				UUID.fromString(resultSet.getString("target")),
+				resultSet.getString("target_name"),
+				AuctionAPI.decodeItem(resultSet.getString("item")),
+				UUID.fromString(resultSet.getString("item_id")),
+				AdminAction.valueOf(resultSet.getString("action").toUpperCase()),
+				resultSet.getLong("time")
 		);
 	}
 
