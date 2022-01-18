@@ -2,9 +2,16 @@ package ca.tweetzy.auctionhouse.api.hook;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import lombok.experimental.UtilityClass;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -65,5 +72,18 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 		}
 
 		return null;
+	}
+
+	@UtilityClass
+	public static final class PAPIReplacer {
+		public String tryReplace(Player player, String msg) {
+			if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI"))
+				msg = PlaceholderAPI.setPlaceholders(player, msg);
+			return msg;
+		}
+
+		public List<String> tryReplace(Player player, List<String> msgs) {
+			return msgs.stream().map(line -> tryReplace(player, line)).collect(Collectors.toList());
+		}
 	}
 }

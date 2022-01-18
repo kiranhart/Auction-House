@@ -2,6 +2,10 @@ package ca.tweetzy.auctionhouse.settings;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.core.configuration.Config;
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 
@@ -177,6 +181,14 @@ public class LocaleSettings {
 		languageNodes.put("commands.description.unban", "Unban a player from the auction house");
 		languageNodes.put("commands.description.togglelistinfo", "Toggle whether auction house should message you when you list an item");
 		languageNodes.put("commands.description.markchest", "Toggles whether a chest is an auction chest");
+	}
+
+	public static void send(CommandSender sender, String msg) {
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && sender instanceof Player) {
+			msg = PlaceholderAPI.setPlaceholders((Player) sender, msg);
+		}
+
+		AuctionHouse.getInstance().getLocale().getMessage(msg).sendPrefixedMessage(sender);
 	}
 
 	public static void setup() {

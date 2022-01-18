@@ -36,6 +36,8 @@ import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import lombok.Getter;
 import lombok.Setter;
+import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.PlaceholderHook;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -236,7 +238,7 @@ public class AuctionHouse extends TweetyPlugin {
 		);
 
 		// Placeholder API
-		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPIHook") != null) {
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			new PlaceholderAPIHook(this).register();
 		}
 

@@ -1,3 +1,5 @@
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
+
 /**
  * The current file has been created by Kiran Hart
  * Date Created: July 21 2021
@@ -30,7 +32,10 @@ public class Test {
 
 //        long future = System.currentTimeMillis() + 1000L * 10;
 
-		System.out.println("16".compareTo(System.getProperty("java.version")) <= 0);
+//		System.out.println("16".compareTo(System.getProperty("java.version")) <= 0);
+
+		final double max = 99999999999999999999999999999.0D;
+		System.out.println(AuctionAPI.getInstance().getFriendlyNumber(max));
 	}
 
 	public static long getSecondsFromString(String time) {
