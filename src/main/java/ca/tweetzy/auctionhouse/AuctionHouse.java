@@ -254,6 +254,7 @@ public class AuctionHouse extends TweetyPlugin {
 
 		// metrics
 		this.metrics = new Metrics(this, 6806);
+		this.metrics.addCustomChart(new Metrics.SimplePie("using_mysql", () -> String.valueOf(Settings.DATABASE_USE.getBoolean())));
 
 		getServer().getScheduler().runTaskLater(this, () -> {
 			if (!ServerProject.isServer(ServerProject.SPIGOT, ServerProject.PAPER)) {
