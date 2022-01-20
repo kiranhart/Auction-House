@@ -66,7 +66,7 @@ public class GUIBans extends Gui {
 					put("%player_name%", offlinePlayer.getName());
 					put("%player_displayname%", AuctionAPI.getInstance().getDisplayName(offlinePlayer));
 					put("%ban_reason%", ban.getReason());
-					put("%ban_amount%", TimeUtils.makeReadable(ban.getTime() - System.currentTimeMillis()));
+					put("%ban_amount%", (ban.getTime() - System.currentTimeMillis()) <= 0 ? AuctionHouse.getInstance().getLocale().getMessage("bans.ban expired").getMessage() : TimeUtils.makeReadable(ban.getTime() - System.currentTimeMillis()));
 				}}), ClickType.RIGHT, e -> {
 					AuctionHouse.getInstance().getAuctionBanManager().removeBan(ban.getBannedPlayer());
 					AuctionHouse.getInstance().getLocale().getMessage("bans.playerunbanned").processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(offlinePlayer)).processPlaceholder("player", offlinePlayer.getName()).sendPrefixedMessage(e.player);

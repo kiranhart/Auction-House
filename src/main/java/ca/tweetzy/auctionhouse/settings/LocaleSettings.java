@@ -101,6 +101,7 @@ public class LocaleSettings {
 		languageNodes.put("bans.playerunbanned", "&cUnbanned &4%player% &cfrom the auction house");
 		languageNodes.put("bans.remainingtime", "&cYou are banned from the auction house for &4%ban_amount%");
 		languageNodes.put("bans.unbanned", "&aYou are now unbanned from the auction house");
+		languageNodes.put("bans.ban expired", "&aBan Expired");
 
 		languageNodes.put("auction_filter.sale_types.biddable", "Biddable");
 		languageNodes.put("auction_filter.sale_types.non_biddable", "Not Biddable");
