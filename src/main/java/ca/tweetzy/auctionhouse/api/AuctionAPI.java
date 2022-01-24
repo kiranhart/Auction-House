@@ -650,10 +650,12 @@ public class AuctionAPI {
 		auctionedItem.setExpiresAt(System.currentTimeMillis() + 1000L * seconds);
 		auctionedItem.setBidItem(isBiddingItem);
 		auctionedItem.setExpired(false);
-		auctionedItem.setBasePrice(basePrice);
-		auctionedItem.setBidStartingPrice(bidStartPrice);
-		auctionedItem.setBidIncrementPrice(bidIncPrice);
-		auctionedItem.setCurrentPrice(currentPrice);
+
+		auctionedItem.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(basePrice) : basePrice);
+		auctionedItem.setBidStartingPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(bidStartPrice) : bidStartPrice);
+		auctionedItem.setBidIncrementPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(bidIncPrice) : bidIncPrice);
+		auctionedItem.setCurrentPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(currentPrice) : currentPrice);
+
 		auctionedItem.setListedWorld(seller.getWorld().getName());
 		auctionedItem.setInfinite(isInfinite);
 
