@@ -270,9 +270,9 @@ public class GUIAuctionHouse extends Gui {
 
 				auctionItem.setHighestBidder(e.player.getUniqueId());
 				auctionItem.setHighestBidderName(e.player.getName());
-				auctionItem.setCurrentPrice(newBiddingAmount);
+				auctionItem.setCurrentPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(newBiddingAmount) : newBiddingAmount);
 				if (auctionItem.getBasePrice() != -1 && Settings.SYNC_BASE_PRICE_TO_HIGHEST_PRICE.getBoolean() && auctionItem.getCurrentPrice() > auctionItem.getBasePrice()) {
-					auctionItem.setBasePrice(auctionItem.getCurrentPrice());
+					auctionItem.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(auctionItem.getCurrentPrice()) : auctionItem.getCurrentPrice());
 				}
 
 				if (Settings.INCREASE_TIME_ON_BID.getBoolean()) {

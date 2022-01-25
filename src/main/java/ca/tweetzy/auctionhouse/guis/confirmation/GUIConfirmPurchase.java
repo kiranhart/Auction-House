@@ -141,7 +141,7 @@ public class GUIConfirmPurchase extends Gui {
 
 						if (!located.isInfinite()) {
 							located.setItem(item);
-							located.setBasePrice(located.getBasePrice() - buyNowPrice);
+							located.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(located.getBasePrice() - buyNowPrice) : located.getBasePrice() - buyNowPrice);
 						}
 
 						item.setAmount(this.purchaseQuantity);
@@ -211,8 +211,8 @@ public class GUIConfirmPurchase extends Gui {
 	private void transferFunds(Player from, double amount) {
 		double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * amount : 0D;
 
-		AuctionAPI.getInstance().withdrawBalance(from, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount);
-		AuctionAPI.getInstance().depositBalance(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax);
+		AuctionAPI.getInstance().withdrawBalance(from, Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount) : Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount);
+		AuctionAPI.getInstance().depositBalance(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax) : Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax);
 	}
 
 	private void sendMessages(GuiClickEvent e, AuctionedItem located, boolean overwritePrice, double price) {
