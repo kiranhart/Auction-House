@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
@@ -28,7 +29,12 @@ public class CommandTransactions extends AbstractCommand {
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
-		AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionType());
+		if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !player.hasPermission("auctionhouse.transactions.viewall")) {
+			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionList(player, false));
+		} else {
+			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionType());
+		}
+
 		return ReturnType.SUCCESS;
 	}
 

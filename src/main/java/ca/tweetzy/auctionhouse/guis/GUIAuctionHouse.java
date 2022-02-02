@@ -15,6 +15,7 @@ import ca.tweetzy.auctionhouse.guis.admin.GUIAdminItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
 import ca.tweetzy.auctionhouse.guis.filter.GUIFilterSelection;
+import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
@@ -412,7 +413,13 @@ public class GUIAuctionHouse extends Gui {
 			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%total_items_bought%", AuctionHouse.getInstance().getTransactionManager().getTotalItemsBought(auctionPlayer.getPlayer().getUniqueId()));
 				put("%total_items_sold%", AuctionHouse.getInstance().getTransactionManager().getTotalItemsSold(auctionPlayer.getPlayer().getUniqueId()));
-			}}), e -> e.manager.showGUI(e.player, new GUITransactionType()));
+			}}), e -> {
+				if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !e.player.hasPermission("auctionhouse.transactions.viewall")) {
+					e.manager.showGUI(e.player, new GUITransactionList(e.player, false));
+				} else {
+					e.manager.showGUI(e.player, new GUITransactionType());
+				}
+			});
 		}
 	}
 
