@@ -86,6 +86,12 @@ public class GUIExpiredItems extends Gui {
 			for (AuctionedItem auctionItem : data) {
 				setButton(slot++, auctionItem.getItem(), ClickType.LEFT, e -> {
 					if (!Settings.ALLOW_INDIVIDUAL_ITEM_CLAIM.getBoolean()) return;
+
+					if (e.player.getInventory().firstEmpty() == -1) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.noroomclaim").sendPrefixedMessage(e.player);
+						return;
+					}
+
 					if (this.lastClicked == null) {
 						this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
 					} else if (this.lastClicked > System.currentTimeMillis()) {
