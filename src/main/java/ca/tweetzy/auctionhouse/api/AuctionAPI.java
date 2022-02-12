@@ -605,6 +605,10 @@ public class AuctionAPI {
 		return NBTEditor.contains(item, "AuctionHouseRepaired");
 	}
 
+	private double calculateListingFee(double basePrice) {
+		return Settings.TAX_LISTING_FEE_PERCENTAGE.getBoolean() ? (Settings.TAX_LISTING_FEE.getDouble() /100D) * basePrice : basePrice;
+	}
+
 	public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove) {
 		listAuction(seller, original, item, seconds, basePrice, bidStartPrice, bidIncPrice, currentPrice, isBiddingItem, isUsingBundle, requiresHandRemove, false);
 	}
@@ -660,13 +664,13 @@ public class AuctionAPI {
 		auctionedItem.setInfinite(isInfinite);
 
 		if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
-			if (!EconomyManager.hasBalance(seller, Settings.TAX_LISTING_FEE.getDouble())) {
-				AuctionHouse.getInstance().getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
+			if (!EconomyManager.hasBalance(seller, calculateListingFee(basePrice))) {
+				AuctionHouse.getInstance().getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(calculateListingFee(basePrice))).sendPrefixedMessage(seller);
 				return;
 			}
-			EconomyManager.withdrawBalance(seller, Settings.TAX_LISTING_FEE.getDouble());
-			AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
-			AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
+			EconomyManager.withdrawBalance(seller, calculateListingFee(basePrice));
+			AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(calculateListingFee(basePrice))).sendPrefixedMessage(seller);
+			AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(calculateListingFee(basePrice))).sendPrefixedMessage(seller);
 		}
 
 		AuctionStartEvent startEvent = new AuctionStartEvent(seller, auctionedItem);
@@ -723,8 +727,8 @@ public class AuctionAPI {
 
 				// If the item could not be added for whatever reason and the tax listing fee is enabled, refund them
 				if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
-					EconomyManager.deposit(seller, Settings.TAX_LISTING_FEE.getDouble());
-					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_LISTING_FEE.getDouble())).sendPrefixedMessage(seller);
+					EconomyManager.deposit(seller, calculateListingFee(basePrice));
+					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(calculateListingFee(basePrice))).sendPrefixedMessage(seller);
 				}
 				return;
 			}

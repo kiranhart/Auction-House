@@ -121,6 +121,7 @@ public class Settings {
 	public static final ConfigSetting TAX_ENABLED = new ConfigSetting(config, "auction setting.tax.enabled", false, "Should auction house use it's tax system?");
 	public static final ConfigSetting TAX_CHARGE_LISTING_FEE = new ConfigSetting(config, "auction setting.tax.charge listing fee", true, "Should auction house charge players to list an item?");
 	public static final ConfigSetting TAX_LISTING_FEE = new ConfigSetting(config, "auction setting.tax.listing fee", 5.0, "How much should it cost to list a new item?");
+	public static final ConfigSetting TAX_LISTING_FEE_PERCENTAGE = new ConfigSetting(config, "auction setting.tax.listing fee is percentage", true, "Should the listing fee be based on a percentage instead?");
 	public static final ConfigSetting TAX_CHARGE_SALES_TAX_TO_BUYER = new ConfigSetting(config, "auction setting.tax.charge sale tax to buyer", false, "Should auction house tax the buyer instead of the seller?");
 	public static final ConfigSetting TAX_SALES_TAX_BUY_NOW_PERCENTAGE = new ConfigSetting(config, "auction setting.tax.buy now sales tax", 15.0, "Tax % that should be charged on items that are bought immediately");
 	public static final ConfigSetting TAX_SALES_TAX_AUCTION_WON_PERCENTAGE = new ConfigSetting(config, "auction setting.tax.auction won sales tax", 10.0, "Tax % that should be charged on items that are won through the auction");
