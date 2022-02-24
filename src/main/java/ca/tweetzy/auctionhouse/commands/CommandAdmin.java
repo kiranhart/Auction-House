@@ -43,7 +43,10 @@ public class CommandAdmin extends AbstractCommand {
 
 				AuctionHouse.getInstance().getDataManager().getAdminLogs((error, logs) -> {
 					if (error == null)
-						AuctionHouse.newChain().sync(() -> AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAdminLogs(logs))).execute();
+						AuctionHouse.newChain().sync(() -> {
+							AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAdminLogs(logs));
+
+						}).execute();
 					else
 						error.printStackTrace();
 				});

@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ca.tweetzy</groupId>
     <artifactId>auctionhouse</artifactId>
-    <version>2.55.0</version>
+    <version>2.56.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -121,6 +121,23 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.0.2</version>
                 <executions>
+                    <execution>
+                        <id>copy-to-ready-jars</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>C:\Users\Kiran\Documents\Development\Minecraft\Ready Jars</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>C:\Users\Kiran\Documents\Development\Minecraft\Active\Auction House\target</directory>
+                                    <include>Auction House-${project.version}.jar</include>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>copy-files-on-build</id>
                         <phase>package</phase>
