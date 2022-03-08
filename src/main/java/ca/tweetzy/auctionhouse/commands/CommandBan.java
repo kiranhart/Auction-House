@@ -52,47 +52,49 @@ public class CommandBan extends AbstractCommand {
 			reason.append(args[i]).append(" ");
 		}
 
-		OfflinePlayer offlinePlayer = null;
+		AuctionHouse.newChain().async(() -> {
+			OfflinePlayer offlinePlayer = null;
 
-		if (target == null) {
-			// try and look for an offline player
-			offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
-			if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
-				return ReturnType.FAILURE;
+			if (target == null) {
+				// try and look for an offline player
+				offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
+				if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
+					return;
+				}
 			}
-		}
 
-		UUID toBan = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
+			UUID toBan = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
 
-		if (!AuctionAPI.getInstance().isValidTimeString(timeString)) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.invalidtimestring").sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
-		}
+			if (!AuctionAPI.getInstance().isValidTimeString(timeString)) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.invalidtimestring").sendPrefixedMessage(player);
+				return;
+			}
 
-		if (reason.toString().length() == 0) {
-			AuctionHouse.getInstance().getLocale().getMessage("bans.nobanreason").sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
-		}
+			if (reason.toString().length() == 0) {
+				AuctionHouse.getInstance().getLocale().getMessage("bans.nobanreason").sendPrefixedMessage(player);
+				return;
+			}
 
-		if (AuctionHouse.getInstance().getAuctionBanManager().getBans().containsKey(toBan)) {
-			AuctionHouse.getInstance().getLocale().getMessage("bans.playeralreadybanned").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
-		}
+			if (AuctionHouse.getInstance().getAuctionBanManager().getBans().containsKey(toBan)) {
+				AuctionHouse.getInstance().getLocale().getMessage("bans.playeralreadybanned").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
+				return;
+			}
 
-		long bannedSeconds = AuctionAPI.getInstance().getSecondsFromString(timeString);
+			long bannedSeconds = AuctionAPI.getInstance().getSecondsFromString(timeString);
 
-		AuctionBanPlayerEvent auctionBanPlayerEvent = new AuctionBanPlayerEvent(player, toBan, reason.toString().trim(), bannedSeconds, false);
-		Bukkit.getServer().getPluginManager().callEvent(auctionBanPlayerEvent);
-		if (auctionBanPlayerEvent.isCancelled()) return ReturnType.FAILURE;
+			AuctionBanPlayerEvent auctionBanPlayerEvent = new AuctionBanPlayerEvent(player, toBan, reason.toString().trim(), bannedSeconds, true);
+			Bukkit.getServer().getPluginManager().callEvent(auctionBanPlayerEvent);
+			if (auctionBanPlayerEvent.isCancelled()) return;
 
-		AuctionBan auctionBan = new AuctionBan(toBan, reason.toString().trim(), System.currentTimeMillis() + bannedSeconds * 1000);
-		AuctionHouse.getInstance().getAuctionBanManager().addBan(auctionBan);
-		AuctionHouse.getInstance().getLocale().getMessage("bans.bannedplayer").processPlaceholder("player", args[0]).processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(player);
+			AuctionBan auctionBan = new AuctionBan(toBan, reason.toString().trim(), System.currentTimeMillis() + bannedSeconds * 1000);
+			AuctionHouse.getInstance().getAuctionBanManager().addBan(auctionBan);
+			AuctionHouse.getInstance().getLocale().getMessage("bans.bannedplayer").processPlaceholder("player", args[0]).processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(player);
 
-		if (target != null) {
-			AuctionHouse.getInstance().getLocale().getMessage("bans.remainingtime").processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(target);
-		}
+			if (target != null) {
+				AuctionHouse.getInstance().getLocale().getMessage("bans.remainingtime").processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(target);
+			}
+		}).execute();
 
 		return ReturnType.SUCCESS;
 	}
@@ -100,9 +102,7 @@ public class CommandBan extends AbstractCommand {
 	@Override
 	protected List<String> onTab(CommandSender sender, String... args) {
 		if (args.length == 1) {
-			List<String> players = Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
-			players.addAll(Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList()));
-			return players;
+			return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
 		}
 
 		if (args.length == 2) return Arrays.asList("1m", "1h", "1d", "1y");
