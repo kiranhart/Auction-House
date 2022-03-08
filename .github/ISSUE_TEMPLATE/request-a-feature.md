@@ -1,8 +1,11 @@
-# Feature Request
+---
+name: Request a Feature
+about: Suggest a change/new feature for the plugin
+title: ''
+labels: enhancement
+assignees: ''
 
-|Name|About|Labels|
-|-----------|-----|------|
-|Request a Feature|Suggest a new feature/change for this plugin|enhancement
+---
 
 **Describe Feature**
 - Describe how this feature will work
