@@ -1,8 +1,11 @@
-# Report a Bug
+---
+name: Report a Bug
+about: Report an issue with the plugin
+title: ''
+labels: bug
+assignees: ''
 
-|Name|About|Labels|
-|-----------|-----|------|
-|Request a Feature|Suggest a new feature/change for this plugin|bug
+---
 
 **Describe Bug**
 - Describe the bug in as much detail as possible, the more detailed, the chances of it being fixed is faster
