@@ -33,7 +33,6 @@ public class AuctionItemManager {
 	private final ConcurrentHashMap<UUID, AuctionedItem> garbageBin = new ConcurrentHashMap<>();
 
 	public void start() {
-		// Attempt to convert from old serialization method
 		AuctionHouse.getInstance().getDataManager().getItems((error, results) -> {
 			if (error == null) {
 				for (AuctionedItem item : results) {
@@ -53,6 +52,10 @@ public class AuctionItemManager {
 
 	public void sendToGarbage(@NonNull AuctionedItem auctionedItem) {
 		this.garbageBin.put(auctionedItem.getId(), auctionedItem);
+	}
+
+	public void sendToGarbage(@NonNull UUID uuid) {
+		this.garbageBin.put(uuid, new AuctionedItem());
 	}
 
 	public AuctionedItem getItem(@NonNull UUID id) {

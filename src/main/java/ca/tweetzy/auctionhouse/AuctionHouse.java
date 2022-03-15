@@ -36,8 +36,6 @@ import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import lombok.Getter;
 import lombok.Setter;
-import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.PlaceholderHook;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -53,7 +51,6 @@ import java.util.List;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 
-@SuppressWarnings("unused")
 public class AuctionHouse extends TweetyPlugin {
 
 	private static TaskChainFactory taskChainFactory;
@@ -66,9 +63,6 @@ public class AuctionHouse extends TweetyPlugin {
 
 	@Getter
 	private final GuiManager guiManager = new GuiManager(this);
-
-	@Getter
-	private final Config data = new Config(this, "data.yml");
 
 	protected Metrics metrics;
 
@@ -164,9 +158,6 @@ public class AuctionHouse extends TweetyPlugin {
 
 		if (getServer().getPluginManager().isPluginEnabled("CMI"))
 			Bukkit.getServer().getPluginManager().registerEvents(new CMIListener(), this);
-
-
-		this.data.load();
 
 		// auction players
 		this.auctionPlayerManager = new AuctionPlayerManager();

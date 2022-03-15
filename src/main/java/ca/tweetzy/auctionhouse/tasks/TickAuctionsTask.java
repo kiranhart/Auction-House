@@ -3,9 +3,9 @@ package ca.tweetzy.auctionhouse.tasks;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.AuctionStat;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -14,11 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * The current file has been created by Kiran Hart
@@ -50,7 +46,15 @@ public class TickAuctionsTask extends BukkitRunnable {
 			ItemStack itemStack = auctionItem.getItem();
 
 			if (!AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().keySet().isEmpty()) {
-				AuctionHouse.getInstance().getDataManager().deleteItems(AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
+				final List<UUID> toClear = new ArrayList<>();
+				Iterator<UUID> ids = AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().keySet().stream().iterator();
+				while (ids.hasNext()) {
+					toClear.add(ids.next());
+					ids.remove();
+				}
+
+				AuctionHouse.getInstance().getDataManager().deleteItems(toClear);
+				toClear.clear();
 			}
 
 			if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {

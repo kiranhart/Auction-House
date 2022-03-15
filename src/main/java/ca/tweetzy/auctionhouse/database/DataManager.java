@@ -6,20 +6,27 @@ import ca.tweetzy.auctionhouse.auction.*;
 import ca.tweetzy.auctionhouse.auction.enums.AdminAction;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.database.DataManagerAbstract;
 import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
+import ca.tweetzy.core.utils.TextUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.*;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 /**
  * The current file has been created by Kiran Hart
@@ -179,10 +186,19 @@ public class DataManager extends DataManagerAbstract {
 		this.async(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions")) {
 				ResultSet resultSet = statement.executeQuery();
+				final List<UUID> toRemove = new ArrayList<>();
+
 				while (resultSet.next()) {
-					items.add(extractAuctionedItem(resultSet));
+					if (resultSet.getBoolean("expired") && Settings.EXPIRATION_TIME_LIMIT_ENABLED.getBoolean() && Instant.ofEpochMilli(resultSet.getLong("expires_at")).isBefore(Instant.now().minus(Duration.ofHours(Settings.EXPIRATION_TIME_LIMIT.getInt())))) {
+						toRemove.add(UUID.fromString(resultSet.getString("id")));
+					} else {
+						final AuctionedItem item = extractAuctionedItem(resultSet);
+						if (item != null)
+							items.add(item);
+					}
 				}
 
+				deleteItems(toRemove);
 				callback.accept(null, items);
 			} catch (Exception e) {
 				resolveCallback(callback, e);
@@ -428,10 +444,17 @@ public class DataManager extends DataManagerAbstract {
 			}
 
 			statement.executeBatch();
+
 		}));
 	}
 
 	private AuctionedItem extractAuctionedItem(ResultSet resultSet) throws SQLException {
+		final ItemStack item = AuctionAPI.decodeItem(resultSet.getString("item"));
+		if (item == null) {
+			AuctionHouse.getInstance().getLogger().log(Level.WARNING, "Auction Item with id " + resultSet.getString("id") + " is using an unknown material, it is being skipped!");
+			return null;
+		}
+
 		AuctionedItem auctionItem = new AuctionedItem(
 				UUID.fromString(resultSet.getString("id")),
 				UUID.fromString(resultSet.getString("owner")),
@@ -439,7 +462,7 @@ public class DataManager extends DataManagerAbstract {
 				resultSet.getString("owner_name"),
 				resultSet.getString("highest_bidder_name"),
 				AuctionItemCategory.valueOf(resultSet.getString("category")),
-				AuctionAPI.decodeItem(resultSet.getString("item")),
+				item,
 				resultSet.getDouble("base_price"),
 				resultSet.getDouble("bid_start_price"),
 				resultSet.getDouble("bid_increment_price"),

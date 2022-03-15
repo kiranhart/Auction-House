@@ -210,7 +210,6 @@ public class AuctionAPI {
 		try {
 			config.loadFromString(string);
 		} catch (IllegalArgumentException | InvalidConfigurationException e) {
-			e.printStackTrace();
 			return null;
 		}
 		return config.getItemStack("i", null);
