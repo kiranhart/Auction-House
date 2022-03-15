@@ -32,7 +32,7 @@ public class CommandTransactions extends AbstractCommand {
 		if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !player.hasPermission("auctionhouse.transactions.viewall")) {
 			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionList(player, false));
 		} else {
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionType());
+			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionType(player));
 		}
 
 		return ReturnType.SUCCESS;

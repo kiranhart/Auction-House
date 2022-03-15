@@ -59,6 +59,8 @@ public class LocaleSettings {
 		languageNodes.put("general.visit auction chest", "&cVisit an Auction chest to use Auction House.");
 		languageNodes.put("general.disabled in world", "&cAuction House is disabled in this world.");
 		languageNodes.put("general.requires creative", "&cThat action requires you to be in creative mode");
+		languageNodes.put("general.deleted transactions", "&cDeleted a total of &4%deleted_transactions% &ctransactions");
+		languageNodes.put("general.transaction delete begin", "&cBeginning transaction deletion, this may take some time.");
 
 
 		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
@@ -81,6 +83,9 @@ public class LocaleSettings {
 
 		languageNodes.put("prompts.enter listing time", "&aPlease enter listing time (ex. 1 day):");
 		languageNodes.put("prompts.enter valid listing time", "&cPlease enter a valid listing time.");
+
+		languageNodes.put("prompts.enter deletion range", "&aPlease enter deletion range (ex. 1 day):");
+		languageNodes.put("prompts.enter valid deletion range", "&cPlease enter a valid deletion range");
 
 		languageNodes.put("transaction.sale_type.bid_won", "Won Auction");
 		languageNodes.put("transaction.sale_type.immediate_buy", "Bought Immediately");

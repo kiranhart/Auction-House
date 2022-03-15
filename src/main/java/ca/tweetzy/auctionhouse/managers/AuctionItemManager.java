@@ -54,10 +54,6 @@ public class AuctionItemManager {
 		this.garbageBin.put(auctionedItem.getId(), auctionedItem);
 	}
 
-	public void sendToGarbage(@NonNull UUID uuid) {
-		this.garbageBin.put(uuid, new AuctionedItem());
-	}
-
 	public AuctionedItem getItem(@NonNull UUID id) {
 		return this.items.getOrDefault(id, null);
 	}

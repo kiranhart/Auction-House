@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -46,16 +47,9 @@ public class TickAuctionsTask extends BukkitRunnable {
 			ItemStack itemStack = auctionItem.getItem();
 
 			if (!AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().keySet().isEmpty()) {
-				final List<UUID> toClear = new ArrayList<>();
-				Iterator<UUID> ids = AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().keySet().stream().iterator();
-				while (ids.hasNext()) {
-					toClear.add(ids.next());
-					ids.remove();
-				}
-
-				AuctionHouse.getInstance().getDataManager().deleteItems(toClear);
-				toClear.clear();
+				AuctionHouse.getInstance().getDataManager().deleteItems(AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
 			}
+
 
 			if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
 				AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());

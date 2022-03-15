@@ -417,7 +417,7 @@ public class GUIAuctionHouse extends Gui {
 				if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !e.player.hasPermission("auctionhouse.transactions.viewall")) {
 					e.manager.showGUI(e.player, new GUITransactionList(e.player, false));
 				} else {
-					e.manager.showGUI(e.player, new GUITransactionType());
+					e.manager.showGUI(e.player, new GUITransactionType(e.player));
 				}
 			});
 		}

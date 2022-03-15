@@ -59,7 +59,7 @@ public class GUITransactionList extends Gui {
 			if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !e.player.hasPermission("auctionhouse.transactions.viewall")) {
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			} else {
-				e.manager.showGUI(e.player, new GUITransactionType());
+				e.manager.showGUI(e.player, new GUITransactionType(e.player));
 			}
 		});
 

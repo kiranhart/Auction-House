@@ -396,6 +396,19 @@ public class DataManager extends DataManagerAbstract {
 		this.thread.execute(() -> insertAuction(item, callback));
 	}
 
+	public void deleteTransactions(Collection<UUID> transactions) {
+		this.async(() -> this.databaseConnector.connect(connection -> {
+			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "transactions WHERE id = ?");
+			for (UUID id : transactions) {
+				statement.setString(1, id.toString());
+				statement.addBatch();
+			}
+
+			statement.executeBatch();
+
+		}));
+	}
+
 	public void updateItems(Collection<AuctionedItem> items, UpdateCallback callback) {
 		this.databaseConnector.connect(connection -> {
 			connection.setAutoCommit(false);

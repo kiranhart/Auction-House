@@ -561,6 +561,22 @@ public class Settings {
 	public static final ConfigSetting GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_NAME = new ConfigSetting(config, "gui.transactions type.items.self transactions.name", "&eYour Transactions");
 	public static final ConfigSetting GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_LORE = new ConfigSetting(config, "gui.transactions type.items.self transactions.lore", Collections.singletonList("&7Click to view all your transactions"));
 
+	public static final ConfigSetting GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_ITEM = new ConfigSetting(config, "gui.transactions type.items.delete transactions.item", XMaterial.LAVA_BUCKET.name());
+	public static final ConfigSetting GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_NAME = new ConfigSetting(config, "gui.transactions type.items.delete transactions.name", "&cDelete Transactions");
+	public static final ConfigSetting GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_LORE = new ConfigSetting(config, "gui.transactions type.items.delete transactions.lore", Arrays.asList(
+			"&7Click to delete transactions older than a specified period",
+			"&7Ex. 3 day will delete every single transaction older",
+			"&7than 3 days from the current time.",
+			"&7Valid time ranges:",
+			"&esecond",
+			"&eminute",
+			"&ehour",
+			"&eday",
+			"&eweek",
+			"&emonth",
+			"&eyear"
+	));
+
 
 	/*  ===============================
 	 *    		LOGS LIST GUI
