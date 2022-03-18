@@ -61,6 +61,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 			long timeRemaining = (auctionItem.getExpiresAt() - System.currentTimeMillis()) / 1000;
 
+			// broadcast ending
 			if (!auctionItem.isExpired()) {
 				if (Settings.BROADCAST_AUCTION_ENDING.getBoolean()) {
 					if (timeRemaining <= Settings.BROADCAST_AUCTION_ENDING_AT_TIME.getInt() && timeRemaining % 10 == 0 && timeRemaining != 0) {
@@ -73,6 +74,8 @@ public class TickAuctionsTask extends BukkitRunnable {
 			}
 
 			if (timeRemaining <= 0 && !auctionItem.isExpired()) {
+
+				// the owner is the highest bidder, so just expire
 				if (auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
 					auctionItem.setExpired(true);
 					if (auctionItem.isExpired()) {
@@ -101,6 +104,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 				AuctionAPI.getInstance().withdrawBalance(auctionWinner, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice);
 				AuctionAPI.getInstance().depositBalance(Bukkit.getOfflinePlayer(auctionItem.getOwner()), Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice : finalPrice - tax);
 
+				// alert seller and buyer
 				if (Bukkit.getOfflinePlayer(auctionItem.getOwner()).isOnline()) {
 					AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
 							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
@@ -127,7 +131,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 						else
 							PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack);
 
-						auctionItemIterator.remove();
+						AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
 						continue;
 					}
 
@@ -136,7 +140,8 @@ public class TickAuctionsTask extends BukkitRunnable {
 							AuctionHouse.newChain().sync(() -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack)).execute();
 						else
 							PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack);
-						auctionItemIterator.remove();
+
+						AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
 						continue;
 					}
 				}
