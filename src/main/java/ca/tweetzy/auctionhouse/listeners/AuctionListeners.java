@@ -6,13 +6,12 @@ import ca.tweetzy.auctionhouse.api.events.AuctionAdminEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.AuctionStat;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.UUID;
@@ -32,7 +31,7 @@ public class AuctionListeners implements Listener {
 		));
 
 		if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean()) {
-			Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
+			AuctionHouse.newChain().async(() -> {
 				Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
 					AuctionAPI.getInstance().sendDiscordMessage(
 							hook,
@@ -44,7 +43,7 @@ public class AuctionListeners implements Listener {
 							e.getAuctionItem().isBidItem()
 					);
 				});
-			}, 1L);
+			}).execute();
 		}
 	}
 
@@ -66,7 +65,7 @@ public class AuctionListeners implements Listener {
 				e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? e.getAuctionItem().getCurrentPrice() : e.getAuctionItem().getBasePrice()
 		));
 
-		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
+		AuctionHouse.newChain().async(() -> {
 			if (Settings.RECORD_TRANSACTIONS.getBoolean()) {
 
 				AuctionHouse.getInstance().getDataManager().insertTransactionAsync(new Transaction(
@@ -90,15 +89,15 @@ public class AuctionListeners implements Listener {
 			if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_FINISH.getBoolean()) {
 				Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> AuctionAPI.getInstance().sendDiscordMessage(hook, e.getOriginalOwner(), e.getBuyer(), e.getAuctionItem(), e.getSaleType(), false, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM));
 			}
-		}, 1L);
+		}).execute();
 	}
 
 	@EventHandler
 	public void onAuctionBid(AuctionBidEvent e) {
 		if (!Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_BID.getBoolean()) return;
-		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
-			AuctionAPI.getInstance().sendDiscordBidMessage(hook, e.getAuctionedItem(), e.getNewBidAmount());
-		}), 1L);
+		AuctionHouse.newChain().async(() -> {
+			Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> AuctionAPI.getInstance().sendDiscordBidMessage(hook, e.getAuctionedItem(), e.getNewBidAmount()));
+		}).execute();
 	}
 
 	@EventHandler

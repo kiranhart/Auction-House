@@ -5,8 +5,8 @@ import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.api.hook.MMOItemsHook;
 import ca.tweetzy.auctionhouse.api.hook.McMMOHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
@@ -605,27 +605,27 @@ public class AuctionAPI {
 	}
 
 	private double calculateListingFee(double basePrice) {
-		return Settings.TAX_LISTING_FEE_PERCENTAGE.getBoolean() ? (Settings.TAX_LISTING_FEE.getDouble() /100D) * basePrice : basePrice;
+		return Settings.TAX_LISTING_FEE_PERCENTAGE.getBoolean() ? (Settings.TAX_LISTING_FEE.getDouble() / 100D) * basePrice : Settings.TAX_LISTING_FEE.getDouble();
 	}
 
 	public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove) {
 		listAuction(seller, original, item, seconds, basePrice, bidStartPrice, bidIncPrice, currentPrice, isBiddingItem, isUsingBundle, requiresHandRemove, false);
 	}
 
-		/**
-		 * Used to insert an auction into the database
-		 *
-		 * @param seller        Is the player who is listing the item
-		 * @param item          Is the item stack being listed to the auction house
-		 * @param original      Is the original item stack (only applies if using a bundle)
-		 * @param seconds       Is the total amount of seconds the item will be active for
-		 * @param basePrice     Is the buy now price
-		 * @param bidStartPrice Is the price the bidding will start at if the item is an auction
-		 * @param bidIncPrice   Is the default price increment for an auction
-		 * @param currentPrice  Is the current/start price of an item
-		 * @param isBiddingItem States whether the item is an auction or bin item
-		 * @param isUsingBundle States whether the item is a bundled item
-		 */
+	/**
+	 * Used to insert an auction into the database
+	 *
+	 * @param seller        Is the player who is listing the item
+	 * @param item          Is the item stack being listed to the auction house
+	 * @param original      Is the original item stack (only applies if using a bundle)
+	 * @param seconds       Is the total amount of seconds the item will be active for
+	 * @param basePrice     Is the buy now price
+	 * @param bidStartPrice Is the price the bidding will start at if the item is an auction
+	 * @param bidIncPrice   Is the default price increment for an auction
+	 * @param currentPrice  Is the current/start price of an item
+	 * @param isBiddingItem States whether the item is an auction or bin item
+	 * @param isUsingBundle States whether the item is a bundled item
+	 */
 	public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove, boolean isInfinite) {
 		if (McMMOHook.isUsingAbility(seller)) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.mcmmo_ability_active").sendPrefixedMessage(seller);
