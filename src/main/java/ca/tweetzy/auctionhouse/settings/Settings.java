@@ -103,6 +103,7 @@ public class Settings {
 	public static final ConfigSetting SYNC_BASE_PRICE_TO_HIGHEST_PRICE = new ConfigSetting(config, "auction setting.sync the base price to the current price", true, "Ex. If the buy now price was 100, and the current price exceeds 100 to say 200, the buy now price will become 200.");
 
 	public static final ConfigSetting CURRENCY_FORMAT = new ConfigSetting(config, "auction setting.currency format", "%,.2f");
+	public static final ConfigSetting STRIP_ZEROS_ON_WHOLE_NUMBERS = new ConfigSetting(config, "auction setting.strip zeros on whole numbers", false, "If the price / amount is a whole number (ex. 40.00) it will drop the .00");
 
 	public static final ConfigSetting USE_ALTERNATE_CURRENCY_FORMAT = new ConfigSetting(config, "auction setting.use alternate currency format", false, "If true, $123,456.78 will become $123.456,78");
 	public static final ConfigSetting USE_FLAT_NUMBER_FORMAT = new ConfigSetting(config, "auction setting.use flat number format", false, "If true, $123,456.78 will become $12345678");

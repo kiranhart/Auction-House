@@ -418,6 +418,15 @@ public class AuctionAPI {
 	 */
 	public String formatNumber(double number) {
 		String formatted = String.format(Settings.CURRENCY_FORMAT.getString(), number);
+
+		// do the zero drop here
+		// this is a bit scuffed, I gotta improve this
+		if (Double.parseDouble(formatted.replace(",", "")) % 1 == 0 && Settings.STRIP_ZEROS_ON_WHOLE_NUMBERS.getBoolean()) {
+			formatted = formatted.replaceAll("0+$", "");
+			if (formatted.endsWith("."))
+				formatted = formatted.substring(0, formatted.length() - 1);
+		}
+
 		String preDecimal = Settings.USE_ALTERNATE_CURRENCY_FORMAT.getBoolean() ? replaceLast(formatted.replace(",", "."), ".", ",") : formatted;
 		return Settings.USE_FLAT_NUMBER_FORMAT.getBoolean() ? preDecimal.replace(".", "").replace(",", "") : preDecimal;
 	}
