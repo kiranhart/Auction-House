@@ -99,6 +99,7 @@ public class GUIConfirmPurchase extends Gui {
 		setActionForRange(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, ClickType.LEFT, e -> {
 			e.gui.close();
 		});
+
 		setActionForRange(this.buyingSpecificQuantity ? 9 : 0, this.buyingSpecificQuantity ? 12 : 3, ClickType.LEFT, e -> {
 			// Re-select the item to ensure that it's available
 			try {
@@ -134,17 +135,19 @@ public class GUIConfirmPurchase extends Gui {
 				}
 
 				if (this.buyingSpecificQuantity) {
-					ItemStack item = auctionItem.getItem();
+					// the original item stack
+					ItemStack item = auctionItem.getItem().clone();
+					ItemStack toGive = auctionItem.getItem().clone();
 
 					if (item.getAmount() - this.purchaseQuantity >= 1) {
 						item.setAmount(item.getAmount() - this.purchaseQuantity);
+						toGive.setAmount(this.purchaseQuantity);
 
 						if (!located.isInfinite()) {
 							located.setItem(item);
 							located.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(located.getBasePrice() - buyNowPrice) : located.getBasePrice() - buyNowPrice);
 						}
 
-						item.setAmount(this.purchaseQuantity);
 						transferFunds(e.player, buyNowPrice);
 					} else {
 						transferFunds(e.player, buyNowPrice);
@@ -152,7 +155,7 @@ public class GUIConfirmPurchase extends Gui {
 							AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
 					}
 
-					PlayerUtils.giveItem(e.player, item);
+					PlayerUtils.giveItem(e.player, toGive);
 					sendMessages(e, located, true, buyNowPrice);
 
 				} else {

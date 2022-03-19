@@ -414,7 +414,7 @@ public class DataManager extends DataManagerAbstract {
 			connection.setAutoCommit(false);
 			SQLException err = null;
 
-			PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET owner = ?, owner_name = ?, highest_bidder = ?, highest_bidder_name = ?, base_price = ?, bid_start_price = ?, bid_increment_price = ?, current_price = ?, expires_at = ?, expired = ? WHERE id = ?");
+			PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET owner = ?, owner_name = ?, highest_bidder = ?, highest_bidder_name = ?, base_price = ?, bid_start_price = ?, bid_increment_price = ?, current_price = ?, expires_at = ?, expired = ?, item = ? WHERE id = ?");
 			for (AuctionedItem item : items) {
 				try {
 					statement.setString(1, item.getOwner().toString());
@@ -427,7 +427,8 @@ public class DataManager extends DataManagerAbstract {
 					statement.setDouble(8, item.getCurrentPrice());
 					statement.setLong(9, item.getExpiresAt());
 					statement.setBoolean(10, item.isExpired());
-					statement.setString(11, item.getId().toString());
+					statement.setString(11, AuctionAPI.encodeItem(item.getItem()));
+					statement.setString(12, item.getId().toString());
 					statement.addBatch();
 				} catch (SQLException e) {
 					err = e;
