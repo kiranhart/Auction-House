@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.api.hook;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -65,6 +66,26 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 			AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
 			if (auctionPlayer == null) return null;
 			return String.valueOf(auctionPlayer.getItems(true).size());
+		}
+
+		if (params.equalsIgnoreCase("total_money_earned")) {
+			return AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getEarned());
+		}
+
+		if (params.equalsIgnoreCase("total_money_spent")) {
+			return AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getSpent());
+		}
+
+		if (params.equalsIgnoreCase("total_items_listed")) {
+			return AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getCreated());
+		}
+
+		if (params.equalsIgnoreCase("total_items_expired")) {
+			return AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getExpired());
+		}
+
+		if (params.equalsIgnoreCase("total_items_sold")) {
+			return AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getSold());
 		}
 
 		if (params.equalsIgnoreCase("server_active_auctions")) {
