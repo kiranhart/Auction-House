@@ -156,7 +156,7 @@ public class GUIConfirmPurchase extends Gui {
 					}
 
 					PlayerUtils.giveItem(e.player, toGive);
-					sendMessages(e, located, true, buyNowPrice);
+					sendMessages(e, located, true, buyNowPrice, this.purchaseQuantity);
 
 				} else {
 					transferFunds(e.player, buyNowPrice);
@@ -164,7 +164,7 @@ public class GUIConfirmPurchase extends Gui {
 						AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
 
 					PlayerUtils.giveItem(e.player, located.getItem());
-					sendMessages(e, located, false, 0);
+					sendMessages(e, located, false, 0, -1);
 				}
 
 				if (Settings.BROADCAST_AUCTION_SALE.getBoolean()) {
@@ -218,17 +218,17 @@ public class GUIConfirmPurchase extends Gui {
 		AuctionAPI.getInstance().depositBalance(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax) : Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax);
 	}
 
-	private void sendMessages(GuiClickEvent e, AuctionedItem located, boolean overwritePrice, double price) {
+	private void sendMessages(GuiClickEvent e, AuctionedItem located, boolean overwritePrice, double price, int qtyOverride) {
 		double totalPrice = overwritePrice ? price : located.getBasePrice();
 		double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * totalPrice : 0D;
 
 		AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(e.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice)).sendPrefixedMessage(e.player);
-		AuctionHouse.getInstance().getLocale().getMessage("general.bought_item").processPlaceholder("amount", located.getItem().getAmount()).processPlaceholder("item", AuctionAPI.getInstance().getItemName(located.getItem())).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice)).sendPrefixedMessage(e.player);
+		AuctionHouse.getInstance().getLocale().getMessage("general.bought_item").processPlaceholder("amount", qtyOverride != -1 ? qtyOverride : located.getItem().getAmount()).processPlaceholder("item", AuctionAPI.getInstance().getItemName(located.getItem())).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice)).sendPrefixedMessage(e.player);
 
 		if (Bukkit.getOfflinePlayer(located.getOwner()).isOnline()) {
 			AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
 					.processPlaceholder("item", AuctionAPI.getInstance().getItemName(located.getItem()))
-					.processPlaceholder("amount", located.getItem().getAmount())
+					.processPlaceholder("amount", qtyOverride != -1 ? qtyOverride : located.getItem().getAmount())
 					.processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice : totalPrice - tax))
 					.processPlaceholder("buyer_name", e.player.getName())
 					.sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
