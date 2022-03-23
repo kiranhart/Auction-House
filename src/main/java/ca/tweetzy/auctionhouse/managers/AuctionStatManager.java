@@ -35,7 +35,7 @@ public final class AuctionStatManager {
 		});
 	}
 
-	public AuctionStat<Integer, Integer, Integer, Double, Double> getPlayerStats(final Player player) {
+	public AuctionStat<Integer, Integer, Integer, Double, Double> getPlayerStats(final OfflinePlayer player) {
 		return this.stats.getOrDefault(player.getUniqueId(), new AuctionStat<>(0, 0, 0, 0D, 0D));
 	}
 
