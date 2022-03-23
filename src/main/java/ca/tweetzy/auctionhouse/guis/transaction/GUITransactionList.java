@@ -67,7 +67,7 @@ public class GUITransactionList extends Gui {
 		List<Transaction> data = this.transactions.stream().sorted(Comparator.comparingLong(Transaction::getTransactionTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
 
 		for (Transaction transaction : data) {
-			setButton(slot++, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_ITEM.getString(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(), new HashMap<String, Object>() {{
+			setButton(slot++, ConfigurationItemHelper.createConfigurationItem(transaction.getItem(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%transaction_id%", transaction.getId().toString());
 				put("%seller%", Bukkit.getOfflinePlayer(transaction.getSeller()).getName());
 				put("%buyer%", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName());
