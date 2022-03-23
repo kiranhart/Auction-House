@@ -421,10 +421,13 @@ public class AuctionAPI {
 
 		// do the zero drop here
 		// this is a bit scuffed, I gotta improve this
-		if (Double.parseDouble(formatted.replace(",", "")) % 1 == 0 && Settings.STRIP_ZEROS_ON_WHOLE_NUMBERS.getBoolean()) {
-			formatted = formatted.replaceAll("0+$", "");
-			if (formatted.endsWith("."))
-				formatted = formatted.substring(0, formatted.length() - 1);
+		if (Settings.STRIP_ZEROS_ON_WHOLE_NUMBERS.getBoolean()) {
+			if (Double.parseDouble(formatted.replace(",", "")) % 1 == 0) {
+
+				formatted = formatted.replaceAll("0+$", "");
+				if (formatted.endsWith("."))
+					formatted = formatted.substring(0, formatted.length() - 1);
+			}
 		}
 
 		String preDecimal = Settings.USE_ALTERNATE_CURRENCY_FORMAT.getBoolean() ? replaceLast(formatted.replace(",", "."), ".", ",") : formatted;
