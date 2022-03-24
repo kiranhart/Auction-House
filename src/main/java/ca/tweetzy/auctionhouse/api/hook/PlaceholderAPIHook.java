@@ -69,23 +69,23 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 		}
 
 		if (params.equalsIgnoreCase("total_money_earned")) {
-			return AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getEarned());
+			return String.valueOf(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getEarned());
 		}
 
 		if (params.equalsIgnoreCase("total_money_spent")) {
-			return AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getSpent());
+			return String.valueOf(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getSpent());
 		}
 
 		if (params.equalsIgnoreCase("total_items_listed")) {
-			return AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getCreated());
+			return String.valueOf(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getCreated());
 		}
 
 		if (params.equalsIgnoreCase("total_items_expired")) {
-			return AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getExpired());
+			return String.valueOf(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getExpired());
 		}
 
 		if (params.equalsIgnoreCase("total_items_sold")) {
-			return AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getSold());
+			return String.valueOf(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getSold());
 		}
 
 		if (params.equalsIgnoreCase("server_active_auctions")) {
