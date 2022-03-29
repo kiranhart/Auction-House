@@ -79,7 +79,7 @@ public class GUIExpiredItems extends Gui {
 					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
 				}
 
-				draw();
+				e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer, this.lastClicked));
 			});
 
 			int slot = 0;
