@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 
 public class GUIAuctionHouse extends Gui {
 
-	final AuctionPlayer auctionPlayer;
+	AuctionPlayer auctionPlayer;
 	private List<AuctionedItem> items;
 
 	private BukkitTask task;
@@ -120,28 +120,30 @@ public class GUIAuctionHouse extends Gui {
 				this.items = this.items.stream().filter(item -> checkSearchCriteria(this.searchPhrase, item)).collect(Collectors.toList());
 			}
 
-			if (this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.ALL && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SEARCH && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SELF) {
-				this.items = this.items.stream().filter(item -> checkFilterCriteria(item, this.auctionPlayer.getSelectedFilter())).collect(Collectors.toList());
-			} else if (this.auctionPlayer.getSelectedFilter() == AuctionItemCategory.SELF) {
-				this.items = this.items.stream().filter(item -> item.getOwner().equals(this.auctionPlayer.getPlayer().getUniqueId())).collect(Collectors.toList());
-			} else if (this.auctionPlayer.getSelectedFilter() == AuctionItemCategory.SEARCH && this.auctionPlayer.getCurrentSearchPhrase().length() != 0) {
-				this.items = this.items.stream().filter(item -> checkSearchCriteria(this.auctionPlayer.getCurrentSearchPhrase(), item)).collect(Collectors.toList());
-			}
+			if (this.auctionPlayer != null) {
+				if (this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.ALL && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SEARCH && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SELF) {
+					this.items = this.items.stream().filter(item -> checkFilterCriteria(item, this.auctionPlayer.getSelectedFilter())).collect(Collectors.toList());
+				} else if (this.auctionPlayer.getSelectedFilter() == AuctionItemCategory.SELF) {
+					this.items = this.items.stream().filter(item -> item.getOwner().equals(this.auctionPlayer.getPlayer().getUniqueId())).collect(Collectors.toList());
+				} else if (this.auctionPlayer.getSelectedFilter() == AuctionItemCategory.SEARCH && this.auctionPlayer.getCurrentSearchPhrase().length() != 0) {
+					this.items = this.items.stream().filter(item -> checkSearchCriteria(this.auctionPlayer.getCurrentSearchPhrase(), item)).collect(Collectors.toList());
+				}
 
-			if (this.auctionPlayer.getSelectedSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM) {
-				this.items = this.items.stream().filter(AuctionedItem::isBidItem).collect(Collectors.toList());
-			}
+				if (this.auctionPlayer.getSelectedSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM) {
+					this.items = this.items.stream().filter(AuctionedItem::isBidItem).collect(Collectors.toList());
+				}
 
-			if (this.auctionPlayer.getSelectedSaleType() == AuctionSaleType.WITHOUT_BIDDING_SYSTEM) {
-				this.items = this.items.stream().filter(item -> !item.isBidItem()).collect(Collectors.toList());
-			}
+				if (this.auctionPlayer.getSelectedSaleType() == AuctionSaleType.WITHOUT_BIDDING_SYSTEM) {
+					this.items = this.items.stream().filter(item -> !item.isBidItem()).collect(Collectors.toList());
+				}
 
-			if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.PRICE) {
-				this.items = this.items.stream().sorted(Comparator.comparingDouble(AuctionedItem::getCurrentPrice).reversed()).collect(Collectors.toList());
-			}
+				if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.PRICE) {
+					this.items = this.items.stream().sorted(Comparator.comparingDouble(AuctionedItem::getCurrentPrice).reversed()).collect(Collectors.toList());
+				}
 
-			if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.RECENT) {
-				this.items = this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).collect(Collectors.toList());
+				if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.RECENT) {
+					this.items = this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).collect(Collectors.toList());
+				}
 			}
 
 			this.items = this.items.stream().sorted(Comparator.comparing(AuctionedItem::isInfinite).reversed()).collect(Collectors.toList());
