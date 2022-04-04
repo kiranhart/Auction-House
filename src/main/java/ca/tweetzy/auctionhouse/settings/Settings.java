@@ -578,6 +578,16 @@ public class Settings {
 			"&eyear"
 	));
 
+	/*  ===============================
+	 *       MIN ITEM PRICES GUI
+	 *  ===============================*/
+	public static final ConfigSetting GUI_MIN_ITEM_PRICES_TITLE = new ConfigSetting(config, "gui.min item prices.title", "&7&LMinimum Item Prices");
+	public static final ConfigSetting GUI_MIN_ITEM_PRICES_LORE = new ConfigSetting(config, "gui.min item prices.lore", Arrays.asList(
+			"&7&m-------------------------",
+			"&7Minimum Price&f: &a%price%",
+			"",
+			"&7Click to delete"
+	));
 
 	/*  ===============================
 	 *    		LOGS LIST GUI

@@ -6,6 +6,7 @@ import ca.tweetzy.auctionhouse.api.hook.MMOItemsHook;
 import ca.tweetzy.auctionhouse.api.hook.McMMOHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
@@ -652,6 +653,25 @@ public class AuctionAPI {
 		if (Settings.PREVENT_SALE_OF_REPAIRED_ITEMS.getBoolean() && isRepaired(item)) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.cannot list repaired item").sendPrefixedMessage(seller);
 			return;
+		}
+
+		if (!AuctionHouse.getInstance().getMinItemPriceManager().getMinPrices().isEmpty() && !isUsingBundle) {
+			final MinItemPrice foundMinPriceItem = AuctionHouse.getInstance().getMinItemPriceManager().getMinPrice(original);
+			if (foundMinPriceItem != null) {
+
+				boolean valid = true;
+
+				if (isBiddingItem) {
+					if (basePrice < foundMinPriceItem.getPrice() || bidStartPrice < foundMinPriceItem.getPrice()) valid = false;
+				} else {
+					if (basePrice < foundMinPriceItem.getPrice()) valid = false;
+				}
+
+				if (!valid) {
+					AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(foundMinPriceItem.getPrice())).sendPrefixedMessage(seller);
+					return;
+				}
+			}
 		}
 
 		AuctionedItem auctionedItem = new AuctionedItem();

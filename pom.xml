@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ca.tweetzy</groupId>
     <artifactId>auctionhouse</artifactId>
-    <version>2.60.3</version>
+    <version>2.61.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,7 +23,7 @@
 
     <build>
         <defaultGoal>clean install</defaultGoal>
-        <finalName>Auction House-${project.version}</finalName>
+        <finalName>Auction House</finalName>
 
         <plugins>
             <plugin>
@@ -132,7 +132,7 @@
                             <resources>
                                 <resource>
                                     <directory>C:\Users\Kiran\Documents\Development\Minecraft\Active\Auction House\target</directory>
-                                    <include>Auction House-${project.version}.jar</include>
+                                    <include>Auction House.jar</include>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>
@@ -149,7 +149,7 @@
                             <resources>
                                 <resource>
                                     <directory>C:\Users\Kiran\Documents\Development\Minecraft\Active\Auction House\target</directory>
-                                    <include>Auction House-${project.version}.jar</include>
+                                    <include>Auction House.jar</include>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>

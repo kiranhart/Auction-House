@@ -12,6 +12,7 @@ import ca.tweetzy.core.database.DataManagerAbstract;
 import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
 import ca.tweetzy.core.utils.TextUtils;
+import net.royawesome.jlibnoise.module.combiner.Min;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -335,6 +336,63 @@ public class DataManager extends DataManagerAbstract {
 		});
 	}
 
+	public void insertMinPrice(MinItemPrice item, Callback<MinItemPrice> callback) {
+		this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "min_item_prices (id, item, price) VALUES(?, ?, ?)")) {
+				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "min_item_prices WHERE id = ?");
+
+				fetch.setString(1, item.getUuid().toString());
+				statement.setString(1, item.getUuid().toString());
+				statement.setString(2, AuctionAPI.encodeItem(item.getItemStack()));
+				statement.setDouble(3, item.getPrice());
+				statement.executeUpdate();
+
+				if (callback != null) {
+					ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractMinItemPrice(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		});
+	}
+
+	public void insertMinPriceAsync(MinItemPrice item, Callback<MinItemPrice> callback) {
+		this.thread.execute(() -> this.insertMinPrice(item, callback));
+	}
+
+	public void getMinItemPrices(Callback<ArrayList<MinItemPrice>> callback) {
+		ArrayList<MinItemPrice> minItemPrices = new ArrayList<>();
+		this.async(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "min_item_prices")) {
+				ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					minItemPrices.add(extractMinItemPrice(resultSet));
+				}
+
+				callback.accept(null, minItemPrices);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deleteMinItemPrice(Collection<UUID> minPrices) {
+		this.async(() -> this.databaseConnector.connect(connection -> {
+			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "min_item_prices WHERE id = ?");
+			for (UUID id : minPrices) {
+				statement.setString(1, id.toString());
+				statement.addBatch();
+			}
+
+			statement.executeBatch();
+
+		}));
+	}
+
 	public void getStats(Callback<Map<UUID, AuctionStat<Integer, Integer, Integer, Double, Double>>> callback) {
 		Map<UUID, AuctionStat<Integer, Integer, Integer, Double, Double>> stats = new HashMap<>();
 		this.async(() -> this.databaseConnector.connect(connection -> {
@@ -489,6 +547,14 @@ public class DataManager extends DataManagerAbstract {
 		auctionItem.setListedWorld(resultSet.getString("listed_world"));
 		auctionItem.setInfinite(hasColumn(resultSet, "infinite") && resultSet.getBoolean("infinite"));
 		return auctionItem;
+	}
+
+	private MinItemPrice extractMinItemPrice(ResultSet resultSet) throws SQLException {
+		return new MinItemPrice(
+				UUID.fromString(resultSet.getString("id")),
+				AuctionAPI.decodeItem(resultSet.getString("item")),
+				resultSet.getDouble("price")
+		);
 	}
 
 	private Transaction extractTransaction(ResultSet resultSet) throws SQLException {

@@ -32,6 +32,7 @@ public class LocaleSettings {
 		languageNodes.put("general.blockedlore", "&cThat item contains a blocked lore phrase");
 		languageNodes.put("general.air", "&cSorry, but you cannot sell air o.O");
 		languageNodes.put("general.filter air", "&cSorry, but you cannot add air to a filter whitelist");
+		languageNodes.put("general.min item price air", "&cSorry, but you cannot add a price to air");
 		languageNodes.put("general.blocked", "&cSorry, you are not allowed to sell &e%item%");
 		languageNodes.put("general.sellinglimit", "&cYou cannot sell more items, please remove/sell current active items");
 		languageNodes.put("general.noroom", "&cPlease clear room in your inventory to purchase that item.");
@@ -61,6 +62,8 @@ public class LocaleSettings {
 		languageNodes.put("general.requires creative", "&cThat action requires you to be in creative mode");
 		languageNodes.put("general.deleted transactions", "&cDeleted a total of &4%deleted_transactions% &ctransactions");
 		languageNodes.put("general.transaction delete begin", "&cBeginning transaction deletion, this may take some time.");
+		languageNodes.put("general.min price already added", "&cThere is already a minimum price set, please delete the existing one first.");
+		languageNodes.put("general.added min price", "&aSuccessfully set minimum price for %item% &ato &2$%price%");
 
 
 		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
@@ -73,6 +76,7 @@ public class LocaleSettings {
 		languageNodes.put("pricing.moneyremove", "&c&l- $%price% &7(%player_balance%)");
 		languageNodes.put("pricing.moneyadd", "&a&l+ $%price% &7(%player_balance%)");
 		languageNodes.put("pricing.bidmusthigherthanprevious", "&cYour bid must be higher than &4%current_bid%");
+		languageNodes.put("pricing.minitemprice", "&cThe minimum price for this item must be &a$%price%");
 
 		languageNodes.put("prompts.enter new buy now price", "&aPlease enter the new buy now price in chat:");
 		languageNodes.put("prompts.enter new starting bid", "&aPlease enter the new starting bid in chat:");
@@ -171,6 +175,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.syntax.unban", "unban <player>");
 		languageNodes.put("commands.syntax.togglelistinfo", "togglelistinfo");
 		languageNodes.put("commands.syntax.markchest", "markchest");
+		languageNodes.put("commands.syntax.min price", "minprices [add] [price]");
 
 		languageNodes.put("commands.description.active", "View all your auction listings");
 		languageNodes.put("commands.description.auctionhouse", "Main command for the plugin, it opens the auction window.");
@@ -187,6 +192,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.description.unban", "Unban a player from the auction house");
 		languageNodes.put("commands.description.togglelistinfo", "Toggle whether auction house should message you when you list an item");
 		languageNodes.put("commands.description.markchest", "Toggles whether a chest is an auction chest");
+		languageNodes.put("commands.description.min price", "Adds a minimum sell price to an item");
 	}
 
 	public static void send(CommandSender sender, String msg) {

@@ -88,6 +88,9 @@ public class AuctionHouse extends TweetyPlugin {
 	private AuctionStatManager auctionStatManager;
 
 	@Getter
+	private MinItemPriceManager minItemPriceManager;
+
+	@Getter
 	private DatabaseConnector databaseConnector;
 
 	@Getter
@@ -179,7 +182,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new _9_StatsMigration(),
 				new _10_InfiniteItemsMigration(),
 				new _11_AdminLogMigration(),
-				new _12_SerializeFormatDropMigration()
+				new _12_SerializeFormatDropMigration(),
+				new _13_MinItemPriceMigration()
 		);
 
 		dataMigrationManager.runMigrations();
@@ -199,6 +203,9 @@ public class AuctionHouse extends TweetyPlugin {
 		// load the bans
 		this.auctionBanManager = new AuctionBanManager();
 		this.auctionBanManager.loadBans();
+
+		this.minItemPriceManager = new MinItemPriceManager();
+		this.minItemPriceManager.loadMinPrices();
 
 		this.auctionStatManager = new AuctionStatManager();
 		this.auctionStatManager.loadStats();
@@ -226,7 +233,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new CommandBan(),
 				new CommandUnban(),
 				new CommandMarkChest(),
-				new CommandUpload()
+				new CommandUpload(),
+				new CommandMinPrice()
 		);
 
 		// Placeholder API
