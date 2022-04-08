@@ -37,7 +37,7 @@ public class CommandBan extends AbstractCommand {
 
 		if (args.length == 0) {
 			// Open the bans menu
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIBans());
+			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIBans(player));
 			return ReturnType.SUCCESS;
 		}
 

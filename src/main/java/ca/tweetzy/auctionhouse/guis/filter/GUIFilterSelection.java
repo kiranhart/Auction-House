@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -21,11 +22,12 @@ import java.util.HashMap;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 
-public class GUIFilterSelection extends Gui {
+public class GUIFilterSelection extends AbstractPlaceholderGui {
 
 	final AuctionPlayer auctionPlayer;
 
 	public GUIFilterSelection(AuctionPlayer auctionPlayer) {
+		super(auctionPlayer);
 		this.auctionPlayer = auctionPlayer;
 		setTitle(TextUtils.formatText(Settings.GUI_FILTER_TITLE.getString()));
 		setRows(4);

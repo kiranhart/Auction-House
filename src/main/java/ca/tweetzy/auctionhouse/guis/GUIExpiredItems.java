@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * Time Created: 3:19 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIExpiredItems extends Gui {
+public class GUIExpiredItems extends AbstractPlaceholderGui {
 
 	final AuctionPlayer auctionPlayer;
 
@@ -31,6 +31,7 @@ public class GUIExpiredItems extends Gui {
 	private Long lastClicked = null;
 
 	public GUIExpiredItems(AuctionPlayer auctionPlayer) {
+		super(auctionPlayer);
 		this.auctionPlayer = auctionPlayer;
 		setTitle(TextUtils.formatText(Settings.GUI_EXPIRED_AUCTIONS_TITLE.getString()));
 		setRows(6);

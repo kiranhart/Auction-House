@@ -3,10 +3,11 @@ package ca.tweetzy.auctionhouse.guis.filter;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
+import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.Arrays;
@@ -20,12 +21,13 @@ import java.util.stream.Collectors;
  * Time Created: 4:06 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIFilterWhitelistList extends Gui {
+public class GUIFilterWhitelistList extends AbstractPlaceholderGui {
 
 	final AuctionItemCategory filerCategory;
 	List<AuctionFilterItem> items;
 
-	public GUIFilterWhitelistList(AuctionItemCategory filerCategory) {
+	public GUIFilterWhitelistList(Player player, AuctionItemCategory filerCategory) {
+		super(player);
 		this.filerCategory = filerCategory;
 		setTitle(TextUtils.formatText(Settings.GUI_FILTER_WHITELIST_LIST_TITLE.getString().replace("%filter_category%", filerCategory.getTranslatedType())));
 		setRows(6);
@@ -34,13 +36,13 @@ public class GUIFilterWhitelistList extends Gui {
 		setUseLockedCells(true);
 		draw();
 
-		setOnClose(close -> close.manager.showGUI(close.player, new GUIFilterWhitelist()));
+		setOnClose(close -> close.manager.showGUI(close.player, new GUIFilterWhitelist(close.player)));
 	}
 
 	private void draw() {
 		reset();
 		setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-		setButton(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CLOSE_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CLOSE_BTN_NAME.getString()).setLore(Settings.GUI_CLOSE_BTN_LORE.getStringList()).toItemStack(), e -> e.manager.showGUI(e.player, new GUIFilterWhitelist()));
+		setButton(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CLOSE_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CLOSE_BTN_NAME.getString()).setLore(Settings.GUI_CLOSE_BTN_LORE.getStringList()).toItemStack(), e -> e.manager.showGUI(e.player, new GUIFilterWhitelist(e.player)));
 		setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
 		setOnPage(e -> draw());
 

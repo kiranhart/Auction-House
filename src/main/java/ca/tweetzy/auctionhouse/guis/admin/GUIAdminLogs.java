@@ -2,11 +2,12 @@ package ca.tweetzy.auctionhouse.guis.admin;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionAdminLog;
+import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
+import org.bukkit.entity.Player;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -20,11 +21,12 @@ import java.util.stream.Collectors;
  * Time Created: 2:11 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class GUIAdminLogs extends Gui {
+public final class GUIAdminLogs extends AbstractPlaceholderGui {
 
 	final List<AuctionAdminLog> logs;
 
-	public GUIAdminLogs(List<AuctionAdminLog> logs) {
+	public GUIAdminLogs(Player player, List<AuctionAdminLog> logs) {
+		super(player);
 		this.logs = logs;
 
 		setTitle(TextUtils.formatText(Settings.GUI_LOGS_TITLE.getString()));

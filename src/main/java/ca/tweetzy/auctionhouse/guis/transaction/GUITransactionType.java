@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.guis.transaction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -23,11 +24,12 @@ import java.util.*;
  * Time Created: 5:32 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class GUITransactionType extends Gui {
+public final class GUITransactionType extends AbstractPlaceholderGui {
 
 	private final Player player;
 
 	public GUITransactionType(Player player) {
+		super(player);
 		this.player = player;
 		setTitle(TextUtils.formatText(Settings.GUI_TRANSACTIONS_TYPE_TITLE.getString()));
 		setRows(4);

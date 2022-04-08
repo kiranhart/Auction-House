@@ -17,11 +17,12 @@ import java.util.HashMap;
  * Time Created: 2:57 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class GUIStats extends Gui {
+public final class GUIStats extends AbstractPlaceholderGui {
 
 	private final Player player;
 
 	public GUIStats(final Player player) {
+		super(player);
 		this.player = player;
 		setTitle(Settings.GUI_STATS_TITLE.getString());
 		setDefaultItem(Settings.GUI_STATS_BG_ITEM.getMaterial().parseItem());

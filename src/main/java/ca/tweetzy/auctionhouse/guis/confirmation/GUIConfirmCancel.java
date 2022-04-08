@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIActiveAuctions;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
@@ -19,12 +20,13 @@ import java.util.Objects;
  * Time Created: 11:28 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIConfirmCancel extends Gui {
+public class GUIConfirmCancel extends AbstractPlaceholderGui {
 
 	final AuctionPlayer auctionPlayer;
 	final AuctionedItem auctionItem;
 
 	public GUIConfirmCancel(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
+		super(auctionPlayer);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		setTitle(TextUtils.formatText(Settings.GUI_CONFIRM_CANCEL_TITLE.getString()));

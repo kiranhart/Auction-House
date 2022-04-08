@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
@@ -17,7 +18,7 @@ import java.util.Objects;
  * Time Created: 11:18 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIConfirmListing extends Gui {
+public class GUIConfirmListing extends AbstractPlaceholderGui {
 
 	private final Player player;
 	private final ItemStack originalItem;
@@ -33,6 +34,7 @@ public class GUIConfirmListing extends Gui {
 
 
 	public GUIConfirmListing(Player player, ItemStack originalItem, ItemStack itemToSell, int allowedTime, double basePrice, double startingBid, double bidIncrement, boolean isBiddingItem, boolean bundle, boolean requiresHandRemove, boolean isInfinite) {
+		super(player);
 		this.player = player;
 		this.originalItem = originalItem;
 		this.itemToSell = itemToSell;

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * Time Created: 12:28 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIContainerInspect extends Gui {
+public class GUIContainerInspect extends AbstractPlaceholderGui {
 
 	private final int[] fillSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 46, 47, 48, 50, 51, 52, 53};
 	private final ItemStack container;
@@ -43,7 +43,8 @@ public class GUIContainerInspect extends Gui {
 	 *
 	 * @param container is the shulker box
 	 */
-	public GUIContainerInspect(ItemStack container) {
+	public GUIContainerInspect(AuctionPlayer auctionPlayer, ItemStack container) {
+		super(auctionPlayer);
 		this.container = container;
 		this.fromPurchaseGUI = false;
 		setTitle(TextUtils.formatText(Settings.GUI_INSPECT_TITLE.getString()));
@@ -74,7 +75,7 @@ public class GUIContainerInspect extends Gui {
 	}
 
 	public GUIContainerInspect(ItemStack container, AuctionPlayer auctionPlayer, AuctionedItem auctionItem, boolean buyingSpecificQuantity) {
-		this(container);
+		this(auctionPlayer, container);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		this.buyingSpecificQuantity = buyingSpecificQuantity;

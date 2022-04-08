@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * Time Created: 10:33 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIActiveAuctions extends Gui {
+public class GUIActiveAuctions extends AbstractPlaceholderGui {
 
 	private final AuctionPlayer auctionPlayer;
 	private BukkitTask task;
@@ -33,6 +33,7 @@ public class GUIActiveAuctions extends Gui {
 	private List<AuctionedItem> items;
 
 	public GUIActiveAuctions(AuctionPlayer auctionPlayer) {
+		super(auctionPlayer);
 		this.auctionPlayer = auctionPlayer;
 		setTitle(TextUtils.formatText(Settings.GUI_ACTIVE_AUCTIONS_TITLE.getString()));
 		setRows(6);

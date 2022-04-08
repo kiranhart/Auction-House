@@ -8,6 +8,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
+import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,11 +22,12 @@ import java.util.stream.Collectors;
  *
  * @author Kiran Hart
  */
-public final class GUIMinItemPrices extends Gui {
+public final class GUIMinItemPrices extends AbstractPlaceholderGui {
 
 	final List<MinItemPrice> minPrices;
 
-	public GUIMinItemPrices() {
+	public GUIMinItemPrices(Player player) {
+		super(player);
 		this.minPrices = AuctionHouse.getInstance().getMinItemPriceManager().getMinPrices();
 		setTitle(TextUtils.formatText(Settings.GUI_MIN_ITEM_PRICES_TITLE.getString()));
 		setRows(6);
@@ -54,7 +56,7 @@ public final class GUIMinItemPrices extends Gui {
 			}}), click -> {
 				AuctionHouse.getInstance().getDataManager().deleteMinItemPrice(Collections.singletonList(minItemPrice.getUuid()));
 				AuctionHouse.getInstance().getMinItemPriceManager().removeItem(minItemPrice);
-				click.manager.showGUI(click.player, new GUIMinItemPrices());
+				click.manager.showGUI(click.player, new GUIMinItemPrices(click.player));
 			});
 		}
 	}

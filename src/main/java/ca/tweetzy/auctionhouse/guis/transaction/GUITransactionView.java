@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
+import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
@@ -21,9 +22,10 @@ import java.util.stream.Collectors;
  * Time Created: 7:04 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUITransactionView extends Gui {
+public class GUITransactionView extends AbstractPlaceholderGui {
 
 	public GUITransactionView(AuctionPlayer auctionPlayer, Transaction transaction, boolean showAll) {
+		super(auctionPlayer);
 		setTitle(TextUtils.formatText(Settings.GUI_TRANSACTION_VIEW_TITLE.getString()));
 		setRows(6);
 		setAcceptsItems(false);

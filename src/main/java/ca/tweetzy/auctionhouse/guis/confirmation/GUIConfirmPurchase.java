@@ -4,15 +4,15 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.exception.ItemNotFoundException;
+import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.GUIContainerInspect;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -35,7 +35,7 @@ import java.util.Objects;
  * Time Created: 11:18 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIConfirmPurchase extends Gui {
+public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 
 	final AuctionPlayer auctionPlayer;
 	final AuctionedItem auctionItem;
@@ -46,6 +46,7 @@ public class GUIConfirmPurchase extends Gui {
 	double pricePerItem = 0D;
 
 	public GUIConfirmPurchase(AuctionPlayer auctionPlayer, AuctionedItem auctionItem, boolean buyingSpecificQuantity) {
+		super(auctionPlayer);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		this.buyingSpecificQuantity = buyingSpecificQuantity;

@@ -33,7 +33,7 @@ public class CommandMinPrice extends AbstractCommand {
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
 		if (args.length == 0) {
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIMinItemPrices());
+			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIMinItemPrices(player));
 			return ReturnType.SUCCESS;
 		}
 

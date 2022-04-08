@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 
-public class GUISellItem extends Gui {
+public class GUISellItem extends AbstractPlaceholderGui {
 
 	private final AuctionPlayer auctionPlayer;
 	private ItemStack itemToBeListed;
@@ -44,6 +44,7 @@ public class GUISellItem extends Gui {
 
 
 	public GUISellItem(AuctionPlayer auctionPlayer, ItemStack itemToBeListed, double buyNowPrice, double bidStartPrice, double bidIncrementPrice, boolean isBiddingItem, boolean isAllowingBuyNow, int auctionTime) {
+		super(auctionPlayer);
 		this.auctionPlayer = auctionPlayer;
 		this.itemToBeListed = itemToBeListed;
 		this.buyNowPrice = buyNowPrice;

@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.guis;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionBan;
+import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
@@ -11,6 +12,7 @@ import ca.tweetzy.core.utils.TimeUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -26,12 +28,14 @@ import java.util.stream.Collectors;
  * Time Created: 12:16 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIBans extends Gui {
+public class GUIBans extends AbstractPlaceholderGui {
 
 	private List<AuctionBan> bans;
 	private BukkitTask task;
 
-	public GUIBans() {
+
+	public GUIBans(Player player) {
+		super(player);
 		setTitle(TextUtils.formatText(Settings.GUI_BANS_TITLE.getString()));
 		setDefaultItem(Settings.GUI_BANS_BG_ITEM.getMaterial().parseItem());
 		setUseLockedCells(true);

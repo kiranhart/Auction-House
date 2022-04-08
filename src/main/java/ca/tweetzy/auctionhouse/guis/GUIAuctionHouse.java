@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 
-public class GUIAuctionHouse extends Gui {
+public class GUIAuctionHouse extends AbstractPlaceholderGui {
 
 	AuctionPlayer auctionPlayer;
 	private List<AuctionedItem> items;
@@ -57,6 +57,7 @@ public class GUIAuctionHouse extends Gui {
 	private String searchPhrase = "";
 
 	public GUIAuctionHouse(AuctionPlayer auctionPlayer) {
+		super(auctionPlayer);
 		this.auctionPlayer = auctionPlayer;
 		setTitle(TextUtils.formatText(Settings.GUI_AUCTION_HOUSE_TITLE.getString()));
 		setRows(6);
@@ -331,7 +332,7 @@ public class GUIAuctionHouse extends Gui {
 
 		if (NBTEditor.contains(clicked, "AuctionBundleItem")) {
 			cleanup();
-			e.manager.showGUI(e.player, new GUIContainerInspect(e.clickedItem));
+			e.manager.showGUI(e.player, new GUIContainerInspect(this.auctionPlayer, e.clickedItem));
 			return;
 		}
 
@@ -342,7 +343,7 @@ public class GUIAuctionHouse extends Gui {
 			BlockStateMeta meta = (BlockStateMeta) clicked.getItemMeta();
 			if (!(meta.getBlockState() instanceof ShulkerBox)) return;
 			cleanup();
-			e.manager.showGUI(e.player, new GUIContainerInspect(e.clickedItem));
+			e.manager.showGUI(e.player, new GUIContainerInspect(this.auctionPlayer, e.clickedItem));
 		}
 	}
 

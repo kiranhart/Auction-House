@@ -35,7 +35,7 @@ public class CommandFilter extends AbstractCommand {
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
 		if (args.length == 0) {
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIFilterWhitelist());
+			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIFilterWhitelist(player));
 			return ReturnType.SUCCESS;
 		}
 

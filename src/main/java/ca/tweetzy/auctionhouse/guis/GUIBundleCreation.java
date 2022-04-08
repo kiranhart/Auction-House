@@ -23,9 +23,10 @@ import java.util.stream.Collectors;
  * Time Created: 1:11 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class GUIBundleCreation extends Gui {
+public final class GUIBundleCreation extends AbstractPlaceholderGui {
 
 	public GUIBundleCreation(AuctionPlayer player, int allowedTime, boolean buyNowAllow, boolean isBiddingItem, Double buyNowPrice, Double startingBid, Double bidIncrement) {
+		super(player);
 		setTitle(Settings.GUI_CREATE_BUNDLE_TITLE.getString());
 		setRows(6);
 		setAllowDrops(false);

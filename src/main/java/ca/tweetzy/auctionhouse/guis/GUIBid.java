@@ -23,12 +23,13 @@ import org.bukkit.inventory.ItemStack;
  * Time Created: 5:16 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIBid extends Gui {
+public class GUIBid extends AbstractPlaceholderGui {
 
 	private final AuctionPlayer auctionPlayer;
 	private final AuctionedItem auctionItem;
 
 	public GUIBid(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
+		super(auctionPlayer);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		setTitle(TextUtils.formatText(Settings.GUI_BIDDING_TITLE.getString()));
