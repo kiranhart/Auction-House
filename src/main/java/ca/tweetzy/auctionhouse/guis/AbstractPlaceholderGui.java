@@ -20,14 +20,15 @@ public abstract class AbstractPlaceholderGui extends Gui {
 
 	public AbstractPlaceholderGui(Player player) {
 		this.player = player;
-		// will be overriden by other guis
+		setUseLockedCells(true);
 		setDefaultItem(GuiUtils.createButtonItem(Settings.GUI_FILLER.getMaterial(), " "));
 	}
 
 	public AbstractPlaceholderGui(AuctionPlayer player) {
 		this.player = player.getPlayer();
+		setUseLockedCells(true);
+		setDefaultItem(GuiUtils.createButtonItem(Settings.GUI_FILLER.getMaterial(), " "));
 	}
-
 
 	@Override
 	public Gui setTitle(String message) {
