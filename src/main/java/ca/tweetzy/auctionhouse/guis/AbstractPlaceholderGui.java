@@ -2,7 +2,9 @@ package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.entity.Player;
 
@@ -18,6 +20,8 @@ public abstract class AbstractPlaceholderGui extends Gui {
 
 	public AbstractPlaceholderGui(Player player) {
 		this.player = player;
+		// will be overriden by other guis
+		setDefaultItem(GuiUtils.createButtonItem(Settings.GUI_FILLER.getMaterial(), " "));
 	}
 
 	public AbstractPlaceholderGui(AuctionPlayer player) {

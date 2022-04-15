@@ -312,6 +312,10 @@ public class Settings {
 	/*  ===============================
 	 *           GLOBAL ITEMS
 	 *  ===============================*/
+
+	public static final ConfigSetting GUI_FILLER = new ConfigSetting(config, "gui.filler item", XMaterial.BLACK_STAINED_GLASS_PANE.name(), "An item to be used to fill empty gui slots, this will be", "removed in later versions to be done on a per gui basis");
+
+
 	public static final ConfigSetting GUI_BACK_BTN_SLOT = new ConfigSetting(config, "gui.global items.back button.slot", 48, "Valid Slots: 45 - 53");
 	public static final ConfigSetting GUI_BACK_BTN_ITEM = new ConfigSetting(config, "gui.global items.back button.item", "ARROW", "Settings for the back button");
 	public static final ConfigSetting GUI_BACK_BTN_NAME = new ConfigSetting(config, "gui.global items.back button.name", "&e<< Back");
