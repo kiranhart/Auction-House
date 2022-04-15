@@ -29,6 +29,8 @@ public class AutoSaveTask extends BukkitRunnable {
 		AuctionHouse.getInstance().getDataManager().updateItems(AuctionHouse.getInstance().getAuctionItemManager().getItems().values(), null);
 		AuctionHouse.getInstance().getDataManager().updateStats(AuctionHouse.getInstance().getAuctionStatManager().getStats(), null);
 		AuctionHouse.getInstance().getFilterManager().saveFilterWhitelist(true);
-		AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aAuto saved auction items & transactions")).sendPrefixedMessage(Bukkit.getConsoleSender());
+
+		if (!Settings.DISABLE_AUTO_SAVE_MSG.getBoolean())
+			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aAuto saved auction items & transactions")).sendPrefixedMessage(Bukkit.getConsoleSender());
 	}
 }
