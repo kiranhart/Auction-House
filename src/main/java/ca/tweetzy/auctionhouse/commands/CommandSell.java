@@ -140,6 +140,7 @@ public final class CommandSell extends AbstractCommand {
 		Double bidIncrement = null;
 		boolean isBundle = false;
 		boolean isInfinite = false;
+		boolean isStackPrice = false;
 
 
 		for (int i = 0; i < args.length; i++) {
@@ -154,6 +155,9 @@ public final class CommandSell extends AbstractCommand {
 
 			if (args[i].equalsIgnoreCase("-b") || args[i].equalsIgnoreCase("-bundle"))
 				isBundle = true;
+
+			if (args[i].equalsIgnoreCase("-s") || args[i].equalsIgnoreCase("-stack"))
+				isStackPrice = true;
 
 			if ((args[i].equalsIgnoreCase("-i") || args[i].equalsIgnoreCase("-infinite")) && (player.hasPermission("auctionhouse.admin") || player.isOp()))
 				isInfinite = true;
@@ -248,6 +252,10 @@ public final class CommandSell extends AbstractCommand {
 					isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0
 			));
 			return ReturnType.SUCCESS;
+		}
+
+		if (Settings.SMART_MIN_BUY_PRICE.getBoolean() && itemToSell.getAmount() > 1) {
+			buyNowPrice = isStackPrice ? buyNowPrice : buyNowPrice * itemToSell.getAmount();
 		}
 
 		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
