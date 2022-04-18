@@ -65,7 +65,6 @@ public class Settings {
 	public static final ConfigSetting GARBAGE_DELETION_TIMED_DELAY = new ConfigSetting(config, "auction setting.garbage deletion.timed delay", 60, "If timed mode is true, this value will be ran after x specified seconds, the lower this number the more frequent a new async task will be ran!");
 	public static final ConfigSetting GARBAGE_DELETION_MAX_ITEMS = new ConfigSetting(config, "auction setting.garbage deletion.max items", 30, "If timed mode is false, whenever the garbage bin reaches this number, auction house will run the deletion task.", "You should adjust this number based on your server since some servers may have more or less items being claimed / marked for garbage clean up");
 
-
 	public static final ConfigSetting CLAIM_MS_DELAY = new ConfigSetting(config, "auction setting.item claim delay", 100, "How many ms should a player wait before being allowed to claim an item?, Ideally you don't wanna change this. It's meant to prevent auto clicker dupe claims");
 
 	public static final ConfigSetting TICK_UPDATE_GUI_TIME = new ConfigSetting(config, "auction setting.refresh gui every", 10, "How many seconds should pass before the auction gui auto refreshes?");

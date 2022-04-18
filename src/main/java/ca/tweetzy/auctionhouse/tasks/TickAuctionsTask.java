@@ -46,13 +46,14 @@ public class TickAuctionsTask extends BukkitRunnable {
 			AuctionedItem auctionItem = entry.getValue();
 			ItemStack itemStack = auctionItem.getItem();
 
-			if (!AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().keySet().isEmpty()) {
-				AuctionHouse.getInstance().getDataManager().deleteItems(AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
-			}
-
+			// todo undo if new garbage deletion breaks
+//			if (!AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().keySet().isEmpty()) {
+//				AuctionHouse.getInstance().getDataManager().deleteItems(AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
+//			}
 
 			if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
-				AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());
+				// todo undo if breaks new garbage deletion
+				//AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());
 				auctionItemIterator.remove();
 				continue;
 			}

@@ -14,6 +14,7 @@ import ca.tweetzy.auctionhouse.managers.*;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.tasks.AutoSaveTask;
+import ca.tweetzy.auctionhouse.tasks.GarbageBinTask;
 import ca.tweetzy.auctionhouse.tasks.TickAuctionsTask;
 import ca.tweetzy.core.TweetyCore;
 import ca.tweetzy.core.TweetyPlugin;
@@ -244,6 +245,10 @@ public class AuctionHouse extends TweetyPlugin {
 
 		// start the auction tick task
 		TickAuctionsTask.startTask();
+
+		// start the garbage collection task
+		GarbageBinTask.startTask();
+
 		// auto save task
 		if (Settings.AUTO_SAVE_ENABLED.getBoolean()) {
 			AutoSaveTask.startTask();
