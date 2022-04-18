@@ -31,14 +31,14 @@ public final class GarbageBinTask extends BukkitRunnable {
 
 			// timed mode
 			if (Settings.GARBAGE_DELETION_TIMED_MODE.getBoolean()) {
-				AuctionHouse.getInstance().getDataManager().deleteItems(AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
+				AuctionHouse.getInstance().getDataManager().deleteItemsAsync(AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
 				AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().clear();
 				return;
 			}
 
 			// item mode
 			if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().size() >= Settings.GARBAGE_DELETION_MAX_ITEMS.getInt()) {
-				AuctionHouse.getInstance().getDataManager().deleteItems(AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
+				AuctionHouse.getInstance().getDataManager().deleteItemsAsync(AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
 				AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().clear();
 			}
 		}

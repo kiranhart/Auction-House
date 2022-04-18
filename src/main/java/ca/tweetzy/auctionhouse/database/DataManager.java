@@ -11,9 +11,6 @@ import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.database.DataManagerAbstract;
 import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
-import ca.tweetzy.core.utils.TextUtils;
-import net.royawesome.jlibnoise.module.combiner.Min;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -199,7 +196,7 @@ public class DataManager extends DataManagerAbstract {
 					}
 				}
 
-				deleteItems(toRemove);
+				deleteItemsAsync(toRemove);
 				callback.accept(null, items);
 			} catch (Exception e) {
 				resolveCallback(callback, e);
@@ -508,7 +505,7 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void deleteItems(Collection<UUID> items) {
-		this.async(() -> this.databaseConnector.connect(connection -> {
+		this.databaseConnector.connect(connection -> {
 			connection.setAutoCommit(false);
 			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
 			for (UUID id : items) {
@@ -518,7 +515,11 @@ public class DataManager extends DataManagerAbstract {
 
 			statement.executeBatch();
 			connection.setAutoCommit(true);
-		}));
+		});
+	}
+
+	public void deleteItemsAsync(Collection<UUID> items) {
+		this.thread.execute(() -> deleteItems(items));
 	}
 
 	private AuctionedItem extractAuctionedItem(ResultSet resultSet) throws SQLException {

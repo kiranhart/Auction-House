@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.api.UpdateChecker;
 import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.api.hook.UltraEconomyHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations.*;
@@ -43,6 +44,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -295,6 +297,9 @@ public class AuctionHouse extends TweetyPlugin {
 	@Override
 	public void onPluginDisable() {
 		if (this.dataManager != null) {
+			// clean up the garbage items
+			AuctionHouse.getInstance().getDataManager().deleteItems(AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
+
 			this.auctionItemManager.end();
 			this.filterManager.saveFilterWhitelist(false);
 			this.auctionBanManager.saveBans(false);
