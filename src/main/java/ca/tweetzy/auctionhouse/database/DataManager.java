@@ -509,6 +509,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void deleteItems(Collection<UUID> items) {
 		this.async(() -> this.databaseConnector.connect(connection -> {
+			connection.setAutoCommit(false);
 			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
 			for (UUID id : items) {
 				statement.setString(1, id.toString());
@@ -516,7 +517,7 @@ public class DataManager extends DataManagerAbstract {
 			}
 
 			statement.executeBatch();
-
+			connection.setAutoCommit(true);
 		}));
 	}
 
