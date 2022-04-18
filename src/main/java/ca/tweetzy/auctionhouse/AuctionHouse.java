@@ -255,7 +255,8 @@ public class AuctionHouse extends TweetyPlugin {
 		}
 
 		// update check
-		getServer().getScheduler().runTaskLaterAsynchronously(this, () -> this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus(), 1L);
+		if (Settings.UPDATE_CHECKER.getBoolean())
+			getServer().getScheduler().runTaskLaterAsynchronously(this, () -> this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus(), 1L);
 
 		// metrics
 		this.metrics = new Metrics(this, 6806);
