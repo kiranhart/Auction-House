@@ -156,7 +156,7 @@ public final class CommandSell extends AbstractCommand {
 			if (args[i].equalsIgnoreCase("-b") || args[i].equalsIgnoreCase("-bundle"))
 				isBundle = true;
 
-			if (args[i].equalsIgnoreCase("-s") || args[i].equalsIgnoreCase("-stack"))
+			if (player.hasPermission("auctionhouse.cmdflag.stack") && args[i].equalsIgnoreCase("-s") || args[i].equalsIgnoreCase("-stack"))
 				isStackPrice = true;
 
 			if ((args[i].equalsIgnoreCase("-i") || args[i].equalsIgnoreCase("-infinite")) && (player.hasPermission("auctionhouse.admin") || player.isOp()))
@@ -180,12 +180,25 @@ public final class CommandSell extends AbstractCommand {
 
 		// NOT USING THE BIDDING SYSTEM
 		if (!isBiddingItem /* && buyNowPrice != null */) {
+			// min item price todo fix it broke
+			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
+				AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getMinItemPriceManager().getMinPrice(originalItem).getPrice())).sendPrefixedMessage(player);
+				return ReturnType.FAILURE;
+			}
+
 			// Check the if the price meets the min/max criteria
 			if (!checkBasePrice(player, buyNowPrice, false)) return ReturnType.FAILURE;
 		}
 
 		if (isBiddingItem && /* buyNowPrice != null && */ startingBid != null) {
+			// min item price todo fix it broke
+			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
+				AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getMinItemPriceManager().getMinPrice(originalItem).getPrice())).sendPrefixedMessage(player);
+				return ReturnType.FAILURE;
+			}
+
 			if (!checkBasePrice(player, buyNowPrice, true)) return ReturnType.FAILURE;
+
 			// check the starting bid values
 			if (startingBid < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()) {
 				AuctionHouse.getInstance().getLocale().getMessage("pricing.minstartingprice").processPlaceholder("price", Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
@@ -217,6 +230,10 @@ public final class CommandSell extends AbstractCommand {
 				AuctionHouse.getInstance().getLocale().getMessage("pricing.basepricetoolow").sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
 			}
+		}
+
+		if (Settings.SMART_MIN_BUY_PRICE.getBoolean() && itemToSell.getAmount() > 1) {
+			buyNowPrice = isStackPrice ? buyNowPrice : buyNowPrice * itemToSell.getAmount();
 		}
 
 		if (!Settings.ALLOW_ITEM_BUNDLES.getBoolean() && isBundle) {
@@ -252,10 +269,6 @@ public final class CommandSell extends AbstractCommand {
 					isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0
 			));
 			return ReturnType.SUCCESS;
-		}
-
-		if (Settings.SMART_MIN_BUY_PRICE.getBoolean() && itemToSell.getAmount() > 1) {
-			buyNowPrice = isStackPrice ? buyNowPrice : buyNowPrice * itemToSell.getAmount();
 		}
 
 		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {

@@ -20,6 +20,7 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.ItemUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
+import net.minecraft.world.item.Items;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -28,6 +29,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -655,23 +657,9 @@ public class AuctionAPI {
 			return;
 		}
 
-		if (!AuctionHouse.getInstance().getMinItemPriceManager().getMinPrices().isEmpty() && !isUsingBundle) {
-			final MinItemPrice foundMinPriceItem = AuctionHouse.getInstance().getMinItemPriceManager().getMinPrice(original);
-			if (foundMinPriceItem != null) {
-
-				boolean valid = true;
-
-				if (isBiddingItem) {
-					if (basePrice < foundMinPriceItem.getPrice() || bidStartPrice < foundMinPriceItem.getPrice()) valid = false;
-				} else {
-					if (basePrice < foundMinPriceItem.getPrice()) valid = false;
-				}
-
-				if (!valid) {
-					AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(foundMinPriceItem.getPrice())).sendPrefixedMessage(seller);
-					return;
-				}
-			}
+		if (!meetsMinItemPrice(isUsingBundle, isBiddingItem, original, basePrice, bidStartPrice)) {
+			AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getMinItemPriceManager().getMinPrice(original).getPrice())).sendPrefixedMessage(seller);
+			return;
 		}
 
 		AuctionedItem auctionedItem = new AuctionedItem();
@@ -769,6 +757,24 @@ public class AuctionAPI {
 				Bukkit.getOnlinePlayers().forEach(p -> AuctionHouse.getInstance().getLocale().newMessage(msgToAll).sendPrefixedMessage(p));
 			}
 		});
+	}
+
+	public boolean meetsMinItemPrice(boolean isUsingBundle, boolean isBiddingItem, ItemStack original, double basePrice, double bidStartPrice) {
+		boolean valid = true;
+
+		if (!AuctionHouse.getInstance().getMinItemPriceManager().getMinPrices().isEmpty() && !isUsingBundle) {
+			final MinItemPrice foundMinPriceItem = AuctionHouse.getInstance().getMinItemPriceManager().getMinPrice(original);
+			if (foundMinPriceItem != null) {
+
+				if (isBiddingItem) {
+					if (basePrice < foundMinPriceItem.getPrice() || bidStartPrice < foundMinPriceItem.getPrice()) valid = false;
+				} else {
+					if (basePrice < foundMinPriceItem.getPrice()) valid = false;
+				}
+			}
+		}
+
+		return valid;
 	}
 
 	public void logException(@Nullable Plugin plugin, @NotNull Throwable th) {
