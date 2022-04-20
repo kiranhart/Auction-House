@@ -9,12 +9,16 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -26,9 +30,12 @@ import java.util.stream.Collectors;
 public class TickAuctionsTask extends BukkitRunnable {
 
 	private static TickAuctionsTask instance;
+	private static long clock;
+
 
 	public static TickAuctionsTask startTask() {
 		if (instance == null) {
+			clock = 0L;
 			instance = new TickAuctionsTask();
 			instance.runTaskTimerAsynchronously(AuctionHouse.getInstance(), 0, (long) 20 * Settings.TICK_UPDATE_TIME.getInt());
 		}
@@ -37,26 +44,42 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 	@Override
 	public void run() {
+		clock += Settings.TICK_UPDATE_TIME.getInt();
 
 		Set<Map.Entry<UUID, AuctionedItem>> entrySet = AuctionHouse.getInstance().getAuctionItemManager().getItems().entrySet();
 		Iterator<Map.Entry<UUID, AuctionedItem>> auctionItemIterator = entrySet.iterator();
+
 
 		while (auctionItemIterator.hasNext()) {
 			Map.Entry<UUID, AuctionedItem> entry = auctionItemIterator.next();
 			AuctionedItem auctionItem = entry.getValue();
 			ItemStack itemStack = auctionItem.getItem();
 
-			// todo undo if new garbage deletion breaks
-//			if (!AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().keySet().isEmpty()) {
-//				AuctionHouse.getInstance().getDataManager().deleteItems(AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
-//			}
-
 			if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
-				// todo undo if breaks new garbage deletion
-				//AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());
+				AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());
+				AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().put(auctionItem.getId(), auctionItem);
 				auctionItemIterator.remove();
 				continue;
 			}
+
+			// begin the scuffed deletion
+			if (!AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().keySet().isEmpty()) {
+				if (Settings.GARBAGE_DELETION_TIMED_MODE.getBoolean() && clock % Settings.GARBAGE_DELETION_TIMED_DELAY.getInt() == 0) {
+					AuctionHouse.getInstance().getDataManager().deleteItems(AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
+					if (!Settings.DISABLE_CLEANUP_MSG.getBoolean())
+						AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aCleaned a total of &e" + AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().size() + "&a items.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+					AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().clear();
+				} else {
+					if (AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().size() >= Settings.GARBAGE_DELETION_MAX_ITEMS.getInt()) {
+						AuctionHouse.getInstance().getDataManager().deleteItemsAsync(AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
+						if (!Settings.DISABLE_CLEANUP_MSG.getBoolean())
+							AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aCleaned a total of &e" + AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().size() + "&a items.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+						AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().clear();
+					}
+				}
+			}
+
+			// end the scuffed deletion
 
 			if (auctionItem.isInfinite()) continue;
 
