@@ -1,7 +1,8 @@
 <!--suppress HtmlDeprecatedAttribute -->
 <div align="center">
 
-# Auction House
+![logo](https://i.imgur.com/ENVi7Jn.png)
+
 **The most feature packed, up to date auction plugin on Spigot. 1.8-1.18 support in a single jar.**
 **Auction House is the ultimate solution when it comes to server auctions. Unlike other auction plugins, auction house provides many features and is GUI based.**
 
