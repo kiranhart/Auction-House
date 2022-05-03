@@ -20,7 +20,6 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.ItemUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
-import net.minecraft.world.item.Items;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -29,7 +28,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -712,15 +710,6 @@ public class AuctionAPI {
 				.processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(auctionedItem.getBidStartingPrice()))
 				.processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(auctionedItem.getBidIncrementPrice())).getMessage();
 
-		String msgToAll = AuctionHouse.getInstance().getLocale().getMessage(auctionedItem.isBidItem() ? "auction.broadcast.withbid" : "auction.broadcast.nobid")
-				.processPlaceholder("amount", finalItemToSell.getAmount())
-				.processPlaceholder("player", seller.getName())
-				.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(seller))
-				.processPlaceholder("item", AuctionAPI.getInstance().getItemName(finalItemToSell))
-				.processPlaceholder("base_price", auctionedItem.getBasePrice() <= -1 ? NAX : AuctionAPI.getInstance().formatNumber(auctionedItem.getBasePrice()))
-				.processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(auctionedItem.getBidStartingPrice()))
-				.processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(auctionedItem.getBidIncrementPrice())).getMessage();
-
 		if (AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(seller.getUniqueId()) == null) {
 			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + seller.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 			AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(seller));
@@ -754,7 +743,23 @@ public class AuctionAPI {
 
 			AuctionHouse.getInstance().getAuctionItemManager().addAuctionItem(auctionedItem);
 			if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
-				Bukkit.getOnlinePlayers().forEach(p -> AuctionHouse.getInstance().getLocale().newMessage(msgToAll).sendPrefixedMessage(p));
+
+				final String prefix = AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage();
+
+
+				String msgToAll = AuctionHouse.getInstance().getLocale().getMessage(auctionedItem.isBidItem() ? "auction.broadcast.withbid" : "auction.broadcast.nobid")
+						.processPlaceholder("amount", finalItemToSell.getAmount())
+						.processPlaceholder("player", seller.getName())
+						.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(seller))
+						.processPlaceholder("item", AuctionAPI.getInstance().getItemName(finalItemToSell))
+						.processPlaceholder("base_price", auctionedItem.getBasePrice() <= -1 ? NAX : AuctionAPI.getInstance().formatNumber(auctionedItem.getBasePrice()))
+						.processPlaceholder("start_price", AuctionAPI.getInstance().formatNumber(auctionedItem.getBidStartingPrice()))
+						.processPlaceholder("increment_price", AuctionAPI.getInstance().formatNumber(auctionedItem.getBidIncrementPrice())).getMessage();
+
+				Bukkit.getOnlinePlayers().forEach(p -> {
+					if (!p.getUniqueId().equals(seller.getUniqueId()))
+						p.sendMessage(TextUtils.formatText((prefix.length() == 0 ? "" : prefix + " ") + msgToAll));
+				});
 			}
 		});
 	}
