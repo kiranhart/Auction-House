@@ -52,6 +52,7 @@ public class AuctionedItem {
 
 	private String listedWorld = null;
 	private boolean infinite = false;
+	private boolean allowPartialBuy = false;
 
 	public AuctionedItem() {
 	}

@@ -185,7 +185,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new _10_InfiniteItemsMigration(),
 				new _11_AdminLogMigration(),
 				new _12_SerializeFormatDropMigration(),
-				new _13_MinItemPriceMigration()
+				new _13_MinItemPriceMigration(),
+				new _14_PartialQtyBuyMigration()
 		);
 
 		dataMigrationManager.runMigrations();

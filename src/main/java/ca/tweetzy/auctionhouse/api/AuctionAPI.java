@@ -622,7 +622,7 @@ public class AuctionAPI {
 	}
 
 	public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove) {
-		listAuction(seller, original, item, seconds, basePrice, bidStartPrice, bidIncPrice, currentPrice, isBiddingItem, isUsingBundle, requiresHandRemove, false);
+		listAuction(seller, original, item, seconds, basePrice, bidStartPrice, bidIncPrice, currentPrice, isBiddingItem, isUsingBundle, requiresHandRemove, false, true);
 	}
 
 	/**
@@ -639,7 +639,7 @@ public class AuctionAPI {
 	 * @param isBiddingItem States whether the item is an auction or bin item
 	 * @param isUsingBundle States whether the item is a bundled item
 	 */
-	public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove, boolean isInfinite) {
+	public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove, boolean isInfinite, boolean allowPartialBuy) {
 		if (McMMOHook.isUsingAbility(seller)) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.mcmmo_ability_active").sendPrefixedMessage(seller);
 			return;
@@ -679,6 +679,7 @@ public class AuctionAPI {
 
 		auctionedItem.setListedWorld(seller.getWorld().getName());
 		auctionedItem.setInfinite(isInfinite);
+		auctionedItem.setAllowPartialBuy(allowPartialBuy);
 
 		if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
 			if (!EconomyManager.hasBalance(seller, calculateListingFee(basePrice))) {

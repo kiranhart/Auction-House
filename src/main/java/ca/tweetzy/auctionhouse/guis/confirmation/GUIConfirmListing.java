@@ -79,7 +79,8 @@ public class GUIConfirmListing extends AbstractPlaceholderGui {
 					this.isBiddingItem,
 					this.isBundle,
 					this.requiresHandRemove,
-					this.isInfinite
+					this.isInfinite,
+					!this.isBiddingItem
 			);
 			e.gui.close();
 		});

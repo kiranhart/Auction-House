@@ -370,6 +370,11 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 					}
 
 					if (e.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_QTY_PURCHASE.getString().toUpperCase())) {
+						if (!auctionItem.isAllowPartialBuy()) {
+							AuctionHouse.getInstance().getLocale().getMessage("general.qtybuydisabled").processPlaceholder("item_owner", auctionItem.getOwnerName()).sendPrefixedMessage(e.player);
+							return;
+						}
+
 						handleNonBidItem(auctionItem, e, true);
 						return;
 					}

@@ -64,6 +64,7 @@ public class LocaleSettings {
 		languageNodes.put("general.transaction delete begin", "&cBeginning transaction deletion, this may take some time.");
 		languageNodes.put("general.min price already added", "&cThere is already a minimum price set, please delete the existing one first.");
 		languageNodes.put("general.added min price", "&aSuccessfully set minimum price for %item% &ato &2$%price%");
+		languageNodes.put("general.qtybuydisabled", "&4%item_owner%&c is only accepting purchases of the entire stack.");
 
 
 		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
