@@ -141,7 +141,7 @@ public final class CommandSell extends AbstractCommand {
 		boolean isBundle = false;
 		boolean isInfinite = false;
 		boolean isStackPrice = false;
-		boolean noPartialBuy = false;
+		boolean partialBuy = false;
 
 		for (int i = 0; i < args.length; i++) {
 			if (NumberUtils.isDouble(args[i])) {
@@ -156,8 +156,8 @@ public final class CommandSell extends AbstractCommand {
 			if (args[i].equalsIgnoreCase("-b") || args[i].equalsIgnoreCase("-bundle"))
 				isBundle = true;
 
-			if (args[i].equalsIgnoreCase("-e") || args[i].equalsIgnoreCase("-entirestack"))
-				noPartialBuy = true;
+			if (args[i].equalsIgnoreCase("-p") || args[i].equalsIgnoreCase("-partialbuy"))
+				partialBuy = true;
 
 			if (player.hasPermission("auctionhouse.cmdflag.stack") && args[i].equalsIgnoreCase("-s") || args[i].equalsIgnoreCase("-stack"))
 				isStackPrice = true;
@@ -302,7 +302,7 @@ public final class CommandSell extends AbstractCommand {
 					isBundle,
 					true,
 					isInfinite,
-					!noPartialBuy
+					partialBuy
 			);
 		}
 

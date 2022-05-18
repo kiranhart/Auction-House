@@ -622,7 +622,7 @@ public class AuctionAPI {
 	}
 
 	public void listAuction(Player seller, ItemStack original, ItemStack item, int seconds, double basePrice, double bidStartPrice, double bidIncPrice, double currentPrice, boolean isBiddingItem, boolean isUsingBundle, boolean requiresHandRemove) {
-		listAuction(seller, original, item, seconds, basePrice, bidStartPrice, bidIncPrice, currentPrice, isBiddingItem, isUsingBundle, requiresHandRemove, false, true);
+		listAuction(seller, original, item, seconds, basePrice, bidStartPrice, bidIncPrice, currentPrice, isBiddingItem, isUsingBundle, requiresHandRemove, false, false);
 	}
 
 	/**
