@@ -620,7 +620,6 @@ public class Settings {
 	public static final ConfigSetting GUI_TRANSACTIONS_TITLE = new ConfigSetting(config, "gui.transactions.title", "&7&LYour Transactions");
 	public static final ConfigSetting GUI_TRANSACTIONS_TITLE_ALL = new ConfigSetting(config, "gui.transactions.title all", "&7&LAll Transactions");
 
-	public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TRANSACTION_ITEM = new ConfigSetting(config, "gui.transactions.items.transaction.item", "PAPER");
 	public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME = new ConfigSetting(config, "gui.transactions.items.transaction.name", "&e%transaction_id%");
 	public static final ConfigSetting GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE = new ConfigSetting(config, "gui.transactions.items.transaction.lore", Arrays.asList(
 			"&7Seller&F: &e%seller%",
@@ -654,6 +653,7 @@ public class Settings {
 	public static final ConfigSetting GUI_TRANSACTION_VIEW_ITEM_INFO_NAME = new ConfigSetting(config, "gui.transaction view.items.information.name", "&e%transaction_id%");
 	public static final ConfigSetting GUI_TRANSACTION_VIEW_ITEM_INFO_LORE = new ConfigSetting(config, "gui.transaction view.items.information.lore", Arrays.asList(
 			"&7ID&f: &e%transaction_id%",
+			"&7Item name&F: %item_name%",
 			"&7Sale Type&f: &e%sale_type%",
 			"&7Date&f: &e%transaction_date%",
 			"&7Final Price&f: &e%final_price%"

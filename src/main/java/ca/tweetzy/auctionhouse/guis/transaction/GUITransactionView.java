@@ -46,6 +46,7 @@ public class GUITransactionView extends AbstractPlaceholderGui {
 			put("%sale_type%", transaction.getAuctionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? AuctionHouse.getInstance().getLocale().getMessage("transaction.sale_type.bid_won").getMessage() : AuctionHouse.getInstance().getLocale().getMessage("transaction.sale_type.immediate_buy").getMessage());
 			put("%transaction_date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
 			put("%final_price%", AuctionAPI.getInstance().formatNumber(transaction.getFinalPrice()));
+			put("%item_name%", AuctionAPI.getInstance().getItemName(transaction.getItem()));
 		}}));
 	}
 }

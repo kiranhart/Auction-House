@@ -22,7 +22,6 @@ import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.input.PlayerChatInput;
@@ -182,10 +181,11 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 			return;
 		}
 
-		if (!EconomyManager.hasBalance(e.player, auctionItem.getBasePrice())) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
-			return;
-		}
+		if (!buyingQuantity)
+			if (!EconomyManager.hasBalance(e.player, auctionItem.getBasePrice())) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
+				return;
+			}
 
 		if (buyingQuantity) {
 			if (auctionItem.getBidStartingPrice() <= 0 || !Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
