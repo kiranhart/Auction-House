@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.GUISellItem;
+import ca.tweetzy.auctionhouse.guis.admin.GUIAdminExpired;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminLogs;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -11,6 +12,7 @@ import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -47,6 +50,29 @@ public class CommandAdmin extends AbstractCommand {
 					else
 						error.printStackTrace();
 				});
+				break;
+			case "viewexpired":
+				if (!(sender instanceof Player)) break;
+				player = (Player) sender;
+
+				if (args.length < 2) return ReturnType.FAILURE;
+				OfflinePlayer target = Bukkit.getPlayerExact(args[1]);
+
+				if (target == null) {
+					for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
+						if (offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(args[1])) {
+								target = offlinePlayer;
+						}
+					}
+				}
+
+				if (target == null) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[1]).sendPrefixedMessage(sender);
+					return ReturnType.FAILURE;
+				}
+
+				AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAdminExpired(player, target));
+
 				break;
 			case "endall":
 				for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
@@ -97,8 +123,9 @@ public class CommandAdmin extends AbstractCommand {
 
 	@Override
 	protected List<String> onTab(CommandSender sender, String... args) {
-		if (args.length == 1) return Arrays.asList("endall", "relistall", "logs");
+		if (args.length == 1) return Arrays.asList("endall", "relistall", "logs", "viewexpired");
 		if (args.length == 2 && args[0].equalsIgnoreCase("relistAll")) return Arrays.asList("1", "2", "3", "4", "5");
+		if (args.length == 2 && args[0].equalsIgnoreCase("viewexpired")) return Bukkit.getOnlinePlayers().stream().map(OfflinePlayer::getName).collect(Collectors.toList());
 		return null;
 	}
 

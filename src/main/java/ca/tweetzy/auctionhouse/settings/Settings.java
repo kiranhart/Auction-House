@@ -855,6 +855,12 @@ public class Settings {
 			"&7Money Spent: &a$%auctions_money_spent%"
 	));
 
+	/*  ===============================
+	 *       EXPIRED ITEMS ADMIN GUI
+	 *  ===============================*/
+	public static final ConfigSetting GUI_EXPIRED_ITEMS_ADMIN_TITLE = new ConfigSetting(config, "gui.expired items admin.title", "&7Auction House - &eAdmin Expired");
+	public static final ConfigSetting GUI_EXPIRED_ITEMS_ADMIN_BG_ITEM = new ConfigSetting(config, "gui.expired items admin.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_EXPIRED_ITEMS_ADMIN_ITEMS_LORE = new ConfigSetting(config, "gui.expired items admin.item lore", Collections.singletonList("&7Click to delete this item"));
 
 	/*  ===============================
 	 *         ITEM ADMIN GUI

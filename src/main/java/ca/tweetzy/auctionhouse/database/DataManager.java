@@ -58,7 +58,6 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void saveBans(List<AuctionBan> bans, boolean async) {
-		;
 		String saveItems = "INSERT INTO " + this.getTablePrefix() + "bans(user, reason, time) VALUES(?, ?, ?)";
 		String truncate = AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector ? "TRUNCATE TABLE " + this.getTablePrefix() + "bans" : "DELETE FROM " + this.getTablePrefix() + "bans";
 
