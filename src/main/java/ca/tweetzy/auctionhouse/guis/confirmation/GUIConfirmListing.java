@@ -3,7 +3,9 @@ package ca.tweetzy.auctionhouse.guis.confirmation;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.entity.Player;
@@ -47,6 +49,9 @@ public class GUIConfirmListing extends AbstractPlaceholderGui {
 		this.requiresHandRemove = requiresHandRemove;
 		this.isInfinite = isInfinite;
 
+		setOnOpen(open -> PlayerUtils.takeActiveItem(open.player, CompatibleHand.MAIN_HAND, originalItem.getAmount()));
+		setOnClose(close -> close.player.getInventory().addItem(originalItem));
+
 		setTitle(TextUtils.formatText(Settings.GUI_CONFIRM_LISTING_TITLE.getString()));
 		setAcceptsItems(false);
 		setRows(1);
@@ -63,7 +68,8 @@ public class GUIConfirmListing extends AbstractPlaceholderGui {
 		setItems(5, 8, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_LISTING_NO_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_LISTING_NO_NAME.getString()).setLore(Settings.GUI_CONFIRM_LISTING_NO_LORE.getStringList()).toItemStack());
 
 		setActionForRange(5, 8, ClickType.LEFT, e -> {
-			e.gui.close();
+			e.gui.exit();
+			e.player.getInventory().addItem(originalItem);
 		});
 
 		setActionForRange(0, 3, ClickType.LEFT, e -> {
@@ -82,7 +88,7 @@ public class GUIConfirmListing extends AbstractPlaceholderGui {
 					this.isInfinite,
 					false
 			);
-			e.gui.close();
+			e.gui.exit();
 		});
 	}
 }

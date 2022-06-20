@@ -144,7 +144,7 @@ public final class CommandSell extends AbstractCommand {
 		boolean partialBuy = false;
 
 		for (int i = 0; i < args.length; i++) {
-			if (NumberUtils.isDouble(args[i])) {
+			if (NumberUtils.isDouble(args[i]) && !Double.isNaN(Double.parseDouble(args[i]))) {
 				if (buyNowPrice == null)
 					buyNowPrice = Double.parseDouble(args[i]);
 				else if (startingBid == null)

@@ -45,6 +45,7 @@ public class CommandAuctionHouse extends AbstractCommand {
 			}
 
 			if (args.length == 1 && AuctionHouse.getInstance().getCommandManager().getSubCommands("auctionhouse").stream().noneMatch(cmd -> cmd.equalsIgnoreCase(StringUtils.join(args, ' ').trim()))) {
+				if (args[0].equalsIgnoreCase("NaN")) return ReturnType.FAILURE;
 				AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()), StringUtils.join(args, ' ').trim()));
 			}
 		}
