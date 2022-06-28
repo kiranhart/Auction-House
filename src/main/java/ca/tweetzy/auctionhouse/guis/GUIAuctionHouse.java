@@ -30,6 +30,7 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.event.inventory.ClickType;
@@ -224,12 +225,12 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 		if (Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean()) {
 			e.gui.exit();
 			PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
-			builder.isValidInput((p, str) -> NumberUtils.isDouble(str) && Double.parseDouble(str) >= auctionItem.getBidIncrementPrice());
+			builder.isValidInput((p, str) -> NumberUtils.isDouble(ChatColor.stripColor(str)) && Double.parseDouble(ChatColor.stripColor(str)) >= auctionItem.getBidIncrementPrice());
 			builder.sendValueMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter bid amount").processPlaceholder("current_bid", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).getMessage()));
 			builder.invalidInputMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter valid bid amount").getMessage()));
 			builder.toCancel("cancel");
 			builder.onCancel(p -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
-			builder.setValue((p, value) -> Double.parseDouble(value));
+			builder.setValue((p, value) -> Double.parseDouble(ChatColor.stripColor(value)));
 			builder.onFinish((p, value) -> {
 				if (value > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
 					AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(e.player);

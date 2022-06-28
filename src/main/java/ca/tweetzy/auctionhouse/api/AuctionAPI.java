@@ -263,7 +263,6 @@ public class AuctionAPI {
 
 		ItemStack itemStack = auctionItem.getItem();
 		String itemName = MMOItemsHook.isEnabled() ? MMOItemsHook.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
-
 		DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
 		embedObject.setTitle(isNew ? Settings.DISCORD_MSG_START_TITLE.getString() : Settings.DISCORD_MSG_FINISH_TITLE.getString());
 		embedObject.setColor(colour);
