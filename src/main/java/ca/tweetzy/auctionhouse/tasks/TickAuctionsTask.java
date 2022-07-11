@@ -149,17 +149,18 @@ public class TickAuctionsTask extends BukkitRunnable {
 							.sendPrefixedMessage(auctionWinner.getPlayer());
 					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(auctionWinner.getPlayer()))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice)).sendPrefixedMessage(auctionWinner.getPlayer());
 
-					if (Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean()) {
-						if (Settings.SYNCHRONIZE_ITEM_ADD.getBoolean())
-							AuctionHouse.newChain().sync(() -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack)).execute();
-						else
-							PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack);
+					// handle full inventory
+					if (auctionWinner.getPlayer().getInventory().firstEmpty() == -1) {
+						if (Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean() ) {
+							if (Settings.SYNCHRONIZE_ITEM_ADD.getBoolean())
+								AuctionHouse.newChain().sync(() -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack)).execute();
+							else
+								PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack);
 
-						AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
-						continue;
-					}
-
-					if (auctionWinner.getPlayer().getInventory().firstEmpty() != -1) {
+							AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
+							continue;
+						}
+					} else {
 						if (Settings.SYNCHRONIZE_ITEM_ADD.getBoolean())
 							AuctionHouse.newChain().sync(() -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack)).execute();
 						else
