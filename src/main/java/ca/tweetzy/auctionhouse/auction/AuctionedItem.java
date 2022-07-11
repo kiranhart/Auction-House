@@ -162,6 +162,9 @@ public class AuctionedItem {
 				}
 			} else {
 				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_OFF.getStringList()));
+				if (this.isAllowPartialBuy()) {
+					lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_PARTIAL_BUY.getStringList()));
+				}
 			}
 
 			if (NBTEditor.contains(itemStack, "AuctionBundleItem") || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && itemStack.getType().name().contains("SHULKER_BOX"))) {

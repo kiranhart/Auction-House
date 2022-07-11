@@ -963,6 +963,10 @@ public class Settings {
 			"&eLeft-Click&f: &bBuy Now"
 	), "This will be appended at the end of the lore", "If the auction item is not using a bid, this will show");
 
+	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_PARTIAL_BUY = new ConfigSetting(config, "auction stack.controls.partial buy", Collections.singletonList(
+			"&eShift Left-Click&f: &bBuy Quantity"
+	), "This will be appended at the end of the lore", "If the auction item allows partial buys, this will be added");
+
 	/*  ===============================
 	 *         AUCTION SOUNDS
 	 *  ===============================*/
