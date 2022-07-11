@@ -61,7 +61,7 @@ public class CommandAdmin extends AbstractCommand {
 				if (target == null) {
 					for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
 						if (offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(args[1])) {
-								target = offlinePlayer;
+							target = offlinePlayer;
 						}
 					}
 				}

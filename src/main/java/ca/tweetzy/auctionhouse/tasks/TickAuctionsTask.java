@@ -151,7 +151,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 					// handle full inventory
 					if (auctionWinner.getPlayer().getInventory().firstEmpty() == -1) {
-						if (Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean() ) {
+						if (Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean()) {
 							if (Settings.SYNCHRONIZE_ITEM_ADD.getBoolean())
 								AuctionHouse.newChain().sync(() -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack)).execute();
 							else

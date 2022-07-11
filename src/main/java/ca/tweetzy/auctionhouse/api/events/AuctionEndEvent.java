@@ -1,7 +1,7 @@
 package ca.tweetzy.auctionhouse.api.events;
 
-import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.OfflinePlayer;

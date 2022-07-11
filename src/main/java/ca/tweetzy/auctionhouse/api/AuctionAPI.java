@@ -265,12 +265,12 @@ public class AuctionAPI {
 		String itemName = MMOItemsHook.isEnabled() ? MMOItemsHook.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
 		DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
 
-		final String playerLost =AuctionHouse.getInstance().getLocale().getMessage("discord.player_lost").getMessage();
+		final String playerLost = AuctionHouse.getInstance().getLocale().getMessage("discord.player_lost").getMessage();
 		final String notSold = AuctionHouse.getInstance().getLocale().getMessage("discord.not_sold").getMessage();
-		final String noBuyer =AuctionHouse.getInstance().getLocale().getMessage("discord.no_buyer").getMessage();
+		final String noBuyer = AuctionHouse.getInstance().getLocale().getMessage("discord.no_buyer").getMessage();
 		final String wasNotBought = AuctionHouse.getInstance().getLocale().getMessage("discord.not_bought").getMessage();
-		final String isBidTrue =AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_true").getMessage();
-		final String isBidFalse =AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_false").getMessage();
+		final String isBidTrue = AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_true").getMessage();
+		final String isBidFalse = AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_false").getMessage();
 		final String isBidWin = AuctionHouse.getInstance().getLocale().getMessage("discord.sale_bid_win").getMessage();
 		final String immediateBuy = AuctionHouse.getInstance().getLocale().getMessage("discord.sale_immediate_buy").getMessage();
 

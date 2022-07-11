@@ -1,10 +1,7 @@
 package ca.tweetzy.auctionhouse.listeners;
 
 import ca.tweetzy.core.utils.nms.NBTEditor;
-import com.Zrips.CMI.CMI;
-import com.Zrips.CMI.Modules.CmiItems.CMIItemStack;
 import com.Zrips.CMI.events.CMIAnvilItemRepairEvent;
-import com.Zrips.CMI.utils.CMINBTListType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;

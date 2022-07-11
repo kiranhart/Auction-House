@@ -1,7 +1,6 @@
 package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import org.bukkit.inventory.ItemStack;
 

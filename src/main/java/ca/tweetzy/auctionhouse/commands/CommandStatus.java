@@ -1,7 +1,6 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.GUIStats;
 import ca.tweetzy.core.commands.AbstractCommand;
 import org.bukkit.command.CommandSender;

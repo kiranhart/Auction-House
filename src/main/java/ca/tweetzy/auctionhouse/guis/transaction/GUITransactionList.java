@@ -8,7 +8,6 @@ import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
-import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
@@ -70,7 +69,7 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 		List<Transaction> data = this.transactions.stream().sorted(Comparator.comparingLong(Transaction::getTransactionTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
 
 		for (Transaction transaction : data) {
-			final ItemStack item =  transaction.getItem().clone();
+			final ItemStack item = transaction.getItem().clone();
 			setButton(slot++, ConfigurationItemHelper.createConfigurationItem(item, Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%transaction_id%", transaction.getId().toString());
 				put("%seller%", Bukkit.getOfflinePlayer(transaction.getSeller()).getName());
