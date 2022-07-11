@@ -13,6 +13,7 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -69,12 +70,13 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 		List<Transaction> data = this.transactions.stream().sorted(Comparator.comparingLong(Transaction::getTransactionTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
 
 		for (Transaction transaction : data) {
-			setButton(slot++, ConfigurationItemHelper.createConfigurationItem(transaction.getItem(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(), new HashMap<String, Object>() {{
+			final ItemStack item =  transaction.getItem().clone();
+			setButton(slot++, ConfigurationItemHelper.createConfigurationItem(item, Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%transaction_id%", transaction.getId().toString());
 				put("%seller%", Bukkit.getOfflinePlayer(transaction.getSeller()).getName());
 				put("%buyer%", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName());
 				put("%date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
-				put("%item_name%", AuctionAPI.getInstance().getItemName(transaction.getItem()));
+				put("%item_name%", AuctionAPI.getInstance().getItemName(item));
 			}}), e -> e.manager.showGUI(e.player, new GUITransactionView(this.auctionPlayer, transaction, this.showAll)));
 		}
 	}

@@ -264,14 +264,24 @@ public class AuctionAPI {
 		ItemStack itemStack = auctionItem.getItem();
 		String itemName = MMOItemsHook.isEnabled() ? MMOItemsHook.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
 		DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
+
+		final String playerLost =AuctionHouse.getInstance().getLocale().getMessage("discord.player_lost").getMessage();
+		final String notSold = AuctionHouse.getInstance().getLocale().getMessage("discord.not_sold").getMessage();
+		final String noBuyer =AuctionHouse.getInstance().getLocale().getMessage("discord.no_buyer").getMessage();
+		final String wasNotBought = AuctionHouse.getInstance().getLocale().getMessage("discord.not_bought").getMessage();
+		final String isBidTrue =AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_true").getMessage();
+		final String isBidFalse =AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_false").getMessage();
+		final String isBidWin = AuctionHouse.getInstance().getLocale().getMessage("discord.sale_bid_win").getMessage();
+		final String immediateBuy = AuctionHouse.getInstance().getLocale().getMessage("discord.sale_immediate_buy").getMessage();
+
 		embedObject.setTitle(isNew ? Settings.DISCORD_MSG_START_TITLE.getString() : Settings.DISCORD_MSG_FINISH_TITLE.getString());
 		embedObject.setColor(colour);
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_SELLER_NAME.getString(), Settings.DISCORD_MSG_FIELD_SELLER_VALUE.getString().replace("%seller%", seller.getName() != null ? seller.getName() : AuctionHouse.getInstance().getLocale().getMessage("discord.player_lost").getMessage()), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_BUYER_NAME.getString(), isNew ? AuctionHouse.getInstance().getLocale().getMessage("discord.no_buyer").getMessage() : Settings.DISCORD_MSG_FIELD_BUYER_VALUE.getString().replace("%buyer%", buyer.getName() != null ? buyer.getName() : AuctionHouse.getInstance().getLocale().getMessage("discord.player_lost").getMessage()), Settings.DISCORD_MSG_FIELD_BUYER_INLINE.getBoolean());
+		embedObject.addField(Settings.DISCORD_MSG_FIELD_SELLER_NAME.getString(), Settings.DISCORD_MSG_FIELD_SELLER_VALUE.getString().replace("%seller%", seller.getName() != null ? seller.getName() : playerLost), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
+		embedObject.addField(Settings.DISCORD_MSG_FIELD_BUYER_NAME.getString(), isNew ? noBuyer : Settings.DISCORD_MSG_FIELD_BUYER_VALUE.getString().replace("%buyer%", buyer.getName() != null ? buyer.getName() : playerLost), Settings.DISCORD_MSG_FIELD_BUYER_INLINE.getBoolean());
 		embedObject.addField(Settings.DISCORD_MSG_FIELD_BUY_NOW_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_BUY_NOW_PRICE_VALUE.getString().replace("%buy_now_price%", this.getFriendlyNumber(auctionItem.getBasePrice())), Settings.DISCORD_MSG_FIELD_BUY_NOW_PRICE_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_FINAL_PRICE_NAME.getString(), isNew ? AuctionHouse.getInstance().getLocale().getMessage("discord.not_sold").getMessage() : Settings.DISCORD_MSG_FIELD_FINAL_PRICE_VALUE.getString().replace("%final_price%", this.getFriendlyNumber(isBid ? auctionItem.getCurrentPrice() : auctionItem.getBasePrice())), Settings.DISCORD_MSG_FIELD_FINAL_PRICE_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_IS_BID_NAME.getString(), Settings.DISCORD_MSG_FIELD_IS_BID_VALUE.getString().replace("%is_bid%", isBid ? AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_true").getMessage() : AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_false").getMessage()), Settings.DISCORD_MSG_FIELD_IS_BID_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_NAME.getString(), isNew ? AuctionHouse.getInstance().getLocale().getMessage("discord.not_bought").getMessage() : Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_VALUE.getString().replace("%purchase_type%", saleType == AuctionSaleType.USED_BIDDING_SYSTEM ? AuctionHouse.getInstance().getLocale().getMessage("discord.sale_bid_win").getMessage() : AuctionHouse.getInstance().getLocale().getMessage("discord.sale_immediate_buy").getMessage()), Settings.DISCORD_MSG_FIELD_PURCHASE_INLINE.getBoolean());
+		embedObject.addField(Settings.DISCORD_MSG_FIELD_FINAL_PRICE_NAME.getString(), isNew ? notSold : Settings.DISCORD_MSG_FIELD_FINAL_PRICE_VALUE.getString().replace("%final_price%", this.getFriendlyNumber(isBid ? auctionItem.getCurrentPrice() : auctionItem.getBasePrice())), Settings.DISCORD_MSG_FIELD_FINAL_PRICE_INLINE.getBoolean());
+		embedObject.addField(Settings.DISCORD_MSG_FIELD_IS_BID_NAME.getString(), Settings.DISCORD_MSG_FIELD_IS_BID_VALUE.getString().replace("%is_bid%", isBid ? isBidTrue : isBidFalse), Settings.DISCORD_MSG_FIELD_IS_BID_INLINE.getBoolean());
+		embedObject.addField(Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_NAME.getString(), isNew ? wasNotBought : Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_VALUE.getString().replace("%purchase_type%", saleType == AuctionSaleType.USED_BIDDING_SYSTEM ? isBidWin : immediateBuy), Settings.DISCORD_MSG_FIELD_PURCHASE_INLINE.getBoolean());
 		embedObject.addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", itemName), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean());
 		embedObject.addField(Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_VALUE.getString().replace("%item_amount%", String.valueOf(itemStack.getAmount())), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_INLINE.getBoolean());
 
