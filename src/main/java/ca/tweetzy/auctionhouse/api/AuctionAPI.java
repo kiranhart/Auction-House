@@ -256,7 +256,9 @@ public class AuctionAPI {
 		hook.setUsername(Settings.DISCORD_MSG_USERNAME.getString());
 		hook.setAvatarUrl(Settings.DISCORD_MSG_PFP.getString());
 
-		String[] possibleColours = Settings.DISCORD_MSG_DEFAULT_COLOUR.getString().split("-");
+		String color = isBid ? Settings.DISCORD_MSG_DEFAULT_COLOUR_BID.getString() : isNew ? Settings.DISCORD_MSG_DEFAULT_COLOUR.getString() : Settings.DISCORD_MSG_DEFAULT_COLOUR_SALE.getString();
+
+		String[] possibleColours = color.split("-");
 		Color colour = Settings.DISCORD_MSG_USE_RANDOM_COLOUR.getBoolean()
 				? Color.getHSBColor(ThreadLocalRandom.current().nextFloat() * 360F, ThreadLocalRandom.current().nextFloat() * 101F, ThreadLocalRandom.current().nextFloat() * 101F)
 				: Color.getHSBColor(Float.parseFloat(possibleColours[0]) / 360, Float.parseFloat(possibleColours[1]) / 100, Float.parseFloat(possibleColours[2]) / 100);
@@ -307,7 +309,7 @@ public class AuctionAPI {
 		hook.setUsername(Settings.DISCORD_MSG_USERNAME.getString());
 		hook.setAvatarUrl(Settings.DISCORD_MSG_PFP.getString());
 
-		String[] possibleColours = Settings.DISCORD_MSG_DEFAULT_COLOUR.getString().split("-");
+		String[] possibleColours = Settings.DISCORD_MSG_DEFAULT_COLOUR_BID.getString().split("-");
 		Color colour = Settings.DISCORD_MSG_USE_RANDOM_COLOUR.getBoolean()
 				? Color.getHSBColor(ThreadLocalRandom.current().nextFloat() * 360F, ThreadLocalRandom.current().nextFloat() * 101F, ThreadLocalRandom.current().nextFloat() * 101F)
 				: Color.getHSBColor(Float.parseFloat(possibleColours[0]) / 360, Float.parseFloat(possibleColours[1]) / 100, Float.parseFloat(possibleColours[2]) / 100);
