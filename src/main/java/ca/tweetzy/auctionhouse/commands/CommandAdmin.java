@@ -2,6 +2,8 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.GUISellItem;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminExpired;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminLogs;
@@ -11,6 +13,7 @@ import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -116,6 +119,20 @@ public class CommandAdmin extends AbstractCommand {
 					PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
 				}
 				break;
+			case "open":
+				if (args.length < 2) return ReturnType.FAILURE;
+				player = PlayerUtils.findPlayer(args[1]);
+				if (player == null) return ReturnType.FAILURE;
+
+				if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
+
+				if (AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
+					AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+					AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+				}
+
+				AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+				break;
 		}
 
 		return ReturnType.SUCCESS;
@@ -123,9 +140,9 @@ public class CommandAdmin extends AbstractCommand {
 
 	@Override
 	protected List<String> onTab(CommandSender sender, String... args) {
-		if (args.length == 1) return Arrays.asList("endall", "relistall", "logs", "viewexpired");
+		if (args.length == 1) return Arrays.asList("endall", "relistall", "logs", "viewexpired", "open");
 		if (args.length == 2 && args[0].equalsIgnoreCase("relistAll")) return Arrays.asList("1", "2", "3", "4", "5");
-		if (args.length == 2 && args[0].equalsIgnoreCase("viewexpired")) return Bukkit.getOnlinePlayers().stream().map(OfflinePlayer::getName).collect(Collectors.toList());
+		if (args.length == 2 && (args[0].equalsIgnoreCase("viewexpired") || args[0].equalsIgnoreCase("open"))) return Bukkit.getOnlinePlayers().stream().map(OfflinePlayer::getName).collect(Collectors.toList());
 		return null;
 	}
 
