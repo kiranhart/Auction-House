@@ -259,7 +259,7 @@ public final class CommandSell extends AbstractCommand {
 		}
 
 		// update the listing time to the max allowed time if it wasn't set using the command flag
-		allowedTime = auctionPlayer.getAllowedSellTime(isBiddingItem ? AuctionSaleType.USED_BIDDING_SYSTEM : AuctionSaleType.WITHOUT_BIDDING_SYSTEM);
+		allowedTime = allowedTime != 0 ? allowedTime : auctionPlayer.getAllowedSellTime(isBiddingItem ? AuctionSaleType.USED_BIDDING_SYSTEM : AuctionSaleType.WITHOUT_BIDDING_SYSTEM);
 
 		if (isBundle) {
 			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIBundleCreation(
