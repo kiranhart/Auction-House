@@ -208,6 +208,11 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 					return;
 				}
 
+				if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_PURCHASE_OWN_ITEM.getBoolean()) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(e.player);
+					return;
+				}
+
 				cleanup();
 				e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
 				AuctionHouse.getInstance().getTransactionManager().addPrePurchase(e.player, auctionItem.getId());
