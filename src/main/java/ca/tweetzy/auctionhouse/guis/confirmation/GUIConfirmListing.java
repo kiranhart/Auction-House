@@ -1,7 +1,10 @@
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
+import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -10,8 +13,10 @@ import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -33,6 +38,7 @@ public class GUIConfirmListing extends AbstractPlaceholderGui {
 	private final boolean requiresHandRemove;
 	private final boolean isInfinite;
 
+	private final AuctionedItem auctionedItem;
 
 	public GUIConfirmListing(Player player, ItemStack originalItem, ItemStack itemToSell, int allowedTime, double basePrice, double startingBid, double bidIncrement, boolean isBiddingItem, boolean bundle, boolean requiresHandRemove, boolean isInfinite) {
 		super(player);
@@ -48,6 +54,23 @@ public class GUIConfirmListing extends AbstractPlaceholderGui {
 		this.requiresHandRemove = requiresHandRemove;
 		this.isInfinite = isInfinite;
 
+		this.auctionedItem = new AuctionedItem(
+				UUID.randomUUID(),
+				player.getUniqueId(),
+				player.getUniqueId(),
+				player.getName(),
+				player.getName(),
+				MaterialCategorizer.getMaterialCategory(this.originalItem),
+				this.itemToSell.clone(),
+				/* buy now price */ Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? this.basePrice : -1,
+				/* start bid price */ this.isBiddingItem ? this.startingBid : 0,
+				/* bid inc price */ this.isBiddingItem ? this.bidIncrement != null ? this.bidIncrement : 1 : 0,
+				/* current price */ this.isBiddingItem ? this.startingBid : this.basePrice <= -1 ? this.startingBid : this.basePrice,
+				this.isBiddingItem,
+				false,
+				System.currentTimeMillis() + 1000L * 60 * 60 * 24L
+		);
+
 		setOnOpen(open -> PlayerUtils.takeActiveItem(open.player, CompatibleHand.MAIN_HAND, originalItem.getAmount()));
 		setOnClose(close -> close.player.getInventory().addItem(originalItem));
 
@@ -58,7 +81,7 @@ public class GUIConfirmListing extends AbstractPlaceholderGui {
 	}
 
 	private void placeAuctionItem() {
-		setItem(0, 4, this.itemToSell);
+		setItem(0, 4, this.auctionedItem.getDisplayStack(AuctionStackType.LISTING_PREVIEW));
 	}
 
 	private void draw() {

@@ -170,10 +170,15 @@ public class AuctionedItem {
 				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_INSPECTION.getStringList()));
 			}
 		} else {
-			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_ITEM.getStringList()));
-			if (Settings.ALLOW_PLAYERS_TO_ACCEPT_BID.getBoolean() && this.bidStartingPrice >= 1 || this.bidIncrementPrice >= 1) {
-				if (!this.owner.equals(this.highestBidder)) {
-					lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_ACCEPT_BID.getStringList()));
+			if (type == AuctionStackType.LISTING_PREVIEW) {
+				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_LISTING_PREVIEW_ITEM.getStringList()));
+
+			} else {
+				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_ITEM.getStringList()));
+				if (Settings.ALLOW_PLAYERS_TO_ACCEPT_BID.getBoolean() && this.bidStartingPrice >= 1 || this.bidIncrementPrice >= 1) {
+					if (!this.owner.equals(this.highestBidder)) {
+						lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_ACCEPT_BID.getStringList()));
+					}
 				}
 			}
 		}
