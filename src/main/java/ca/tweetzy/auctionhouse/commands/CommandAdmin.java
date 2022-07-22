@@ -46,6 +46,7 @@ public class CommandAdmin extends AbstractCommand {
 			case "logs":
 				if (!(sender instanceof Player)) break;
 				Player player = (Player) sender;
+				if (!player.hasPermission("auctionhouse.cmd.admin.logs")) return ReturnType.FAILURE;
 
 				AuctionHouse.getInstance().getDataManager().getAdminLogs((error, logs) -> {
 					if (error == null)
@@ -57,6 +58,8 @@ public class CommandAdmin extends AbstractCommand {
 			case "viewexpired":
 				if (!(sender instanceof Player)) break;
 				player = (Player) sender;
+				if (!player.hasPermission("auctionhouse.cmd.admin.viewexpired")) return ReturnType.FAILURE;
+
 
 				if (args.length < 2) return ReturnType.FAILURE;
 				OfflinePlayer target = Bukkit.getPlayerExact(args[1]);
@@ -78,12 +81,14 @@ public class CommandAdmin extends AbstractCommand {
 
 				break;
 			case "endall":
+				if (!sender.hasPermission("auctionhouse.cmd.admin.endall")) return ReturnType.FAILURE;
 				for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
 					AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpired(true);
 				}
 				AuctionHouse.getInstance().getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(sender);
 				break;
 			case "relistall":
+				if (!sender.hasPermission("auctionhouse.cmd.admin.relistall")) return ReturnType.FAILURE;
 				for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
 					if (AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).isExpired()) {
 						int relistTime = args.length == 1 ? AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).isBidItem() ? Settings.DEFAULT_AUCTION_LISTING_TIME.getInt() : Settings.DEFAULT_BIN_LISTING_TIME.getInt() : Integer.parseInt(args[1]);
@@ -95,16 +100,13 @@ public class CommandAdmin extends AbstractCommand {
 				AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(sender);
 				break;
 			case "clearall":
+				if (!sender.hasPermission("auctionhouse.cmd.admin.clearall")) return ReturnType.FAILURE;
 				// Don't tell ppl that this exists
 				AuctionHouse.getInstance().getAuctionItemManager().getItems().clear();
-			case "durabilitystatus":
-				Bukkit.broadcastMessage("damaged: " + AuctionAPI.getInstance().isDamaged(PlayerHelper.getHeldItem((Player) sender)));
-				break;
-			case "repairstatus":
-				Bukkit.broadcastMessage("repair: " + AuctionAPI.getInstance().isRepaired(PlayerHelper.getHeldItem((Player) sender)));
-				break;
 			case "opensell":
 				if (args.length < 2) return ReturnType.FAILURE;
+				if (!sender.hasPermission("auctionhouse.cmd.admin.opensell")) return ReturnType.FAILURE;
+
 				player = PlayerUtils.findPlayer(args[1]);
 				if (player == null) return ReturnType.FAILURE;
 
@@ -121,6 +123,8 @@ public class CommandAdmin extends AbstractCommand {
 				break;
 			case "open":
 				if (args.length < 2) return ReturnType.FAILURE;
+				if (!sender.hasPermission("auctionhouse.cmd.admin.open")) return ReturnType.FAILURE;
+
 				player = PlayerUtils.findPlayer(args[1]);
 				if (player == null) return ReturnType.FAILURE;
 
