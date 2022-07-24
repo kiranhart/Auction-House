@@ -190,7 +190,6 @@ public class GUISellItem extends AbstractPlaceholderGui {
 				builder.sendValueMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new buy now price").getMessage()));
 				builder.toCancel("cancel");
 				builder.onCancel(p -> reopen(e));
-				builder.onCommand(p -> reopen(e));
 				builder.setValue((p, value) -> Double.parseDouble(ChatColor.stripColor(value)));
 				builder.onFinish((p, value) -> {
 					this.buyNowPrice = value;
@@ -218,7 +217,6 @@ public class GUISellItem extends AbstractPlaceholderGui {
 				builder.sendValueMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new starting bid").getMessage()));
 				builder.toCancel("cancel");
 				builder.onCancel(p -> reopen(e));
-				builder.onCommand(p -> reopen(e));
 				builder.setValue((p, value) -> Double.parseDouble(ChatColor.stripColor(value)));
 				builder.onFinish((p, value) -> {
 					this.bidStartPrice = value;
@@ -245,7 +243,6 @@ public class GUISellItem extends AbstractPlaceholderGui {
 					builder.sendValueMessage(TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("prompts.enter new bid increment").getMessage()));
 					builder.toCancel("cancel");
 					builder.onCancel(p -> reopen(e));
-					builder.onCommand(p -> reopen(e));
 					builder.setValue((p, value) -> Double.parseDouble(ChatColor.stripColor(value)));
 					builder.onFinish((p, value) -> {
 						this.bidIncrementPrice = value;
