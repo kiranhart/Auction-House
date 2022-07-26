@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.guis;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmListing;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
@@ -114,23 +115,40 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 			if (validItems.size() == 0) return;
 			final ItemStack bundle = AuctionAPI.getInstance().createBundledItem(firstItem, validItems.toArray(new ItemStack[0]));
 
-			AuctionAPI.getInstance().listAuction(
-					player.getPlayer(),
-					validItems.size() > 1 ? firstItem : validItems.get(0),
-					validItems.size() > 1 ? bundle : validItems.get(0),
-					allowedTime,
-					/* buy now price */ buyNowAllow ? buyNowPrice : -1,
-					/* start bid price */ isBiddingItem ? startingBid : !buyNowAllow ? buyNowPrice : 0,
-					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0,
-					/* current price */ isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice,
-					isBiddingItem || !buyNowAllow,
-					validItems.size() > 1,
-					false
-			);
+			if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
 
-			e.gui.exit();
-			if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
-				e.manager.showGUI(e.player, new GUIAuctionHouse(player));
+				AuctionHouse.getInstance().getGuiManager().showGUI(player.getPlayer(), new GUIConfirmListing(
+						player.getPlayer(),
+						validItems.size() > 1 ? firstItem : validItems.get(0),
+						validItems.size() > 1 ? bundle : validItems.get(0),
+						allowedTime,
+						/* buy now price */ buyNowAllow ? buyNowPrice : -1,
+						/* start bid price */ isBiddingItem ? startingBid : !buyNowAllow ? buyNowPrice : 0,
+						/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0,
+						isBiddingItem,
+						true,
+						validItems.size() > 1,
+						false
+				));
+			} else {
+				AuctionAPI.getInstance().listAuction(
+						player.getPlayer(),
+						validItems.size() > 1 ? firstItem : validItems.get(0),
+						validItems.size() > 1 ? bundle : validItems.get(0),
+						allowedTime,
+						/* buy now price */ buyNowAllow ? buyNowPrice : -1,
+						/* start bid price */ isBiddingItem ? startingBid : !buyNowAllow ? buyNowPrice : 0,
+						/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0,
+						/* current price */ isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice,
+						isBiddingItem || !buyNowAllow,
+						validItems.size() > 1,
+						false
+				);
+
+				e.gui.exit();
+				if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+					e.manager.showGUI(e.player, new GUIAuctionHouse(player));
+				}
 			}
 		});
 	}
