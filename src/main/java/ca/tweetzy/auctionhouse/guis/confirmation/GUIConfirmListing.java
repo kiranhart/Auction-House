@@ -69,7 +69,7 @@ public class GUIConfirmListing extends AbstractPlaceholderGui {
 				/* current price */ this.isBiddingItem ? this.startingBid : this.basePrice <= -1 ? this.startingBid : this.basePrice,
 				this.isBiddingItem,
 				false,
-				System.currentTimeMillis() + 1000L * 60 * 60 * 24L
+				System.currentTimeMillis() + (this.allowedTime * 1000L)
 		);
 
 		setOnOpen(open -> PlayerUtils.takeActiveItem(open.player, CompatibleHand.MAIN_HAND, originalItem.getAmount()));

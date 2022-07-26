@@ -144,13 +144,18 @@ public final class CommandSell extends AbstractCommand {
 		boolean partialBuy = false;
 
 		for (int i = 0; i < args.length; i++) {
+
 			if (NumberUtils.isDouble(args[i]) && !Double.isNaN(Double.parseDouble(args[i]))) {
-				if (buyNowPrice == null)
-					buyNowPrice = Double.parseDouble(args[i]);
-				else if (startingBid == null)
-					startingBid = Double.parseDouble(args[i]);
-				else
-					bidIncrement = Double.parseDouble(args[i]);
+				final boolean hasTimeValue = args.length >= i + 1 && Arrays.asList("day").contains(args[i + 1]);
+
+				if (!hasTimeValue) {
+					if (buyNowPrice == null)
+						buyNowPrice = Double.parseDouble(args[i]);
+					else if (startingBid == null)
+						startingBid = Double.parseDouble(args[i]);
+					else
+						bidIncrement = Double.parseDouble(args[i]);
+				}
 			}
 
 			if (args[i].equalsIgnoreCase("-b") || args[i].equalsIgnoreCase("-bundle"))
@@ -168,6 +173,9 @@ public final class CommandSell extends AbstractCommand {
 			if (args[i].toLowerCase().startsWith("-t") && Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
 				if (i + 2 < args.length) {
 					int customTime = (int) AuctionAPI.toTicks(args[i + 1] + " " + args[i + 2]);
+
+					Bukkit.broadcastMessage(customTime + " time");
+
 					if (customTime <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt())
 						allowedTime = customTime;
 				}
