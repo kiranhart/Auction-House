@@ -146,7 +146,14 @@ public final class CommandSell extends AbstractCommand {
 		for (int i = 0; i < args.length; i++) {
 
 			if (NumberUtils.isDouble(args[i]) && !Double.isNaN(Double.parseDouble(args[i]))) {
-				final boolean hasTimeValue = args.length >= i + 1 && Arrays.asList("day").contains(args[i + 1]);
+				final boolean hasTimeValue = args.length >= i + 1 && Arrays.asList(
+						"second",
+						"minute",
+						"hour",
+						"day",
+						"week",
+						"month"
+				).contains(args[i + 1]);
 
 				if (!hasTimeValue) {
 					if (buyNowPrice == null)
