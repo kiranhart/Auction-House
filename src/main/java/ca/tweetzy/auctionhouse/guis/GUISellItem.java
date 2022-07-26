@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
+import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmListing;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
@@ -329,27 +330,45 @@ public class GUISellItem extends AbstractPlaceholderGui {
 				return;
 			}
 
-			AuctionAPI.getInstance().listAuction(
-					e.player,
-					this.itemToBeListed.clone(),
-					this.itemToBeListed.clone(),
-					this.auctionTime,
-					this.isBiddingItem && !isAllowingBuyNow || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? -1 : buyNowPrice,
-					this.isBiddingItem ? bidStartPrice : 0,
-					Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean() ? 1 : this.isBiddingItem ? bidIncrementPrice : 0,
-					this.isBiddingItem ? bidStartPrice : buyNowPrice,
-					this.isBiddingItem,
-					false,
-					false
-			);
+			if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
+				setAllowClose(true);
 
-			AuctionHouse.getInstance().getAuctionPlayerManager().removeItemFromSellHolding(e.player.getUniqueId());
-			AuctionHouse.getInstance().getAuctionPlayerManager().removeFromUsingSellGUI(e.player.getUniqueId());
-			setAllowClose(true);
-			e.gui.close();
+				AuctionHouse.getInstance().getGuiManager().showGUI(e.player, new GUIConfirmListing(
+						e.player,
+						this.itemToBeListed.clone(),
+						this.itemToBeListed.clone(),
+						this.auctionTime,
+						this.isBiddingItem && !isAllowingBuyNow || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? -1 : buyNowPrice,
+						this.isBiddingItem ? bidStartPrice : 0,
+						Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean() ? 1 : this.isBiddingItem ? bidIncrementPrice : 0,
+						this.isBiddingItem,
+						false,
+						false,
+						false
+				));
+			} else {
+				AuctionAPI.getInstance().listAuction(
+						e.player,
+						this.itemToBeListed.clone(),
+						this.itemToBeListed.clone(),
+						this.auctionTime,
+						this.isBiddingItem && !isAllowingBuyNow || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? -1 : buyNowPrice,
+						this.isBiddingItem ? bidStartPrice : 0,
+						Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean() ? 1 : this.isBiddingItem ? bidIncrementPrice : 0,
+						this.isBiddingItem ? bidStartPrice : buyNowPrice,
+						this.isBiddingItem,
+						false,
+						false
+				);
 
-			if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
-				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+				AuctionHouse.getInstance().getAuctionPlayerManager().removeItemFromSellHolding(e.player.getUniqueId());
+				AuctionHouse.getInstance().getAuctionPlayerManager().removeFromUsingSellGUI(e.player.getUniqueId());
+				setAllowClose(true);
+				e.gui.close();
+
+				if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+					e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+				}
 			}
 		});
 

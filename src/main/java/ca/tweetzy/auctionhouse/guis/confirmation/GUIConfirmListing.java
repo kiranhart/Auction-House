@@ -1,9 +1,11 @@
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
+import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.CompatibleHand;
@@ -13,7 +15,6 @@ import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -95,6 +96,9 @@ public class GUIConfirmListing extends AbstractPlaceholderGui {
 		});
 
 		setActionForRange(0, 3, ClickType.LEFT, e -> {
+			AuctionHouse.getInstance().getAuctionPlayerManager().removeItemFromSellHolding(e.player.getUniqueId());
+			AuctionHouse.getInstance().getAuctionPlayerManager().removeFromUsingSellGUI(e.player.getUniqueId());
+
 			AuctionAPI.getInstance().listAuction(
 					this.player,
 					this.originalItem,
@@ -110,7 +114,13 @@ public class GUIConfirmListing extends AbstractPlaceholderGui {
 					this.isInfinite,
 					false
 			);
-			e.gui.exit();
+
+
+			if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+				e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId())));
+			} else {
+				e.gui.exit();
+			}
 		});
 	}
 }
