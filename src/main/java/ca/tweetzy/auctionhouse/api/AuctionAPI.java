@@ -628,7 +628,7 @@ public class AuctionAPI {
 		return NBTEditor.contains(item, "AuctionHouseRepaired");
 	}
 
-	private double calculateListingFee(double basePrice) {
+	public double calculateListingFee(double basePrice) {
 		return Settings.TAX_LISTING_FEE_PERCENTAGE.getBoolean() ? (Settings.TAX_LISTING_FEE.getDouble() / 100D) * basePrice : Settings.TAX_LISTING_FEE.getDouble();
 	}
 

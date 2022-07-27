@@ -9,6 +9,7 @@ import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.input.ChatPrompt;
 import ca.tweetzy.core.input.PlayerChatInput;
 import ca.tweetzy.core.utils.NumberUtils;
@@ -328,6 +329,15 @@ public class GUISellItem extends AbstractPlaceholderGui {
 			if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && this.isAllowingBuyNow && this.isBiddingItem && this.buyNowPrice <= this.bidStartPrice && Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean()) {
 				AuctionHouse.getInstance().getLocale().getMessage("pricing.basepricetoolow").sendPrefixedMessage(e.player);
 				return;
+			}
+
+			if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
+				final double listingFee = AuctionAPI.getInstance().calculateListingFee(this.isBiddingItem && !isAllowingBuyNow || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? -1 : buyNowPrice);
+
+				if (!EconomyManager.hasBalance(e.player, listingFee)) {
+					AuctionHouse.getInstance().getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", listingFee).sendPrefixedMessage(e.player);
+					return;
+				}
 			}
 
 			if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
