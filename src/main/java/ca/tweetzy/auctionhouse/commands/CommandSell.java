@@ -143,17 +143,24 @@ public final class CommandSell extends AbstractCommand {
 		boolean isStackPrice = false;
 		boolean partialBuy = false;
 
+		List<String> timeSets = Arrays.asList(
+				"second",
+				"minute",
+				"hour",
+				"day",
+				"week",
+				"month"
+		);
+
 		for (int i = 0; i < args.length; i++) {
 
 			if (NumberUtils.isDouble(args[i]) && !Double.isNaN(Double.parseDouble(args[i]))) {
-				final boolean hasTimeValue = args.length >= i + 1 && Arrays.asList(
-						"second",
-						"minute",
-						"hour",
-						"day",
-						"week",
-						"month"
-				).contains(args[i + 1]);
+				boolean hasTimeValue = false;
+
+				if (i + 1 < args.length) {
+					if (timeSets.contains(args[i + 1].toLowerCase()))
+						hasTimeValue = true;
+				}
 
 				if (!hasTimeValue) {
 					if (buyNowPrice == null)
@@ -180,8 +187,6 @@ public final class CommandSell extends AbstractCommand {
 			if (args[i].toLowerCase().startsWith("-t") && Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
 				if (i + 2 < args.length) {
 					int customTime = (int) AuctionAPI.toTicks(args[i + 1] + " " + args[i + 2]);
-
-					Bukkit.broadcastMessage(customTime + " time");
 
 					if (customTime <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt())
 						allowedTime = customTime;
