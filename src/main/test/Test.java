@@ -34,8 +34,8 @@ public class Test {
 
 //		System.out.println("16".compareTo(System.getProperty("java.version")) <= 0);
 
-		final double max = 99999999999999999999999999999.0D;
-		System.out.println(AuctionAPI.getInstance().getFriendlyNumber(max));
+//		final double max = 99999999999999999999999999999.0D;
+		System.out.println(AuctionAPI.getInstance().getFriendlyNumber(0));
 	}
 
 	public static long getSecondsFromString(String time) {

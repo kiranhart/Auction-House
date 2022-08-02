@@ -1,6 +1,7 @@
 package ca.tweetzy.auctionhouse;
 
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
+import ca.tweetzy.auctionhouse.api.hook.CoinAPIHook;
 import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.api.hook.UltraEconomyHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -58,6 +59,7 @@ public class AuctionHouse extends TweetyPlugin {
 	private static TaskChainFactory taskChainFactory;
 	private static AuctionHouse instance;
 	private PluginHook ultraEconomyHook;
+	private PluginHook coinsApiHook;
 
 	@Getter
 	@Setter
@@ -135,6 +137,7 @@ public class AuctionHouse extends TweetyPlugin {
 		}
 
 		this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
+		this.coinsApiHook = PluginHook.addHook(Economy.class, "coins", CoinAPIHook.class);
 
 		// Load Economy
 		EconomyManager.load();
@@ -145,8 +148,12 @@ public class AuctionHouse extends TweetyPlugin {
 
 		// Setup Economy
 		final String ECO_PLUGIN = Settings.ECONOMY_PLUGIN.getString();
+
+
 		if (ECO_PLUGIN.startsWith("UltraEconomy")) {
 			EconomyManager.getManager().setPreferredHook(this.ultraEconomyHook);
+		} else if (ECO_PLUGIN.equalsIgnoreCase("Coins")) {
+			EconomyManager.getManager().setPreferredHook(this.coinsApiHook);
 		} else {
 			EconomyManager.getManager().setPreferredHook(ECO_PLUGIN);
 		}
