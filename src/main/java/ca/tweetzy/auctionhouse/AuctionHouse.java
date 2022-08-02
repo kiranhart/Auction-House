@@ -1,7 +1,7 @@
 package ca.tweetzy.auctionhouse;
 
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
-import ca.tweetzy.auctionhouse.api.hook.CoinAPIHook;
+import ca.tweetzy.auctionhouse.api.hook.CityBuildStuffAPIHook;
 import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.api.hook.UltraEconomyHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -59,7 +59,7 @@ public class AuctionHouse extends TweetyPlugin {
 	private static TaskChainFactory taskChainFactory;
 	private static AuctionHouse instance;
 	private PluginHook ultraEconomyHook;
-	private PluginHook coinsApiHook;
+	private PluginHook cityBuildStuff;
 
 	@Getter
 	@Setter
@@ -137,7 +137,7 @@ public class AuctionHouse extends TweetyPlugin {
 		}
 
 		this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
-		this.coinsApiHook = PluginHook.addHook(Economy.class, "coins", CoinAPIHook.class);
+		this.cityBuildStuff = PluginHook.addHook(Economy.class, "CityBuildStuff", CityBuildStuffAPIHook.class);
 
 		// Load Economy
 		EconomyManager.load();
@@ -152,8 +152,8 @@ public class AuctionHouse extends TweetyPlugin {
 
 		if (ECO_PLUGIN.startsWith("UltraEconomy")) {
 			EconomyManager.getManager().setPreferredHook(this.ultraEconomyHook);
-		} else if (ECO_PLUGIN.equalsIgnoreCase("Coins")) {
-			EconomyManager.getManager().setPreferredHook(this.coinsApiHook);
+		} else if (ECO_PLUGIN.equalsIgnoreCase("CityBuildStuff")) {
+			EconomyManager.getManager().setPreferredHook(this.cityBuildStuff);
 		} else {
 			EconomyManager.getManager().setPreferredHook(ECO_PLUGIN);
 		}

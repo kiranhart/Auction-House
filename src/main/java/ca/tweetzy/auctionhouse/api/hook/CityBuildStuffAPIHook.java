@@ -12,11 +12,11 @@ import org.bukkit.OfflinePlayer;
  * Time Created: 9:18 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class CoinAPIHook extends Economy {
+public final class CityBuildStuffAPIHook extends Economy {
 
-	public CoinAPIHook() {
+	public CityBuildStuffAPIHook() {
 		if (!isEnabled()) {
-			Bukkit.getConsoleSender().sendMessage(TextUtils.formatText("&bCoins &7hook cannot be created&f: &cCoins not installed"));
+			Bukkit.getConsoleSender().sendMessage(TextUtils.formatText("&bCityBuildStuff &7hook cannot be created&f: &cCityBuildStuff not installed"));
 			return;
 		}
 	}
@@ -59,6 +59,6 @@ public final class CoinAPIHook extends Economy {
 
 	@Override
 	public boolean isEnabled() {
-		return Bukkit.getPluginManager().getPlugin("coins") != null;
+		return Bukkit.getPluginManager().getPlugin("CityBuildStuff") != null;
 	}
 }
