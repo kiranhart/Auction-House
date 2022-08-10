@@ -42,17 +42,20 @@ public class GUIAdminItem extends AbstractPlaceholderGui {
 	}
 
 	private void draw() {
-		setButton(1, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_ITEM.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_NAME.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_LORE.getStringList(), null), e -> {
-			AuctionAdminEvent event = new AuctionAdminEvent(createLog(e.player, AdminAction.RETURN_ITEM));
-			Bukkit.getServer().getPluginManager().callEvent(event);
-			if (event.isCancelled()) return;
 
-			this.auctionItem.setExpiresAt(System.currentTimeMillis());
-			this.auctionItem.setExpired(true);
-			e.gui.close();
-		});
+		if (Settings.ADMIN_OPTION_SHOW_RETURN_ITEM.getBoolean())
+			setButton(1, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_ITEM.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_NAME.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_LORE.getStringList(), null), e -> {
+				AuctionAdminEvent event = new AuctionAdminEvent(createLog(e.player, AdminAction.RETURN_ITEM));
+				Bukkit.getServer().getPluginManager().callEvent(event);
+				if (event.isCancelled()) return;
 
-		setButton(1, 3, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_ITEM.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_NAME.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_LORE.getStringList(), null), e -> {
+				this.auctionItem.setExpiresAt(System.currentTimeMillis());
+				this.auctionItem.setExpired(true);
+				e.gui.close();
+			});
+
+		if (Settings.ADMIN_OPTION_SHOW_CLAIM_ITEM.getBoolean())
+			setButton(1, 3, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_ITEM.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_NAME.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_LORE.getStringList(), null), e -> {
 			AuctionAdminEvent event = new AuctionAdminEvent(createLog(e.player, AdminAction.CLAIM_ITEM));
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			if (event.isCancelled()) return;
@@ -62,7 +65,8 @@ public class GUIAdminItem extends AbstractPlaceholderGui {
 			e.gui.close();
 		});
 
-		setButton(1, 5, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_ITEM.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_NAME.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_LORE.getStringList(), null), e -> {
+		if (Settings.ADMIN_OPTION_SHOW_DELETE_ITEM.getBoolean())
+			setButton(1, 5, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_ITEM.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_NAME.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_LORE.getStringList(), null), e -> {
 			AuctionAdminEvent event = new AuctionAdminEvent(createLog(e.player, AdminAction.DELETE_ITEM));
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			if (event.isCancelled()) return;
@@ -71,7 +75,8 @@ public class GUIAdminItem extends AbstractPlaceholderGui {
 			e.gui.close();
 		});
 
-		setButton(1, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_ITEMS_COPY_ITEM.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_COPY_NAME.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_COPY_LORE.getStringList(), null), e -> {
+		if (Settings.ADMIN_OPTION_SHOW_COPY_ITEM.getBoolean())
+			setButton(1, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_ITEMS_COPY_ITEM.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_COPY_NAME.getString(), Settings.GUI_ITEM_ADMIN_ITEMS_COPY_LORE.getStringList(), null), e -> {
 			if (Settings.ITEM_COPY_REQUIRES_GMC.getBoolean() && e.player.getGameMode() != GameMode.CREATIVE) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.requires creative").sendPrefixedMessage(e.player);
 				return;
