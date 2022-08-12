@@ -119,7 +119,7 @@ public class GUISellItem extends AbstractPlaceholderGui {
 	}
 
 	public GUISellItem(AuctionPlayer auctionPlayer, ItemStack itemToBeListed) {
-		this(auctionPlayer, itemToBeListed, Settings.MIN_AUCTION_PRICE.getDouble(), Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(), Settings.MIN_AUCTION_START_PRICE.getDouble(), false, true, auctionPlayer.getAllowedSellTime(AuctionSaleType.WITHOUT_BIDDING_SYSTEM));
+		this(auctionPlayer, itemToBeListed, Settings.MIN_AUCTION_PRICE.getDouble(), Settings.MIN_AUCTION_START_PRICE.getDouble(),Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(), false, true, auctionPlayer.getAllowedSellTime(AuctionSaleType.WITHOUT_BIDDING_SYSTEM));
 	}
 
 	private void draw() {
