@@ -8,8 +8,6 @@ import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.CompatibleHand;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.entity.Player;
@@ -72,8 +70,9 @@ public class GUIConfirmListing extends AbstractPlaceholderGui {
 				System.currentTimeMillis() + (this.allowedTime * 1000L)
 		);
 
-		setOnOpen(open -> PlayerUtils.takeActiveItem(open.player, CompatibleHand.MAIN_HAND, originalItem.getAmount()));
-		setOnClose(close -> close.player.getInventory().addItem(originalItem));
+		// todo add back if dupe is brought back to life
+//		setOnOpen(open -> PlayerUtils.takeActiveItem(open.player, CompatibleHand.MAIN_HAND, originalItem.getAmount()));
+//		setOnClose(close -> close.player.getInventory().addItem(originalItem));
 
 		setTitle(TextUtils.formatText(Settings.GUI_CONFIRM_LISTING_TITLE.getString()));
 		setAcceptsItems(false);

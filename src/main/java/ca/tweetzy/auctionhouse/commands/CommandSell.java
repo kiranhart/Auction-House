@@ -60,11 +60,6 @@ public final class CommandSell extends AbstractCommand {
 			return ReturnType.FAILURE;
 		}
 
-		// Check list delay
-		if (!auctionPlayer.canListItem()) {
-			return ReturnType.FAILURE;
-		}
-
 		// Open the sell menu enabled
 		if (args.length == 0) {
 			if (!Settings.ALLOW_USAGE_OF_SELL_GUI.getBoolean()) {
@@ -280,6 +275,11 @@ public final class CommandSell extends AbstractCommand {
 
 		// update the listing time to the max allowed time if it wasn't set using the command flag
 		allowedTime = allowedTime != 0 ? allowedTime : auctionPlayer.getAllowedSellTime(isBiddingItem ? AuctionSaleType.USED_BIDDING_SYSTEM : AuctionSaleType.WITHOUT_BIDDING_SYSTEM);
+
+		// Check list delay
+		if (!auctionPlayer.canListItem()) {
+			return ReturnType.FAILURE;
+		}
 
 		if (isBundle) {
 			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIBundleCreation(

@@ -341,8 +341,11 @@ public class GUISellItem extends AbstractPlaceholderGui {
 			}
 
 			if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
-				setAllowClose(true);
+				if (!this.auctionPlayer.canListItem()) {
+					return;
+				}
 
+				setAllowClose(true);
 				AuctionHouse.getInstance().getGuiManager().showGUI(e.player, new GUIConfirmListing(
 						e.player,
 						this.itemToBeListed.clone(),
@@ -357,6 +360,10 @@ public class GUISellItem extends AbstractPlaceholderGui {
 						false
 				));
 			} else {
+				if (!this.auctionPlayer.canListItem()) {
+					return;
+				}
+
 				AuctionAPI.getInstance().listAuction(
 						e.player,
 						this.itemToBeListed.clone(),
