@@ -3,7 +3,6 @@ package ca.tweetzy.auctionhouse;
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
 import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.api.hook.UltraEconomyHook;
-import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
@@ -167,10 +166,6 @@ public class AuctionHouse extends TweetyPlugin {
 		if (getServer().getPluginManager().isPluginEnabled("CMI"))
 			Bukkit.getServer().getPluginManager().registerEvents(new CMIListener(), this);
 
-		// auction players
-		this.auctionPlayerManager = new AuctionPlayerManager();
-		Bukkit.getOnlinePlayers().forEach(p -> this.auctionPlayerManager.addPlayer(new AuctionPlayer(p)));
-
 		// Setup the database if enabled
 		this.databaseConnector = Settings.DATABASE_USE.getBoolean() ? new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean()) : new SQLiteConnector(this);
 		this.dataManager = new DataManager(this.databaseConnector, this);
@@ -216,6 +211,10 @@ public class AuctionHouse extends TweetyPlugin {
 
 		this.auctionStatManager = new AuctionStatManager();
 		this.auctionStatManager.loadStats();
+
+		// auction players
+		this.auctionPlayerManager = new AuctionPlayerManager();
+		this.auctionPlayerManager.loadPlayers();
 
 		// gui manager
 		this.guiManager.init();

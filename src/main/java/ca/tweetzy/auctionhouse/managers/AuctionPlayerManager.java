@@ -1,8 +1,11 @@
 package ca.tweetzy.auctionhouse.managers;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -27,7 +30,31 @@ public class AuctionPlayerManager {
 
 	public void addPlayer(AuctionPlayer auctionPlayer) {
 		if (auctionPlayer == null) return;
-		this.auctionPlayers.put(auctionPlayer.getPlayer().getUniqueId(), auctionPlayer);
+		this.auctionPlayers.put(auctionPlayer.getUuid(), auctionPlayer);
+		AuctionHouse.getInstance().getLogger().info("Loading profile for player: " + Bukkit.getOfflinePlayer(auctionPlayer.getUuid()).getName());
+	}
+
+	public void addPlayer(Player player) {
+		if (player == null) return;
+
+		AuctionPlayer found = this.auctionPlayers.get(player.getUniqueId());
+
+		if (found == null) {
+			found = new AuctionPlayer(player);
+			AuctionHouse.getInstance().getDataManager().insertAuctionPlayer(found, (error, created) -> {
+				if (error == null && created != null) {
+					AuctionHouse.getInstance().getLogger().info("Creating profile for player: " + player.getName());
+					addPlayer(created);
+				}
+
+			});
+
+			return;
+		}
+
+		found.setPlayer(player);
+		AuctionHouse.getInstance().getLogger().info("Updating profile player reference for: " + player.getName());
+
 	}
 
 	public void addToUsingSellGUI(UUID uuid) {
@@ -67,4 +94,19 @@ public class AuctionPlayerManager {
 	public HashMap<UUID, Long> getCooldowns() {
 		return this.cooldowns;
 	}
+
+	public void loadPlayers() {
+		this.auctionPlayers.clear();
+
+		AuctionHouse.getInstance().getDataManager().getAuctionPlayers((error, all) -> {
+			if (error == null) {
+				all.forEach(this::addPlayer);
+
+				// add all online players
+				Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> Bukkit.getOnlinePlayers().forEach(this::addPlayer), 20 * 3);
+			}
+		});
+	}
+
+
 }

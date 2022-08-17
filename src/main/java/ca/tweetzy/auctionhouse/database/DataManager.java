@@ -6,11 +6,14 @@ import ca.tweetzy.auctionhouse.auction.*;
 import ca.tweetzy.auctionhouse.auction.enums.AdminAction;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.database.DataManagerAbstract;
 import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
+import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -521,6 +524,83 @@ public class DataManager extends DataManagerAbstract {
 	public void deleteItemsAsync(Collection<UUID> items) {
 		this.thread.execute(() -> deleteItems(items));
 	}
+
+	public void insertAuctionPlayer(AuctionPlayer auctionPlayer, Callback<AuctionPlayer> callback) {
+		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "player (uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) VALUES (?, ?, ?, ?, ?)")) {
+				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "player WHERE uuid = ?");
+
+				fetch.setString(1, auctionPlayer.getUuid().toString());
+				statement.setString(1, auctionPlayer.getPlayer().getUniqueId().toString());
+				statement.setString(2, auctionPlayer.getSelectedSaleType().name());
+				statement.setString(3, auctionPlayer.getSelectedFilter().name());
+				statement.setString(4, auctionPlayer.getAuctionSortType().name());
+				statement.setLong(5, auctionPlayer.getLastListedItem());
+				statement.executeUpdate();
+
+				if (callback != null) {
+					ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractAuctionPlayer(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getAuctionPlayers(Callback<ArrayList<AuctionPlayer>> callback) {
+		ArrayList<AuctionPlayer> auctionPlayers = new ArrayList<>();
+		this.async(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "player")) {
+				ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					auctionPlayers.add(extractAuctionPlayer(resultSet));
+				}
+
+				callback.accept(null, auctionPlayers);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void updateAuctionPlayer(@NonNull final AuctionPlayer auctionPlayer, Callback<Boolean> callback) {
+		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "player SET filter_sale_type = ?, filter_item_category = ?, filter_sort_type = ?, last_listed_item = ? WHERE uuid = ?")) {
+
+				statement.setString(1, auctionPlayer.getSelectedSaleType().name());
+				statement.setString(2, auctionPlayer.getSelectedFilter().name());
+				statement.setString(3, auctionPlayer.getAuctionSortType().name());
+				statement.setLong(4, auctionPlayer.getLastListedItem());
+				statement.setString(5, auctionPlayer.getUuid().toString());
+
+				int result = statement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	private AuctionPlayer extractAuctionPlayer(ResultSet resultSet) throws SQLException {
+		return new AuctionPlayer(
+				UUID.fromString(resultSet.getString("uuid")),
+				Bukkit.getPlayer(UUID.fromString(resultSet.getString("uuid"))),
+				AuctionSaleType.valueOf(resultSet.getString("filter_sale_type")),
+				AuctionItemCategory.valueOf(resultSet.getString("filter_item_category")),
+				AuctionSortType.valueOf(resultSet.getString("filter_sort_type")),
+				"",
+				true,
+				resultSet.getLong("last_listed_item")
+		);
+	}
+
 
 	private AuctionedItem extractAuctionedItem(ResultSet resultSet) throws SQLException {
 		final ItemStack item = AuctionAPI.decodeItem(resultSet.getString("item"));

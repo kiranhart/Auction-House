@@ -43,12 +43,14 @@ public class GUIFilterSelection extends AbstractPlaceholderGui {
 		if (AuctionItemCategory.ALL.isEnabled())
 			setButton(1, 3, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_ITEMS_ALL_ITEM.getString(), Settings.GUI_FILTER_ITEMS_ALL_NAME.getString(), Settings.GUI_FILTER_ITEMS_ALL_LORE.getStringList(), null), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.ALL);
+				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.SELF.isEnabled())
 			setButton(1, 4, GuiUtils.createButtonItem(AuctionAPI.getInstance().getPlayerHead(this.auctionPlayer.getPlayer().getName()), TextUtils.formatText(Settings.GUI_FILTER_ITEMS_OWN_NAME.getString()), TextUtils.formatText(Settings.GUI_FILTER_ITEMS_OWN_LORE.getStringList())), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.SELF);
+				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
@@ -70,44 +72,59 @@ public class GUIFilterSelection extends AbstractPlaceholderGui {
 		if (AuctionItemCategory.MISC.isEnabled())
 			setButton(2, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_ITEMS_MISC_ITEM.getString(), Settings.GUI_FILTER_ITEMS_MISC_NAME.getString(), Settings.GUI_FILTER_ITEMS_MISC_LORE.getStringList(), null), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.MISC);
+				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.ENCHANTS.isEnabled())
 			setButton(2, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_ITEMS_ENCHANTS_ITEM.getString(), Settings.GUI_FILTER_ITEMS_ENCHANTS_NAME.getString(), Settings.GUI_FILTER_ITEMS_ENCHANTS_LORE.getStringList(), null), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.ENCHANTS);
+				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.ARMOR.isEnabled())
 			setButton(2, 3, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_ITEMS_ARMOR_ITEM.getString(), Settings.GUI_FILTER_ITEMS_ARMOR_NAME.getString(), Settings.GUI_FILTER_ITEMS_ARMOR_LORE.getStringList(), null), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.ARMOR);
+				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.WEAPONS.isEnabled())
 			setButton(2, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_ITEMS_WEAPONS_ITEM.getString(), Settings.GUI_FILTER_ITEMS_WEAPONS_NAME.getString(), Settings.GUI_FILTER_ITEMS_WEAPONS_LORE.getStringList(), null), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.WEAPONS);
+				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.TOOLS.isEnabled())
 			setButton(2, 5, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_ITEMS_TOOLS_ITEM.getString(), Settings.GUI_FILTER_ITEMS_TOOLS_NAME.getString(), Settings.GUI_FILTER_ITEMS_TOOLS_LORE.getStringList(), null), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.TOOLS);
+				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.SPAWNERS.isEnabled())
 			setButton(2, 6, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_ITEMS_SPAWNERS_ITEM.getString(), Settings.GUI_FILTER_ITEMS_SPAWNERS_NAME.getString(), Settings.GUI_FILTER_ITEMS_SPAWNERS_LORE.getStringList(), null), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.SPAWNERS);
+				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.BLOCKS.isEnabled())
 			setButton(2, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_ITEMS_BLOCKS_ITEM.getString(), Settings.GUI_FILTER_ITEMS_BLOCKS_NAME.getString(), Settings.GUI_FILTER_ITEMS_BLOCKS_LORE.getStringList(), null), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.BLOCKS);
+				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
+	}
+
+	private void updatePlayerFilter(AuctionPlayer player) {
+		AuctionHouse.getInstance().getDataManager().updateAuctionPlayer(player, (error, success) -> {
+			if (error == null && success)
+				AuctionHouse.getInstance().getLogger().info("Updating profile for player: " + player.getPlayer().getName());
+
+		});
 	}
 }
 

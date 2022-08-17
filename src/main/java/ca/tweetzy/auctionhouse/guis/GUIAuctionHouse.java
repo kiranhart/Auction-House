@@ -543,14 +543,17 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 							break;
 						case DROP:
 							this.auctionPlayer.resetFilter();
+							updatePlayerFilter(this.auctionPlayer);
 							draw();
 							break;
 						case RIGHT:
 							this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
+							updatePlayerFilter(this.auctionPlayer);
 							draw();
 							break;
 						case SHIFT_RIGHT:
 							this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
+							updatePlayerFilter(this.auctionPlayer);
 							draw();
 							break;
 					}
@@ -568,18 +571,22 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 				switch (e.clickType) {
 					case MIDDLE:
 						this.auctionPlayer.resetFilter();
+						updatePlayerFilter(this.auctionPlayer);
 						draw();
 						break;
 					case LEFT:
 						this.auctionPlayer.setSelectedFilter(this.auctionPlayer.getSelectedFilter().next());
+						updatePlayerFilter(this.auctionPlayer);
 						draw();
 						break;
 					case RIGHT:
 						this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
+						updatePlayerFilter(this.auctionPlayer);
 						draw();
 						break;
 					case SHIFT_RIGHT:
 						this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
+						updatePlayerFilter(this.auctionPlayer);
 						draw();
 						break;
 				}
@@ -600,4 +607,11 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 		}
 	}
 
+	private void updatePlayerFilter(AuctionPlayer player) {
+		AuctionHouse.getInstance().getDataManager().updateAuctionPlayer(player, (error, success) -> {
+			if (error == null && success)
+				AuctionHouse.getInstance().getLogger().info("Updating profile for player: " + player.getPlayer().getName());
+
+		});
+	}
 }

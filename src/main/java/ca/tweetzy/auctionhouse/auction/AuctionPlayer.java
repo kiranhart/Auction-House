@@ -5,8 +5,10 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -20,20 +22,26 @@ import java.util.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class AuctionPlayer {
 
-	private final Player player;
+	private final UUID uuid;
+	private Player player;
 
 	private AuctionSaleType selectedSaleType;
 	private AuctionItemCategory selectedFilter;
 	private AuctionSortType auctionSortType;
 	private String currentSearchPhrase;
-	private boolean showListingInfo = true;
-	private long lastListedItem = -1;
+	private boolean showListingInfo;
+	private long lastListedItem;
+
+	public AuctionPlayer(UUID uuid) {
+		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", true, -1);
+	}
 
 	public AuctionPlayer(Player player) {
+		this(player.getUniqueId());
 		this.player = player;
-		resetFilter();
 	}
 
 
@@ -44,6 +52,11 @@ public class AuctionPlayer {
 
 		if (this.lastListedItem == -1 || System.currentTimeMillis() >= this.lastListedItem) {
 			this.lastListedItem = System.currentTimeMillis() + 1000L * Settings.LIST_ITEM_DELAY.getInt();
+			AuctionHouse.getInstance().getDataManager().updateAuctionPlayer(this, (error, success) -> {
+				if (error == null && success)
+					AuctionHouse.getInstance().getLogger().info("Updating profile for player: " + player.getName());
+
+			});
 			return true;
 		}
 

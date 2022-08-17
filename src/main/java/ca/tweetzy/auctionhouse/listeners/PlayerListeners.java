@@ -3,7 +3,6 @@ package ca.tweetzy.auctionhouse.listeners;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
-import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -19,6 +18,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -40,12 +40,14 @@ import java.util.List;
  */
 public class PlayerListeners implements Listener {
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player player = e.getPlayer();
+
+		AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(player);
+
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
-			AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
-			AuctionHouse.getInstance().getLogger().info("Adding player: " + player.getName() + " to Auction Player list.");
+
 			if (Settings.UPDATE_CHECKER.getBoolean() && AuctionHouse.getInstance().getStatus() == UpdateChecker.UpdateStatus.UNRELEASED_VERSION && player.isOp()) {
 				AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", AuctionHouse.getInstance().getDescription().getVersion()))).sendPrefixedMessage(player);
 			}
@@ -55,11 +57,12 @@ public class PlayerListeners implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
-		AuctionHouse.getInstance().getAuctionPlayerManager().removePlayer(player.getUniqueId());
+
+
 		//todo maybe add this back if it messes up stuff
 //		AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().remove(player.getUniqueId());
 		AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
-		AuctionHouse.getInstance().getLogger().info("Removing Instances for user: " + player.getName());
+		AuctionHouse.getInstance().getLogger().info("Removing sell holding instance for user: " + player.getName());
 	}
 
 	@EventHandler
