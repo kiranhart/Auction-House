@@ -1,7 +1,6 @@
 package ca.tweetzy.auctionhouse;
 
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
-import ca.tweetzy.auctionhouse.api.hook.CityBuildStuffAPIHook;
 import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.api.hook.UltraEconomyHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -137,7 +136,6 @@ public class AuctionHouse extends TweetyPlugin {
 		}
 
 		this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
-		this.cityBuildStuff = PluginHook.addHook(Economy.class, "CityBuildStuff", CityBuildStuffAPIHook.class);
 
 		// Load Economy
 		EconomyManager.load();
@@ -152,8 +150,6 @@ public class AuctionHouse extends TweetyPlugin {
 
 		if (ECO_PLUGIN.startsWith("UltraEconomy")) {
 			EconomyManager.getManager().setPreferredHook(this.ultraEconomyHook);
-		} else if (ECO_PLUGIN.equalsIgnoreCase("CityBuildStuff")) {
-			EconomyManager.getManager().setPreferredHook(this.cityBuildStuff);
 		} else {
 			EconomyManager.getManager().setPreferredHook(ECO_PLUGIN);
 		}
@@ -193,7 +189,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new _11_AdminLogMigration(),
 				new _12_SerializeFormatDropMigration(),
 				new _13_MinItemPriceMigration(),
-				new _14_PartialQtyBuyMigration()
+				new _14_PartialQtyBuyMigration(),
+				new _15_AuctionPlayerMigration()
 		);
 
 		dataMigrationManager.runMigrations();
