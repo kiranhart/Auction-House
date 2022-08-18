@@ -31,7 +31,6 @@ public class AuctionPlayerManager {
 	public void addPlayer(AuctionPlayer auctionPlayer) {
 		if (auctionPlayer == null) return;
 		this.auctionPlayers.put(auctionPlayer.getUuid(), auctionPlayer);
-		AuctionHouse.getInstance().getLogger().info("Loading profile for player: " + Bukkit.getOfflinePlayer(auctionPlayer.getUuid()).getName());
 	}
 
 	public void addPlayer(Player player) {
