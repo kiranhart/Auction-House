@@ -146,6 +146,7 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 				AuctionHouse.getInstance().getGuiManager().showGUI(e.player, new GUIListingConfirm(e.player, auctionedItem, result -> {
 					if (!result) {
 						e.player.closeInventory();
+						validItems.forEach(item -> PlayerUtils.giveItem(e.player, item));
 						return;
 					}
 
