@@ -12,7 +12,6 @@ import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.hooks.EconomyManager;
@@ -716,8 +715,11 @@ public class AuctionAPI {
 		ItemStack finalItemToSell = item.clone();
 		int totalOriginal = isUsingBundle ? AuctionAPI.getInstance().getItemCountInPlayerInventory(seller, original) : finalItemToSell.getAmount();
 
-		if (requiresHandRemove)
-			PlayerUtils.takeActiveItem(seller, CompatibleHand.MAIN_HAND, totalOriginal);
+
+		if (requiresHandRemove) {
+			removeSpecificItemQuantityFromPlayer(seller, finalItemToSell, totalOriginal);
+		}
+//			PlayerUtils.takeActiveItem(seller, CompatibleHand.MAIN_HAND, totalOriginal);
 
 
 		SoundManager.getInstance().playSound(seller, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);

@@ -3,10 +3,13 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
+import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.GUIBundleCreation;
 import ca.tweetzy.auctionhouse.guis.GUISellItem;
-import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmListing;
+import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
+import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
@@ -24,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -295,19 +299,66 @@ public final class CommandSell extends AbstractCommand {
 		}
 
 		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIConfirmListing(
-					player,
-					originalItem,
-					itemToSell,
-					allowedTime,
-					/* buy now price */ buyNowAllow ? buyNowPrice : -1,
-					/* start bid price */ isBiddingItem ? startingBid : 0,
-					/* bid inc price */ isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0,
-					isBiddingItem,
-					isBundle,
-					true,
-					isInfinite
-			));
+
+			// TODO clean up is monstrosity
+			AuctionedItem auctionedItem = new AuctionedItem();
+			auctionedItem.setId(UUID.randomUUID());
+			auctionedItem.setOwner(player.getUniqueId());
+			auctionedItem.setHighestBidder(player.getUniqueId());
+			auctionedItem.setOwnerName(player.getName());
+			auctionedItem.setHighestBidderName(player.getName());
+			auctionedItem.setItem(itemToSell);
+			auctionedItem.setCategory(MaterialCategorizer.getMaterialCategory(itemToSell));
+			auctionedItem.setExpiresAt(System.currentTimeMillis() + 1000L * allowedTime);
+			auctionedItem.setBidItem(isBiddingItem);
+			auctionedItem.setExpired(false);
+
+			auctionedItem.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(buyNowAllow ? buyNowPrice : -1) : buyNowAllow ? buyNowPrice : -1);
+			auctionedItem.setBidStartingPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(isBiddingItem ? startingBid : 0) : isBiddingItem ? startingBid : 0);
+			auctionedItem.setBidIncrementPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0) : isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0);
+			auctionedItem.setCurrentPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice) : isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice);
+
+			auctionedItem.setListedWorld(player.getWorld().getName());
+			auctionedItem.setInfinite(isInfinite);
+			auctionedItem.setAllowPartialBuy(partialBuy);
+
+			ItemStack finalItemToSell = itemToSell;
+			int finalAllowedTime = allowedTime;
+			Double finalBuyNowPrice = buyNowPrice;
+			Double finalStartingBid = startingBid;
+			Double finalBidIncrement = bidIncrement;
+			Double finalStartingBid1 = startingBid;
+			boolean finalIsInfinite = isInfinite;
+			boolean finalPartialBuy = partialBuy;
+			boolean finalIsBundle = isBundle;
+
+			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIListingConfirm(player, auctionedItem, result -> {
+				if (!result) {
+					player.closeInventory();
+					return;
+				}
+
+				AuctionAPI.getInstance().listAuction(
+						player,
+						originalItem,
+						finalItemToSell,
+						finalAllowedTime,
+						/* buy now price */ buyNowAllow ? finalBuyNowPrice : -1,
+						/* start bid price */ isBiddingItem ? finalStartingBid : !buyNowAllow ? finalBuyNowPrice : 0,
+						/* bid inc price */ isBiddingItem ? finalBidIncrement != null ? finalBidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0,
+						/* current price */ isBiddingItem ? finalStartingBid : finalBuyNowPrice <= -1 ? finalStartingBid1 : finalBuyNowPrice,
+						isBiddingItem || !buyNowAllow,
+						finalIsBundle,
+						true,
+						finalIsInfinite,
+						finalPartialBuy
+				);
+
+				player.closeInventory();
+				if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+					AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+				}
+			}));
 		} else {
 			AuctionAPI.getInstance().listAuction(
 					player,

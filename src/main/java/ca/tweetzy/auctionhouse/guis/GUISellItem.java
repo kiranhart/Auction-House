@@ -3,9 +3,11 @@ package ca.tweetzy.auctionhouse.guis;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
-import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmListing;
+import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
@@ -22,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -36,9 +39,9 @@ public class GUISellItem extends AbstractPlaceholderGui {
 	private final AuctionPlayer auctionPlayer;
 	private ItemStack itemToBeListed;
 
-	private double buyNowPrice;
-	private double bidStartPrice;
-	private double bidIncrementPrice;
+	private Double buyNowPrice;
+	private Double bidStartPrice;
+	private Double bidIncrementPrice;
 	private boolean isBiddingItem;
 	private boolean isAllowingBuyNow;
 	private int auctionTime;
@@ -119,7 +122,7 @@ public class GUISellItem extends AbstractPlaceholderGui {
 	}
 
 	public GUISellItem(AuctionPlayer auctionPlayer, ItemStack itemToBeListed) {
-		this(auctionPlayer, itemToBeListed, Settings.MIN_AUCTION_PRICE.getDouble(), Settings.MIN_AUCTION_START_PRICE.getDouble(),Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(), false, true, auctionPlayer.getAllowedSellTime(AuctionSaleType.WITHOUT_BIDDING_SYSTEM));
+		this(auctionPlayer, itemToBeListed, Settings.MIN_AUCTION_PRICE.getDouble(), Settings.MIN_AUCTION_START_PRICE.getDouble(), Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(), false, true, auctionPlayer.getAllowedSellTime(AuctionSaleType.WITHOUT_BIDDING_SYSTEM));
 	}
 
 	private void draw() {
@@ -346,19 +349,61 @@ public class GUISellItem extends AbstractPlaceholderGui {
 				}
 
 				setAllowClose(true);
-				AuctionHouse.getInstance().getGuiManager().showGUI(e.player, new GUIConfirmListing(
-						e.player,
-						this.itemToBeListed.clone(),
-						this.itemToBeListed.clone(),
-						this.auctionTime,
-						this.isBiddingItem && !isAllowingBuyNow || !Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() ? -1 : buyNowPrice,
-						this.isBiddingItem ? bidStartPrice : 0,
-						Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean() ? 1 : this.isBiddingItem ? bidIncrementPrice : 0,
-						this.isBiddingItem,
-						false,
-						false,
-						false
-				));
+
+				// TODO clean up is monstrosity
+				AuctionedItem auctionedItem = new AuctionedItem();
+				auctionedItem.setId(UUID.randomUUID());
+				auctionedItem.setOwner(e.player.getUniqueId());
+				auctionedItem.setHighestBidder(e.player.getUniqueId());
+				auctionedItem.setOwnerName(e.player.getName());
+				auctionedItem.setHighestBidderName(e.player.getName());
+				auctionedItem.setItem(this.itemToBeListed.clone());
+				auctionedItem.setCategory(MaterialCategorizer.getMaterialCategory(this.itemToBeListed.clone()));
+				auctionedItem.setExpiresAt(System.currentTimeMillis() + 1000L * this.auctionTime);
+				auctionedItem.setBidItem(isBiddingItem);
+				auctionedItem.setExpired(false);
+
+				auctionedItem.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(this.isAllowingBuyNow ? buyNowPrice : -1) : this.isAllowingBuyNow ? buyNowPrice : -1);
+				auctionedItem.setBidStartingPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(this.isBiddingItem ? this.bidStartPrice : 0) : this.isBiddingItem ? this.bidStartPrice : 0);
+				auctionedItem.setBidIncrementPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(this.isBiddingItem ? this.bidIncrementPrice != null ? this.bidIncrementPrice : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0) : this.isBiddingItem ? this.bidIncrementPrice != null ? this.bidIncrementPrice : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0);
+				auctionedItem.setCurrentPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(this.isBiddingItem ? this.bidStartPrice : this.buyNowPrice <= -1 ? this.bidStartPrice : this.buyNowPrice) : this.isBiddingItem ? this.bidStartPrice : this.buyNowPrice <= -1 ? this.bidStartPrice : this.buyNowPrice);
+
+				auctionedItem.setListedWorld(e.player.getWorld().getName());
+				auctionedItem.setInfinite(false);
+				auctionedItem.setAllowPartialBuy(false);
+
+				AuctionHouse.getInstance().getGuiManager().showGUI(e.player, new GUIListingConfirm(e.player, auctionedItem, result -> {
+					if (!result) {
+						e.player.closeInventory();
+						if (!this.acceptsItems || this.itemToBeListed != null && this.itemToBeListed.getType() != XMaterial.AIR.parseMaterial())
+							PlayerUtils.giveItem(e.player, this.itemToBeListed);
+						return;
+					}
+
+					AuctionAPI.getInstance().listAuction(
+							e.player,
+							this.itemToBeListed.clone(),
+							this.itemToBeListed.clone(),
+							this.auctionTime,
+							/* buy now price */ this.isAllowingBuyNow ? this.buyNowPrice : -1,
+							/* start bid price */ isBiddingItem ? this.bidStartPrice : !this.isAllowingBuyNow ? this.buyNowPrice : 0,
+							/* bid inc price */ isBiddingItem ? this.bidIncrementPrice != null ? this.bidIncrementPrice : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0,
+							/* current price */ isBiddingItem ? this.bidStartPrice : this.buyNowPrice <= -1 ? this.bidStartPrice : this.buyNowPrice,
+							isBiddingItem || !this.isAllowingBuyNow,
+							false,
+							false,
+							false,
+							false
+					);
+
+					e.player.closeInventory();
+
+					e.player.closeInventory();
+					if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+						e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+					}
+				}));
+
 			} else {
 				if (!this.auctionPlayer.canListItem()) {
 					return;
