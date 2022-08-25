@@ -92,7 +92,14 @@ public class AuctionedItem {
 		ItemStack itemStack = this.item.clone();
 		itemStack.setAmount(Math.max(this.item.getAmount(), 1));
 		ItemMeta meta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
-		List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
+//		List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
+
+		List<String> lore = new ArrayList<>();
+
+		if (meta != null && meta.getLore() != null)
+			lore.addAll(meta.getLore());
+
+
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HEADER.getStringList()));
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_SELLER.getStringList().stream().map(s -> s.replace("%seller%", this.ownerName)).collect(Collectors.toList())));
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_CURRENT_PRICE.getStringList().stream().map(s -> s.replace("%currentprice%", Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : AuctionAPI.getInstance().formatNumber(this.currentPrice))).collect(Collectors.toList())));
@@ -121,7 +128,12 @@ public class AuctionedItem {
 		ItemStack itemStack = this.item.clone();
 		itemStack.setAmount(Math.max(this.item.getAmount(), 1));
 		ItemMeta meta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
-		List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
+
+		List<String> lore = new ArrayList<>();
+
+		if (meta != null && meta.getLore() != null)
+			lore.addAll(meta.getLore());
+
 
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HEADER.getStringList()));
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_SELLER.getStringList().stream().map(s -> s.replace("%seller%", this.ownerName)).collect(Collectors.toList())));
