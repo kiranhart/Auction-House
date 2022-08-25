@@ -159,6 +159,10 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 	}
 
 	private boolean checkFilterCriteria(AuctionedItem auctionItem, AuctionItemCategory category) {
+		// option for only whitelisted shit
+		if (Settings.FILTER_ONLY_USES_WHITELIST.getBoolean())
+			return AuctionHouse.getInstance().getFilterManager().getFilterWhitelist(category).stream().anyMatch(item -> item.isSimilar(auctionItem.getItem()));
+
 		return auctionItem.getCategory() == category ||
 				AuctionHouse.getInstance().getFilterManager().getFilterWhitelist(category).stream().anyMatch(item -> item.isSimilar(auctionItem.getItem()));
 	}
