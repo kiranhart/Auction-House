@@ -171,6 +171,8 @@ public class GUISellItem extends AbstractPlaceholderGui {
 					reopen(e);
 				});
 
+				builder.onPlayerDiconnect(() -> PlayerUtils.giveItem(e.player, this.itemToBeListed));
+
 				PlayerChatInput<Long> input = builder.build();
 				input.start();
 			});
@@ -201,6 +203,8 @@ public class GUISellItem extends AbstractPlaceholderGui {
 					reopen(e);
 				});
 
+				builder.onPlayerDiconnect(() -> PlayerUtils.giveItem(e.player, this.itemToBeListed));
+
 				PlayerChatInput<Double> input = builder.build();
 				input.start();
 			});
@@ -228,6 +232,8 @@ public class GUISellItem extends AbstractPlaceholderGui {
 					reopen(e);
 				});
 
+				builder.onPlayerDiconnect(() -> PlayerUtils.giveItem(e.player, this.itemToBeListed));
+
 				PlayerChatInput<Double> input = builder.build();
 				input.start();
 			});
@@ -253,6 +259,8 @@ public class GUISellItem extends AbstractPlaceholderGui {
 						this.bidIncrementPrice = value;
 						reopen(e);
 					});
+
+					builder.onPlayerDiconnect(() -> PlayerUtils.giveItem(e.player, this.itemToBeListed));
 
 					PlayerChatInput<Double> input = builder.build();
 					input.start();
