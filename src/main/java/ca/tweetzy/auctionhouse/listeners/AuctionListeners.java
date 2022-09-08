@@ -26,12 +26,6 @@ public class AuctionListeners implements Listener {
 
 	@EventHandler
 	public void onAuctionStart(AuctionStartEvent e) {
-
-		// legacy stat stuff
-//		AuctionHouse.getInstance().getAuctionStatManager().insertOrUpdate(e.getSeller(), new AuctionStat<>(
-//				1, 0, 0, 0D, 0D
-//		));
-
 		// new stat system
 		new AuctionStatistic(e.getSeller().getUniqueId(), e.getAuctionItem().isBidItem() ? AuctionStatisticType.CREATED_AUCTION : AuctionStatisticType.CREATED_BIN, 1).store(null);
 
@@ -54,25 +48,6 @@ public class AuctionListeners implements Listener {
 
 	@EventHandler
 	public void onAuctionEnd(AuctionEndEvent e) {
-
-		// legacy stat system
-//		AuctionHouse.getInstance().getAuctionStatManager().insertOrUpdate(e.getOriginalOwner(), new AuctionStat<>(
-//				0,
-//				1,
-//				0,
-//				e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? e.getAuctionItem().getCurrentPrice() : e.getAuctionItem().getBasePrice(),
-//				0D
-//		));
-
-		// legacy stat system
-//		AuctionHouse.getInstance().getAuctionStatManager().insertOrUpdate(e.getBuyer(), new AuctionStat<>(
-//				0,
-//				0,
-//				0,
-//				0D,
-//				e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? e.getAuctionItem().getCurrentPrice() : e.getAuctionItem().getBasePrice()
-//		));
-
 		// new stat system
 		new AuctionStatistic(e.getOriginalOwner().getUniqueId(), e.getAuctionItem().isBidItem() ? AuctionStatisticType.SOLD_AUCTION : AuctionStatisticType.SOLD_BIN, 1).store(null);
 		new AuctionStatistic(e.getOriginalOwner().getUniqueId(), AuctionStatisticType.MONEY_EARNED, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? e.getAuctionItem().getCurrentPrice() : e.getAuctionItem().getBasePrice()).store(null);

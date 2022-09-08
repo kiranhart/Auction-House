@@ -67,26 +67,6 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 			return String.valueOf(auctionPlayer.getItems(true).size());
 		}
 
-		if (params.equalsIgnoreCase("total_money_earned")) {
-			return String.valueOf(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getEarned());
-		}
-
-		if (params.equalsIgnoreCase("total_money_spent")) {
-			return String.valueOf(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getSpent());
-		}
-
-		if (params.equalsIgnoreCase("total_items_listed")) {
-			return String.valueOf(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getCreated());
-		}
-
-		if (params.equalsIgnoreCase("total_items_expired")) {
-			return String.valueOf(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getExpired());
-		}
-
-		if (params.equalsIgnoreCase("total_items_sold")) {
-			return String.valueOf(AuctionHouse.getInstance().getAuctionStatManager().getPlayerStats(player).getSold());
-		}
-
 		if (params.equalsIgnoreCase("server_active_auctions")) {
 			return String.valueOf(AuctionHouse.getInstance().getAuctionItemManager().getItems().size());
 		}

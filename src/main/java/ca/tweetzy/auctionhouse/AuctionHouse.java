@@ -87,9 +87,6 @@ public class AuctionHouse extends TweetyPlugin {
 	private AuctionBanManager auctionBanManager;
 
 	@Getter
-	private AuctionStatManager auctionStatManager;
-
-	@Getter
 	private AuctionStatisticManager auctionStatisticManager;
 
 	@Getter
@@ -213,9 +210,6 @@ public class AuctionHouse extends TweetyPlugin {
 		this.minItemPriceManager = new MinItemPriceManager();
 		this.minItemPriceManager.loadMinPrices();
 
-		this.auctionStatManager = new AuctionStatManager();
-		this.auctionStatManager.loadStats();
-
 		this.auctionStatisticManager = new AuctionStatisticManager();
 		this.auctionStatisticManager.loadStatistics();
 
@@ -310,7 +304,6 @@ public class AuctionHouse extends TweetyPlugin {
 			this.auctionItemManager.end();
 			this.filterManager.saveFilterWhitelist(false);
 			this.auctionBanManager.saveBans(false);
-			this.auctionStatManager.saveStats();
 			this.dataManager.close();
 		}
 

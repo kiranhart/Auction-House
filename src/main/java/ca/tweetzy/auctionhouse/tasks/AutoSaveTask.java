@@ -27,7 +27,6 @@ public class AutoSaveTask extends BukkitRunnable {
 	@Override
 	public void run() {
 		AuctionHouse.getInstance().getDataManager().updateItems(AuctionHouse.getInstance().getAuctionItemManager().getItems().values(), null);
-		AuctionHouse.getInstance().getDataManager().updateStats(AuctionHouse.getInstance().getAuctionStatManager().getStats(), null);
 		AuctionHouse.getInstance().getFilterManager().saveFilterWhitelist(true);
 
 		if (!Settings.DISABLE_AUTO_SAVE_MSG.getBoolean())

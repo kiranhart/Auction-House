@@ -3,7 +3,6 @@ package ca.tweetzy.auctionhouse.tasks;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
-import ca.tweetzy.auctionhouse.auction.AuctionStat;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -102,11 +101,6 @@ public class TickAuctionsTask extends BukkitRunnable {
 				// the owner is the highest bidder, so just expire
 				if (auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
 					auctionItem.setExpired(true);
-					if (auctionItem.isExpired()) {
-						AuctionHouse.getInstance().getAuctionStatManager().insertOrUpdate(Bukkit.getOfflinePlayer(auctionItem.getOwner()), new AuctionStat<>(
-								0, 0, 1, 0D, 0D
-						));
-					}
 					continue;
 				}
 
