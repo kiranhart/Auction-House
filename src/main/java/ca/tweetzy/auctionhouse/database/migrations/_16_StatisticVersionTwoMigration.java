@@ -1,8 +1,6 @@
 package ca.tweetzy.auctionhouse.database.migrations;
 
-import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.core.database.DataMigration;
-import ca.tweetzy.core.database.MySQLConnector;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,11 +21,9 @@ public class _16_StatisticVersionTwoMigration extends DataMigration {
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 
-		String autoIncrement = AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
-
 		try (Statement statement = connection.createStatement()) {
 			statement.execute("CREATE TABLE " + tablePrefix + "statistic (" +
-					"id INTEGER PRIMARY KEY" + autoIncrement + ", " +
+					"id VARCHAR(36) PRIMARY KEY, " +
 					"stat_owner VARCHAR(36) NOT NULL, " +
 					"stat_type VARCHAR(20) NOT NULL, " +
 					"value DOUBLE NOT NULL, " +

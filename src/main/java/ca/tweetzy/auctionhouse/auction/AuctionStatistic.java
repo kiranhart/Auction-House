@@ -18,19 +18,40 @@
 
 package ca.tweetzy.auctionhouse.auction;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.interfaces.Storeable;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @AllArgsConstructor
 @Getter
-public final class AuctionStatistic {
+public final class AuctionStatistic implements Storeable<AuctionStatistic> {
 
+	private final UUID id;
 	private final UUID statOwner;
 	private final AuctionStatisticType statisticType;
 	private final double value;
 	private final long time;
 
+	public AuctionStatistic(UUID statOwner, AuctionStatisticType type, double value) {
+		this(UUID.randomUUID(), statOwner, type, value, System.currentTimeMillis());
+	}
+
+	@Override
+	public void store(Consumer<AuctionStatistic> stored) {
+		AuctionHouse.getInstance().getDataManager().insertStatistic(this, (error, statistic) -> {
+			if (error != null) return;
+
+			if (statistic != null) {
+				AuctionHouse.getInstance().getAuctionStatisticManager().addStatistic(statistic);
+
+				if (stored != null)
+					stored.accept(statistic);
+			}
+		});
+	}
 }

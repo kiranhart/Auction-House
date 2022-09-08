@@ -3,10 +3,7 @@ package ca.tweetzy.auctionhouse.database;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.*;
-import ca.tweetzy.auctionhouse.auction.enums.AdminAction;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
+import ca.tweetzy.auctionhouse.auction.enums.*;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.database.DataManagerAbstract;
@@ -393,6 +390,49 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void insertStatistic(AuctionStatistic statistic, Callback<AuctionStatistic> callback) {
+		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "statistic (id, stat_owner, stat_type, value, time) VALUES (?, ?, ?, ?, ?)")) {
+
+				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "statistic WHERE id = ?");
+
+				fetch.setString(1, statistic.getId().toString());
+				statement.setString(1, statistic.getId().toString());
+				statement.setString(2, statistic.getStatOwner().toString());
+				statement.setString(3, statistic.getStatisticType().name());
+				statement.setDouble(4, statistic.getValue());
+				statement.setLong(5, statistic.getTime());
+
+				if (callback != null) {
+					ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractAuctionStatistic(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getStatistics(Callback<List<AuctionStatistic>> callback) {
+		List<AuctionStatistic> stats = new ArrayList<>();
+		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "statistic")) {
+				ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					stats.add(extractAuctionStatistic(resultSet));
+				}
+
+				callback.accept(null, stats);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	@Deprecated
 	public void getStats(Callback<Map<UUID, AuctionStat<Integer, Integer, Integer, Double, Double>>> callback) {
 		Map<UUID, AuctionStat<Integer, Integer, Integer, Double, Double>> stats = new HashMap<>();
 		this.async(() -> this.databaseConnector.connect(connection -> {
@@ -415,6 +455,7 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	@Deprecated
 	public void updateStats(Map<UUID, AuctionStat<Integer, Integer, Integer, Double, Double>> stats, UpdateCallback callback) {
 		this.databaseConnector.connect(connection -> {
 			connection.setAutoCommit(false);
@@ -586,6 +627,16 @@ public class DataManager extends DataManagerAbstract {
 				resolveCallback(callback, e);
 			}
 		}));
+	}
+
+	private AuctionStatistic extractAuctionStatistic(ResultSet resultSet) throws SQLException {
+		return new AuctionStatistic(
+				UUID.fromString(resultSet.getString("uuid")),
+				UUID.fromString(resultSet.getString("stat_owner")),
+				AuctionStatisticType.valueOf(resultSet.getString("stat_type")),
+				resultSet.getDouble("value"),
+				resultSet.getLong("time")
+		);
 	}
 
 	private AuctionPlayer extractAuctionPlayer(ResultSet resultSet) throws SQLException {
