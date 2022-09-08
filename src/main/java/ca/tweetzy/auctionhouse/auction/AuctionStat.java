@@ -13,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@Deprecated
 public final class AuctionStat<Created, Sold, Expired, Earned, Spent> {
 
 	private Created created;
