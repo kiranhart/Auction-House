@@ -90,6 +90,9 @@ public class AuctionHouse extends TweetyPlugin {
 	private AuctionStatManager auctionStatManager;
 
 	@Getter
+	private AuctionStatisticManager auctionStatisticManager;
+
+	@Getter
 	private MinItemPriceManager minItemPriceManager;
 
 	@Getter
@@ -212,6 +215,9 @@ public class AuctionHouse extends TweetyPlugin {
 
 		this.auctionStatManager = new AuctionStatManager();
 		this.auctionStatManager.loadStats();
+
+		this.auctionStatisticManager = new AuctionStatisticManager();
+		this.auctionStatisticManager.loadStatistics();
 
 		// auction players
 		this.auctionPlayerManager = new AuctionPlayerManager();

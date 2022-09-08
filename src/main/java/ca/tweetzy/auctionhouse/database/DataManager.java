@@ -392,9 +392,9 @@ public class DataManager extends DataManagerAbstract {
 
 	public void insertStatistic(AuctionStatistic statistic, Callback<AuctionStatistic> callback) {
 		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "statistic (id, stat_owner, stat_type, value, time) VALUES (?, ?, ?, ?, ?)")) {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "statistic (uuid, stat_owner, stat_type, value, time) VALUES (?, ?, ?, ?, ?)")) {
 
-				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "statistic WHERE id = ?");
+				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "statistic WHERE uuid = ?");
 
 				fetch.setString(1, statistic.getId().toString());
 				statement.setString(1, statistic.getId().toString());
@@ -402,6 +402,7 @@ public class DataManager extends DataManagerAbstract {
 				statement.setString(3, statistic.getStatisticType().name());
 				statement.setDouble(4, statistic.getValue());
 				statement.setLong(5, statistic.getTime());
+				statement.executeUpdate();
 
 				if (callback != null) {
 					ResultSet res = fetch.executeQuery();

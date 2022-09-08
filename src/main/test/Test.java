@@ -1,4 +1,8 @@
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The current file has been created by Kiran Hart
@@ -9,33 +13,23 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 public class Test {
 
 	public static void main(String[] args) {
-//        System.out.println(TimeUtils.makeReadable(getSecondsFromString("2y")*1000));
-//        List<String> enchants = new ArrayList<>();
-//        enchants.add("Sharpness V");
-//        enchants.add("Sharpness I");
-//        enchants.add("Fire Aspect IV");
 
-//        System.out.println(StringUtils.join(enchants, ";=;"));
+		final List<TestObject> list = new ArrayList<>();
 
-//        final String uIDPartOne = "%%__US";
-//        final String uIDPartTwo = "ER__%%";
-//
-//        final String UID = "%%__USER_%%";
+		list.add(new TestObject(1, "Kiran"));
+		list.add(new TestObject(2, "Carl"));
+		list.add(new TestObject(3, "Orlando"));
 
-//        System.out.println(UID.contains(uIDPartOne) && UID.contains(uIDPartTwo));
+		System.out.println(list.size());
+	}
 
-//        System.out.println(AuctionAPI.toTicks("1 day"));
+	@AllArgsConstructor
+	@Getter
+	static class TestObject {
 
-//        String arguments = "3d";
-//
-//        System.out.println(getSecondsFromString(arguments));
+		private final int id;
+		private final String name;
 
-//        long future = System.currentTimeMillis() + 1000L * 10;
-
-//		System.out.println("16".compareTo(System.getProperty("java.version")) <= 0);
-
-//		final double max = 99999999999999999999999999999.0D;
-		System.out.println(AuctionAPI.getInstance().getFriendlyNumber(0));
 	}
 
 	public static long getSecondsFromString(String time) {

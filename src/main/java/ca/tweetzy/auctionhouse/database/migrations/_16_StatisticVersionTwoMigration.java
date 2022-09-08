@@ -23,7 +23,7 @@ public class _16_StatisticVersionTwoMigration extends DataMigration {
 
 		try (Statement statement = connection.createStatement()) {
 			statement.execute("CREATE TABLE " + tablePrefix + "statistic (" +
-					"id VARCHAR(36) PRIMARY KEY, " +
+					"uuid VARCHAR(36) PRIMARY KEY, " +
 					"stat_owner VARCHAR(36) NOT NULL, " +
 					"stat_type VARCHAR(20) NOT NULL, " +
 					"value DOUBLE NOT NULL, " +
