@@ -20,10 +20,15 @@ package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionStatistic;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public final class AuctionStatisticManager {
 
@@ -45,6 +50,36 @@ public final class AuctionStatisticManager {
 	public List<AuctionStatistic> getStatistics() {
 		synchronized (this.statistics) {
 			return this.statistics;
+		}
+	}
+
+	public double getStatistic(AuctionStatisticType statisticType) {
+		synchronized (this.statistics) {
+			return this.statistics.stream().filter(stat -> stat.getStatisticType() == statisticType).mapToDouble(AuctionStatistic::getValue).sum();
+		}
+	}
+
+	public double getStatistic(AuctionStatisticType statisticType, ChronoUnit timeUnit, int timeAmount) {
+		synchronized (this.statistics) {
+			final List<AuctionStatistic> globalStats = this.statistics.stream().filter(stat -> stat.getStatisticType() == statisticType).collect(Collectors.toList());
+			final long time = Instant.now().minus(timeAmount, timeUnit).toEpochMilli();
+
+			return globalStats.stream().filter(stat -> stat.getTime() >= time).mapToDouble(AuctionStatistic::getValue).sum();
+		}
+	}
+
+	public double getStatisticByPlayer(UUID playerUuid, AuctionStatisticType statisticType) {
+		synchronized (this.statistics) {
+			return this.statistics.stream().filter(stat -> stat.getStatOwner().equals(playerUuid) && stat.getStatisticType() == statisticType).mapToDouble(AuctionStatistic::getValue).sum();
+		}
+	}
+
+	public double getStatisticByPlayer(UUID playerUuid, AuctionStatisticType statisticType, ChronoUnit timeUnit, int timeAmount) {
+		synchronized (this.statistics) {
+			final List<AuctionStatistic> playerStats = this.statistics.stream().filter(stat -> stat.getStatOwner().equals(playerUuid) && stat.getStatisticType() == statisticType).collect(Collectors.toList());
+			final long time = Instant.now().minus(timeAmount, timeUnit).toEpochMilli();
+
+			return playerStats.stream().filter(stat -> stat.getTime() >= time).mapToDouble(AuctionStatistic::getValue).sum();
 		}
 	}
 

@@ -44,7 +44,6 @@ public class AuctionPlayer {
 		this.player = player;
 	}
 
-
 	public boolean canListItem() {
 		if (Settings.LIST_ITEM_DELAY.getInt() == -1) {
 			return true;
@@ -110,4 +109,5 @@ public class AuctionPlayer {
 
 		return possibleTimes.size() <= 0 ? defaultTime : Math.max(defaultTime, Collections.max(possibleTimes));
 	}
+
 }
