@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -35,8 +36,11 @@ public class AuctionPlayer {
 	private boolean showListingInfo;
 	private long lastListedItem;
 
+	private ItemStack itemBeingListed;
+	private int assignedTaskId;
+
 	public AuctionPlayer(UUID uuid) {
-		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", true, -1);
+		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", true, -1, null,-1);
 	}
 
 	public AuctionPlayer(Player player) {

@@ -593,7 +593,9 @@ public class DataManager extends DataManagerAbstract {
 				AuctionSortType.valueOf(resultSet.getString("filter_sort_type")),
 				"",
 				true,
-				resultSet.getLong("last_listed_item")
+				resultSet.getLong("last_listed_item"),
+				null,
+				-1
 		);
 	}
 

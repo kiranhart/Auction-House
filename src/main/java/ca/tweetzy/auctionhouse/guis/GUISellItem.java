@@ -17,9 +17,11 @@ import ca.tweetzy.core.input.PlayerChatInput;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +48,7 @@ public class GUISellItem extends AbstractPlaceholderGui {
 	private boolean isAllowingBuyNow;
 	private int auctionTime;
 
+	private BukkitTask task;
 
 	public GUISellItem(AuctionPlayer auctionPlayer, ItemStack itemToBeListed, double buyNowPrice, double bidStartPrice, double bidIncrementPrice, boolean isBiddingItem, boolean isAllowingBuyNow, int auctionTime) {
 		super(auctionPlayer);
@@ -84,9 +87,14 @@ public class GUISellItem extends AbstractPlaceholderGui {
 			}
 
 			AuctionHouse.getInstance().getAuctionPlayerManager().addToUsingSellGUI(open.player.getUniqueId());
+
+			makeMess();
 		});
 
 		setOnClose(close -> {
+
+			cleanup();
+
 			if (!AuctionHouse.getInstance().getAuctionPlayerManager().getUsingSellGUI().contains(close.player.getUniqueId())) {
 				ItemStack toGiveBack = AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().get(close.player.getUniqueId());
 				PlayerUtils.giveItem(close.player, toGiveBack); // this could give them air
@@ -137,6 +145,7 @@ public class GUISellItem extends AbstractPlaceholderGui {
 					e.event.setCancelled(true);
 				}
 			}
+
 
 			this.itemToBeListed = e.clickedItem;
 		});
@@ -405,8 +414,6 @@ public class GUISellItem extends AbstractPlaceholderGui {
 					);
 
 					e.player.closeInventory();
-
-					e.player.closeInventory();
 					if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
 						e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 					}
@@ -463,5 +470,17 @@ public class GUISellItem extends AbstractPlaceholderGui {
 
 	private void setTheItemToBeListed() {
 		this.itemToBeListed = getItem(1, 4);
+		this.auctionPlayer.setItemBeingListed(this.itemToBeListed);
+	}
+
+	private void makeMess() {
+		task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::setTheItemToBeListed, 0L, 10);
+		this.auctionPlayer.setAssignedTaskId(task.getTaskId());
+	}
+
+	private void cleanup() {
+		if (task != null) {
+			task.cancel();
+		}
 	}
 }

@@ -743,6 +743,11 @@ public class AuctionAPI {
 
 		// Actually attempt the insertion now
 		AuctionHouse.getInstance().getDataManager().insertAuctionAsync(auctionedItem, (error, inserted) -> {
+
+			AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(seller.getUniqueId());
+			if (auctionPlayer != null)
+				auctionPlayer.setItemBeingListed(null);
+
 			if (error != null) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.something_went_wrong_while_listing").sendPrefixedMessage(seller);
 				ItemStack originalCopy = original.clone();

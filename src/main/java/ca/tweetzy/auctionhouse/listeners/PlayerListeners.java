@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
 import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
+import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -22,6 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -42,6 +44,22 @@ import java.util.List;
  */
 public class PlayerListeners implements Listener {
 
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent event) {
+		final Player player = event.getEntity();
+
+		final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
+		if (auctionPlayer != null) {
+			// task id cancel
+			Bukkit.getServer().getScheduler().cancelTask(auctionPlayer.getAssignedTaskId());
+
+			if (auctionPlayer.getItemBeingListed() != null && player.getLocation().getWorld() != null) {
+				player.getLocation().getWorld().dropItemNaturally(player.getLocation(), auctionPlayer.getItemBeingListed());
+			}
+		}
+
+	}
+
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player player = e.getPlayer();
@@ -60,9 +78,6 @@ public class PlayerListeners implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
 
-
-		//todo maybe add this back if it messes up stuff
-//		AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().remove(player.getUniqueId());
 		AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
 		AuctionHouse.getInstance().getLogger().info("Removing sell holding instance for user: " + player.getName());
 	}
