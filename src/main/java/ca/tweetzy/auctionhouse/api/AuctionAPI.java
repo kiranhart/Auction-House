@@ -494,7 +494,14 @@ public class AuctionAPI {
 		if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
 			for (ItemStack item : player.getInventory().getContents()) {
 				if (item == null || item.getType() != XMaterial.PLAYER_HEAD.parseMaterial()) continue;
-				if (NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) total += item.getAmount();
+				if (NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) {
+					final String invItemTexture = NBTEditor.getTexture(item);
+					final String orgItemTexture = NBTEditor.getTexture(stack);
+
+					if (invItemTexture == null) continue;
+					if (orgItemTexture == null) continue;
+					total += item.getAmount();
+				}
 			}
 		} else {
 			for (ItemStack item : player.getInventory().getContents()) {
@@ -542,7 +549,23 @@ public class AuctionAPI {
 			ItemStack item = player.getInventory().getItem(j);
 			if (item == null) continue;
 			if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial() && item.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
-				if (!NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) continue;
+
+				// is actual player head???
+				SkullMeta invItemMeta = (SkullMeta) item.getItemMeta();
+				SkullMeta orgItemMeta = (SkullMeta) stack.getItemMeta();
+
+				if (invItemMeta != null && orgItemMeta != null && invItemMeta.hasOwner() && orgItemMeta.hasOwner()) {
+					if (!invItemMeta.getOwner().equalsIgnoreCase(orgItemMeta.getOwner())) continue;
+				} else {
+					final String invItemTexture = NBTEditor.getTexture(item);
+					final String orgItemTexture = NBTEditor.getTexture(stack);
+
+					if (invItemTexture == null) continue;
+					if (orgItemTexture == null) continue;
+
+					if (!NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) continue;
+				}
+
 			} else {
 				if (!item.isSimilar(stack)) continue;
 
