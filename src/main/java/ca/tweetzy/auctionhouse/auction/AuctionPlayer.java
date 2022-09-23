@@ -89,6 +89,10 @@ public class AuctionPlayer {
 
 
 	public int getSellLimit() {
+		// fall back
+		if (player == null)
+			return Integer.MAX_VALUE;
+
 		if (player.hasPermission("auctionhouse.maxsell.*")) return Integer.MAX_VALUE;
 		for (int i = 1001; i > 0; i--) {
 			if (player.hasPermission("auctionhouse.maxsell." + i)) return i;
