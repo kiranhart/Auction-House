@@ -24,20 +24,48 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public final class AuctionStatisticManager {
 
 	private final List<AuctionStatistic> statistics = Collections.synchronizedList(new ArrayList<>());
 
+	// 'cheat' way of doing this leaderboard thing, I will fix this eventually...
+	private final Map<UUID, Double> createdAuctionCount = new ConcurrentHashMap<>();
+	private final Map<UUID, Double> createdBinCount = new ConcurrentHashMap<>();
+	private final Map<UUID, Double> soldAuctionCount = new ConcurrentHashMap<>();
+	private final Map<UUID, Double> soldBinCount = new ConcurrentHashMap<>();
+	private final Map<UUID, Double> moneySpentCount = new ConcurrentHashMap<>();
+	private final Map<UUID, Double> moneyEarnedCount = new ConcurrentHashMap<>();
+
+
 	public void addStatistic(AuctionStatistic statistic) {
 		synchronized (this.statistics) {
 			if (this.statistics.contains(statistic)) return;
 			this.statistics.add(statistic);
+
+			switch (statistic.getStatisticType()) {
+				case CREATED_AUCTION:
+					this.createdAuctionCount.put(statistic.getStatOwner(), this.createdAuctionCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					break;
+				case CREATED_BIN:
+					this.createdBinCount.put(statistic.getStatOwner(), this.createdBinCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					break;
+				case SOLD_AUCTION:
+					this.soldAuctionCount.put(statistic.getStatOwner(), this.soldAuctionCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					break;
+				case SOLD_BIN:
+					this.soldBinCount.put(statistic.getStatOwner(), this.soldBinCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					break;
+				case MONEY_SPENT:
+					this.moneySpentCount.put(statistic.getStatOwner(), this.moneySpentCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					break;
+				case MONEY_EARNED:
+					this.moneyEarnedCount.put(statistic.getStatOwner(), this.moneyEarnedCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					break;
+			}
 		}
 	}
 
@@ -50,6 +78,31 @@ public final class AuctionStatisticManager {
 	public List<AuctionStatistic> getStatistics() {
 		synchronized (this.statistics) {
 			return this.statistics;
+		}
+	}
+
+	public Map<UUID, Double> getStatisticMap(AuctionStatisticType statisticType) {
+		switch (statisticType) {
+			case CREATED_AUCTION:
+				return this.createdAuctionCount;
+			case CREATED_BIN:
+				return this.createdBinCount;
+			case SOLD_AUCTION:
+				return this.soldAuctionCount;
+			case SOLD_BIN:
+				return this.soldBinCount;
+			case MONEY_SPENT:
+				return this.moneySpentCount;
+			case MONEY_EARNED:
+				return this.moneyEarnedCount;
+		}
+
+		return new HashMap<>();
+	}
+
+	public List<AuctionStatistic> getStatistics(AuctionStatisticType statisticType) {
+		synchronized (this.statistics) {
+			return this.statistics.stream().filter(stat -> stat.getStatisticType() == statisticType).collect(Collectors.toList());
 		}
 	}
 
