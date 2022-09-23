@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
  */
 public abstract class AbstractPlaceholderGui extends Gui {
 
-	private final Player player;
+	protected final Player player;
 
 	public AbstractPlaceholderGui(Player player) {
 		this.player = player;
