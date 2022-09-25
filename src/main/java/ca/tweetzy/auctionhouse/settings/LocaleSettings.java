@@ -130,6 +130,13 @@ public class LocaleSettings {
 		languageNodes.put("auction_filter.sort_order.recent", "Recent");
 		languageNodes.put("auction_filter.sort_order.price", "Price");
 
+		languageNodes.put("auction_statistic.created_auction", "Created Auction");
+		languageNodes.put("auction_statistic.created_bin", "Created Bin");
+		languageNodes.put("auction_statistic.sold_auctions", "Sold Auctions");
+		languageNodes.put("auction_statistic.sold_bins", "Sold Bins");
+		languageNodes.put("auction_statistic.money_spent", "Money Spent");
+		languageNodes.put("auction_statistic.money_earned", "Money Earned");
+
 		languageNodes.put("auction.listed.withbid", "&eListed &fx%amount% &6%item% &e&lBuy Now&f: &a%base_price% &e&lStarting&f: &a%start_price% &e&lIncrement&f: &a%increment_price%");
 		languageNodes.put("auction.listed.nobid", "&eListed &fx%amount% &6%item% &efor &a%base_price%");
 		languageNodes.put("auction.broadcast.withbid", "&e%player% listed &fx%amount% &6%item% &e&lBuy Now&f: &a%base_price% &e&lStarting&f: &a%start_price% &e&lIncrement&f: &a%increment_price%");
@@ -177,6 +184,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.syntax.togglelistinfo", "togglelistinfo");
 		languageNodes.put("commands.syntax.markchest", "markchest");
 		languageNodes.put("commands.syntax.min price", "minprices [add] [price]");
+		languageNodes.put("commands.syntax.stats", "stats [player]");
 
 		languageNodes.put("commands.description.active", "View all your auction listings");
 		languageNodes.put("commands.description.auctionhouse", "Main command for the plugin, it opens the auction window.");
@@ -194,6 +202,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.description.togglelistinfo", "Toggle whether auction house should message you when you list an item");
 		languageNodes.put("commands.description.markchest", "Toggles whether a chest is an auction chest");
 		languageNodes.put("commands.description.min price", "Adds a minimum sell price to an item");
+		languageNodes.put("commands.description.stats", "View yours or another players stats");
 	}
 
 	public static void send(CommandSender sender, String msg) {

@@ -16,8 +16,8 @@ public final class GUIStats extends AbstractPlaceholderGui {
 	public GUIStats(final Player player) {
 		super(player);
 		this.player = player;
-		setTitle(Settings.GUI_STATS_TITLE.getString());
-		setDefaultItem(Settings.GUI_STATS_BG_ITEM.getMaterial().parseItem());
+		setTitle(Settings.GUI_STATS_VIEW_SELECT_TITLE.getString());
+		setDefaultItem(Settings.GUI_STATS_VIEW_SELECT_BG_ITEM.getMaterial().parseItem());
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);
