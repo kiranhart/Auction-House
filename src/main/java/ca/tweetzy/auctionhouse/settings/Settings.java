@@ -848,6 +848,8 @@ public class Settings {
 	public static final ConfigSetting GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_NAME = new ConfigSetting(config, "gui.stat view select.items.leaderboard.name", "&e&lLeaderboard");
 	public static final ConfigSetting GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_LORE = new ConfigSetting(config, "gui.stat view select.items.leaderboard.lore", Collections.singletonList("&7Click to view server leaderboard"));
 
+	public static final ConfigSetting GUI_STATS_SELF_TITLE = new ConfigSetting(config, "gui.stat view self.items.title", "&7Auction House - &eYour Stats");
+	public static final ConfigSetting GUI_STATS_SELF_BG_ITEM = new ConfigSetting(config, "gui.stat view self.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
 
 	public static final ConfigSetting GUI_STATS_SELF_ITEMS_CREATED_AUCTION_ITEM = new ConfigSetting(config, "gui.stat view self.items.created auction.item", XMaterial.DIAMOND.name());
 	public static final ConfigSetting GUI_STATS_SELF_ITEMS_CREATED_AUCTION_NAME = new ConfigSetting(config, "gui.stat view self.items.created auction.name", "&e&lCreated Auctions");
@@ -872,6 +874,18 @@ public class Settings {
 	public static final ConfigSetting GUI_STATS_SELF_ITEMS_MONEY_SPENT_ITEM = new ConfigSetting(config, "gui.stat view self.items.money spent.item", XMaterial.RED_STAINED_GLASS_PANE.name());
 	public static final ConfigSetting GUI_STATS_SELF_ITEMS_MONEY_SPENT_NAME = new ConfigSetting(config, "gui.stat view self.items.money spent.name", "&e&LMoney Spent");
 	public static final ConfigSetting GUI_STATS_SELF_ITEMS_MONEY_SPENT_LORE = new ConfigSetting(config, "gui.stat view self.items.money spent.lore", Collections.singletonList("&7You spent &c$%money_spent%"));
+
+	public static final ConfigSetting GUI_STATS_LEADERBOARD_TITLE = new ConfigSetting(config, "gui.stat view leaderboard.items.title", "&7Auction House - &eStat Leaderboard");
+	public static final ConfigSetting GUI_STATS_LEADERBOARD_BG_ITEM = new ConfigSetting(config, "gui.stat view leaderboard.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+	public static final ConfigSetting GUI_STATS_LEADERBOARD_ITEMS_PLAYER_NAME = new ConfigSetting(config, "gui.stat view leaderboard.items.player.name", "&e&l%player_name%");
+	public static final ConfigSetting GUI_STATS_LEADERBOARD_ITEMS_PLAYER_LORE = new ConfigSetting(config, "gui.stat view leaderboard.items.player.lore", Arrays.asList(
+			"",
+			"&7Statistic&f: &e%auction_statistic_name%",
+			"&7Value&f: &e%auction_statistic_value%",
+			""
+	));
+
 
 	/*  ===============================
 	 *       EXPIRED ITEMS ADMIN GUI
