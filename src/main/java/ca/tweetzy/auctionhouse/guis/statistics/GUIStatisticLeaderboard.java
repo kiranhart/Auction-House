@@ -24,14 +24,14 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
@@ -45,8 +45,8 @@ public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
 		super(player);
 		this.auctionPlayer = player;
 		this.statisticType = statisticType;
-		setTitle(Settings.GUI_STATS_VIEW_SELECT_TITLE.getString());
-		setDefaultItem(Settings.GUI_STATS_VIEW_SELECT_BG_ITEM.getMaterial().parseItem());
+		setTitle(Settings.GUI_STATS_LEADERBOARD_TITLE.getString());
+		setDefaultItem(Settings.GUI_STATS_LEADERBOARD_BG_ITEM.getMaterial().parseItem());
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);
@@ -64,24 +64,55 @@ public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
 
 
-
-			return this.statisticsMap;
+			return this.statisticsMap.entrySet().stream().skip((page - 1) * 45L).limit(45L).collect(Collectors.toList());
 		}).asyncLast((data) -> {
 			pages = (int) Math.max(1, Math.ceil(this.statisticsMap.size() / (double) 45L));
+			drawPaginationButtons();
 
 			int slot = 0;
-			for (Map.Entry<UUID, Double> playerStat : data.entrySet()) {
-				final ItemStack head = AuctionAPI.getInstance().getPlayerHead(Bukkit.getOfflinePlayer(playerStat.getKey()).getName());
+			for (Map.Entry<UUID, Double> playerStat : data) {
+				final OfflinePlayer targetUser = Bukkit.getOfflinePlayer(playerStat.getKey());
 
-				setItem(slot++, ConfigurationItemHelper.createConfigurationItem(head, "STAT", Arrays.asList(
-						playerStat.getKey() + " == uuid",
-						playerStat.getValue() + " == val"
-				), null));
+				final ItemStack head = AuctionAPI.getInstance().getPlayerHead(targetUser.getName());
+
+				setItem(slot++, ConfigurationItemHelper.createConfigurationItem(
+						head,
+						Settings.GUI_STATS_LEADERBOARD_ITEMS_PLAYER_NAME.getString(),
+						Settings.GUI_STATS_LEADERBOARD_ITEMS_PLAYER_LORE.getStringList(),
+						new HashMap<String, Object>() {{
+							put("%player_name%", targetUser.getName() == null ? "&e&lUsername not found" : targetUser.getName());
+							put("%auction_statistic_name%", statisticType.getTranslatedType());
+							put("%auction_statistic_value%", AuctionAPI.getInstance().formatNumber(playerStat.getValue()));
+						}}
+				));
 			}
 		}).execute();
 
 		setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
 			e.manager.showGUI(e.player, new GUIStatisticViewSelect(this.auctionPlayer));
+		});
+
+		drawStatisticTypeButton();
+	}
+
+	private void drawPaginationButtons() {
+		setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
+		setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+		setOnPage(e -> {
+			draw();
+			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString(), 1.0F, 1.0F);
+		});
+	}
+
+	private void drawStatisticTypeButton() {
+		setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(
+				Settings.GUI_STATS_LEADERBOARD_ITEMS_STAT_ITEM.getString(),
+				Settings.GUI_STATS_LEADERBOARD_ITEMS_STAT_NAME.getString(),
+				Settings.GUI_STATS_LEADERBOARD_ITEMS_STAT_LORE.getStringList(), new HashMap<String, Object>() {{
+					put("%statistic_name%", statisticType.getTranslatedType());
+				}}), click -> {
+
+			click.manager.showGUI(click.player, new GUIStatisticLeaderboard(this.auctionPlayer, this.statisticType.next()));
 		});
 	}
 }
