@@ -886,6 +886,44 @@ public class Settings {
 			""
 	));
 
+	public static final ConfigSetting GUI_STATS_LEADERBOARD_ITEMS_STAT_ITEM = new ConfigSetting(config, "gui.stat view leaderboard.items.stat.item", XMaterial.NETHER_STAR.name());
+	public static final ConfigSetting GUI_STATS_LEADERBOARD_ITEMS_STAT_NAME = new ConfigSetting(config, "gui.stat view leaderboard.items.stat.name", "&e&lStatistic Type");
+	public static final ConfigSetting GUI_STATS_LEADERBOARD_ITEMS_STAT_LORE = new ConfigSetting(config, "gui.stat view leaderboard.items.stat.lore", Arrays.asList(
+			"",
+			"&7Selected&f: &e%statistic_name%",
+			"&7Click to &achange &7viewed statistic",
+			""
+	));
+
+	// other player
+	public static final ConfigSetting GUI_STATS_SEARCH_TITLE = new ConfigSetting(config, "gui.stat view other.items.title", "&7Auction House - &e%player_name% Stats");
+	public static final ConfigSetting GUI_STATS_SEARCH_BG_ITEM = new ConfigSetting(config, "gui.stat view other.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_CREATED_AUCTION_ITEM = new ConfigSetting(config, "gui.stat view other.items.created auction.item", XMaterial.DIAMOND.name());
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_CREATED_AUCTION_NAME = new ConfigSetting(config, "gui.stat view other.items.created auction.name", "&e&lCreated Auctions");
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_CREATED_AUCTION_LORE = new ConfigSetting(config, "gui.stat view other.items.created auction.lore", Collections.singletonList("&7They created &e%created_auctions% &7auctions"));
+
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_CREATED_BIN_ITEM = new ConfigSetting(config, "gui.stat view other.items.created bin.item", XMaterial.HOPPER_MINECART.name());
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_CREATED_BIN_NAME = new ConfigSetting(config, "gui.stat view other.items.created bin.name", "&e&lCreated Bins");
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_CREATED_BIN_LORE = new ConfigSetting(config, "gui.stat view other.items.created bin.lore", Collections.singletonList("&7They created &e%created_bins% &7bins"));
+
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_SOLD_AUCTION_ITEM = new ConfigSetting(config, "gui.stat view other.items.sold auction.item", XMaterial.LADDER.name());
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_SOLD_AUCTION_NAME = new ConfigSetting(config, "gui.stat view other.items.sold auction.name", "&e&LSold Auctions");
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_SOLD_AUCTION_LORE = new ConfigSetting(config, "gui.stat view other.items.sold auction.lore", Collections.singletonList("&7They sold &e%sold_auctions% &7auction(s)"));
+
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_SOLD_BIN_ITEM = new ConfigSetting(config, "gui.stat view other.items.sold bin.item", XMaterial.CHEST.name());
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_SOLD_BIN_NAME = new ConfigSetting(config, "gui.stat view other.items.sold bin.name", "&e&LSold Bins");
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_SOLD_BIN_LORE = new ConfigSetting(config, "gui.stat view other.items.sold bin.lore", Collections.singletonList("&7They &e%sold_bins% &7bin(s)"));
+
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_EARNED_ITEM = new ConfigSetting(config, "gui.stat view other.items.money earned.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_EARNED_NAME = new ConfigSetting(config, "gui.stat view other.items.money earned.name", "&e&LMoney Earned");
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_EARNED_LORE = new ConfigSetting(config, "gui.stat view other.items.money earned.lore", Collections.singletonList("&7They earned &a$%money_earned%"));
+
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_ITEM = new ConfigSetting(config, "gui.stat view other.items.money spent.item", XMaterial.RED_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_NAME = new ConfigSetting(config, "gui.stat view other.items.money spent.name", "&e&LMoney Spent");
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_LORE = new ConfigSetting(config, "gui.stat view other.items.money spent.lore", Collections.singletonList("&7They spent &c$%money_spent%"));
+
+
 
 	/*  ===============================
 	 *       EXPIRED ITEMS ADMIN GUI
