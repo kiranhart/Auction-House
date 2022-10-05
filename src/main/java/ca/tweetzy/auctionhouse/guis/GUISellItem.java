@@ -17,6 +17,7 @@ import ca.tweetzy.core.input.PlayerChatInput;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.ClickType;
@@ -160,6 +161,10 @@ public class GUISellItem extends AbstractPlaceholderGui {
 				put("%remaining_seconds%", times[3]);
 			}}), ClickType.LEFT, e -> {
 				e.gui.close();
+
+				// work-around to clicking closeable item with item on cursor
+				handleClosableCursorItem(e);
+
 				PlayerChatInput.PlayerChatInputBuilder<Long> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
 				builder.isValidInput((p, str) -> {
 					String[] parts = ChatColor.stripColor(str).split(" ");
@@ -193,7 +198,11 @@ public class GUISellItem extends AbstractPlaceholderGui {
 			}}), ClickType.LEFT, e -> {
 				setTheItemToBeListed();
 				setAllowClose(true);
+
 				e.gui.close();
+
+				// work-around to clicking closeable item with item on cursor
+				handleClosableCursorItem(e);
 
 				PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
 				builder.isValidInput((p, str) -> {
@@ -225,7 +234,11 @@ public class GUISellItem extends AbstractPlaceholderGui {
 			}}), ClickType.LEFT, e -> {
 				setTheItemToBeListed();
 				setAllowClose(true);
+
 				e.gui.close();
+
+				// work-around to clicking closeable item with item on cursor
+				handleClosableCursorItem(e);
 
 				PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
 				builder.isValidInput((p, str) -> {
@@ -253,7 +266,11 @@ public class GUISellItem extends AbstractPlaceholderGui {
 				}}), ClickType.LEFT, e -> {
 					setTheItemToBeListed();
 					setAllowClose(true);
+
 					e.gui.close();
+
+					// work-around to clicking closeable item with item on cursor
+					handleClosableCursorItem(e);
 
 					PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
 					builder.isValidInput((p, str) -> {
@@ -453,8 +470,18 @@ public class GUISellItem extends AbstractPlaceholderGui {
 			AuctionHouse.getInstance().getAuctionPlayerManager().getUsingSellGUI().remove(e.player.getUniqueId());
 			setAllowClose(true);
 			e.gui.close();
+
+			if (e.cursor != null)
+				e.player.getInventory().addItem(e.cursor);
 		});
 
+	}
+
+	private void handleClosableCursorItem(@NonNull final GuiClickEvent e) {
+		if (e.cursor != null) {
+			AuctionHouse.getInstance().getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), e.cursor);
+			this.itemToBeListed = e.cursor.clone();
+		}
 	}
 
 	private boolean validateChatNumber(String input, double requirement, boolean checkMax) {
