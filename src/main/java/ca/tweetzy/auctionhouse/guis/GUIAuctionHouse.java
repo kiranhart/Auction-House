@@ -279,6 +279,8 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 
 				ItemStack itemStack = auctionItem.getItem();
 
+				// TODO implement bid tracking/money return on outbid
+
 				OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
 				OfflinePlayer owner = Bukkit.getOfflinePlayer(auctionItem.getOwner());
 
