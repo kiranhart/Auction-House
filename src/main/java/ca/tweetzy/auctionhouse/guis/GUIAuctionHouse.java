@@ -228,7 +228,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 			return;
 		}
 
-		if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_BID_OWN_ITEM.getBoolean()) {
+		if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_BID_OWN_ITEM.getBoolean() || Settings.BIDDING_TAKES_MONEY.getBoolean() && e.player.getUniqueId().equals(auctionItem.getOwner())) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.cantbidonown").sendPrefixedMessage(e.player);
 			return;
 		}
@@ -267,6 +267,8 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 					newBiddingAmount = auctionItem.getCurrentPrice() + value;
 				}
 
+				newBiddingAmount = Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(newBiddingAmount) : newBiddingAmount;
+
 				if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, newBiddingAmount)) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
 					return;
@@ -279,8 +281,6 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 
 				ItemStack itemStack = auctionItem.getItem();
 
-				// TODO implement bid tracking/money return on outbid
-
 				OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
 				OfflinePlayer owner = Bukkit.getOfflinePlayer(auctionItem.getOwner());
 
@@ -288,9 +288,34 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 				Bukkit.getServer().getPluginManager().callEvent(auctionBidEvent);
 				if (auctionBidEvent.isCancelled()) return;
 
+				// TODO implement bid tracking/money return on outbid
+				if (Settings.BIDDING_TAKES_MONEY.getBoolean()) {
+					final double oldBidAmount = auctionItem.getCurrentPrice();
+
+					if (!EconomyManager.hasBalance(e.player, newBiddingAmount)) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
+						return;
+					}
+
+					if (e.player.getUniqueId().equals(owner.getUniqueId()) || oldBidder.getUniqueId().equals(e.player.getUniqueId())) {
+						return;
+					}
+
+					if (!auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
+						EconomyManager.deposit(oldBidder, oldBidAmount);
+						if (oldBidder.isOnline())
+							AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(oldBidAmount)).sendPrefixedMessage(oldBidder.getPlayer());
+					}
+
+					EconomyManager.withdrawBalance(e.player, newBiddingAmount);
+					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(e.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(newBiddingAmount)).sendPrefixedMessage(e.player);
+
+				}
+
 				auctionItem.setHighestBidder(e.player.getUniqueId());
 				auctionItem.setHighestBidderName(e.player.getName());
-				auctionItem.setCurrentPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(newBiddingAmount) : newBiddingAmount);
+				auctionItem.setCurrentPrice(newBiddingAmount);
+
 				if (auctionItem.getBasePrice() != -1 && Settings.SYNC_BASE_PRICE_TO_HIGHEST_PRICE.getBoolean() && auctionItem.getCurrentPrice() > auctionItem.getBasePrice()) {
 					auctionItem.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(auctionItem.getCurrentPrice()) : auctionItem.getCurrentPrice());
 				}
