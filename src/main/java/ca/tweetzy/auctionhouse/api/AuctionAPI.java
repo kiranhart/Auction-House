@@ -731,7 +731,7 @@ public class AuctionAPI {
 			AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(calculateListingFee(basePrice))).sendPrefixedMessage(seller);
 		}
 
-		AuctionStartEvent startEvent = new AuctionStartEvent(seller, auctionedItem);
+		AuctionStartEvent startEvent = new AuctionStartEvent(seller, auctionedItem, Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean() ? calculateListingFee(basePrice) : 0D);
 		Bukkit.getServer().getPluginManager().callEvent(startEvent);
 		if (startEvent.isCancelled()) return;
 
