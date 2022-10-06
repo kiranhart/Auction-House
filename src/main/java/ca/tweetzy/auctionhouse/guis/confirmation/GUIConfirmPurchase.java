@@ -127,7 +127,7 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 					return;
 				}
 
-				AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), e.player, this.auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM, false);
+				AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), e.player, this.auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM, tax, false);
 				Bukkit.getServer().getPluginManager().callEvent(auctionEndEvent);
 				if (auctionEndEvent.isCancelled()) return;
 
