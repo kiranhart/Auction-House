@@ -282,7 +282,7 @@ public class AuctionAPI {
 		final String isBidWin = AuctionHouse.getInstance().getLocale().getMessage("discord.sale_bid_win").getMessage();
 		final String immediateBuy = AuctionHouse.getInstance().getLocale().getMessage("discord.sale_immediate_buy").getMessage();
 
-		embedObject.setTitle(isNew ? Settings.DISCORD_MSG_START_TITLE.getString() : Settings.DISCORD_MSG_FINISH_TITLE.getString());
+		embedObject.setTitle(isNew ? isBid ? Settings.DISCORD_MSG_START_TITLE_BID.getString() : Settings.DISCORD_MSG_START_TITLE.getString() : Settings.DISCORD_MSG_FINISH_TITLE.getString());
 		embedObject.setColor(colour);
 		embedObject.addField(Settings.DISCORD_MSG_FIELD_SELLER_NAME.getString(), Settings.DISCORD_MSG_FIELD_SELLER_VALUE.getString().replace("%seller%", seller.getName() != null ? seller.getName() : playerLost), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
 		embedObject.addField(Settings.DISCORD_MSG_FIELD_BUYER_NAME.getString(), isNew ? noBuyer : Settings.DISCORD_MSG_FIELD_BUYER_VALUE.getString().replace("%buyer%", buyer.getName() != null ? buyer.getName() : playerLost), Settings.DISCORD_MSG_FIELD_BUYER_INLINE.getBoolean());

@@ -262,6 +262,8 @@ public class Settings {
 	public static final ConfigSetting DISCORD_MSG_DEFAULT_COLOUR_BID = new ConfigSetting(config, "discord.msg.default colour bid", "137-100-100", "The color of the embed during a bid, it needs to be in hsb format.", "Separate the numbers with a -");
 	public static final ConfigSetting DISCORD_MSG_DEFAULT_COLOUR_SALE = new ConfigSetting(config, "discord.msg.default colour sale", "137-100-100", "The color of the embed during a sale, it needs to be in hsb format.", "Separate the numbers with a -");
 	public static final ConfigSetting DISCORD_MSG_START_TITLE = new ConfigSetting(config, "discord.msg.auction start title", "New Auction Available", "The title of the message when a new auction is made");
+
+	public static final ConfigSetting DISCORD_MSG_START_TITLE_BID = new ConfigSetting(config, "discord.msg.auction start title bid", "New Bid Item Available", "The title of the message when a new biddable auction is made");
 	public static final ConfigSetting DISCORD_MSG_FINISH_TITLE = new ConfigSetting(config, "discord.msg.auction finish title", "Auction Finished", "The title of the message when an auction finishes");
 	public static final ConfigSetting DISCORD_MSG_BID_TITLE = new ConfigSetting(config, "discord.msg.auction bid title", "New Bid Placed", "The title of the message when a new bid is placed");
 
