@@ -582,9 +582,11 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 							draw();
 							break;
 						case RIGHT:
-							this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
-							updatePlayerFilter(this.auctionPlayer);
-							draw();
+							if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
+								this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
+								updatePlayerFilter(this.auctionPlayer);
+								draw();
+							}
 							break;
 						case SHIFT_RIGHT:
 							this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
@@ -615,9 +617,11 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 						draw();
 						break;
 					case RIGHT:
-						this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
-						updatePlayerFilter(this.auctionPlayer);
-						draw();
+						if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
+							this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
+							updatePlayerFilter(this.auctionPlayer);
+							draw();
+						}
 						break;
 					case SHIFT_RIGHT:
 						this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
