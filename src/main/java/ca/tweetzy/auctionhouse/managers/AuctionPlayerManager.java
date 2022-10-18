@@ -58,8 +58,11 @@ public class AuctionPlayerManager {
 		if (!Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean())
 			found.setSelectedSaleType(AuctionSaleType.BOTH);
 
+		// if the player's current filter is disabled, set it to all
+		if (!found.getSelectedFilter().isEnabled())
+			found.setSelectedFilter(AuctionItemCategory.ALL);
 
-		if (AuctionItemCategory.isAllButAllDisabled())
+		if (found.getSelectedFilter() != AuctionItemCategory.ALL && AuctionItemCategory.isAllButAllDisabled())
 			found.setSelectedFilter(AuctionItemCategory.ALL);
 
 		if (!Settings.DISABLE_PROFILE_UPDATE_MSG.getBoolean())
