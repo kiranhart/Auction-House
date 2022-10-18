@@ -2,6 +2,8 @@ package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -52,6 +54,14 @@ public class AuctionPlayerManager {
 		}
 
 		found.setPlayer(player);
+
+		if (!Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean())
+			found.setSelectedSaleType(AuctionSaleType.BOTH);
+
+
+		if (AuctionItemCategory.isAllButAllDisabled())
+			found.setSelectedFilter(AuctionItemCategory.ALL);
+
 		if (!Settings.DISABLE_PROFILE_UPDATE_MSG.getBoolean())
 			AuctionHouse.getInstance().getLogger().info("Updating profile player reference for: " + player.getName());
 

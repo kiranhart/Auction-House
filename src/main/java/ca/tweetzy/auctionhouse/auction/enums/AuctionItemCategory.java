@@ -42,6 +42,19 @@ public enum AuctionItemCategory {
 		return whitelistAllowed;
 	}
 
+	public static boolean isAllButAllDisabled() {
+		boolean isDisabled = AuctionItemCategory.ALL.enabled;
+		for (AuctionItemCategory value : AuctionItemCategory.values()) {
+			if (value == ALL) continue;
+			if (!value.enabled) {
+				isDisabled = false;
+				break;
+			}
+		}
+
+		return isDisabled;
+	}
+
 	public boolean isEnabled() {
 		return enabled;
 	}
