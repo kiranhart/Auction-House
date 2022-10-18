@@ -122,7 +122,8 @@ public class GUIFilterSelection extends AbstractPlaceholderGui {
 	private void updatePlayerFilter(AuctionPlayer player) {
 		AuctionHouse.getInstance().getDataManager().updateAuctionPlayer(player, (error, success) -> {
 			if (error == null && success)
-				AuctionHouse.getInstance().getLogger().info("Updating profile for player: " + player.getPlayer().getName());
+				if (!Settings.DISABLE_PROFILE_UPDATE_MSG.getBoolean())
+					AuctionHouse.getInstance().getLogger().info("Updating profile for player: " + player.getPlayer().getName());
 
 		});
 	}

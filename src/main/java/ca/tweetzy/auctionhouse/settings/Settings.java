@@ -61,6 +61,8 @@ public class Settings {
 	public static final ConfigSetting DISABLE_AUTO_SAVE_MSG = new ConfigSetting(config, "auction setting.disable auto save message", false, "If true, auction house will not log the auto save task to the console");
 	public static final ConfigSetting DISABLE_CLEANUP_MSG = new ConfigSetting(config, "auction setting.disable clean up message", false, "If true, auction house will not log the clean up process to the console");
 
+	public static final ConfigSetting DISABLE_PROFILE_UPDATE_MSG = new ConfigSetting(config, "auction setting.disable profile update message", false, "If true, auction house will not log the player profile updates to the console");
+
 	public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
 
 	public static final ConfigSetting GARBAGE_DELETION_TIMED_MODE = new ConfigSetting(config, "auction setting.garbage deletion.timed mode", true, "If true, auction house will only run the garbage deletion task, after set amount of seconds", "otherwise if false, it will wait until the total garbage bin count", "reaches/exceeds the specified value");

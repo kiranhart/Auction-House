@@ -57,6 +57,7 @@ public class AuctionPlayer {
 			this.lastListedItem = System.currentTimeMillis() + 1000L * Settings.LIST_ITEM_DELAY.getInt();
 			AuctionHouse.getInstance().getDataManager().updateAuctionPlayer(this, (error, success) -> {
 				if (error == null && success)
+					if (!Settings.DISABLE_PROFILE_UPDATE_MSG.getBoolean())
 					AuctionHouse.getInstance().getLogger().info("Updating profile for player: " + player.getName());
 
 			});

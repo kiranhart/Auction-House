@@ -52,7 +52,8 @@ public class AuctionPlayerManager {
 		}
 
 		found.setPlayer(player);
-		AuctionHouse.getInstance().getLogger().info("Updating profile player reference for: " + player.getName());
+		if (!Settings.DISABLE_PROFILE_UPDATE_MSG.getBoolean())
+			AuctionHouse.getInstance().getLogger().info("Updating profile player reference for: " + player.getName());
 
 	}
 
