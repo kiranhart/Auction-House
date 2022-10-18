@@ -167,7 +167,15 @@ public class AuctionHouse extends TweetyPlugin {
 			Bukkit.getServer().getPluginManager().registerEvents(new CMIListener(), this);
 
 		// Setup the database if enabled
-		this.databaseConnector = Settings.DATABASE_USE.getBoolean() ? new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean()) : new SQLiteConnector(this);
+		this.databaseConnector = Settings.DATABASE_USE.getBoolean() ? new MySQLConnector(
+				this,
+				Settings.DATABASE_HOST.getString(),
+				Settings.DATABASE_PORT.getInt(),
+				Settings.DATABASE_NAME.getString(),
+				Settings.DATABASE_USERNAME.getString(),
+				Settings.DATABASE_PASSWORD.getString(),
+				Settings.DATABASE_CUSTOM_PARAMS.getString().equalsIgnoreCase("None") ? "" : Settings.DATABASE_CUSTOM_PARAMS.getString()
+		) : new SQLiteConnector(this);
 
 		// Use a custom table prefix if using a remote database. The default prefix setting acts exactly like if the prefix is null
 		final String tablePrefix = Settings.DATABASE_USE.getBoolean() ? Settings.DATABASE_TABLE_PREFIX.getString() : null;
