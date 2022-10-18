@@ -42,7 +42,7 @@ public final class CommandUpload extends AbstractCommand {
 		if (!args[0].equalsIgnoreCase("-confirm")) return ReturnType.FAILURE;
 
 		DatabaseConnector databaseConnector = new SQLiteConnector(AuctionHouse.getInstance());
-		DataManager manager = new DataManager(databaseConnector, AuctionHouse.getInstance());
+		DataManager manager = new DataManager(databaseConnector, AuctionHouse.getInstance(), null);
 
 		manager.getItems((error, items) -> {
 			if (error == null)

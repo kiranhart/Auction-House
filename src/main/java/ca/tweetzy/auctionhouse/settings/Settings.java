@@ -241,6 +241,7 @@ public class Settings {
 	 *         DATABASE OPTIONS
 	 *  ===============================*/
 	public static final ConfigSetting DATABASE_USE = new ConfigSetting(config, "database.use database", false, "Should the plugin use a database to store shop data?");
+	public static final ConfigSetting DATABASE_TABLE_PREFIX = new ConfigSetting(config, "database.table prefix", "auctionhouse_", "What prefix should be used for table names");
 	public static final ConfigSetting DATABASE_HOST = new ConfigSetting(config, "database.host", "localhost", "What is the connection url/host");
 	public static final ConfigSetting DATABASE_PORT = new ConfigSetting(config, "database.port", 3306, "What is the port to database (default is 3306)");
 	public static final ConfigSetting DATABASE_NAME = new ConfigSetting(config, "database.name", "plugin_dev", "What is the name of the database?");

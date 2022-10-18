@@ -168,7 +168,10 @@ public class AuctionHouse extends TweetyPlugin {
 
 		// Setup the database if enabled
 		this.databaseConnector = Settings.DATABASE_USE.getBoolean() ? new MySQLConnector(this, Settings.DATABASE_HOST.getString(), Settings.DATABASE_PORT.getInt(), Settings.DATABASE_NAME.getString(), Settings.DATABASE_USERNAME.getString(), Settings.DATABASE_PASSWORD.getString(), Settings.DATABASE_USE_SSL.getBoolean()) : new SQLiteConnector(this);
-		this.dataManager = new DataManager(this.databaseConnector, this);
+
+		// Use a custom table prefix if using a remote database. The default prefix setting acts exactly like if the prefix is null
+		final String tablePrefix = Settings.DATABASE_USE.getBoolean() ? Settings.DATABASE_TABLE_PREFIX.getString() : null;
+		this.dataManager = new DataManager(this.databaseConnector, this, tablePrefix);
 
 		DataMigrationManager dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
 				new _1_InitialMigration(),
