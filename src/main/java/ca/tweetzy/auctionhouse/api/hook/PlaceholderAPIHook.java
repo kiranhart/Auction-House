@@ -60,6 +60,11 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 	public String onRequest(OfflinePlayer player, @NotNull String params) {
 		if (params.equalsIgnoreCase("name")) return player == null ? null : player.getName();
 
+		// legacy placeholders
+		if (params.equalsIgnoreCase("total_money_earned"))
+			return String.valueOf(AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.MONEY_EARNED));
+
+
 		if (params.equalsIgnoreCase("active_auctions")) {
 			AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
 			if (auctionPlayer == null) return null;

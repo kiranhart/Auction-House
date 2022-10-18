@@ -606,7 +606,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 				put("%filter_sort_order%", auctionPlayer.getAuctionSortType().getTranslatedType());
 			}}), e -> {
 				switch (e.clickType) {
-					case MIDDLE:
+					case DROP:
 						this.auctionPlayer.resetFilter();
 						updatePlayerFilter(this.auctionPlayer);
 						draw();

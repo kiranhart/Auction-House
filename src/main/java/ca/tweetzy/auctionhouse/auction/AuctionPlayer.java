@@ -40,7 +40,7 @@ public class AuctionPlayer {
 	private int assignedTaskId;
 
 	public AuctionPlayer(UUID uuid) {
-		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", true, -1, null,-1);
+		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", true, -1, null, -1);
 	}
 
 	public AuctionPlayer(Player player) {
@@ -58,7 +58,7 @@ public class AuctionPlayer {
 			AuctionHouse.getInstance().getDataManager().updateAuctionPlayer(this, (error, success) -> {
 				if (error == null && success)
 					if (!Settings.DISABLE_PROFILE_UPDATE_MSG.getBoolean())
-					AuctionHouse.getInstance().getLogger().info("Updating profile for player: " + player.getName());
+						AuctionHouse.getInstance().getLogger().info("Updating profile for player: " + player.getName());
 
 			});
 			return true;
