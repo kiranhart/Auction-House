@@ -1,8 +1,8 @@
 ---
-name: Request a Feature 
-about: Suggest a change/new feature for the plugin 
+name: Request a Feature
+about: Suggest a change/new feature for the plugin
 title: ''
-labels: enhancement 
+labels: enhancement
 assignees: ''
 
 ---
@@ -11,5 +11,6 @@ assignees: ''
 Describe how this feature will work
 
 **Additional Information**
+
 - You can provide image links
 - You can provide video links

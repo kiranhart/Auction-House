@@ -55,7 +55,7 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 			setAllowClose(true);
 			this.result.accept(false);
 		});
-		setActionForRange(0, 3, ClickType.LEFT, e ->  {
+		setActionForRange(0, 3, ClickType.LEFT, e -> {
 			setAllowClose(true);
 			this.result.accept(true);
 		});

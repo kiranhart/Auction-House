@@ -146,7 +146,8 @@ public class CommandAdmin extends AbstractCommand {
 	protected List<String> onTab(CommandSender sender, String... args) {
 		if (args.length == 1) return Arrays.asList("endall", "relistall", "logs", "viewexpired", "open");
 		if (args.length == 2 && args[0].equalsIgnoreCase("relistAll")) return Arrays.asList("1", "2", "3", "4", "5");
-		if (args.length == 2 && (args[0].equalsIgnoreCase("viewexpired") || args[0].equalsIgnoreCase("open"))) return Bukkit.getOnlinePlayers().stream().map(OfflinePlayer::getName).collect(Collectors.toList());
+		if (args.length == 2 && (args[0].equalsIgnoreCase("viewexpired") || args[0].equalsIgnoreCase("open")))
+			return Bukkit.getOnlinePlayers().stream().map(OfflinePlayer::getName).collect(Collectors.toList());
 		return null;
 	}
 

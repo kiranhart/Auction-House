@@ -58,6 +58,6 @@ public final class GUIStatisticViewSelect extends AbstractPlaceholderGui {
 				Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_NAME.getString(),
 				Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_LORE.getStringList(),
 				null
-		), click -> click.manager.showGUI(click.player, new GUIStatisticLeaderboard(this.auctionPlayer,  AuctionStatisticType.MONEY_EARNED)));
+		), click -> click.manager.showGUI(click.player, new GUIStatisticLeaderboard(this.auctionPlayer, AuctionStatisticType.MONEY_EARNED)));
 	}
 }

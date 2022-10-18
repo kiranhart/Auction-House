@@ -8,73 +8,73 @@ authors: [ Kiran Hart ]
 softdepend: [ Vault, PlayerPoints, PlaceholderAPIHook, MMOItemsHook, UltraEconomy, CMI, Essentials, CityBuildStuff ]
 
 commands:
-  auctionhouse:
-    description: Main command for the auction house plugin
-    aliases: [ ah, auctions, auctionhouses, ahgui, auctiongui ]
-    default: true
-    usage: /ah
+    auctionhouse:
+        description: Main command for the auction house plugin
+        aliases: [ ah, auctions, auctionhouses, ahgui, auctiongui ]
+        default: true
+        usage: /ah
 
 permissions:
-  auctionhouse.*:
-    description: Allows access to all sub permissions
-    children:
-      auctionhouse.cmd: true
-      auctionhouse.cmd.sell: true
-      auctionhouse.cmd.active: true
-      auctionhouse.cmd.expired: true
-      auctionhouse.cmd.settings: true
-      auctionhouse.cmd.transactions: true
-      auctionhouse.cmd.search: true
-      auctionhouse.cmd.convert: true
-      auctionhouse.cmd.upload: true
-      auctionhouse.cmd.status: true
-      auctionhouse.cmd.admin: true
-      auctionhouse.cmd.filter: true
-      auctionhouse.cmd.ban: true
-      auctionhouse.cmd.unban: true
-      auctionhouse.cmd.togglelistinfo: true
-  auctionhouse.cmd:
-    description: Allows the user to use /ah
-    default: op
-  auctionhouse.cmd.sell:
-    description: Allows the user to sell items in the auction house
-    default: op
-  auctionhouse.cmd.active:
-    description: Allows the user to open the active listings gui through a command
-    default: op
-  auctionhouse.cmd.expired:
-    description: Allows the user to open the expired listings gui through a command
-    default: op
-  auctionhouse.cmd.settings:
-    description: Allows the user to open the in game config editor
-    default: op
-  auctionhouse.cmd.transactions:
-    description: Allows the user to open the transactions menu
-    default: op
-  auctionhouse.cmd.search:
-    description: Allows the user to search for auction items.
-    default: op
-  auctionhouse.cmd.convert:
-    description: Allows the user to run conversion command
-    default: op
-  auctionhouse.cmd.upload:
-    description: Allows the user to run upload command
-    default: op
-  auctionhouse.cmd.status:
-    description: Allows the user to view status information about auction house
-    default: op
-  auctionhouse.cmd.admin:
-    description: Allows the user to access admin commands
-    default: op
-  auctionhouse.cmd.filter:
-    description: Allows the user to access the filter whitelist menu
-    default: op
-  auctionhouse.cmd.ban:
-    description: Allows the user to ban players from the auction house
-    default: op
-  auctionhouse.cmd.unban:
-    description: Allows the user to unban players from the auction house
-    default: op
-  auctionhouse.cmd.togglelistinfo:
-    description: Allows the user to turn off their listing messages
-    default: true
+    auctionhouse.*:
+        description: Allows access to all sub permissions
+        children:
+            auctionhouse.cmd: true
+            auctionhouse.cmd.sell: true
+            auctionhouse.cmd.active: true
+            auctionhouse.cmd.expired: true
+            auctionhouse.cmd.settings: true
+            auctionhouse.cmd.transactions: true
+            auctionhouse.cmd.search: true
+            auctionhouse.cmd.convert: true
+            auctionhouse.cmd.upload: true
+            auctionhouse.cmd.status: true
+            auctionhouse.cmd.admin: true
+            auctionhouse.cmd.filter: true
+            auctionhouse.cmd.ban: true
+            auctionhouse.cmd.unban: true
+            auctionhouse.cmd.togglelistinfo: true
+    auctionhouse.cmd:
+        description: Allows the user to use /ah
+        default: op
+    auctionhouse.cmd.sell:
+        description: Allows the user to sell items in the auction house
+        default: op
+    auctionhouse.cmd.active:
+        description: Allows the user to open the active listings gui through a command
+        default: op
+    auctionhouse.cmd.expired:
+        description: Allows the user to open the expired listings gui through a command
+        default: op
+    auctionhouse.cmd.settings:
+        description: Allows the user to open the in game config editor
+        default: op
+    auctionhouse.cmd.transactions:
+        description: Allows the user to open the transactions menu
+        default: op
+    auctionhouse.cmd.search:
+        description: Allows the user to search for auction items.
+        default: op
+    auctionhouse.cmd.convert:
+        description: Allows the user to run conversion command
+        default: op
+    auctionhouse.cmd.upload:
+        description: Allows the user to run upload command
+        default: op
+    auctionhouse.cmd.status:
+        description: Allows the user to view status information about auction house
+        default: op
+    auctionhouse.cmd.admin:
+        description: Allows the user to access admin commands
+        default: op
+    auctionhouse.cmd.filter:
+        description: Allows the user to access the filter whitelist menu
+        default: op
+    auctionhouse.cmd.ban:
+        description: Allows the user to ban players from the auction house
+        default: op
+    auctionhouse.cmd.unban:
+        description: Allows the user to unban players from the auction house
+        default: op
+    auctionhouse.cmd.togglelistinfo:
+        description: Allows the user to turn off their listing messages
+        default: true

@@ -10,7 +10,6 @@ public enum AuctionStackType {
 
 	MAIN_AUCTION_HOUSE,
 	ACTIVE_AUCTIONS_LIST,
-	LISTING_PREVIEW
-	;
+	LISTING_PREVIEW;
 
 }

@@ -117,10 +117,10 @@ public class Settings {
 	public static final ConfigSetting CURRENCY_FORMAT = new ConfigSetting(config, "auction setting.currency format", "%,.2f");
 	public static final ConfigSetting STRIP_ZEROS_ON_WHOLE_NUMBERS = new ConfigSetting(config, "auction setting.strip zeros on whole numbers", false, "If the price / amount is a whole number (ex. 40.00) it will drop the .00");
 
-	public static final ConfigSetting ADMIN_OPTION_SHOW_RETURN_ITEM = new ConfigSetting(config, "auction setting.admin option.show return to player", true );
-	public static final ConfigSetting ADMIN_OPTION_SHOW_CLAIM_ITEM = new ConfigSetting(config, "auction setting.admin option.show claim item", true );
-	public static final ConfigSetting ADMIN_OPTION_SHOW_DELETE_ITEM = new ConfigSetting(config, "auction setting.admin option.show delete item", true );
-	public static final ConfigSetting ADMIN_OPTION_SHOW_COPY_ITEM = new ConfigSetting(config, "auction setting.admin option.show copy item", true );
+	public static final ConfigSetting ADMIN_OPTION_SHOW_RETURN_ITEM = new ConfigSetting(config, "auction setting.admin option.show return to player", true);
+	public static final ConfigSetting ADMIN_OPTION_SHOW_CLAIM_ITEM = new ConfigSetting(config, "auction setting.admin option.show claim item", true);
+	public static final ConfigSetting ADMIN_OPTION_SHOW_DELETE_ITEM = new ConfigSetting(config, "auction setting.admin option.show delete item", true);
+	public static final ConfigSetting ADMIN_OPTION_SHOW_COPY_ITEM = new ConfigSetting(config, "auction setting.admin option.show copy item", true);
 
 	public static final ConfigSetting USE_ALTERNATE_CURRENCY_FORMAT = new ConfigSetting(config, "auction setting.use alternate currency format", false, "If true, $123,456.78 will become $123.456,78");
 	public static final ConfigSetting USE_FLAT_NUMBER_FORMAT = new ConfigSetting(config, "auction setting.use flat number format", false, "If true, $123,456.78 will become $12345678");
@@ -930,7 +930,6 @@ public class Settings {
 	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_ITEM = new ConfigSetting(config, "gui.stat view other.items.money spent.item", XMaterial.RED_STAINED_GLASS_PANE.name());
 	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_NAME = new ConfigSetting(config, "gui.stat view other.items.money spent.name", "&e&LMoney Spent");
 	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_LORE = new ConfigSetting(config, "gui.stat view other.items.money spent.lore", Collections.singletonList("&7They spent &c$%money_spent%"));
-
 
 
 	/*  ===============================

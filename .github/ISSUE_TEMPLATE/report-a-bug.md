@@ -11,6 +11,7 @@ assignees: ''
 Describe the bug in as much detail as possible, the more detailed, the chances of it being fixed is faster
 
 **To Reproduce**
+
 - Describe how to reproduce this bug: EX.
 
 1. Open the main menu
@@ -24,6 +25,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Server Information (please complete the following information):**
+
 - Provide the server version
 - Provide the server jar (ex. paper/spigot)
 - Plugin Version
