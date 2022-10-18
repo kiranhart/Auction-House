@@ -39,8 +39,16 @@ public class DataManager extends DataManagerAbstract {
 
 	private final ExecutorService thread = Executors.newSingleThreadExecutor();
 
-	public DataManager(DatabaseConnector databaseConnector, Plugin plugin) {
+	private final @Nullable String customTablePrefix;
+
+	public DataManager(DatabaseConnector databaseConnector, Plugin plugin, @Nullable String customTablePrefix) {
 		super(databaseConnector, plugin);
+		this.customTablePrefix = customTablePrefix;
+	}
+
+	@Override
+	public String getTablePrefix() {
+		return customTablePrefix == null ? super.getTablePrefix() : customTablePrefix;
 	}
 
 	public void close() {
