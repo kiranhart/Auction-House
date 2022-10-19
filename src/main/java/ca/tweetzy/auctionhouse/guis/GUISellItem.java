@@ -163,7 +163,9 @@ public class GUISellItem extends AbstractPlaceholderGui {
 				e.gui.close();
 
 				// work-around to clicking closeable item with item on cursor
-				handleClosableCursorItem(e);
+				if (handleClosableCursorItem(e)) {
+					return;
+				}
 
 				PlayerChatInput.PlayerChatInputBuilder<Long> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
 				builder.isValidInput((p, str) -> {
@@ -202,7 +204,9 @@ public class GUISellItem extends AbstractPlaceholderGui {
 				e.gui.close();
 
 				// work-around to clicking closeable item with item on cursor
-				handleClosableCursorItem(e);
+				if (handleClosableCursorItem(e)) {
+					return;
+				}
 
 				PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
 				builder.isValidInput((p, str) -> {
@@ -238,7 +242,9 @@ public class GUISellItem extends AbstractPlaceholderGui {
 				e.gui.close();
 
 				// work-around to clicking closeable item with item on cursor
-				handleClosableCursorItem(e);
+				if (handleClosableCursorItem(e)) {
+					return;
+				}
 
 				PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
 				builder.isValidInput((p, str) -> {
@@ -270,7 +276,9 @@ public class GUISellItem extends AbstractPlaceholderGui {
 					e.gui.close();
 
 					// work-around to clicking closeable item with item on cursor
-					handleClosableCursorItem(e);
+					if (handleClosableCursorItem(e)) {
+						return;
+					}
 
 					PlayerChatInput.PlayerChatInputBuilder<Double> builder = new PlayerChatInput.PlayerChatInputBuilder<>(AuctionHouse.getInstance(), e.player);
 					builder.isValidInput((p, str) -> {
@@ -477,11 +485,20 @@ public class GUISellItem extends AbstractPlaceholderGui {
 
 	}
 
-	private void handleClosableCursorItem(@NonNull final GuiClickEvent e) {
-		if (e.cursor != null) {
-			AuctionHouse.getInstance().getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), e.cursor);
-			this.itemToBeListed = e.cursor.clone();
+	private boolean handleClosableCursorItem(@NonNull final GuiClickEvent e) {
+		if (e.cursor != null && getItem(1, 4) == null) {
+//			AuctionHouse.getInstance().getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), e.cursor);
+//			this.itemToBeListed = e.cursor.clone();
+			PlayerUtils.giveItem(e.player, e.cursor.clone());
+			return true;
 		}
+
+		return false;
+	}
+
+	private void setTheItemToBeListed() {
+		this.itemToBeListed = getItem(1, 4);
+		this.auctionPlayer.setItemBeingListed(this.itemToBeListed);
 	}
 
 	private boolean validateChatNumber(String input, double requirement, boolean checkMax) {
@@ -492,12 +509,7 @@ public class GUISellItem extends AbstractPlaceholderGui {
 	}
 
 	private void reopen(GuiClickEvent e) {
-		e.manager.showGUI(e.player, new GUISellItem(this.auctionPlayer, this.itemToBeListed, this.buyNowPrice, this.bidStartPrice, this.bidIncrementPrice, this.isBiddingItem, this.isAllowingBuyNow, this.auctionTime));
-	}
-
-	private void setTheItemToBeListed() {
-		this.itemToBeListed = getItem(1, 4);
-		this.auctionPlayer.setItemBeingListed(this.itemToBeListed);
+		e.manager.showGUI(e.player, new GUISellItem(this.auctionPlayer, this.auctionPlayer.getItemBeingListed(), this.buyNowPrice, this.bidStartPrice, this.bidIncrementPrice, this.isBiddingItem, this.isAllowingBuyNow, this.auctionTime));
 	}
 
 	private void makeMess() {
