@@ -18,5 +18,20 @@
 
 package ca.tweetzy.auctionhouse.ahv3.api.auction;
 
-public interface Bid {
+import ca.tweetzy.auctionhouse.ahv3.api.Identifiable;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public interface Bid extends Identifiable {
+
+	UUID getAuctionUUID();
+
+	UUID getBidderUUID();
+
+	String getBidderName();
+
+	BigDecimal getAmount();
+
+	long getBidTime();
 }

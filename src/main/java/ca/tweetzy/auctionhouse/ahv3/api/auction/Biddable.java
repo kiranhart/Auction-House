@@ -18,5 +18,12 @@
 
 package ca.tweetzy.auctionhouse.ahv3.api.auction;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 public interface Biddable {
+
+	BigDecimal getStartingPrice();
+
+	List<Bid> getBids();
 }
