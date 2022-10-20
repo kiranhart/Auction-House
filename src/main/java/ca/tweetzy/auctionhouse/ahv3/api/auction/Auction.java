@@ -18,5 +18,36 @@
 
 package ca.tweetzy.auctionhouse.ahv3.api.auction;
 
-public interface Auction {
+import ca.tweetzy.auctionhouse.ahv3.api.EditTrackable;
+import ca.tweetzy.auctionhouse.ahv3.api.Identifiable;
+import ca.tweetzy.auctionhouse.ahv3.api.ListingType;
+import ca.tweetzy.auctionhouse.ahv3.api.Synchronize;
+import org.bukkit.inventory.ItemStack;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public interface Auction extends Identifiable, EditTrackable, Synchronize {
+
+	UUID getOwner();
+
+	String getOwnerName();
+
+	ItemStack getItem();
+
+	ListingType getType();
+
+	BigDecimal getBinPrice();
+
+	String getListedWorld();
+
+	String getListedServer();
+
+	long getListedAt();
+
+	long getExpirationTime();
+
+	void setExpirationTime(long expirationTime);
+
+	void setBinPrice(BigDecimal binPrice);
 }
