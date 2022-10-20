@@ -18,5 +18,31 @@
 
 package ca.tweetzy.auctionhouse.ahv3.api.auction;
 
-public interface Statistic {
+import ca.tweetzy.auctionhouse.ahv3.api.EditTrackable;
+import ca.tweetzy.auctionhouse.ahv3.api.Identifiable;
+import ca.tweetzy.auctionhouse.api.interfaces.Storeable;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
+import lombok.NonNull;
+
+import java.util.UUID;
+
+public interface Statistic extends Identifiable, EditTrackable, Storeable<Statistic> {
+
+	/**
+	 * The owning player of this statistic
+	 * @return the {@link UUID} of the statistic owner
+	 */
+	@NonNull UUID getOwner();
+
+	/**
+	 * Get the statistic type that is being tracked
+	 * @return the tracked {@link AuctionStatisticType}
+	 */
+	@NonNull AuctionStatisticType getType();
+
+	/**
+	 * The total value of this statistic
+	 * @return statistic value
+	 */
+	double getValue();
 }
