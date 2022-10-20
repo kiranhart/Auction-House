@@ -64,7 +64,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 			// begin the scuffed deletion
 			if (!AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().keySet().isEmpty()) {
 				if (Settings.GARBAGE_DELETION_TIMED_MODE.getBoolean() && clock % Settings.GARBAGE_DELETION_TIMED_DELAY.getInt() == 0) {
-					AuctionHouse.getInstance().getDataManager().deleteItems(AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
+					AuctionHouse.getInstance().getDataManager().deleteItemsAsync(AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
 					if (!Settings.DISABLE_CLEANUP_MSG.getBoolean())
 						AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aCleaned a total of &e" + AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().size() + "&a items.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 					AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().clear();
