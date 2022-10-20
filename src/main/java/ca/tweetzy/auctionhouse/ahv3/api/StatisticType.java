@@ -18,5 +18,31 @@
 
 package ca.tweetzy.auctionhouse.ahv3.api;
 
-public enum StatisticType {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+public enum StatisticType implements Navigable<StatisticType> {
+
+	CREATED_AUCTION("Created Auction"),
+	CREATED_BIN("Created Bin"),
+
+	SOLD_AUCTION("Sold Auctions"),
+	SOLD_BIN("Sold Bins"),
+
+	MONEY_SPENT("Money Spent"),
+	MONEY_EARNED("Money Earned");
+
+	@Getter
+	private final String type;
+
+	@Override
+	public StatisticType next() {
+		return values()[(this.ordinal() + 1) % values().length];
+	}
+
+	@Override
+	public StatisticType previous() {
+		return values()[(ordinal() - 1 + values().length) % values().length];
+	}
 }
