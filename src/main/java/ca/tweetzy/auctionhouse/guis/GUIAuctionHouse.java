@@ -15,6 +15,7 @@ import ca.tweetzy.auctionhouse.guis.admin.GUIAdminItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
 import ca.tweetzy.auctionhouse.guis.filter.GUIFilterSelection;
+import ca.tweetzy.auctionhouse.guis.sell.GUISellItem;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
@@ -473,8 +474,6 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 	}
 
 	private void drawPaginationButtons() {
-		setItem(Settings.GUI_NEXT_BTN_SLOT.getInt(), XMaterial.AIR.parseItem());
-		setItem(Settings.GUI_BACK_BTN_SLOT.getInt(), XMaterial.AIR.parseItem());
 		setPrevPage(Settings.GUI_BACK_BTN_SLOT.getInt(), new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
 		setNextPage(Settings.GUI_NEXT_BTN_SLOT.getInt(), new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
 

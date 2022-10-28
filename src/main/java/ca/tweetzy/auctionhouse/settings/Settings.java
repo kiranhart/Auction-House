@@ -842,6 +842,59 @@ public class Settings {
 	public static final ConfigSetting GUI_SELL_ITEMS_BUY_NOW_DISABLED_LORE = new ConfigSetting(config, "gui.sell.items.buy now disabled.lore", Collections.singletonList("&7Click to &aEnable &7buy now"));
 
 	/*  ===============================
+	 *    ITEM SELL LISTING TYPE GUI
+	 *  ===============================*/
+	public static final ConfigSetting GUI_SELL_LISTING_TYPE_TITLE = new ConfigSetting(config, "gui.sell listing type.title", "&7Auction House - &eSelect Listing Type");
+	public static final ConfigSetting GUI_SELL_LISTING_TYPE_BG_ITEM = new ConfigSetting(config, "gui.sell listing type.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+	public static final ConfigSetting GUI_SELL_LISTING_TYPE_ITEMS_BIN_ITEM = new ConfigSetting(config, "gui.sell listing type.items.bin.item", XMaterial.SUNFLOWER.name());
+	public static final ConfigSetting GUI_SELL_LISTING_TYPE_ITEMS_BIN_NAME = new ConfigSetting(config, "gui.sell listing type.items.bin.name", "&e&lBin Item");
+	public static final ConfigSetting GUI_SELL_LISTING_TYPE_ITEMS_BIN_LORE = new ConfigSetting(config, "gui.sell listing type.items.bin.lore", Arrays.asList(
+			"&7A Bin item is an item that does not accept any",
+			"&7bids, it must be bought for the listed price.",
+			"",
+			"&7Click to list as &aBin Item"
+	));
+
+	public static final ConfigSetting GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_ITEM = new ConfigSetting(config, "gui.sell listing type.items.auction.item", XMaterial.DIAMOND.name());
+	public static final ConfigSetting GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_NAME = new ConfigSetting(config, "gui.sell listing type.items.auction.name", "&e&lAuction Item");
+	public static final ConfigSetting GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_LORE = new ConfigSetting(config, "gui.sell listing type.items.auction.lore", Arrays.asList(
+			"&7An Auction item is an item that can be bid",
+			"&7on by multiple people, the highest bid wins.",
+			"",
+			"&7Click to list as an &aAuction"
+	));
+
+	/*  ===============================
+	 *    ITEM SELL PLACE ITEM GUI
+	 *  ===============================*/
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_TITLE = new ConfigSetting(config, "gui.sell place item.title", "&7Auction House - &ePlace Item(s)");
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_BG_ITEM = new ConfigSetting(config, "gui.sell place item.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM = new ConfigSetting(config, "gui.sell place item.items.continue.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_NAME = new ConfigSetting(config, "gui.sell place item.items.continue.name", "&e&lContinue");
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_LORE = new ConfigSetting(config, "gui.sell place item.items.continue.lore", Arrays.asList(
+			"",
+			"&7Click to continue to pricing"
+	));
+
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_NAME = new ConfigSetting(config, "gui.sell place item.items.bundle.name", "&e&lListing Bundle");
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_LORE = new ConfigSetting(config, "gui.sell place item.items.bundle.lore", Arrays.asList(
+			"&7You are currently in the bundle",
+			"&7listing view.",
+			"",
+			"&7Click to list a single item instead"
+	));
+
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_NAME = new ConfigSetting(config, "gui.sell place item.items.single.name", "&e&lSingle Listing");
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_LORE = new ConfigSetting(config, "gui.sell place item.items.single.lore", Arrays.asList(
+			"&7You are currently in the single",
+			"&7item listing view.",
+			"",
+			"&7Click to list a bundle instead"
+	));
+
+	/*  ===============================
 	 *         AH STATS GUI
 	 *  ===============================*/
 	public static final ConfigSetting GUI_STATS_VIEW_SELECT_TITLE = new ConfigSetting(config, "gui.stat view select.title", "&7Auction House - &eStatistics");
