@@ -62,7 +62,11 @@ public final class GUISellListingType extends AbstractPlaceholderGui {
 				.of(Objects.requireNonNull(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_ITEM.getMaterial().parseItem()))
 				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_NAME.getString())
 				.lore(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_LORE.getStringList())
-				.make(), click -> this.listingType.accept(ListingType.AUCTION));
+				.make(), click -> {
+
+			if (this.listingType != null)
+				this.listingType.accept(ListingType.AUCTION);
+		});
 	}
 
 	private void drawBinButton(int col) {
@@ -70,6 +74,10 @@ public final class GUISellListingType extends AbstractPlaceholderGui {
 				.of(Objects.requireNonNull(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_ITEM.getMaterial().parseItem()))
 				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_NAME.getString())
 				.lore(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_LORE.getStringList())
-				.make(), click -> this.listingType.accept(ListingType.BIN));
+				.make(), click -> {
+
+			if (this.listingType != null)
+				this.listingType.accept(ListingType.BIN);
+		});
 	}
 }
