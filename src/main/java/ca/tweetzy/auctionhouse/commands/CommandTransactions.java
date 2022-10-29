@@ -24,14 +24,15 @@ public class CommandTransactions extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
+		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !player.hasPermission("auctionhouse.transactions.viewall")) {
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionList(player, false));
+			instance.getGuiManager().showGUI(player, new GUITransactionList(player, false));
 		} else {
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionType(player));
+			instance.getGuiManager().showGUI(player, new GUITransactionType(player));
 		}
 
 		return ReturnType.SUCCESS;

@@ -26,31 +26,32 @@ public class CommandStats extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
-		final AuctionPlayer user = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		final AuctionPlayer user = instance.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
 		if (user == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
-			AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
 		if (args.length == 0) {
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIStatisticViewSelect(user));
+			instance.getGuiManager().showGUI(player, new GUIStatisticViewSelect(user));
 			return ReturnType.SUCCESS;
 		}
 
 		final Player target = Bukkit.getPlayerExact(args[0]);
 
 		if (target == null) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
+			instance.getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
 			return ReturnType.FAILURE;
 		}
 
-		final AuctionPlayer targetAuctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(target.getUniqueId());
-		AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIStatisticTarget(user, targetAuctionPlayer));
+		final AuctionPlayer targetAuctionPlayer = instance.getAuctionPlayerManager().getPlayer(target.getUniqueId());
+		instance.getGuiManager().showGUI(player, new GUIStatisticTarget(user, targetAuctionPlayer));
 
 		return ReturnType.SUCCESS;
 	}

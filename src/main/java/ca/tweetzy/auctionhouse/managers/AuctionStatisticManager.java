@@ -45,25 +45,27 @@ public final class AuctionStatisticManager {
 		synchronized (this.statistics) {
 			if (this.statistics.contains(statistic)) return;
 			this.statistics.add(statistic);
-
+			
+			final UUID owner = statistic.getStatOwner();
+			final double value = value;
 			switch (statistic.getStatisticType()) {
 				case CREATED_AUCTION:
-					this.createdAuctionCount.put(statistic.getStatOwner(), this.createdAuctionCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					this.createdAuctionCount.put(owner, this.createdAuctionCount.getOrDefault(owner, 0D) + value);
 					break;
 				case CREATED_BIN:
-					this.createdBinCount.put(statistic.getStatOwner(), this.createdBinCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					this.createdBinCount.put(owner, this.createdBinCount.getOrDefault(owner, 0D) + value);
 					break;
 				case SOLD_AUCTION:
-					this.soldAuctionCount.put(statistic.getStatOwner(), this.soldAuctionCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					this.soldAuctionCount.put(owner, this.soldAuctionCount.getOrDefault(owner, 0D) + value);
 					break;
 				case SOLD_BIN:
-					this.soldBinCount.put(statistic.getStatOwner(), this.soldBinCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					this.soldBinCount.put(owner, this.soldBinCount.getOrDefault(owner, 0D) + value);
 					break;
 				case MONEY_SPENT:
-					this.moneySpentCount.put(statistic.getStatOwner(), this.moneySpentCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					this.moneySpentCount.put(owner, this.moneySpentCount.getOrDefault(owner, 0D) + value);
 					break;
 				case MONEY_EARNED:
-					this.moneyEarnedCount.put(statistic.getStatOwner(), this.moneyEarnedCount.getOrDefault(statistic.getStatOwner(), 0D) + statistic.getValue());
+					this.moneyEarnedCount.put(owner, this.moneyEarnedCount.getOrDefault(owner, 0D) + value);
 					break;
 			}
 		}

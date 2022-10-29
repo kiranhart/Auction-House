@@ -23,16 +23,17 @@ public class MaterialCategorizer {
 		if (material.isBlock()) return AuctionItemCategory.BLOCKS;
 		if (material == XMaterial.ENCHANTED_BOOK.parseMaterial()) return AuctionItemCategory.ENCHANTS;
 
+		final String materialName = material.name();
 		// Armor filter
-		if (material.name().endsWith("_HELMET") || material.name().endsWith("_CHESTPLATE") || material.name().endsWith("_LEGGINGS") || material.name().endsWith("_BOOTS"))
+		if (materialName.endsWith("_HELMET") || materialName.endsWith("_CHESTPLATE") || materialName.endsWith("_LEGGINGS") || materialName.endsWith("_BOOTS"))
 			return AuctionItemCategory.ARMOR;
 
 		// Weapon Filter
-		if (material.name().endsWith("_SWORD") || material.name().equals("BOW") || material.name().equals("TRIDENT") || material.name().equals("CROSSBOW"))
+		if (materialName.endsWith("_SWORD") || materialName.equals("BOW") || materialName.equals("TRIDENT") || materialName.equals("CROSSBOW"))
 			return AuctionItemCategory.WEAPONS;
 
 		// Tool Filter
-		if (material.name().endsWith("_AXE") || material.name().endsWith("_PICKAXE") || material.name().endsWith("_HOE") || material.name().endsWith("SHOVEL"))
+		if (materialName.endsWith("_AXE") || materialName.endsWith("_PICKAXE") || materialName.endsWith("_HOE") || materialName.endsWith("SHOVEL"))
 			return AuctionItemCategory.TOOLS;
 		return AuctionItemCategory.MISC;
 	}

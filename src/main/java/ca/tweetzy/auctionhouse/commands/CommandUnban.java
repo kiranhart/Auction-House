@@ -30,26 +30,27 @@ public class CommandUnban extends AbstractCommand {
 		if (args.length != 1) return ReturnType.SYNTAX_ERROR;
 		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
 
-		Player target = PlayerUtils.findPlayer(args[0]);
+		final Player target = PlayerUtils.findPlayer(args[0]);
 		OfflinePlayer offlinePlayer = null;
 
+		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (target == null) {
 			offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
 			if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
+				instance.getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
 				return ReturnType.FAILURE;
 			}
 		}
 
 		UUID toUnBan = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
 
-		if (!AuctionHouse.getInstance().getAuctionBanManager().getBans().containsKey(toUnBan)) {
-			AuctionHouse.getInstance().getLocale().getMessage("bans.playernotbanned").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
+		if (!instance.getAuctionBanManager().getBans().containsKey(toUnBan)) {
+			instance.getLocale().getMessage("bans.playernotbanned").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
 			return ReturnType.FAILURE;
 		}
 
-		AuctionHouse.getInstance().getAuctionBanManager().removeBan(toUnBan);
-		AuctionHouse.getInstance().getLocale().getMessage("bans.playerunbanned").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
+		instance.getAuctionBanManager().removeBan(toUnBan);
+		instance.getLocale().getMessage("bans.playerunbanned").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
 		if (target != null) {
 			AuctionHouse.getInstance().getLocale().getMessage("bans.unbanned").sendPrefixedMessage(target);
 		}

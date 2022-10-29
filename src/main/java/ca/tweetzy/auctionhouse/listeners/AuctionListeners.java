@@ -7,10 +7,12 @@ import ca.tweetzy.auctionhouse.api.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionStatistic;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -27,19 +29,22 @@ public class AuctionListeners implements Listener {
 	@EventHandler
 	public void onAuctionStart(AuctionStartEvent e) {
 		// new stat system
-		new AuctionStatistic(e.getSeller().getUniqueId(), e.getAuctionItem().isBidItem() ? AuctionStatisticType.CREATED_AUCTION : AuctionStatisticType.CREATED_BIN, 1).store(null);
+		final Player seller = e.getSeller();
+		final AuctionedItem auctionedItem = e.getAuctionedItem();
+		new AuctionStatistic(seller.getUniqueId(), auctionedItem.isBidItem() ? AuctionStatisticType.CREATED_AUCTION : AuctionStatisticType.CREATED_BIN, 1).store(null);
 
 		if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean()) {
 			AuctionHouse.newChain().async(() -> {
+				final AuctionAPI instance = AuctionAPI.getInstance();
 				Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
-					AuctionAPI.getInstance().sendDiscordMessage(
+					instance.sendDiscordMessage(
 							hook,
-							e.getSeller(),
-							e.getSeller(),
-							e.getAuctionItem(),
+							seller,
+							seller,
+							auctionedItem,
 							AuctionSaleType.USED_BIDDING_SYSTEM,
 							true,
-							e.getAuctionItem().isBidItem()
+							auctionedItem.isBidItem()
 					);
 				});
 			}).execute();
@@ -49,33 +54,36 @@ public class AuctionListeners implements Listener {
 	@EventHandler
 	public void onAuctionEnd(AuctionEndEvent e) {
 		// new stat system
-		new AuctionStatistic(e.getOriginalOwner().getUniqueId(), e.getAuctionItem().isBidItem() ? AuctionStatisticType.SOLD_AUCTION : AuctionStatisticType.SOLD_BIN, 1).store(null);
-		new AuctionStatistic(e.getOriginalOwner().getUniqueId(), AuctionStatisticType.MONEY_EARNED, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? e.getAuctionItem().getCurrentPrice() : e.getAuctionItem().getBasePrice()).store(null);
-		new AuctionStatistic(e.getBuyer().getUniqueId(), AuctionStatisticType.MONEY_SPENT, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? e.getAuctionItem().getCurrentPrice() : e.getAuctionItem().getBasePrice()).store(null);
+		final Player originalOwner = e.getOriginalOwner(), buyer = e.getBuyer();
+		final UUID originalOwnerUUID = originalOwner.getUniqueId(), buyerUUID = buyer.getUniqueId();
+		final AuctionedItem auctionedItem = e.getAuctionedItem();
+		new AuctionStatistic(originalOwnerUUID, auctionedItem.isBidItem() ? AuctionStatisticType.SOLD_AUCTION : AuctionStatisticType.SOLD_BIN, 1).store(null);
+		new AuctionStatistic(originalOwnerUUID, AuctionStatisticType.MONEY_EARNED, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? auctionedItem.getCurrentPrice() : auctionedItem.getBasePrice()).store(null);
+		new AuctionStatistic(buyerUUID, AuctionStatisticType.MONEY_SPENT, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? auctionedItem.getCurrentPrice() : auctionedItem.getBasePrice()).store(null);
 
 		AuctionHouse.newChain().async(() -> {
 			if (Settings.RECORD_TRANSACTIONS.getBoolean()) {
-
-				AuctionHouse.getInstance().getDataManager().insertTransactionAsync(new Transaction(
+				final AuctionHouse instance = AuctionHouse.getInstance();
+				instance.getDataManager().insertTransactionAsync(new Transaction(
 						UUID.randomUUID(),
-						e.getOriginalOwner().getUniqueId(),
-						e.getBuyer().getUniqueId(),
-						e.getAuctionItem().getOwnerName(),
-						e.getBuyer().getName(),
+						originalOwnerUUID,
+						buyerUUID,
+						auctionedItem.getOwnerName(),
+						buyer.getName(),
 						System.currentTimeMillis(),
-						e.getAuctionItem().getItem(),
+						auctionedItem.getItem(),
 						e.getSaleType(),
-						e.getAuctionItem().getCurrentPrice()
+						auctionedItem.getCurrentPrice()
 				), (error, transaction) -> {
 					if (error == null) {
-						AuctionHouse.getInstance().getTransactionManager().addTransaction(transaction);
+						instance.getTransactionManager().addTransaction(transaction);
 					}
 				});
-
 			}
 
 			if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_FINISH.getBoolean()) {
-				Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> AuctionAPI.getInstance().sendDiscordMessage(hook, e.getOriginalOwner(), e.getBuyer(), e.getAuctionItem(), e.getSaleType(), false, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM));
+				final AuctionAPI instance = AuctionAPI.getInstance();
+				Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> instance.sendDiscordMessage(hook, originalOwner, buyer, auctionedItem, e.getSaleType(), false, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM));
 			}
 		}).execute();
 	}
@@ -84,7 +92,9 @@ public class AuctionListeners implements Listener {
 	public void onAuctionBid(AuctionBidEvent e) {
 		if (!Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_BID.getBoolean()) return;
 		AuctionHouse.newChain().async(() -> {
-			Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> AuctionAPI.getInstance().sendDiscordBidMessage(hook, e.getAuctionedItem(), e.getNewBidAmount()));
+			final AuctionAPI instance = AuctionAPI.getInstance();
+			final AuctionedItem auctionedItem = e.getAuctionedItem();
+			Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> instance.sendDiscordBidMessage(hook, auctionedItem, e.getNewBidAmount()));
 		}).execute();
 	}
 

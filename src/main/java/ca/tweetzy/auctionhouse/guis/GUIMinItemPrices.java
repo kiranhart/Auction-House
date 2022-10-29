@@ -38,12 +38,13 @@ public final class GUIMinItemPrices extends AbstractPlaceholderGui {
 		reset();
 
 		pages = (int) Math.max(1, Math.ceil(this.minPrices.size() / (double) 45));
+
 		setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
 		setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
 		setOnPage(e -> draw());
 
 		int slot = 0;
-		List<MinItemPrice> data = this.minPrices.stream().skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
+		final List<MinItemPrice> data = this.minPrices.stream().skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
 
 		for (MinItemPrice minItemPrice : data) {
 

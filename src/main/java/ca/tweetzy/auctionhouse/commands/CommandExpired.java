@@ -25,15 +25,16 @@ public class CommandExpired extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
-
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
-			AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+		
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
+			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
-		AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIExpiredItems(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+		instance.getGuiManager().showGUI(player, new GUIExpiredItems(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 		return ReturnType.SUCCESS;
 	}
 
@@ -44,12 +45,12 @@ public class CommandExpired extends AbstractCommand {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.expired").getMessage();
+		return instance.getLocale().getMessage("commands.syntax.expired").getMessage();
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.expired").getMessage();
+		return instance.getLocale().getMessage("commands.description.expired").getMessage();
 	}
 
 	@Override

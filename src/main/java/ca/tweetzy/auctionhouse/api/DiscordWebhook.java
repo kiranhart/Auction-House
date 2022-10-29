@@ -52,8 +52,7 @@ public class DiscordWebhook {
 			throw new IllegalArgumentException("Set content or add at least one EmbedObject");
 		}
 
-		JSONObject json = new JSONObject();
-
+		final JSONObject json = new JSONObject();
 		json.put("content", this.content);
 		json.put("username", this.username);
 		json.put("avatar_url", this.avatarUrl);

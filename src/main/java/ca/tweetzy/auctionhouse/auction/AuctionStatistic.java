@@ -43,11 +43,12 @@ public final class AuctionStatistic implements Storeable<AuctionStatistic> {
 
 	@Override
 	public void store(Consumer<AuctionStatistic> stored) {
-		AuctionHouse.getInstance().getDataManager().insertStatistic(this, (error, statistic) -> {
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		instance.getDataManager().insertStatistic(this, (error, statistic) -> {
 			if (error != null) return;
 
 			if (statistic != null) {
-				AuctionHouse.getInstance().getAuctionStatisticManager().addStatistic(statistic);
+				instance.getAuctionStatisticManager().addStatistic(statistic);
 
 				if (stored != null)
 					stored.accept(statistic);

@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.managers;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.core.compatibility.XSound;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -32,12 +33,11 @@ public class SoundManager {
 	}
 
 	public void playSound(Player[] players, String sound, float volume, float pitch) {
-		Arrays.stream(players).forEach(p -> p.playSound(p.getLocation(), XSound.matchXSound(sound).get().parseSound(), volume, pitch));
+		final Sound xsound = XSound.matchXSound(sound).get().parseSound();
+		Arrays.stream(players).forEach(p -> p.playSound(p.getLocation(), xsound, volume, pitch));
 	}
 
 	public void playSound(Player player, String sound, float volume, float pitch, int delay) {
 		Bukkit.getServer().getScheduler().runTaskLater(AuctionHouse.getInstance(), () -> playSound(player, sound, volume, pitch), delay);
 	}
-
-
 }

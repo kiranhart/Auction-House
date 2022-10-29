@@ -29,11 +29,12 @@ public class CommandMinPrice extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
+		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (args.length == 0) {
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIMinItemPrices(player));
+			instance.getGuiManager().showGUI(player, new GUIMinItemPrices(player));
 			return ReturnType.SUCCESS;
 		}
 
@@ -42,26 +43,26 @@ public class CommandMinPrice extends AbstractCommand {
 			ItemStack held = PlayerHelper.getHeldItem(player);
 
 			if (held.getType() == XMaterial.AIR.parseMaterial()) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.min item price air").sendPrefixedMessage(player);
+				instance.getLocale().getMessage("general.min item price air").sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
 			}
 
-			if (AuctionHouse.getInstance().getMinItemPriceManager().getMinPrice(held.clone()) != null) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.min price already added").sendPrefixedMessage(player);
+			if (instance.getMinItemPriceManager().getMinPrice(held.clone()) != null) {
+				instance.getLocale().getMessage("general.min price already added").sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
 			}
 
 			if (!NumberUtils.isNumeric(args[1])) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").sendPrefixedMessage(player);
+				instance.getLocale().getMessage("general.notanumber").sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
 			}
 
 			final double price = Double.parseDouble(args[1]);
 
-			AuctionHouse.getInstance().getDataManager().insertMinPriceAsync(new MinItemPrice(held.clone(), price), (error, inserted) -> {
+			instance.getDataManager().insertMinPriceAsync(new MinItemPrice(held.clone(), price), (error, inserted) -> {
 				if (error == null) {
-					AuctionHouse.getInstance().getMinItemPriceManager().addItem(inserted);
-					AuctionHouse.getInstance().getLocale().getMessage("general.added min price")
+					instance.getMinItemPriceManager().addItem(inserted);
+					instance.getLocale().getMessage("general.added min price")
 							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(inserted.getItemStack()))
 							.processPlaceholder("price", AuctionAPI.getInstance().formatNumber(inserted.getPrice()))
 							.sendPrefixedMessage(player);

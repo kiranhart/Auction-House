@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class ConfigurationItemHelper {
 
 	public static ItemStack createConfigurationItem(ItemStack stack, String title, List<String> lore, HashMap<String, Object> replacements, String... nbtData) {
-		ItemMeta meta = stack.getItemMeta();
+		final ItemMeta meta = stack.getItemMeta();
 		assert meta != null;
 		meta.setDisplayName(TextUtils.formatText(title));
 

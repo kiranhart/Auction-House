@@ -34,12 +34,13 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 	public GUITransactionList(Player player, boolean showAll) {
 		super(player);
 		this.player = player;
-		this.auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(this.player.getUniqueId());
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		this.auctionPlayer = instance.getAuctionPlayerManager().getPlayer(this.player.getUniqueId());
 		this.showAll = showAll;
 		if (showAll)
-			this.transactions = new ArrayList<>(AuctionHouse.getInstance().getTransactionManager().getTransactions().values());
+			this.transactions = new ArrayList<>(instance.getTransactionManager().getTransactions().values());
 		else
-			this.transactions = AuctionHouse.getInstance().getTransactionManager().getTransactions().values().stream().filter(transaction -> transaction.getSeller().equals(player.getUniqueId()) || transaction.getBuyer().equals(player.getUniqueId())).collect(Collectors.toList());
+			this.transactions = instance.getTransactionManager().getTransactions().values().stream().filter(transaction -> transaction.getSeller().equals(player.getUniqueId()) || transaction.getBuyer().equals(player.getUniqueId())).collect(Collectors.toList());
 
 		setTitle(TextUtils.formatText(showAll ? Settings.GUI_TRANSACTIONS_TITLE_ALL.getString() : Settings.GUI_TRANSACTIONS_TITLE.getString()));
 		setRows(6);
