@@ -19,16 +19,19 @@ import java.util.List;
  */
 public class CommandExpired extends AbstractCommand {
 
+	final AuctionHouse instance;
+
+
 	public CommandExpired() {
 		super(CommandType.PLAYER_ONLY, "expired");
+		instance = AuctionHouse.getInstance();
 	}
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
-		
-		final AuctionHouse instance = AuctionHouse.getInstance();
+
 		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
 			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));

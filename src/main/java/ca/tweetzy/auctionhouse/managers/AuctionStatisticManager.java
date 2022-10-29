@@ -47,7 +47,8 @@ public final class AuctionStatisticManager {
 			this.statistics.add(statistic);
 			
 			final UUID owner = statistic.getStatOwner();
-			final double value = value;
+			final double value = statistic.getValue();
+
 			switch (statistic.getStatisticType()) {
 				case CREATED_AUCTION:
 					this.createdAuctionCount.put(owner, this.createdAuctionCount.getOrDefault(owner, 0D) + value);
