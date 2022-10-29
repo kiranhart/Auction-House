@@ -25,16 +25,16 @@ public class CommandActive extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
-			AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
+			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
-
-		AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIActiveAuctions(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+		instance.getGuiManager().showGUI(player, new GUIActiveAuctions(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 		return ReturnType.SUCCESS;
 	}
 

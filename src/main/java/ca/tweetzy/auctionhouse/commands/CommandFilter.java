@@ -31,11 +31,12 @@ public class CommandFilter extends AbstractCommand {
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
+		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (args.length == 0) {
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIFilterWhitelist(player));
+			instance.getGuiManager().showGUI(player, new GUIFilterWhitelist(player));
 			return ReturnType.SUCCESS;
 		}
 
@@ -52,19 +53,19 @@ public class CommandFilter extends AbstractCommand {
 
 				ItemStack held = PlayerHelper.getHeldItem(player);
 				if (held.getType() == XMaterial.AIR.parseMaterial()) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.filter air").sendPrefixedMessage(player);
+					instance.getLocale().getMessage("general.filter air").sendPrefixedMessage(player);
 					return ReturnType.FAILURE;
 				}
 
 
-				if (AuctionHouse.getInstance().getFilterManager().getFilteredItem(held) != null && AuctionHouse.getInstance().getFilterManager().getFilteredItem(held).getCategory() == AuctionItemCategory.valueOf(args[1].toUpperCase())) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.filteritemaddedalready").sendPrefixedMessage(player);
+				if (instance.getFilterManager().getFilteredItem(held) != null && instance.getFilterManager().getFilteredItem(held).getCategory() == AuctionItemCategory.valueOf(args[1].toUpperCase())) {
+					instance.getLocale().getMessage("general.filteritemaddedalready").sendPrefixedMessage(player);
 					return ReturnType.FAILURE;
 				}
 
 				AuctionFilterItem filterItem = new AuctionFilterItem(held, AuctionItemCategory.valueOf(args[1].toUpperCase()));
-				AuctionHouse.getInstance().getFilterManager().addFilterItem(filterItem);
-				AuctionHouse.getInstance().getLocale().getMessage("general.addeditemtofilterwhitelist").processPlaceholder("item_name", AuctionAPI.getInstance().getItemName(held)).processPlaceholder("filter_category", args[1]).sendPrefixedMessage(player);
+				instance.getFilterManager().addFilterItem(filterItem);
+				instance.getLocale().getMessage("general.addeditemtofilterwhitelist").processPlaceholder("item_name", AuctionAPI.getInstance().getItemName(held)).processPlaceholder("filter_category", args[1]).sendPrefixedMessage(player);
 			}
 		}
 

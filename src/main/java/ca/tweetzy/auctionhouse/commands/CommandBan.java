@@ -34,10 +34,11 @@ public class CommandBan extends AbstractCommand {
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		Player player = (Player) sender;
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
-
+		
+		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (args.length == 0) {
 			// Open the bans menu
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIBans(player));
+			instance.getGuiManager().showGUI(player, new GUIBans(player));
 			return ReturnType.SUCCESS;
 		}
 
@@ -45,7 +46,7 @@ public class CommandBan extends AbstractCommand {
 			return ReturnType.SYNTAX_ERROR;
 		}
 
-		Player target = PlayerUtils.findPlayer(args[0]);
+		final Player target = PlayerUtils.findPlayer(args[0]);
 		String timeString = args[1];
 		StringBuilder reason = new StringBuilder();
 		for (int i = 2; i < args.length; i++) {
@@ -59,7 +60,7 @@ public class CommandBan extends AbstractCommand {
 				// try and look for an offline player
 				offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
 				if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
+					instance.getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
 					return;
 				}
 			}
@@ -67,17 +68,17 @@ public class CommandBan extends AbstractCommand {
 			UUID toBan = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
 
 			if (!AuctionAPI.getInstance().isValidTimeString(timeString)) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.invalidtimestring").sendPrefixedMessage(player);
+				instance.getLocale().getMessage("general.invalidtimestring").sendPrefixedMessage(player);
 				return;
 			}
 
 			if (reason.toString().length() == 0) {
-				AuctionHouse.getInstance().getLocale().getMessage("bans.nobanreason").sendPrefixedMessage(player);
+				instance.getLocale().getMessage("bans.nobanreason").sendPrefixedMessage(player);
 				return;
 			}
 
-			if (AuctionHouse.getInstance().getAuctionBanManager().getBans().containsKey(toBan)) {
-				AuctionHouse.getInstance().getLocale().getMessage("bans.playeralreadybanned").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
+			if (instance.getAuctionBanManager().getBans().containsKey(toBan)) {
+				instance.getLocale().getMessage("bans.playeralreadybanned").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
 				return;
 			}
 
@@ -88,11 +89,11 @@ public class CommandBan extends AbstractCommand {
 			if (auctionBanPlayerEvent.isCancelled()) return;
 
 			AuctionBan auctionBan = new AuctionBan(toBan, reason.toString().trim(), System.currentTimeMillis() + bannedSeconds * 1000);
-			AuctionHouse.getInstance().getAuctionBanManager().addBan(auctionBan);
-			AuctionHouse.getInstance().getLocale().getMessage("bans.bannedplayer").processPlaceholder("player", args[0]).processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(player);
+			instance.getAuctionBanManager().addBan(auctionBan);
+			instance.getLocale().getMessage("bans.bannedplayer").processPlaceholder("player", args[0]).processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(player);
 
 			if (target != null) {
-				AuctionHouse.getInstance().getLocale().getMessage("bans.remainingtime").processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(target);
+				instance.getLocale().getMessage("bans.remainingtime").processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(target);
 			}
 		}).execute();
 

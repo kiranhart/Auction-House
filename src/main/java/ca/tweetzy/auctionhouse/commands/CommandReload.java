@@ -23,8 +23,9 @@ public class CommandReload extends AbstractCommand {
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
-		AuctionHouse.getInstance().reloadConfig();
-		AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aReloaded files")).sendPrefixedMessage(sender);
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		instance.reloadConfig();
+		instance.getLocale().newMessage(TextUtils.formatText("&aReloaded files")).sendPrefixedMessage(sender);
 		return ReturnType.SUCCESS;
 	}
 

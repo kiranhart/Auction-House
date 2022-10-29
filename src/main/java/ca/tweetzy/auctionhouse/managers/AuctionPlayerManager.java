@@ -111,12 +111,13 @@ public class AuctionPlayerManager {
 	public void loadPlayers() {
 		this.auctionPlayers.clear();
 
-		AuctionHouse.getInstance().getDataManager().getAuctionPlayers((error, all) -> {
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		instance.getDataManager().getAuctionPlayers((error, all) -> {
 			if (error == null) {
 				all.forEach(this::addPlayer);
 
 				// add all online players
-				Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> Bukkit.getOnlinePlayers().forEach(this::addPlayer), 20 * 3);
+				Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(instance, () -> Bukkit.getOnlinePlayers().forEach(this::addPlayer), 20 * 3);
 			}
 		});
 	}

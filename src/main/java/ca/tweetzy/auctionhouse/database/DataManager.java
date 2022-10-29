@@ -306,6 +306,7 @@ public class DataManager extends DataManagerAbstract {
 	public void insertAuction(AuctionedItem item, Callback<AuctionedItem> callback) {
 		this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite, allow_partial_buys) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+				final AuctionAPI api = AuctionAPI.getInstance();
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
 
 				fetch.setString(1, item.getId().toString());
@@ -322,9 +323,9 @@ public class DataManager extends DataManagerAbstract {
 				statement.setBoolean(11, item.isExpired());
 				statement.setLong(12, item.getExpiresAt());
 				statement.setString(13, item.getItem().getType().name());
-				statement.setString(14, AuctionAPI.getInstance().getItemName(item.getItem()));
-				statement.setString(15, AuctionAPI.getInstance().serializeLines(AuctionAPI.getInstance().getItemLore(item.getItem())));
-				statement.setString(16, AuctionAPI.getInstance().serializeLines(AuctionAPI.getInstance().getItemEnchantments(item.getItem())));
+				statement.setString(14, api.getItemName(item.getItem()));
+				statement.setString(15, api.serializeLines(api.getItemLore(item.getItem())));
+				statement.setString(16, api.serializeLines(api.getItemEnchantments(item.getItem())));
 				statement.setString(17, AuctionAPI.encodeItem(item.getItem()));
 				statement.setString(18, item.getListedWorld());
 				statement.setBoolean(19, item.isInfinite());

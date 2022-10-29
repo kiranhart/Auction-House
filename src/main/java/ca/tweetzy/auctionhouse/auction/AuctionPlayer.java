@@ -52,29 +52,28 @@ public class AuctionPlayer {
 		if (Settings.LIST_ITEM_DELAY.getInt() == -1) {
 			return true;
 		}
-
+		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (this.lastListedItem == -1 || System.currentTimeMillis() >= this.lastListedItem) {
 			this.lastListedItem = System.currentTimeMillis() + 1000L * Settings.LIST_ITEM_DELAY.getInt();
-			AuctionHouse.getInstance().getDataManager().updateAuctionPlayer(this, (error, success) -> {
+			instance.getDataManager().updateAuctionPlayer(this, (error, success) -> {
 				if (error == null && success)
 					if (!Settings.DISABLE_PROFILE_UPDATE_MSG.getBoolean())
-						AuctionHouse.getInstance().getLogger().info("Updating profile for player: " + player.getName());
+						instance.getLogger().info("Updating profile for player: " + player.getName());
 
 			});
 			return true;
 		}
 
-		AuctionHouse.getInstance().getLocale().getMessage("general.wait_to_list").processPlaceholder("time", (this.lastListedItem - System.currentTimeMillis()) / 1000).sendPrefixedMessage(this.player);
-
+		instance.getLocale().getMessage("general.wait_to_list").processPlaceholder("time", (this.lastListedItem - System.currentTimeMillis()) / 1000).sendPrefixedMessage(this.player);
 		return false;
 	}
 
 	public List<AuctionedItem> getItems(boolean getExpired) {
-		List<AuctionedItem> items = new ArrayList<>();
-
-		for (Map.Entry<UUID, AuctionedItem> entry : AuctionHouse.getInstance().getAuctionItemManager().getItems().entrySet()) {
-			AuctionedItem auctionItem = entry.getValue();
-			if (auctionItem.getOwner().equals(this.player.getUniqueId()) && auctionItem.isExpired() == getExpired && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
+		final List<AuctionedItem> items = new ArrayList<>();
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		for (Map.Entry<UUID, AuctionedItem> entry : instance.getAuctionItemManager().getItems().entrySet()) {
+			final AuctionedItem auctionItem = entry.getValue();
+			if (auctionItem.getOwner().equals(this.player.getUniqueId()) && auctionItem.isExpired() == getExpired && !instance.getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
 				items.add(auctionItem);
 			}
 		}

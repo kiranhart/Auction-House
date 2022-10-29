@@ -36,16 +36,17 @@ public final class CommandMarkChest extends AbstractCommand {
 		if (targetBlock.getType() != XMaterial.CHEST.parseMaterial()) return ReturnType.FAILURE;
 
 		final Chest chest = (Chest) targetBlock.getState();
-		final NamespacedKey key = new NamespacedKey(AuctionHouse.getInstance(), "AuctionHouseMarkedChest");
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		final NamespacedKey key = new NamespacedKey(instance, "AuctionHouseMarkedChest");
 
 		if (chest.getPersistentDataContainer().has(key, PersistentDataType.BYTE)) {
 			chest.getPersistentDataContainer().remove(key);
 			chest.update(true);
-			AuctionHouse.getInstance().getLocale().getMessage("general.unmarked chest").sendPrefixedMessage(player);
+			instance.getLocale().getMessage("general.unmarked chest").sendPrefixedMessage(player);
 		} else {
 			chest.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
 			chest.update(true);
-			AuctionHouse.getInstance().getLocale().getMessage("general.marked chest").sendPrefixedMessage(player);
+			instance.getLocale().getMessage("general.marked chest").sendPrefixedMessage(player);
 		}
 
 		return ReturnType.SUCCESS;

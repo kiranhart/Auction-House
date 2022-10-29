@@ -41,16 +41,17 @@ public class CommandAdmin extends AbstractCommand {
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		if (args.length < 1) return ReturnType.FAILURE;
 		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
-
+		
+		final AuctionHouse instance = AuctionHouse.getInstance();
 		switch (args[0].toLowerCase()) {
 			case "logs":
 				if (!(sender instanceof Player)) break;
 				Player player = (Player) sender;
 				if (!player.hasPermission("auctionhouse.cmd.admin.logs")) return ReturnType.FAILURE;
 
-				AuctionHouse.getInstance().getDataManager().getAdminLogs((error, logs) -> {
+				instance.getDataManager().getAdminLogs((error, logs) -> {
 					if (error == null)
-						AuctionHouse.newChain().sync(() -> AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAdminLogs(player, logs))).execute();
+						AuctionHouse.newChain().sync(() -> instance.getGuiManager().showGUI(player, new GUIAdminLogs(player, logs))).execute();
 					else
 						error.printStackTrace();
 				});
@@ -73,36 +74,36 @@ public class CommandAdmin extends AbstractCommand {
 				}
 
 				if (target == null) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[1]).sendPrefixedMessage(sender);
+					instance.getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[1]).sendPrefixedMessage(sender);
 					return ReturnType.FAILURE;
 				}
 
-				AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAdminExpired(player, target));
+				instance.getGuiManager().showGUI(player, new GUIAdminExpired(player, target));
 
 				break;
 			case "endall":
 				if (!sender.hasPermission("auctionhouse.cmd.admin.endall")) return ReturnType.FAILURE;
-				for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
-					AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpired(true);
+				for (UUID id : instance.getAuctionItemManager().getItems().keySet()) {
+					instance.getAuctionItemManager().getItems().get(id).setExpired(true);
 				}
-				AuctionHouse.getInstance().getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(sender);
+				instance.getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(sender);
 				break;
 			case "relistall":
 				if (!sender.hasPermission("auctionhouse.cmd.admin.relistall")) return ReturnType.FAILURE;
-				for (UUID id : AuctionHouse.getInstance().getAuctionItemManager().getItems().keySet()) {
-					if (AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).isExpired()) {
-						int relistTime = args.length == 1 ? AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).isBidItem() ? Settings.DEFAULT_AUCTION_LISTING_TIME.getInt() : Settings.DEFAULT_BIN_LISTING_TIME.getInt() : Integer.parseInt(args[1]);
+				for (UUID id : instance.getAuctionItemManager().getItems().keySet()) {
+					if (instance.getAuctionItemManager().getItems().get(id).isExpired()) {
+						int relistTime = args.length == 1 ? instance.getAuctionItemManager().getItems().get(id).isBidItem() ? Settings.DEFAULT_AUCTION_LISTING_TIME.getInt() : Settings.DEFAULT_BIN_LISTING_TIME.getInt() : Integer.parseInt(args[1]);
 
-						AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpiresAt(System.currentTimeMillis() + 1000L * relistTime);
-						AuctionHouse.getInstance().getAuctionItemManager().getItems().get(id).setExpired(false);
+						instance.getAuctionItemManager().getItems().get(id).setExpiresAt(System.currentTimeMillis() + 1000L * relistTime);
+						instance.getAuctionItemManager().getItems().get(id).setExpired(false);
 					}
 				}
-				AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(sender);
+				instance.getLocale().getMessage("general.relisteditems").sendPrefixedMessage(sender);
 				break;
 			case "clearall":
 				if (!sender.hasPermission("auctionhouse.cmd.admin.clearall")) return ReturnType.FAILURE;
 				// Don't tell ppl that this exists
-				AuctionHouse.getInstance().getAuctionItemManager().getItems().clear();
+				instance.getAuctionItemManager().getItems().clear();
 			case "opensell":
 				if (args.length < 2) return ReturnType.FAILURE;
 				if (!sender.hasPermission("auctionhouse.cmd.admin.opensell")) return ReturnType.FAILURE;
@@ -113,11 +114,11 @@ public class CommandAdmin extends AbstractCommand {
 				ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 
 				if (itemToSell.getType() == XMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
+					instance.getLocale().getMessage("general.air").sendPrefixedMessage(player);
 					return ReturnType.FAILURE;
 				} else {
-					AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellItem(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()), itemToSell));
-					AuctionHouse.getInstance().getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), itemToSell);
+					instance.getGuiManager().showGUI(player, new GUISellItem(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()), itemToSell));
+					instance.getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), itemToSell);
 					PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
 				}
 				break;
@@ -130,12 +131,12 @@ public class CommandAdmin extends AbstractCommand {
 
 				if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
-				if (AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-					AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
-					AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+				if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
+					instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+					instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 				}
 
-				AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+				instance.getGuiManager().showGUI(player, new GUIAuctionHouse(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 				break;
 		}
 

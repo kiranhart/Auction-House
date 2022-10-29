@@ -30,6 +30,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -47,7 +49,6 @@ public class PlayerListeners implements Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		final Player player = event.getEntity();
-
 		final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
 		if (auctionPlayer != null) {
 			// task id cancel
@@ -57,39 +58,38 @@ public class PlayerListeners implements Listener {
 				player.getLocation().getWorld().dropItemNaturally(player.getLocation(), auctionPlayer.getItemBeingListed());
 			}
 		}
-
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerJoin(PlayerJoinEvent e) {
-		Player player = e.getPlayer();
-
-		AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(player);
+		final Player player = e.getPlayer();
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		instance.getAuctionPlayerManager().addPlayer(player);
 
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
 
-			if (Settings.UPDATE_CHECKER.getBoolean() && AuctionHouse.getInstance().getStatus() == UpdateChecker.UpdateStatus.UNRELEASED_VERSION && player.isOp()) {
-				AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", AuctionHouse.getInstance().getDescription().getVersion()))).sendPrefixedMessage(player);
+			if (Settings.UPDATE_CHECKER.getBoolean() && instance.getStatus() == UpdateChecker.UpdateStatus.UNRELEASED_VERSION && player.isOp()) {
+				instance.getLocale().newMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", instance.getDescription().getVersion()))).sendPrefixedMessage(player);
 			}
 		}, 20);
 	}
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e) {
-		Player player = e.getPlayer();
-
-		AuctionHouse.getInstance().getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
-		AuctionHouse.getInstance().getLogger().info("Removing sell holding instance for user: " + player.getName());
+		final Player player = e.getPlayer();
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		instance.getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
+		instance.getLogger().info("Removing sell holding instance for user: " + player.getName());
 	}
 
 	@EventHandler
 	public void onCraftWithBundle(PrepareItemCraftEvent event) {
-		final ItemStack[] craftingItems = event.getInventory().getMatrix();
-
+		final CraftingInventory inventory = event.getInventory();
+		final ItemStack[] craftingItems = inventory.getMatrix();
 		for (ItemStack item : craftingItems) {
 			if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
 			if (NBTEditor.contains(item, "AuctionBundleItem")) {
-				event.getInventory().setResult(XMaterial.AIR.parseItem());
+				inventory.setResult(XMaterial.AIR.parseItem());
 			}
 		}
 	}
@@ -104,23 +104,24 @@ public class PlayerListeners implements Listener {
 		if (block == null || block.getType() != XMaterial.CHEST.parseMaterial()) return;
 		final Chest chest = (Chest) block.getState();
 
-		final NamespacedKey key = new NamespacedKey(AuctionHouse.getInstance(), "AuctionHouseMarkedChest");
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		final NamespacedKey key = new NamespacedKey(instance, "AuctionHouseMarkedChest");
 		if (chest.getPersistentDataContainer().has(key, PersistentDataType.BYTE)) {
 			e.setUseInteractedBlock(Event.Result.DENY);
 			e.setCancelled(true);
 
-			if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
+			if (instance.getAuctionBanManager().checkAndHandleBan(player)) {
 				return;
 			}
 
-			AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+			instance.getGuiManager().showGUI(player, new GUIAuctionHouse(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 		}
 	}
 
 	@EventHandler
 	public void onBundleClick(PlayerInteractEvent e) {
-		Player player = e.getPlayer();
-		ItemStack heldItem = PlayerHelper.getHeldItem(player);
+		final Player player = e.getPlayer();
+		final ItemStack heldItem = PlayerHelper.getHeldItem(player);
 
 		if (heldItem == null || (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK))
 			return;
@@ -128,7 +129,7 @@ public class PlayerListeners implements Listener {
 		if (!NBTEditor.contains(heldItem, "AuctionBundleItem")) return;
 		e.setCancelled(true);
 
-		List<ItemStack> items = new ArrayList<>();
+		final List<ItemStack> items = new ArrayList<>();
 
 		for (int i = 0; i < NBTEditor.getInt(heldItem, "AuctionBundleItem"); i++) {
 			items.add(AuctionAPI.getInstance().deserializeItem(NBTEditor.getByteArray(heldItem, "AuctionBundleItem-" + i)));

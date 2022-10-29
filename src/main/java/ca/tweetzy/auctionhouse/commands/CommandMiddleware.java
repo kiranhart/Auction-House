@@ -21,17 +21,18 @@ public final class CommandMiddleware {
 	public AbstractCommand.ReturnType handle(@NonNull final Player player) {
 		if (AuctionAPI.tellMigrationStatus(player)) return AbstractCommand.ReturnType.FAILURE;
 
+		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (Settings.BLOCKED_WORLDS.getStringList().contains(player.getWorld().getName())) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.disabled in world").sendPrefixedMessage(player);
+			instance.getLocale().getMessage("general.disabled in world").sendPrefixedMessage(player);
 			return AbstractCommand.ReturnType.FAILURE;
 		}
 
 		if (Settings.USE_AUCTION_CHEST_MODE.getBoolean()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.visit auction chest").sendPrefixedMessage(player);
+			instance.getLocale().getMessage("general.visit auction chest").sendPrefixedMessage(player);
 			return AbstractCommand.ReturnType.FAILURE;
 		}
 
-		if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(player)) {
+		if (instance.getAuctionBanManager().checkAndHandleBan(player)) {
 			return AbstractCommand.ReturnType.FAILURE;
 		}
 

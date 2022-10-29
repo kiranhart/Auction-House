@@ -258,20 +258,20 @@ public class AuctionAPI {
 	 * @param isBid       Is this auction a bid enabled auction, or a single sale auction?
 	 */
 	public void sendDiscordMessage(String webhook, OfflinePlayer seller, OfflinePlayer buyer, AuctionedItem auctionItem, AuctionSaleType saleType, boolean isNew, boolean isBid) {
-		DiscordWebhook hook = new DiscordWebhook(webhook);
+		final DiscordWebhook hook = new DiscordWebhook(webhook);
 		hook.setUsername(Settings.DISCORD_MSG_USERNAME.getString());
 		hook.setAvatarUrl(Settings.DISCORD_MSG_PFP.getString());
 
-		String color = isBid ? Settings.DISCORD_MSG_DEFAULT_COLOUR_BID.getString() : isNew ? Settings.DISCORD_MSG_DEFAULT_COLOUR.getString() : Settings.DISCORD_MSG_DEFAULT_COLOUR_SALE.getString();
+		final String color = isBid ? Settings.DISCORD_MSG_DEFAULT_COLOUR_BID.getString() : isNew ? Settings.DISCORD_MSG_DEFAULT_COLOUR.getString() : Settings.DISCORD_MSG_DEFAULT_COLOUR_SALE.getString();
 
-		String[] possibleColours = color.split("-");
-		Color colour = Settings.DISCORD_MSG_USE_RANDOM_COLOUR.getBoolean()
+		final String[] possibleColours = color.split("-");
+		final Color colour = Settings.DISCORD_MSG_USE_RANDOM_COLOUR.getBoolean()
 				? Color.getHSBColor(ThreadLocalRandom.current().nextFloat() * 360F, ThreadLocalRandom.current().nextFloat() * 101F, ThreadLocalRandom.current().nextFloat() * 101F)
 				: Color.getHSBColor(Float.parseFloat(possibleColours[0]) / 360, Float.parseFloat(possibleColours[1]) / 100, Float.parseFloat(possibleColours[2]) / 100);
 
-		ItemStack itemStack = auctionItem.getItem();
-		String itemName = MMOItemsHook.isEnabled() ? MMOItemsHook.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
-		DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
+		final ItemStack itemStack = auctionItem.getItem();
+		final String itemName = MMOItemsHook.isEnabled() ? MMOItemsHook.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
+		final DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
 
 		final String playerLost = AuctionHouse.getInstance().getLocale().getMessage("discord.player_lost").getMessage();
 		final String notSold = AuctionHouse.getInstance().getLocale().getMessage("discord.not_sold").getMessage();
@@ -311,19 +311,19 @@ public class AuctionAPI {
 	 */
 	public void sendDiscordBidMessage(String webhook, AuctionedItem auctionItem, double newBid) {
 		// oh boy the code repetition is high with this one
-		DiscordWebhook hook = new DiscordWebhook(webhook);
+		final DiscordWebhook hook = new DiscordWebhook(webhook);
 		hook.setUsername(Settings.DISCORD_MSG_USERNAME.getString());
 		hook.setAvatarUrl(Settings.DISCORD_MSG_PFP.getString());
 
-		String[] possibleColours = Settings.DISCORD_MSG_DEFAULT_COLOUR_BID.getString().split("-");
-		Color colour = Settings.DISCORD_MSG_USE_RANDOM_COLOUR.getBoolean()
+		final String[] possibleColours = Settings.DISCORD_MSG_DEFAULT_COLOUR_BID.getString().split("-");
+		final Color colour = Settings.DISCORD_MSG_USE_RANDOM_COLOUR.getBoolean()
 				? Color.getHSBColor(ThreadLocalRandom.current().nextFloat() * 360F, ThreadLocalRandom.current().nextFloat() * 101F, ThreadLocalRandom.current().nextFloat() * 101F)
 				: Color.getHSBColor(Float.parseFloat(possibleColours[0]) / 360, Float.parseFloat(possibleColours[1]) / 100, Float.parseFloat(possibleColours[2]) / 100);
 
-		ItemStack itemStack = auctionItem.getItem();
-		String itemName = MMOItemsHook.isEnabled() ? MMOItemsHook.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
+		final ItemStack itemStack = auctionItem.getItem();
+		final String itemName = MMOItemsHook.isEnabled() ? MMOItemsHook.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
 
-		DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
+		final DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
 		embedObject.setTitle(Settings.DISCORD_MSG_BID_TITLE.getString());
 		embedObject.setColor(colour);
 		embedObject.addField(Settings.DISCORD_MSG_FIELD_BIDDER_NAME.getString(), Settings.DISCORD_MSG_FIELD_BIDDER_VALUE.getString().replace("%bidder%", auctionItem.getHighestBidderName() != null ? auctionItem.getHighestBidderName() : AuctionHouse.getInstance().getLocale().getMessage("discord.player_lost").getMessage()), Settings.DISCORD_MSG_FIELD_BIDDER_INLINE.getBoolean());
@@ -375,7 +375,7 @@ public class AuctionAPI {
 	 * @return a list of all the enchantment names
 	 */
 	public List<String> getItemEnchantments(ItemStack stack) {
-		List<String> enchantments = new ArrayList<>();
+		final List<String> enchantments = new ArrayList<>();
 		Objects.requireNonNull(stack, "Item Stack cannot be null when getting enchantments");
 		if (!stack.getEnchantments().isEmpty()) {
 			stack.getEnchantments().forEach((k, i) -> {
