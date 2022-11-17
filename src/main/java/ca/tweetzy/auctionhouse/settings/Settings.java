@@ -895,6 +895,53 @@ public class Settings {
 	));
 
 	/*  ===============================
+	 *    ITEM SELL BIN GUI
+	 *  ===============================*/
+	public static final ConfigSetting GUI_SELL_BIN_TITLE = new ConfigSetting(config, "gui.sell bin item.title", "&7Auction House - &eBin Listing");
+	public static final ConfigSetting GUI_SELL_BIN_BG_ITEM = new ConfigSetting(config, "gui.sell bin item.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_ITEM = new ConfigSetting(config, "gui.sell bin item.items.confirm.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_NAME = new ConfigSetting(config, "gui.sell bin item.items.confirm.name", "&e&lList Item");
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_LORE = new ConfigSetting(config, "gui.sell bin item.items.confirm.lore", Arrays.asList(
+			"",
+			"&7Click to list this item"
+	));
+
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_TIME_ITEM = new ConfigSetting(config, "gui.sell bin item.items.time.item", XMaterial.CLOCK.name());
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_TIME_NAME = new ConfigSetting(config, "gui.sell bin item.items.time.name", "&e&lListing Time");
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_TIME_LORE = new ConfigSetting(config, "gui.sell bin item.items.time.lore", Arrays.asList(
+			"",
+			"&7Click to edit the listing time"
+	));
+
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_PRICE_ITEM = new ConfigSetting(config, "gui.sell bin item.items.price.item", XMaterial.DIAMOND.name());
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_PRICE_NAME = new ConfigSetting(config, "gui.sell bin item.items.price.name", "&e&lPrice");
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE = new ConfigSetting(config, "gui.sell bin item.items.price.lore", Arrays.asList(
+			"",
+			"&7The current price if &F: &a$%listing_bin_price%",
+			"",
+			"&7Click to edit the listing price"
+	));
+
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_ITEM = new ConfigSetting(config, "gui.sell bin item.items.partial enabled.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_NAME = new ConfigSetting(config, "gui.sell bin item.items.partial enabled.name", "&e&lQuantity Purchase");
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_LORE = new ConfigSetting(config, "gui.sell bin item.items.partial enabled.lore", Arrays.asList(
+			"",
+			"&7You have partial purchases &aenabled",
+			"",
+			"&7Click to &cdisable &7partial purchases"
+	));
+
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_ITEM = new ConfigSetting(config, "gui.sell bin item.items.partial disabled.item", XMaterial.RED_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_NAME = new ConfigSetting(config, "gui.sell bin item.items.partial disabled.name", "&e&lQuantity Purchase");
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_LORE = new ConfigSetting(config, "gui.sell bin item.items.partial disabled.lore", Arrays.asList(
+			"",
+			"&7You have partial purchases &cdisabled",
+			"",
+			"&7Click to &eenable &7partial purchases"
+	));
+
+	/*  ===============================
 	 *         AH STATS GUI
 	 *  ===============================*/
 	public static final ConfigSetting GUI_STATS_VIEW_SELECT_TITLE = new ConfigSetting(config, "gui.stat view select.title", "&7Auction House - &eStatistics");
