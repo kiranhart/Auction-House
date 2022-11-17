@@ -7,7 +7,7 @@
 	<artifactId>auctionhouse</artifactId>
 
 	<name>AuctionHouse</name>
-	<description>The ultimate spawner plugin</description>
+	<description>The ultimate auction solution for your server</description>
 	<version>2.79.0</version>
 	<packaging>jar</packaging>
 
@@ -16,8 +16,8 @@
 		<jarName>${project.name}</jarName>
 		<main.class>${project.groupId}.${project.artifactId}.${project.name}</main.class>
 		<java.version>8</java.version>
-		<feather.version>3.4.0</feather.version>
-		<feather.path>ca.tweetzy</feather.path>
+		<flight.version>3.6.0</flight.version>
+		<flight.path>ca.tweetzy</flight.path>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -84,9 +84,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>${feather.path}</groupId>
-			<artifactId>feather</artifactId>
-			<version>${feather.version}</version>
+			<groupId>${flight.path}</groupId>
+			<artifactId>flight</artifactId>
+			<version>${flight.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.MilkBowl</groupId>
@@ -246,14 +246,13 @@
 					<createDependencyReducedPom>false</createDependencyReducedPom>
 					<artifactSet>
 						<includes>
-							<include>${feather.path}:feather*</include>
+							<include>${flight.path}:flight*</include>
 							<include>ca.tweetzy:tweetycore</include>
 							<include>com.zaxxer:HikariCP</include>
 							<include>org.slf4j:slf4j-api</include>
 							<include>org.slf4j:slf4j-nop</include>
 							<include>co.aikar:taskchain-bukkit</include>
 							<include>co.aikar:taskchain-core</include>
-							<include>com.sparkjava:spark-core</include>
 						</includes>
 					</artifactSet>
 					<filters>
@@ -273,8 +272,8 @@
 							<shadedPattern>${project.groupId}.${project.artifactId}.core</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>ca.tweetzy.feather</pattern>
-							<shadedPattern>${project.groupId}.${project.artifactId}.feather</shadedPattern>
+							<pattern>ca.tweetzy.flight</pattern>
+							<shadedPattern>${project.groupId}.${project.artifactId}.flight</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>com.zaxxer.hikari</pattern>
