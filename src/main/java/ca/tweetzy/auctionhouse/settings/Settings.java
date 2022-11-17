@@ -237,6 +237,56 @@ public class Settings {
 			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
 	);
 
+	public static final ConfigSetting CLICKS_FILTER_SORT_PRICE_OR_RECENT = new ConfigSetting(config, "auction setting.clicks.filter.sort by price or recent", "SHIFT_RIGHT",
+			"Valid Click Types",
+			"LEFT",
+			"RIGHT",
+			"SHIFT_LEFT",
+			"SHIFT_RIGHT",
+			"MIDDLE",
+			"DROP",
+			"",
+			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+	);
+
+	public static final ConfigSetting CLICKS_FILTER_SORT_SALE_TYPE = new ConfigSetting(config, "auction setting.clicks.filter.sort sale type", "RIGHT",
+			"Valid Click Types",
+			"LEFT",
+			"RIGHT",
+			"SHIFT_LEFT",
+			"SHIFT_RIGHT",
+			"MIDDLE",
+			"DROP",
+			"",
+			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+	);
+
+	public static final ConfigSetting CLICKS_FILTER_RESET = new ConfigSetting(config, "auction setting.clicks.filter.reset", "DROP",
+			"Valid Click Types",
+			"LEFT",
+			"RIGHT",
+			"SHIFT_LEFT",
+			"SHIFT_RIGHT",
+			"MIDDLE",
+			"DROP",
+			"",
+			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+	);
+
+	public static final ConfigSetting CLICKS_FILTER_CATEGORY= new ConfigSetting(config, "auction setting.clicks.filter.change category", "LEFT",
+			"Valid Click Types",
+			"LEFT",
+			"RIGHT",
+			"SHIFT_LEFT",
+			"SHIFT_RIGHT",
+			"MIDDLE",
+			"DROP",
+			"",
+			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+	);
+
+
+
 	/*  ===============================
 	 *         DATABASE OPTIONS
 	 *  ===============================*/

@@ -571,27 +571,31 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED.getBoolean()) {
 				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getInt(), item, e -> {
-					switch (e.clickType) {
-						case LEFT:
-							e.manager.showGUI(e.player, new GUIFilterSelection(this.auctionPlayer));
-							break;
-						case DROP:
-							this.auctionPlayer.resetFilter();
+					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase())) {
+						e.manager.showGUI(e.player, new GUIFilterSelection(this.auctionPlayer));
+						return;
+					}
+
+					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_RESET.getString().toUpperCase())) {
+						this.auctionPlayer.resetFilter();
+						updatePlayerFilter(this.auctionPlayer);
+						draw();
+						return;
+					}
+
+					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_SALE_TYPE.getString().toUpperCase())) {
+						if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
+							this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
 							updatePlayerFilter(this.auctionPlayer);
 							draw();
-							break;
-						case RIGHT:
-							if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
-								this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
-								updatePlayerFilter(this.auctionPlayer);
-								draw();
-							}
-							break;
-						case SHIFT_RIGHT:
-							this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
-							updatePlayerFilter(this.auctionPlayer);
-							draw();
-							break;
+						}
+						return;
+					}
+
+					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase())) {
+						this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
+						updatePlayerFilter(this.auctionPlayer);
+						draw();
 					}
 				});
 			}
@@ -604,29 +608,33 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 				put("%filter_auction_type%", auctionPlayer.getSelectedSaleType().getTranslatedType());
 				put("%filter_sort_order%", auctionPlayer.getAuctionSortType().getTranslatedType());
 			}}), e -> {
-				switch (e.clickType) {
-					case DROP:
-						this.auctionPlayer.resetFilter();
+
+				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase())) {
+					this.auctionPlayer.setSelectedFilter(this.auctionPlayer.getSelectedFilter().next());
+					updatePlayerFilter(this.auctionPlayer);
+					draw();
+				}
+
+				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_RESET.getString().toUpperCase())) {
+					this.auctionPlayer.resetFilter();
+					updatePlayerFilter(this.auctionPlayer);
+					draw();
+					return;
+				}
+
+				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_SALE_TYPE.getString().toUpperCase())) {
+					if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
+						this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
 						updatePlayerFilter(this.auctionPlayer);
 						draw();
-						break;
-					case LEFT:
-						this.auctionPlayer.setSelectedFilter(this.auctionPlayer.getSelectedFilter().next());
-						updatePlayerFilter(this.auctionPlayer);
-						draw();
-						break;
-					case RIGHT:
-						if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
-							this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
-							updatePlayerFilter(this.auctionPlayer);
-							draw();
-						}
-						break;
-					case SHIFT_RIGHT:
-						this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
-						updatePlayerFilter(this.auctionPlayer);
-						draw();
-						break;
+					}
+					return;
+				}
+
+				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase())) {
+					this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
+					updatePlayerFilter(this.auctionPlayer);
+					draw();
 				}
 			});
 		}
