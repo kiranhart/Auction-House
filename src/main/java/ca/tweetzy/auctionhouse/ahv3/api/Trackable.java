@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.ahv3.api;
 
-public interface EditTrackable {
+public interface Trackable {
 
 	/**
 	 * Time when the element was created
