@@ -23,7 +23,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.GuiUtils;
-import ca.tweetzy.feather.utils.QuickItem;
+import ca.tweetzy.flight.utils.QuickItem;
 import lombok.NonNull;
 
 import java.util.Objects;
