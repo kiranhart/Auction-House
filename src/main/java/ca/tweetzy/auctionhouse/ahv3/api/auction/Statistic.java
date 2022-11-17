@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.ahv3.api.auction;
 
-import ca.tweetzy.auctionhouse.ahv3.api.EditTrackable;
+import ca.tweetzy.auctionhouse.ahv3.api.Trackable;
 import ca.tweetzy.auctionhouse.ahv3.api.Identifiable;
 import ca.tweetzy.auctionhouse.api.interfaces.Storeable;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
@@ -26,7 +26,7 @@ import lombok.NonNull;
 
 import java.util.UUID;
 
-public interface Statistic extends Identifiable, EditTrackable, Storeable<Statistic> {
+public interface Statistic extends Identifiable, Trackable, Storeable<Statistic> {
 
 	/**
 	 * The owning player of this statistic
