@@ -79,6 +79,19 @@ public class LocaleSettings {
 		languageNodes.put("pricing.bidmusthigherthanprevious", "&cYour bid must be higher than &4%current_bid%");
 		languageNodes.put("pricing.minitemprice", "&cThe minimum price for this item must be &a$%price%");
 
+
+		languageNodes.put("titles.buy now price.title", "&eBuy Out Price");
+		languageNodes.put("titles.buy now price.subtitle", "&fEnter new buyout price in chat");
+
+		languageNodes.put("titles.starting bid price.title", "&eStarting Bid Price");
+		languageNodes.put("titles.starting bid price.subtitle", "&fEnter new starting bid in chat");
+
+		languageNodes.put("titles.bid increment price.title", "&eBid Increment Price");
+		languageNodes.put("titles.bid increment price.subtitle", "&fEnter new bid increment in chat");
+
+		languageNodes.put("titles.listing time.title", "&eListing Time");
+		languageNodes.put("titles.listing time.subtitle", "&fEnter new listing time in chat");
+
 		languageNodes.put("prompts.enter new buy now price", "&aPlease enter the new buy now price in chat:");
 		languageNodes.put("prompts.enter new starting bid", "&aPlease enter the new starting bid in chat:");
 		languageNodes.put("prompts.enter new bid increment", "&aPlease enter the new bid increment in chat:");
