@@ -19,13 +19,14 @@
 package ca.tweetzy.auctionhouse.ahv3.api.auction;
 
 import ca.tweetzy.auctionhouse.ahv3.api.Identifiable;
+import ca.tweetzy.auctionhouse.ahv3.api.Storeable;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public interface Bid extends Identifiable {
+public interface Bid extends Identifiable, Storeable<Bid> {
 
-	UUID getAuctionUUID();
+	UUID getAuctionId();
 
 	UUID getBidderUUID();
 
