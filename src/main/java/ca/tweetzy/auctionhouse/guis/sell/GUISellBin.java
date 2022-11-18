@@ -44,8 +44,8 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 
 	private final AuctionPlayer auctionPlayer;
 
-	private double listingPrice;
-	private long listingTime;
+	private final double listingPrice;
+	private final long listingTime;
 	private boolean allowPartialBuy;
 
 	public GUISellBin(@NonNull final AuctionPlayer auctionPlayer, final double listingPrice, final long listingTime, boolean allowPartialBuy) {
