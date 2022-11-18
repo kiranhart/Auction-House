@@ -49,7 +49,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.CraftingInventory;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -96,6 +95,12 @@ public class PlayerListeners implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		final Player player = e.getPlayer();
 		final AuctionHouse instance = AuctionHouse.getInstance();
+
+		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) != null)
+			if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed() != null)
+				player.getInventory().addItem(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed());
+
+
 		instance.getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
 		instance.getLogger().info("Removing sell holding instance for user: " + player.getName());
 	}
