@@ -67,6 +67,15 @@
 			<id>paper-repo</id>
 			<url>https://papermc.io/repo/repository/maven-public/</url>
 		</repository>
+		<repository>
+			<id>dv8tion</id>
+			<name>m2-dv8tion</name>
+			<url>https://m2.dv8tion.net/releases</url>
+		</repository>
+		<repository>
+			<id>Scarsz-Nexus</id>
+			<url>https://nexus.scarsz.me/content/groups/public/</url>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -168,6 +177,12 @@
 			<groupId>com.github.DrBlankDev</groupId>
 			<artifactId>CoinApi</artifactId>
 			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.discordsrv</groupId>
+			<artifactId>discordsrv</artifactId>
+			<version>1.26.0</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>
