@@ -33,5 +33,6 @@ public enum ListingResult {
 	CANNOT_SELL_BUNDLE_ITEM,
 
 	UNKNOWN,
+	EVENT_CANCELED
 
 }
