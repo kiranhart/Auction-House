@@ -44,10 +44,10 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 
 	private final AuctionPlayer auctionPlayer;
 
-	private double binPrice;
-	private double startingBid;
-	private double bidIncrement;
-	private long listingTime;
+	private final double binPrice;
+	private final double startingBid;
+	private final double bidIncrement;
+	private final long listingTime;
 	private boolean allowBuyNow;
 
 	public GUISellAuction(@NonNull final AuctionPlayer auctionPlayer, final double binPrice, final double startingBid, final double bidIncrement, final long listingTime, final boolean allowBuyNow) {
@@ -112,13 +112,58 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 			});
 		}
 
-		setButton(3, 4, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_ITEM.getMaterial().parseItem()))
-				.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(this.binPrice))).make(), click -> {
+		if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean())
+			setButton(3, 4, QuickItem
+					.of(Objects.requireNonNull(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_ITEM.getMaterial().parseItem()))
+					.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_NAME.getString())
+					.lore(Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(this.binPrice))).make(), click -> {
+
+				click.gui.exit();
+				new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.subtitle").getMessage()) {
+
+					@Override
+					public void onExit(Player player) {
+						click.manager.showGUI(player, GUISellAuction.this);
+					}
+
+					@Override
+					public boolean onResult(String string) {
+						string = ChatColor.stripColor(string);
+
+						if (!NumberUtils.isDouble(string)) {
+							AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").sendPrefixedMessage(player);
+							return false;
+						}
+
+						double listingAmount = Double.parseDouble(string);
+
+						if (listingAmount < Settings.MIN_AUCTION_PRICE.getDouble())
+							listingAmount = Settings.MIN_AUCTION_PRICE.getDouble();
+
+						if (listingAmount > Settings.MAX_AUCTION_PRICE.getDouble())
+							listingAmount = Settings.MAX_AUCTION_PRICE.getDouble();
+
+						click.manager.showGUI(click.player, new GUISellAuction(
+								GUISellAuction.this.auctionPlayer,
+								listingAmount,
+								GUISellAuction.this.startingBid,
+								GUISellAuction.this.bidIncrement,
+								GUISellAuction.this.listingTime,
+								GUISellAuction.this.allowBuyNow
+						));
+
+						return true;
+					}
+				};
+			});
+
+		setButton(3, 3, QuickItem
+				.of(Objects.requireNonNull(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_ITEM.getMaterial().parseItem()))
+				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_NAME.getString())
+				.lore(Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(), "listing_start_price", AuctionAPI.getInstance().formatNumber(this.startingBid))).make(), click -> {
 
 			click.gui.exit();
-			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.subtitle").getMessage()) {
+			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.starting bid price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.starting bid price.subtitle").getMessage()) {
 
 				@Override
 				public void onExit(Player player) {
@@ -136,16 +181,23 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 
 					double listingAmount = Double.parseDouble(string);
 
-					if (listingAmount < Settings.MIN_AUCTION_PRICE.getDouble())
-						listingAmount = Settings.MIN_AUCTION_PRICE.getDouble();
+					if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && GUISellAuction.this.allowBuyNow)
+						if (Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && listingAmount >= GUISellAuction.this.binPrice) {
+							AuctionHouse.getInstance().getLocale().getMessage("pricing.basepricetoolow").sendPrefixedMessage(player);
+							return false;
+						}
 
-					if (listingAmount > Settings.MAX_AUCTION_PRICE.getDouble())
-						listingAmount = Settings.MAX_AUCTION_PRICE.getDouble();
+					if (listingAmount < Settings.MIN_AUCTION_START_PRICE.getDouble())
+						listingAmount = Settings.MIN_AUCTION_START_PRICE.getDouble();
+
+					if (listingAmount > Settings.MAX_AUCTION_START_PRICE.getDouble())
+						listingAmount = Settings.MAX_AUCTION_START_PRICE.getDouble();
+
 
 					click.manager.showGUI(click.player, new GUISellAuction(
 							GUISellAuction.this.auctionPlayer,
+							GUISellAuction.this.binPrice,
 							listingAmount,
-							GUISellAuction.this.startingBid,
 							GUISellAuction.this.bidIncrement,
 							GUISellAuction.this.listingTime,
 							GUISellAuction.this.allowBuyNow
@@ -156,21 +208,52 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 			};
 		});
 
-		setItem(1, 4, new AuctionedItem(
-				UUID.randomUUID(),
-				auctionPlayer.getUuid(),
-				auctionPlayer.getUuid(),
-				auctionPlayer.getPlayer().getName(),
-				auctionPlayer.getPlayer().getName(),
-				MaterialCategorizer.getMaterialCategory(this.auctionPlayer.getItemBeingListed()),
-				this.auctionPlayer.getItemBeingListed(),
-				this.binPrice,
-				0,
-				0,
-				this.binPrice,
-				false, false,
-				this.listingTime
-		).getDisplayStack(AuctionStackType.LISTING_PREVIEW));
+		setButton(3, 5, QuickItem
+				.of(Objects.requireNonNull(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getMaterial().parseItem()))
+				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME.getString())
+				.lore(Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(), "listing_increment_price", AuctionAPI.getInstance().formatNumber(this.bidIncrement))).make(), click -> {
+
+			click.gui.exit();
+			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.subtitle").getMessage()) {
+
+				@Override
+				public void onExit(Player player) {
+					click.manager.showGUI(player, GUISellAuction.this);
+				}
+
+				@Override
+				public boolean onResult(String string) {
+					string = ChatColor.stripColor(string);
+
+					if (!NumberUtils.isDouble(string)) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").sendPrefixedMessage(player);
+						return false;
+					}
+
+					double listingAmount = Double.parseDouble(string);
+
+					if (listingAmount < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble())
+						listingAmount = Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble();
+
+					if (listingAmount > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble())
+						listingAmount = Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble();
+
+					click.manager.showGUI(click.player, new GUISellAuction(
+							GUISellAuction.this.auctionPlayer,
+							GUISellAuction.this.binPrice,
+							GUISellAuction.this.startingBid,
+							listingAmount,
+							GUISellAuction.this.listingTime,
+							GUISellAuction.this.allowBuyNow
+					));
+
+					return true;
+				}
+			};
+		});
+
+		drawAuctionItem();
+		drawBuyoutToggle();
 
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Objects.requireNonNull(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_ITEM.getMaterial().parseItem()))
@@ -179,5 +262,37 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 				.make(), click -> {
 
 		});
+	}
+
+	private void drawBuyoutToggle() {
+		if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
+			setButton(3, 7, QuickItem
+					.of(Objects.requireNonNull(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_ITEM.getMaterial().parseItem() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_ITEM.getMaterial().parseItem()))
+					.name(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_NAME.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_NAME.getString())
+					.lore(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_LORE.getStringList() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_LORE.getStringList()).make(), e -> {
+
+				this.allowBuyNow = !allowBuyNow;
+				drawBuyoutToggle();
+				drawAuctionItem();
+			});
+		}
+	}
+
+	private void drawAuctionItem() {
+		setItem(1, 4, new AuctionedItem(
+				UUID.randomUUID(),
+				auctionPlayer.getUuid(),
+				auctionPlayer.getUuid(),
+				auctionPlayer.getPlayer().getName(),
+				auctionPlayer.getPlayer().getName(),
+				MaterialCategorizer.getMaterialCategory(this.auctionPlayer.getItemBeingListed()),
+				this.auctionPlayer.getItemBeingListed(),
+				this.allowBuyNow ? this.binPrice : -1,
+				this.startingBid,
+				this.bidIncrement,
+				this.startingBid,
+				true, false,
+				this.listingTime
+		).getDisplayStack(AuctionStackType.LISTING_PREVIEW));
 	}
 }

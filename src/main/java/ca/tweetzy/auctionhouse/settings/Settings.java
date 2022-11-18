@@ -1024,6 +1024,51 @@ public class Settings {
 			"&7Click to edit the listing time"
 	));
 
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_ITEM = new ConfigSetting(config, "gui.sell auction item.items.bin price.item", XMaterial.DIAMOND.name());
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_NAME = new ConfigSetting(config, "gui.sell auction item.items.bin price.name", "&e&lBuyout Price");
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE = new ConfigSetting(config, "gui.sell auction item.items.bin price.lore", Arrays.asList(
+			"",
+			"&7The current buyout price is&F: &a$%listing_bin_price%",
+			"",
+			"&7Click to edit the buyout price"
+	));
+
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_ITEM = new ConfigSetting(config, "gui.sell auction item.items.starting price.item", XMaterial.DIAMOND.name());
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_NAME = new ConfigSetting(config, "gui.sell auction item.items.starting price.name", "&e&lStarting Price");
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE = new ConfigSetting(config, "gui.sell auction item.items.starting price.lore", Arrays.asList(
+			"",
+			"&7The current starting price is&F: &a$%listing_start_price%",
+			"",
+			"&7Click to edit the starting price"
+	));
+
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM = new ConfigSetting(config, "gui.sell auction item.items.increment price.item", XMaterial.DIAMOND.name());
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME = new ConfigSetting(config, "gui.sell auction item.items.increment price.name", "&e&lIncrement Price");
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE = new ConfigSetting(config, "gui.sell auction item.items.increment price.lore", Arrays.asList(
+			"",
+			"&7The current increment price is&F: &a$%listing_increment_price%",
+			"",
+			"&7Click to edit the increment price"
+	));
+
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_ITEM = new ConfigSetting(config, "gui.sell auction item.items.buyout enabled.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_NAME = new ConfigSetting(config, "gui.sell auction item.items.buyout enabled.name", "&e&lAuction Buyout");
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_LORE = new ConfigSetting(config, "gui.sell auction item.items.buyout enabled.lore", Arrays.asList(
+			"",
+			"&7You have buyout &aenabled",
+			"",
+			"&7Click to &cdisable &7auction buyout"
+	));
+
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_ITEM = new ConfigSetting(config, "gui.sell auction item.items.buyout disabled.item", XMaterial.RED_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_NAME = new ConfigSetting(config, "gui.sell auction item.items.buyout disabled.name", "&e&lAuction Buyout");
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_LORE = new ConfigSetting(config, "gui.sell auction item.items.buyout disabled.lore", Arrays.asList(
+			"",
+			"&7You have buyout &cdisabled",
+			"",
+			"&7Click to &aenable &7auction buyout"
+	));
+
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_ITEM = new ConfigSetting(config, "gui.sell auction item.items.confirm.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_NAME = new ConfigSetting(config, "gui.sell auction item.items.confirm.name", "&e&lList Item");
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_LORE = new ConfigSetting(config, "gui.sell auction item.items.confirm.lore", Arrays.asList(
