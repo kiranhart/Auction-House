@@ -19,11 +19,14 @@
 package ca.tweetzy.auctionhouse.guis.sell;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.ahv3.api.ListingResult;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
+import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -89,7 +92,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 						if (parts.length == 2) {
 							if (NumberUtils.isInt(parts[0]) && Arrays.asList("second", "minute", "hour", "day", "week", "month", "year").contains(parts[1].toLowerCase())) {
 								if (AuctionAPI.toTicks(string) <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt()) {
-									click.manager.showGUI(click.player, new GUISellBin(GUISellBin.this.auctionPlayer, GUISellBin.this.listingPrice, System.currentTimeMillis() + (1000L * AuctionAPI.toTicks(string)), GUISellBin.this.allowPartialBuy));
+									click.manager.showGUI(click.player, new GUISellBin(GUISellBin.this.auctionPlayer, GUISellBin.this.listingPrice, AuctionAPI.toTicks(string), GUISellBin.this.allowPartialBuy));
 									return true;
 								}
 							}
@@ -123,7 +126,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 						return false;
 					}
 
-					 double listingAmount = Double.parseDouble(string);
+					double listingAmount = Double.parseDouble(string);
 
 					if (listingAmount < Settings.MIN_AUCTION_PRICE.getDouble())
 						listingAmount = Settings.MIN_AUCTION_PRICE.getDouble();
@@ -131,7 +134,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 					if (listingAmount > Settings.MAX_AUCTION_PRICE.getDouble())
 						listingAmount = Settings.MAX_AUCTION_PRICE.getDouble();
 
-					click.manager.showGUI(click.player, new GUISellBin(GUISellBin.this.auctionPlayer, listingAmount, GUISellBin.this.listingTime,  GUISellBin.this.allowPartialBuy));
+					click.manager.showGUI(click.player, new GUISellBin(GUISellBin.this.auctionPlayer, listingAmount, GUISellBin.this.listingTime, GUISellBin.this.allowPartialBuy));
 
 					return true;
 				}
@@ -140,21 +143,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 
 		drawQtyPurchase();
 
-		setItem(1, 4, new AuctionedItem(
-				UUID.randomUUID(),
-				auctionPlayer.getUuid(),
-				auctionPlayer.getUuid(),
-				auctionPlayer.getPlayer().getName(),
-				auctionPlayer.getPlayer().getName(),
-				MaterialCategorizer.getMaterialCategory(this.auctionPlayer.getItemBeingListed()),
-				this.auctionPlayer.getItemBeingListed(),
-				this.listingPrice,
-				0,
-				0,
-				this.listingPrice,
-				false, false,
-				this.listingTime
-		).getDisplayStack(AuctionStackType.LISTING_PREVIEW));
+		setItem(1, 4, createListingItem().getDisplayStack(AuctionStackType.LISTING_PREVIEW));
 
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Objects.requireNonNull(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_ITEM.getMaterial().parseItem()))
@@ -162,6 +151,18 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 				.lore(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_LORE.getStringList())
 				.make(), click -> {
 
+			click.gui.exit();
+
+			AuctionCreator.create(this.auctionPlayer, createListingItem(), (originalListing, listingResult) -> {
+				if (listingResult != ListingResult.SUCCESS) {
+					PlayerUtils.giveItem(click.player, originalListing.getItem());
+					this.auctionPlayer.setItemBeingListed(null);
+					return;
+				}
+
+				if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
+					click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
+			});
 		});
 	}
 
@@ -176,5 +177,26 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 				drawQtyPurchase();
 			});
 		}
+	}
+
+	private AuctionedItem createListingItem() {
+		final AuctionedItem item = new AuctionedItem(
+				UUID.randomUUID(),
+				auctionPlayer.getUuid(),
+				auctionPlayer.getUuid(),
+				auctionPlayer.getPlayer().getName(),
+				auctionPlayer.getPlayer().getName(),
+				MaterialCategorizer.getMaterialCategory(this.auctionPlayer.getItemBeingListed()),
+				this.auctionPlayer.getItemBeingListed(),
+				this.listingPrice,
+				0,
+				0,
+				this.listingPrice,
+				false, false,
+				System.currentTimeMillis() + (this.listingTime * 1000L)
+		);
+
+		item.setAllowPartialBuy(this.allowPartialBuy);
+		return item;
 	}
 }
