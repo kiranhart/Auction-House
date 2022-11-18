@@ -1,3 +1,21 @@
+/*
+ * Auction House
+ * Copyright 2018-2022 Kiran Hart
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ca.tweetzy.auctionhouse.settings;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
@@ -988,7 +1006,29 @@ public class Settings {
 			"",
 			"&7You have partial purchases &cdisabled",
 			"",
-			"&7Click to &eenable &7partial purchases"
+			"&7Click to &aenable &7partial purchases"
+	));
+
+
+	/*  ===============================
+	 *    ITEM SELL AUCTION GUI
+	 *  ===============================*/
+
+	public static final ConfigSetting GUI_SELL_AUCTION_TITLE = new ConfigSetting(config, "gui.sell auction item.title", "&7Auction House - &eAuction Listing");
+	public static final ConfigSetting GUI_SELL_AUCTION_BG_ITEM = new ConfigSetting(config, "gui.sell auction item.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM = new ConfigSetting(config, "gui.sell auction item.items.time.item", XMaterial.CLOCK.name());
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_TIME_NAME = new ConfigSetting(config, "gui.sell auction item.items.time.name", "&e&lListing Time");
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_TIME_LORE = new ConfigSetting(config, "gui.sell auction item.items.time.lore", Arrays.asList(
+			"",
+			"&7Click to edit the listing time"
+	));
+
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_ITEM = new ConfigSetting(config, "gui.sell auction item.items.confirm.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_NAME = new ConfigSetting(config, "gui.sell auction item.items.confirm.name", "&e&lList Item");
+	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_LORE = new ConfigSetting(config, "gui.sell auction item.items.confirm.lore", Arrays.asList(
+			"",
+			"&7Click to list this item"
 	));
 
 	/*  ===============================

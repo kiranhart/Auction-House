@@ -1,6 +1,6 @@
 /*
  * Auction House
- * Copyright 2022 Kiran Hart
+ * Copyright 2018-2022 Kiran Hart
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
