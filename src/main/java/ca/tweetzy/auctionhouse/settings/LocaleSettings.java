@@ -83,6 +83,7 @@ public class LocaleSettings {
 		languageNodes.put("general.min price already added", "&cThere is already a minimum price set, please delete the existing one first.");
 		languageNodes.put("general.added min price", "&aSuccessfully set minimum price for %item% &ato &2$%price%");
 		languageNodes.put("general.qtybuydisabled", "&4%item_owner%&c is only accepting purchases of the entire stack.");
+		languageNodes.put("general.invalid bid amount", "&cBid either too low or too high");
 
 
 		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
@@ -110,15 +111,8 @@ public class LocaleSettings {
 		languageNodes.put("titles.listing time.title", "&eListing Time");
 		languageNodes.put("titles.listing time.subtitle", "&fEnter new listing time in chat");
 
-		languageNodes.put("prompts.enter new buy now price", "&aPlease enter the new buy now price in chat:");
-		languageNodes.put("prompts.enter new starting bid", "&aPlease enter the new starting bid in chat:");
-		languageNodes.put("prompts.enter new bid increment", "&aPlease enter the new bid increment in chat:");
-
-		languageNodes.put("prompts.enter bid amount", "&7Current Bid &e%current_bid% &7Type '&ccancel&7' to cancel placing bid");
-		languageNodes.put("prompts.enter valid bid amount", "&cBid either too low or too high");
-
-		languageNodes.put("prompts.enter listing time", "&aPlease enter listing time (ex. 1 day):");
-		languageNodes.put("prompts.enter valid listing time", "&cPlease enter a valid listing time.");
+		languageNodes.put("titles.enter bid.title", "&ePlace Bid");
+		languageNodes.put("titles.enter bid.subtitle", "&fEnter new bid amount in chat");
 
 		languageNodes.put("prompts.enter deletion range", "&aPlease enter deletion range (ex. 1 day):");
 		languageNodes.put("prompts.enter valid deletion range", "&cPlease enter a valid deletion range");
