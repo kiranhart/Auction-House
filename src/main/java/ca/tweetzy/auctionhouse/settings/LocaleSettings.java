@@ -84,6 +84,7 @@ public class LocaleSettings {
 		languageNodes.put("general.added min price", "&aSuccessfully set minimum price for %item% &ato &2$%price%");
 		languageNodes.put("general.qtybuydisabled", "&4%item_owner%&c is only accepting purchases of the entire stack.");
 		languageNodes.put("general.invalid bid amount", "&cBid either too low or too high");
+		languageNodes.put("general.invalid deletion range", "&cPlease enter a valid deletion range");
 
 
 		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
@@ -114,8 +115,8 @@ public class LocaleSettings {
 		languageNodes.put("titles.enter bid.title", "&ePlace Bid");
 		languageNodes.put("titles.enter bid.subtitle", "&fEnter new bid amount in chat");
 
-		languageNodes.put("prompts.enter deletion range", "&aPlease enter deletion range (ex. 1 day):");
-		languageNodes.put("prompts.enter valid deletion range", "&cPlease enter a valid deletion range");
+		languageNodes.put("titles.enter deletion range.title", "&eDeletion Range");
+		languageNodes.put("titles.enter deletion range.subtitle", "&fEnter deletion range in chat");
 
 		languageNodes.put("transaction.sale_type.bid_won", "Won Auction");
 		languageNodes.put("transaction.sale_type.immediate_buy", "Bought Immediately");
