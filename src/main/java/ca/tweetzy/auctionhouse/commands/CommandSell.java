@@ -26,15 +26,14 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.GUIBundleCreation;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
-import ca.tweetzy.auctionhouse.guis.sell.GUISellItem;
+import ca.tweetzy.auctionhouse.guis.sell.GUISellListingType;
+import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.Bukkit;
@@ -93,9 +92,9 @@ public final class CommandSell extends AbstractCommand {
 				instance.getLocale().getMessage("general.air").sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
 			} else {
-				instance.getGuiManager().showGUI(player, new GUISellItem(auctionPlayer, itemToSell));
-				instance.getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), itemToSell);
-				PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
+				instance.getGuiManager().showGUI(player, new GUISellListingType(auctionPlayer, selected -> {
+					instance.getGuiManager().showGUI(player, new GUISellPlaceItem(auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, selected));
+				}));
 			}
 			return ReturnType.SUCCESS;
 		}

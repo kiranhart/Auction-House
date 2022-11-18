@@ -19,15 +19,20 @@
 package ca.tweetzy.auctionhouse.guis.sell;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.ahv3.api.ListingResult;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
+import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
+import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.GuiUtils;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -98,7 +103,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 											GUISellAuction.this.binPrice,
 											GUISellAuction.this.startingBid,
 											GUISellAuction.this.bidIncrement,
-											System.currentTimeMillis() + (1000L * AuctionAPI.toTicks(string)),
+											AuctionAPI.toTicks(string),
 											GUISellAuction.this.allowBuyNow
 									));
 									return true;
@@ -261,6 +266,22 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 				.lore(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_LORE.getStringList())
 				.make(), click -> {
 
+			click.gui.exit();
+
+			// do listing confirmation first
+			if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
+				click.manager.showGUI(click.player, new GUIListingConfirm(click.player, createListingItem(), confirmed -> {
+					if (confirmed)
+						performAuctionListing(click);
+					else {
+						click.player.closeInventory();
+						PlayerUtils.giveItem(click.player, this.auctionPlayer.getItemBeingListed());
+					}
+				}));
+				return;
+			}
+
+			performAuctionListing(click);
 		});
 	}
 
@@ -278,8 +299,25 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 		}
 	}
 
+	private void performAuctionListing(GuiClickEvent click) {
+		AuctionCreator.create(this.auctionPlayer, createListingItem(), (originalListing, listingResult) -> {
+			if (listingResult != ListingResult.SUCCESS) {
+				PlayerUtils.giveItem(click.player, originalListing.getItem());
+				this.auctionPlayer.setItemBeingListed(null);
+				return;
+			}
+
+			if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
+				click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
+		});
+	}
+
 	private void drawAuctionItem() {
-		setItem(1, 4, new AuctionedItem(
+		setItem(1, 4, createListingItem().getDisplayStack(AuctionStackType.LISTING_PREVIEW));
+	}
+
+	private AuctionedItem createListingItem() {
+		return new AuctionedItem(
 				UUID.randomUUID(),
 				auctionPlayer.getUuid(),
 				auctionPlayer.getUuid(),
@@ -292,7 +330,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 				this.bidIncrement,
 				this.startingBid,
 				true, false,
-				this.listingTime
-		).getDisplayStack(AuctionStackType.LISTING_PREVIEW));
+				System.currentTimeMillis() + (this.listingTime * 1000L)
+		);
 	}
 }

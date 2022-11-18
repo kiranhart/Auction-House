@@ -26,11 +26,13 @@ import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.GuiUtils;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -153,16 +155,33 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 
 			click.gui.exit();
 
-			AuctionCreator.create(this.auctionPlayer, createListingItem(), (originalListing, listingResult) -> {
-				if (listingResult != ListingResult.SUCCESS) {
-					PlayerUtils.giveItem(click.player, originalListing.getItem());
-					this.auctionPlayer.setItemBeingListed(null);
-					return;
-				}
+			// do listing confirmation first
+			if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
+				click.manager.showGUI(click.player, new GUIListingConfirm(click.player, createListingItem(), confirmed -> {
+					if (confirmed)
+						performAuctionListing(click);
+					else {
+						click.player.closeInventory();
+						PlayerUtils.giveItem(click.player, this.auctionPlayer.getItemBeingListed());
+					}
+				}));
+				return;
+			}
 
-				if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
-					click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
-			});
+			performAuctionListing(click);
+		});
+	}
+
+	private void performAuctionListing(GuiClickEvent click) {
+		AuctionCreator.create(this.auctionPlayer, createListingItem(), (originalListing, listingResult) -> {
+			if (listingResult != ListingResult.SUCCESS) {
+				PlayerUtils.giveItem(click.player, originalListing.getItem());
+				this.auctionPlayer.setItemBeingListed(null);
+				return;
+			}
+
+			if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
+				click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
 		});
 	}
 

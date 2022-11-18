@@ -24,11 +24,11 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminExpired;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminLogs;
-import ca.tweetzy.auctionhouse.guis.sell.GUISellItem;
+import ca.tweetzy.auctionhouse.guis.sell.GUISellListingType;
+import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.compatibility.CompatibleHand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
@@ -59,7 +59,7 @@ public class CommandAdmin extends AbstractCommand {
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		if (args.length < 1) return ReturnType.FAILURE;
 		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
-		
+
 		final AuctionHouse instance = AuctionHouse.getInstance();
 		switch (args[0].toLowerCase()) {
 			case "logs":
@@ -135,9 +135,9 @@ public class CommandAdmin extends AbstractCommand {
 					instance.getLocale().getMessage("general.air").sendPrefixedMessage(player);
 					return ReturnType.FAILURE;
 				} else {
-					instance.getGuiManager().showGUI(player, new GUISellItem(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()), itemToSell));
-					instance.getAuctionPlayerManager().addItemToSellHolding(player.getUniqueId(), itemToSell);
-					PlayerUtils.takeActiveItem(player, CompatibleHand.MAIN_HAND, itemToSell.getAmount());
+					instance.getGuiManager().showGUI(player, new GUISellListingType(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()), selected -> {
+						instance.getGuiManager().showGUI(player, new GUISellPlaceItem(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()), GUISellPlaceItem.ViewMode.SINGLE_ITEM, selected));
+					}));
 				}
 				break;
 			case "open":
