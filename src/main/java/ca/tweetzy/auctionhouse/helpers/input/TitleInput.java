@@ -34,50 +34,50 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public abstract class TitleInput extends Input {
 
 	private final Player player;
-    private final String title;
-    private final String subTitle;
-    private final String actionbar;
+	private final String title;
+	private final String subTitle;
+	private final String actionbar;
 
-    public TitleInput(@NonNull final Player player, final String title, final String subTitle, final String actionbar) {
-        super(player);
-        this.player = player;
-        this.title = title;
-        this.subTitle = subTitle;
-        this.actionbar = actionbar;
-    }
+	public TitleInput(@NonNull final Player player, final String title, final String subTitle, final String actionbar) {
+		super(player);
+		this.player = player;
+		this.title = title;
+		this.subTitle = subTitle;
+		this.actionbar = actionbar;
+	}
 
-    public TitleInput(@NonNull final Player player, final String title, final String subTitle) {
-        this(player, Common.colorize(title), Common.colorize(subTitle), Common.colorize(""));
-    }
+	public TitleInput(@NonNull final Player player, final String title, final String subTitle) {
+		this(player, Common.colorize(title), Common.colorize(subTitle), Common.colorize(""));
+	}
 
-    public abstract boolean onResult(String string);
+	public abstract boolean onResult(String string);
 
-    public boolean onInput(String text) {
-        if (this.onResult(text)) {
-            this.close(true);
-        }
-        return true;
-    }
+	public boolean onInput(String text) {
+		if (this.onResult(text)) {
+			this.close(true);
+		}
+		return true;
+	}
 
-    @EventHandler
-    public void close(PlayerInteractEvent e) {
-        if (e.getPlayer().equals(this.player) && (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)) {
-            this.close(false);
-        }
-    }
+	@EventHandler
+	public void close(PlayerInteractEvent e) {
+		if (e.getPlayer().equals(this.player) && (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)) {
+			this.close(false);
+		}
+	}
 
-    @Override
-    public String getTitle() {
-        return this.title;
-    }
+	@Override
+	public String getTitle() {
+		return this.title;
+	}
 
-    @Override
-    public String getSubtitle() {
-        return this.subTitle;
-    }
+	@Override
+	public String getSubtitle() {
+		return this.subTitle;
+	}
 
-    @Override
-    public String getActionBar() {
-        return this.actionbar;
-    }
+	@Override
+	public String getActionBar() {
+		return this.actionbar;
+	}
 }

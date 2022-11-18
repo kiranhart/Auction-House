@@ -18,10 +18,10 @@
 
 package ca.tweetzy.auctionhouse.ahv3.api.auction;
 
-import ca.tweetzy.auctionhouse.ahv3.api.Trackable;
 import ca.tweetzy.auctionhouse.ahv3.api.Identifiable;
 import ca.tweetzy.auctionhouse.ahv3.api.ListingType;
 import ca.tweetzy.auctionhouse.ahv3.api.Synchronize;
+import ca.tweetzy.auctionhouse.ahv3.api.Trackable;
 import org.bukkit.inventory.ItemStack;
 
 import java.math.BigDecimal;

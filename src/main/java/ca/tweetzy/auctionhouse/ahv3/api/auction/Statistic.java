@@ -18,8 +18,8 @@
 
 package ca.tweetzy.auctionhouse.ahv3.api.auction;
 
-import ca.tweetzy.auctionhouse.ahv3.api.Trackable;
 import ca.tweetzy.auctionhouse.ahv3.api.Identifiable;
+import ca.tweetzy.auctionhouse.ahv3.api.Trackable;
 import ca.tweetzy.auctionhouse.api.interfaces.Storeable;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
 import lombok.NonNull;

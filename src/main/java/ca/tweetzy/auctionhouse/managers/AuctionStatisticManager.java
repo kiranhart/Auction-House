@@ -45,7 +45,7 @@ public final class AuctionStatisticManager {
 		synchronized (this.statistics) {
 			if (this.statistics.contains(statistic)) return;
 			this.statistics.add(statistic);
-			
+
 			final UUID owner = statistic.getStatOwner();
 			final double value = statistic.getValue();
 

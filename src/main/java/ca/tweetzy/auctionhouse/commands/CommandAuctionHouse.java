@@ -49,7 +49,7 @@ public class CommandAuctionHouse extends AbstractCommand {
 			Player player = (Player) sender;
 
 			if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
-			
+
 			final AuctionHouse instance = AuctionHouse.getInstance();
 			if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
 				instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());

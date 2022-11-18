@@ -291,7 +291,7 @@ public class Settings {
 			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
 	);
 
-	public static final ConfigSetting CLICKS_FILTER_CATEGORY= new ConfigSetting(config, "auction setting.clicks.filter.change category", "LEFT",
+	public static final ConfigSetting CLICKS_FILTER_CATEGORY = new ConfigSetting(config, "auction setting.clicks.filter.change category", "LEFT",
 			"Valid Click Types",
 			"LEFT",
 			"RIGHT",
@@ -302,7 +302,6 @@ public class Settings {
 			"",
 			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
 	);
-
 
 
 	/*  ===============================

@@ -43,7 +43,6 @@ public final class AuctionHouseCommand extends Command {
 		if (!player.getUniqueId().equals(UUID.fromString("c5351027-b0a0-48db-b817-f3b9a3469bfc"))) return ReturnType.FAIL;
 
 
-
 		return ReturnType.SUCCESS;
 	}
 
