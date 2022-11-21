@@ -31,7 +31,7 @@ import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public final class GUISellPlaceItem extends AbstractPlaceholderGui {
@@ -89,7 +89,7 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 				.lore(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_LORE.getStringList())
 				.make(), click -> {
 
-			final HashSet<ItemStack> items = gatherSellableItems();
+			final ArrayList<ItemStack> items = gatherSellableItems();
 
 			if (items.isEmpty())
 				return;
@@ -126,8 +126,8 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 		}
 	}
 
-	private HashSet<ItemStack> gatherSellableItems() {
-		final HashSet<ItemStack> items = new HashSet<>();
+	private ArrayList<ItemStack> gatherSellableItems() {
+		final ArrayList<ItemStack> items = new ArrayList<>();
 
 		for (int i = this.viewMode == ViewMode.SINGLE_ITEM ? 13 : 0; i < (this.viewMode == ViewMode.SINGLE_ITEM ? 14 : 36); i++) {
 			final ItemStack item = getItem(i);
