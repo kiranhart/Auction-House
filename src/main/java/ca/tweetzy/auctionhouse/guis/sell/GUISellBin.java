@@ -20,6 +20,8 @@ package ca.tweetzy.auctionhouse.guis.sell;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.ahv3.api.ListingResult;
+import ca.tweetzy.auctionhouse.ahv3.api.ListingType;
+import ca.tweetzy.auctionhouse.ahv3.model.BundleUtil;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -35,6 +37,7 @@ import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.core.utils.nms.NBTEditor;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import lombok.NonNull;
@@ -64,13 +67,30 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 		setDefaultItem(GuiUtils.createButtonItem(Settings.GUI_SELL_BIN_BG_ITEM.getMaterial(), " "));
 		setRows(6);
 
-		setOnClose(close -> PlayerUtils.giveItem(close.player, this.auctionPlayer.getItemBeingListed()));
+		setOnClose(close -> {
+			if (BundleUtil.isBundledItem(this.auctionPlayer.getItemBeingListed()))
+				PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(this.auctionPlayer.getItemBeingListed()));
+			else
+				PlayerUtils.giveItem(close.player, this.auctionPlayer.getItemBeingListed());
+
+			this.auctionPlayer.setItemBeingListed(null);
+		});
 
 		draw();
 	}
 
 	private void draw() {
 		reset();
+
+		setButton(getRows() - 1, 0, QuickItem
+				.of(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseItem()))
+				.name(Settings.GUI_BACK_BTN_NAME.getString())
+				.lore(Settings.GUI_BACK_BTN_LORE.getStringList())
+				.make(), click -> {
+
+			click.gui.close();
+			click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, NBTEditor.contains(this.auctionPlayer.getItemBeingListed(), "AuctionBundleItem") ? GUISellPlaceItem.ViewMode.BUNDLE_ITEM : GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.BIN));
+		});
 
 		if (Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
 
