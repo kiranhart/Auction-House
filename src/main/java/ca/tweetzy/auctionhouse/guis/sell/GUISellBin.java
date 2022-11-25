@@ -73,10 +73,19 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 		reset();
 
 		if (Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
+
+			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime);
+
 			setButton(3, 1, QuickItem
 					.of(Objects.requireNonNull(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_ITEM.getMaterial().parseItem()))
 					.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_NAME.getString())
-					.lore(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_LORE.getStringList()).make(), click -> {
+					.lore(Replacer.replaceVariables(
+							Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_LORE.getStringList(),
+							"remaining_days", times[0],
+							"remaining_hours", times[1],
+							"remaining_minutes", times[2],
+							"remaining_seconds", times[3]
+					)).make(), click -> {
 
 				click.gui.exit();
 				new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage()) {

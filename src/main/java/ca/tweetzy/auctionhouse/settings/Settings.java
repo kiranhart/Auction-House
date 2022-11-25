@@ -931,6 +931,8 @@ public class Settings {
 	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_TIME_NAME = new ConfigSetting(config, "gui.sell bin item.items.time.name", "&e&lListing Time");
 	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_TIME_LORE = new ConfigSetting(config, "gui.sell bin item.items.time.lore", Arrays.asList(
 			"",
+			"&eCurrent Time: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%&Fs",
+			"",
 			"&7Click to edit the listing time"
 	));
 
@@ -972,6 +974,8 @@ public class Settings {
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM = new ConfigSetting(config, "gui.sell auction item.items.time.item", XMaterial.CLOCK.name());
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_TIME_NAME = new ConfigSetting(config, "gui.sell auction item.items.time.name", "&e&lListing Time");
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_TIME_LORE = new ConfigSetting(config, "gui.sell auction item.items.time.lore", Arrays.asList(
+			"",
+			"&eCurrent Time: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%&Fs",
 			"",
 			"&7Click to edit the listing time"
 	));

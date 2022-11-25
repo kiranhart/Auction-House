@@ -80,6 +80,7 @@ public abstract class Input implements Listener, Runnable {
 	)
 	public void onChat(AsyncPlayerChatEvent e) {
 		if (e.getPlayer().equals(this.player)) {
+
 			this.onInput(e.getMessage());
 			e.setCancelled(true);
 		}
