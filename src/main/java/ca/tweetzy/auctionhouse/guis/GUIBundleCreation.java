@@ -55,12 +55,14 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 		setTitle(Settings.GUI_CREATE_BUNDLE_TITLE.getString());
 		setRows(6);
 		setAllowDrops(false);
-		setAllowShiftClick(true);
 		setAcceptsItems(true);
+		setAllowShiftClick(true);
 		setUnlockedRange(0, 44);
+		for (int i = 0; i < 45; i++)
+			setItem(i, XMaterial.AIR.parseItem());
 
 		setOnClose(close -> {
-			for (int i = 0; i < 44; i++) {
+			for (int i = 0; i < 45; i++) {
 				final ItemStack item = getItem(i);
 				if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
 				PlayerUtils.giveItem(auctionPlayer.getPlayer(), item);
