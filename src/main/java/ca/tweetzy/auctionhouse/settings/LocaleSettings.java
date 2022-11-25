@@ -111,6 +111,7 @@ public class LocaleSettings {
 
 		languageNodes.put("titles.listing time.title", "&eListing Time");
 		languageNodes.put("titles.listing time.subtitle", "&fEnter new listing time in chat");
+		languageNodes.put("titles.listing time.actionbar", "&aExample&f: &e1 day &f(&eTime Units&f: &bsecond&f, &bminute&f, &bhour&f, &bday&f, &bweek&f, &bmonth&f, &byear&f)");
 
 		languageNodes.put("titles.enter bid.title", "&ePlace Bid");
 		languageNodes.put("titles.enter bid.subtitle", "&fEnter new bid amount in chat");

@@ -88,7 +88,12 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 					)).make(), click -> {
 
 				click.gui.exit();
-				new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage()) {
+				new TitleInput(
+						click.player,
+						AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage(),
+						AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage(),
+						AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage()
+				) {
 
 					@Override
 					public void onExit(Player player) {
