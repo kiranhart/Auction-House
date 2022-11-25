@@ -19,10 +19,12 @@
 package ca.tweetzy.auctionhouse.helpers.input;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.ActionBar;
 import ca.tweetzy.flight.comp.Titles;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -80,6 +82,10 @@ public abstract class Input implements Listener, Runnable {
 	)
 	public void onChat(AsyncPlayerChatEvent e) {
 		if (e.getPlayer().equals(this.player)) {
+			if (ChatColor.stripColor(e.getMessage()).equals(Settings.TITLE_INPUT_CANCEL_WORD.getString())) {
+				e.setCancelled(true);
+				this.close(false);
+			}
 
 			this.onInput(e.getMessage());
 			e.setCancelled(true);

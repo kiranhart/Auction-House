@@ -43,7 +43,7 @@ public abstract class TitleInput extends Input {
 		this.player = player;
 		this.title = title;
 		this.subTitle = subTitle;
-		this.actionbar = actionbar;
+		this.actionbar = Common.colorize(actionbar);
 	}
 
 	public TitleInput(@NonNull final Player player, final String title, final String subTitle) {
