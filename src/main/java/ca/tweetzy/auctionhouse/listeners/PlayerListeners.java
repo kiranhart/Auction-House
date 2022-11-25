@@ -19,7 +19,7 @@
 package ca.tweetzy.auctionhouse.listeners;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.ahv3.model.BundleUtil;
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
 import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -52,7 +52,6 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -149,14 +148,10 @@ public class PlayerListeners implements Listener {
 		if (heldItem == null || (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK))
 			return;
 		if (heldItem.getType() == XMaterial.AIR.parseMaterial()) return;
-		if (!NBTEditor.contains(heldItem, "AuctionBundleItem")) return;
+		if (!BundleUtil.isBundledItem(heldItem)) return;
 		e.setCancelled(true);
 
-		final List<ItemStack> items = new ArrayList<>();
-
-		for (int i = 0; i < NBTEditor.getInt(heldItem, "AuctionBundleItem"); i++) {
-			items.add(AuctionAPI.getInstance().deserializeItem(NBTEditor.getByteArray(heldItem, "AuctionBundleItem-" + i)));
-		}
+		final List<ItemStack> items = BundleUtil.extractBundleItems(heldItem);
 
 		if (heldItem.getAmount() >= 2) {
 			heldItem.setAmount(heldItem.getAmount() - 1);

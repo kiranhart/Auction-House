@@ -19,4 +19,6 @@
 package ca.tweetzy.auctionhouse.ahv3.api;
 
 public interface AuctionHouseAPI {
+
+
 }
