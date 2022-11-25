@@ -878,6 +878,13 @@ public class Settings {
 			"&7Click to list as an &aAuction"
 	));
 
+	public static final ConfigSetting GUI_SELL_LISTING_TYPE_ITEMS_RETURN_ITEM = new ConfigSetting(config, "gui.sell listing type.items.return.item", XMaterial.BARRIER.name());
+	public static final ConfigSetting GUI_SELL_LISTING_TYPE_ITEMS_RETURN_NAME = new ConfigSetting(config, "gui.sell listing type.items.return.name", "&e&lAuction House");
+	public static final ConfigSetting GUI_SELL_LISTING_TYPE_ITEMS_RETURN_LORE = new ConfigSetting(config, "gui.sell listing type.items.return.lore", Arrays.asList(
+			"",
+			"&7Click to go to the &aAuction House"
+	));
+
 	/*  ===============================
 	 *    ITEM SELL PLACE ITEM GUI
 	 *  ===============================*/
