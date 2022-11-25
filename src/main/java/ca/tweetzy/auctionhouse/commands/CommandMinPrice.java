@@ -71,7 +71,7 @@ public class CommandMinPrice extends AbstractCommand {
 			}
 
 			if (!NumberUtils.isNumeric(args[1])) {
-				instance.getLocale().getMessage("general.notanumber").sendPrefixedMessage(player);
+				instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[1]).sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
 			}
 

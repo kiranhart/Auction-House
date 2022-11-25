@@ -170,7 +170,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 						string = ChatColor.stripColor(string);
 
 						if (!NumberUtils.isDouble(string)) {
-							AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").sendPrefixedMessage(player);
+							AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value",  string).sendPrefixedMessage(player);
 							return false;
 						}
 
@@ -214,7 +214,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 					string = ChatColor.stripColor(string);
 
 					if (!NumberUtils.isDouble(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").sendPrefixedMessage(player);
+						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value",  string).sendPrefixedMessage(player);
 						return false;
 					}
 
@@ -264,7 +264,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 					string = ChatColor.stripColor(string);
 
 					if (!NumberUtils.isDouble(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").sendPrefixedMessage(player);
+						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value",  string).sendPrefixedMessage(player);
 						return false;
 					}
 
