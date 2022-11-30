@@ -58,8 +58,13 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 		setAcceptsItems(true);
 		setAllowShiftClick(true);
 		setUnlockedRange(0, 44);
+
 		for (int i = 0; i < 45; i++)
 			setItem(i, XMaterial.AIR.parseItem());
+
+		setActionForRange(45, 53, e -> {
+			e.event.setCancelled(true);
+		});
 
 		setOnClose(close -> {
 			for (int i = 0; i < 45; i++) {
