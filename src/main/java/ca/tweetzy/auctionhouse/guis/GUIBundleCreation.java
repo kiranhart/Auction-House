@@ -189,6 +189,7 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 					});
 				}));
 			} else {
+				e.gui.exit();
 				AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
 					if (listingResult != ListingResult.SUCCESS) {
 						PlayerUtils.giveItem(auctionPlayer.getPlayer(), auction.getItem());
