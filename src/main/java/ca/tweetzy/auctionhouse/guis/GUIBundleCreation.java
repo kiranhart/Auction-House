@@ -32,12 +32,10 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.ChatColor;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -62,9 +60,7 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 		for (int i = 0; i < 45; i++)
 			setItem(i, XMaterial.AIR.parseItem());
 
-		setActionForRange(45, 53, e -> {
-			e.event.setCancelled(true);
-		});
+		Arrays.asList(45, 46, 47, 48, 49,50, 51, 52, 53).forEach(i -> setAction(i, e -> e.event.setCancelled(true)));
 
 		setOnClose(close -> {
 			for (int i = 0; i < 45; i++) {
@@ -74,7 +70,7 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 			}
 		});
 
-		setButton(49, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CREATE_BUNDLE_CONFIRM_ITEM.getString(), Settings.GUI_CREATE_BUNDLE_CONFIRM_NAME.getString(), Settings.GUI_CREATE_BUNDLE_CONFIRM_LORE.getStringList(), new HashMap<>()), e -> {
+		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CREATE_BUNDLE_CONFIRM_ITEM.getString(), Settings.GUI_CREATE_BUNDLE_CONFIRM_NAME.getString(), Settings.GUI_CREATE_BUNDLE_CONFIRM_LORE.getStringList(), new HashMap<>()), ClickType.LEFT, e -> {
 			ItemStack firstItem = null;
 			List<ItemStack> validItems = new ArrayList<>();
 
