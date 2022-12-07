@@ -209,6 +209,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 	private void performAuctionListing(GuiClickEvent click) {
 		AuctionCreator.create(this.auctionPlayer, createListingItem(), (originalListing, listingResult) -> {
 			if (listingResult != ListingResult.SUCCESS) {
+				click.player.closeInventory();
 				PlayerUtils.giveItem(click.player, originalListing.getItem());
 				this.auctionPlayer.setItemBeingListed(null);
 				return;

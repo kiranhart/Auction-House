@@ -354,6 +354,7 @@ public final class CommandSell extends AbstractCommand {
 
 				AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
 					if (listingResult != ListingResult.SUCCESS) {
+						player.closeInventory();
 						PlayerUtils.giveItem(player, auction.getItem());
 						auctionPlayer.setItemBeingListed(null);
 						return;
