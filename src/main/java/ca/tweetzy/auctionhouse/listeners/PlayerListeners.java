@@ -174,9 +174,4 @@ public class PlayerListeners implements Listener {
 		stack = NBTEditor.set(stack, "AUCTION_REPAIRED", "AuctionHouseRepaired");
 		event.setResult(stack);
 	}
-
-	@EventHandler
-	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		event.setMessage(PlaceholderAPIHook.PAPIReplacer.tryReplace(event.getPlayer(), event.getMessage()));
-	}
 }
