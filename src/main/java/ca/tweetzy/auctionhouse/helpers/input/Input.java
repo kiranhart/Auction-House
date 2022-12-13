@@ -32,6 +32,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -77,9 +78,7 @@ public abstract class Input implements Listener, Runnable {
 			ActionBar.sendActionBar(this.player, actionBar);
 	}
 
-	@EventHandler(
-			priority = EventPriority.LOWEST
-	)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onChat(AsyncPlayerChatEvent e) {
 		if (e.getPlayer().equals(this.player)) {
 			if (ChatColor.stripColor(e.getMessage()).equals(Settings.TITLE_INPUT_CANCEL_WORD.getString())) {
@@ -89,6 +88,13 @@ public abstract class Input implements Listener, Runnable {
 
 			this.onInput(e.getMessage());
 			e.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onCommandExecute(PlayerCommandPreprocessEvent event) {
+		if (event.getPlayer().equals(this.player)) {
+			event.setCancelled(true);
 		}
 	}
 

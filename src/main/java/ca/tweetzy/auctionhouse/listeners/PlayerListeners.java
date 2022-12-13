@@ -30,6 +30,7 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
+import ca.tweetzy.flight.comp.Titles;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -78,6 +79,9 @@ public class PlayerListeners implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		final Player player = e.getPlayer();
 		final AuctionHouse instance = AuctionHouse.getInstance();
+		Titles.sendTitle(player, 1, 1, 1, " ", " ");
+
+
 		instance.getAuctionPlayerManager().addPlayer(player);
 
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
@@ -93,9 +97,11 @@ public class PlayerListeners implements Listener {
 		final Player player = e.getPlayer();
 		final AuctionHouse instance = AuctionHouse.getInstance();
 
-		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) != null)
-			if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed() != null)
-				player.getInventory().addItem(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed());
+		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) != null) if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed() != null) {
+
+			player.getInventory().addItem(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed());
+			instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setItemBeingListed(null);
+		}
 
 
 		instance.getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
@@ -143,8 +149,7 @@ public class PlayerListeners implements Listener {
 		final Player player = e.getPlayer();
 		final ItemStack heldItem = PlayerHelper.getHeldItem(player);
 
-		if (heldItem == null || (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK))
-			return;
+		if (heldItem == null || (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)) return;
 		if (heldItem.getType() == XMaterial.AIR.parseMaterial()) return;
 		if (!BundleUtil.isBundledItem(heldItem)) return;
 		e.setCancelled(true);
