@@ -97,7 +97,7 @@ public class PlayerListeners implements Listener {
 		final Player player = e.getPlayer();
 		final AuctionHouse instance = AuctionHouse.getInstance();
 
-		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) != null) if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed() != null) {
+		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) != null && instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed() != null) {
 
 			player.getInventory().addItem(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed());
 			instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setItemBeingListed(null);
