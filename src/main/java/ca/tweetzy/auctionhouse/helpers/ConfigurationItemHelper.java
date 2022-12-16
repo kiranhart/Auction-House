@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.helpers;
 
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.inventory.ItemFlag;
@@ -70,6 +70,6 @@ public class ConfigurationItemHelper {
 	}
 
 	public static ItemStack createConfigurationItem(String item, String title, List<String> lore, HashMap<String, Object> replacements) {
-		return createConfigurationItem(Objects.requireNonNull(XMaterial.matchXMaterial(item).get().parseItem()), title, lore, replacements);
+		return createConfigurationItem(Objects.requireNonNull(CompMaterial.matchCompMaterial(item).get().parseItem()), title, lore, replacements);
 	}
 }

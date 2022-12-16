@@ -19,7 +19,7 @@
 package ca.tweetzy.auctionhouse.ahv3.model;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.comp.NBTEditor;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
@@ -32,7 +32,7 @@ import java.util.List;
 public final class BundleUtil {
 
 	public boolean isBundledItem(@NonNull final ItemStack itemStack) {
-		return itemStack.getType() != XMaterial.AIR.parseMaterial() && NBTEditor.contains(itemStack, "AuctionBundleItem");
+		return itemStack.getType() != CompMaterial.AIR.parseMaterial() && NBTEditor.contains(itemStack, "AuctionBundleItem");
 	}
 
 	public List<ItemStack> extractBundleItems(@NonNull final ItemStack itemStack) {

@@ -19,7 +19,7 @@
 package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.core.compatibility.XSound;
+import ca.tweetzy.flight.comp.enums.CompSound;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -47,11 +47,11 @@ public class SoundManager {
 	}
 
 	public void playSound(Player player, String sound, float volume, float pitch) {
-		player.playSound(player.getLocation(), XSound.matchXSound(sound).get().parseSound(), volume, pitch);
+		player.playSound(player.getLocation(), CompSound.matchCompSound(sound).get().parseSound(), volume, pitch);
 	}
 
 	public void playSound(Player[] players, String sound, float volume, float pitch) {
-		final Sound xsound = XSound.matchXSound(sound).get().parseSound();
+		final Sound xsound = CompSound.matchCompSound(sound).get().parseSound();
 		Arrays.stream(players).forEach(p -> p.playSound(p.getLocation(), xsound, volume, pitch));
 	}
 

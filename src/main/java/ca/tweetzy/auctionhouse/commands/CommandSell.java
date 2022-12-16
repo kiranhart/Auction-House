@@ -34,7 +34,6 @@ import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
@@ -92,7 +91,7 @@ public final class CommandSell extends AbstractCommand {
 				return ReturnType.SYNTAX_ERROR;
 			}
 
-			if (itemToSell.getType() == XMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
+			if (itemToSell.getType() == CompMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
 				instance.getLocale().getMessage("general.air").sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
 			} else {
@@ -103,7 +102,7 @@ public final class CommandSell extends AbstractCommand {
 			return ReturnType.SUCCESS;
 		}
 
-		if (itemToSell.getType() == XMaterial.AIR.parseMaterial()) {
+		if (itemToSell.getType() == CompMaterial.AIR.parseMaterial()) {
 			instance.getLocale().getMessage("general.air").sendPrefixedMessage(player);
 			return ReturnType.FAILURE;
 		}

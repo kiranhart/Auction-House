@@ -25,7 +25,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.guis.filter.GUIFilterWhitelist;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -70,7 +70,7 @@ public class CommandFilter extends AbstractCommand {
 			if (isValid && AuctionItemCategory.valueOf(args[1].toUpperCase()).isWhitelistAllowed()) {
 
 				ItemStack held = PlayerHelper.getHeldItem(player);
-				if (held.getType() == XMaterial.AIR.parseMaterial()) {
+				if (held.getType() == CompMaterial.AIR.parseMaterial()) {
 					instance.getLocale().getMessage("general.filter air").sendPrefixedMessage(player);
 					return ReturnType.FAILURE;
 				}

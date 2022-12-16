@@ -25,8 +25,8 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.compatibility.ServerVersion;
-import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
@@ -113,9 +113,9 @@ public class PlayerListeners implements Listener {
 		final CraftingInventory inventory = event.getInventory();
 		final ItemStack[] craftingItems = inventory.getMatrix();
 		for (ItemStack item : craftingItems) {
-			if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
+			if (item == null || item.getType() == CompMaterial.AIR.parseMaterial()) continue;
 			if (NBTEditor.contains(item, "AuctionBundleItem")) {
-				inventory.setResult(XMaterial.AIR.parseItem());
+				inventory.setResult(CompMaterial.AIR.parseItem());
 			}
 		}
 	}
@@ -127,7 +127,7 @@ public class PlayerListeners implements Listener {
 		final Player player = e.getPlayer();
 		final Block block = e.getClickedBlock();
 
-		if (block == null || block.getType() != XMaterial.CHEST.parseMaterial()) return;
+		if (block == null || block.getType() != CompMaterial.CHEST.parseMaterial()) return;
 		final Chest chest = (Chest) block.getState();
 
 		final AuctionHouse instance = AuctionHouse.getInstance();
@@ -150,7 +150,7 @@ public class PlayerListeners implements Listener {
 		final ItemStack heldItem = PlayerHelper.getHeldItem(player);
 
 		if (heldItem == null || (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)) return;
-		if (heldItem.getType() == XMaterial.AIR.parseMaterial()) return;
+		if (heldItem.getType() == CompMaterial.AIR.parseMaterial()) return;
 		if (!BundleUtil.isBundledItem(heldItem)) return;
 		e.setCancelled(true);
 
@@ -160,9 +160,9 @@ public class PlayerListeners implements Listener {
 			heldItem.setAmount(heldItem.getAmount() - 1);
 		} else {
 			if (ServerVersion.isServerVersionAbove(ServerVersion.V1_8)) {
-				player.getInventory().setItemInMainHand(XMaterial.AIR.parseItem());
+				player.getInventory().setItemInMainHand(CompMaterial.AIR.parseItem());
 			} else {
-				player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+				player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
 			}
 		}
 

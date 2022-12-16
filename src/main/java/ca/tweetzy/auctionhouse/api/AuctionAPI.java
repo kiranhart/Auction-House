@@ -26,11 +26,11 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.ServerVersion;
-import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.ItemUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -252,7 +252,7 @@ public class AuctionAPI {
 	 * @return the player skull
 	 */
 	public ItemStack getPlayerHead(String name) {
-		ItemStack stack = XMaterial.PLAYER_HEAD.parseItem();
+		ItemStack stack = CompMaterial.PLAYER_HEAD.parseItem();
 		SkullMeta meta = (SkullMeta) stack.getItemMeta();
 		meta.setOwner(name);
 		stack.setItemMeta(meta);
@@ -503,9 +503,9 @@ public class AuctionAPI {
 	 */
 	public int getItemCountInPlayerInventory(Player player, ItemStack stack) {
 		int total = 0;
-		if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
+		if (stack.getType() == CompMaterial.PLAYER_HEAD.parseMaterial()) {
 			for (ItemStack item : player.getInventory().getContents()) {
-				if (item == null || item.getType() != XMaterial.PLAYER_HEAD.parseMaterial()) continue;
+				if (item == null || item.getType() != CompMaterial.PLAYER_HEAD.parseMaterial()) continue;
 				if (NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) {
 					final String invItemTexture = NBTEditor.getTexture(item);
 					final String orgItemTexture = NBTEditor.getTexture(stack);
@@ -536,7 +536,7 @@ public class AuctionAPI {
 		for (int i = 0; i < player.getInventory().getSize(); i++) {
 			ItemStack item = player.getInventory().getItem(i);
 			if (item == null) continue;
-			if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial() && item.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
+			if (stack.getType() == CompMaterial.PLAYER_HEAD.parseMaterial() && item.getType() == CompMaterial.PLAYER_HEAD.parseMaterial()) {
 				if (!NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) continue;
 			} else {
 				if (!item.isSimilar(stack)) continue;
@@ -560,7 +560,7 @@ public class AuctionAPI {
 		for (int j = 0; j < player.getInventory().getSize(); j++) {
 			ItemStack item = player.getInventory().getItem(j);
 			if (item == null) continue;
-			if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial() && item.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
+			if (stack.getType() == CompMaterial.PLAYER_HEAD.parseMaterial() && item.getType() == CompMaterial.PLAYER_HEAD.parseMaterial()) {
 
 				// is actual player head???
 				SkullMeta invItemMeta = (SkullMeta) item.getItemMeta();

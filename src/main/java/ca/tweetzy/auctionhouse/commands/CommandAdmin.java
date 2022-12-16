@@ -29,7 +29,7 @@ import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
@@ -131,7 +131,7 @@ public class CommandAdmin extends AbstractCommand {
 
 				ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 
-				if (itemToSell.getType() == XMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
+				if (itemToSell.getType() == CompMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
 					instance.getLocale().getMessage("general.air").sendPrefixedMessage(player);
 					return ReturnType.FAILURE;
 				} else {
