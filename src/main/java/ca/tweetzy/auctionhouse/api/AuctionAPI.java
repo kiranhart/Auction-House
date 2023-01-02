@@ -64,6 +64,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -807,5 +808,45 @@ public class AuctionAPI {
 			}
 
 		return player.getName();
+	}
+
+	public boolean meetsListingRequirements(Player player, ItemStack itemStack) {
+		boolean meets = true;
+
+		if (Settings.MAKE_BLOCKED_ITEMS_A_WHITELIST.getBoolean()) {
+			if (!Settings.BLOCKED_ITEMS.getStringList().contains(itemStack.getType().name())) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
+				return false;
+			}
+		} else {
+			if (Settings.BLOCKED_ITEMS.getStringList().contains(itemStack.getType().name())) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
+				return false;
+			}
+		}
+
+		String itemName = ChatColor.stripColor(getItemName(itemStack).toLowerCase());
+		List<String> itemLore = getItemLore(itemStack).stream().map(line -> ChatColor.stripColor(line.toLowerCase())).collect(Collectors.toList());
+
+		// Check for blocked names and lore
+		for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
+			if (match(s, itemName)) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.blockedname").sendPrefixedMessage(player);
+				meets = false;
+			}
+		}
+
+		if (!itemLore.isEmpty() && meets) {
+			for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
+				for (String line : itemLore) {
+					if (match(s, line)) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.blockedlore").sendPrefixedMessage(player);
+						meets = false;
+					}
+				}
+			}
+		}
+
+		return meets;
 	}
 }
