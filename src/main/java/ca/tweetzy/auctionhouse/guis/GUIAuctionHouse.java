@@ -315,7 +315,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 					OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
 					OfflinePlayer owner = Bukkit.getOfflinePlayer(auctionItem.getOwner());
 
-					AuctionBidEvent auctionBidEvent = new AuctionBidEvent(e.player, auctionItem, newBiddingAmount);
+					AuctionBidEvent auctionBidEvent = new AuctionBidEvent(e.player, auctionItem, newBiddingAmount, true);
 					Bukkit.getServer().getPluginManager().callEvent(auctionBidEvent);
 					if (auctionBidEvent.isCancelled()) return true;
 
