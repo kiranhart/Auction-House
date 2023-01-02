@@ -333,6 +333,8 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 	}
 
 	private void performAuctionListing(GuiClickEvent click) {
+		if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, this.auctionPlayer.getItemBeingListed())) return;
+
 		AuctionCreator.create(this.auctionPlayer, createListingItem(), (originalListing, listingResult) -> {
 			if (listingResult != ListingResult.SUCCESS) {
 				click.player.closeInventory();
