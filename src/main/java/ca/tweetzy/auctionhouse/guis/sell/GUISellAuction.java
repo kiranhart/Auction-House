@@ -299,6 +299,9 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 				.lore(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_LORE.getStringList())
 				.make(), click -> {
 
+			if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, this.auctionPlayer.getItemBeingListed())) return;
+			if (!auctionPlayer.canListItem())  return;
+
 			click.gui.exit();
 
 			// do listing confirmation first
@@ -333,8 +336,6 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 	}
 
 	private void performAuctionListing(GuiClickEvent click) {
-		if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, this.auctionPlayer.getItemBeingListed())) return;
-
 		AuctionCreator.create(this.auctionPlayer, createListingItem(), (originalListing, listingResult) -> {
 			if (listingResult != ListingResult.SUCCESS) {
 				click.player.closeInventory();
