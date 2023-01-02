@@ -18,9 +18,11 @@
 
 package ca.tweetzy.auctionhouse.helpers;
 
-import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.comp.enums.ServerVersion;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -38,10 +40,13 @@ import java.util.stream.Collectors;
  */
 public class ConfigurationItemHelper {
 
-	public static ItemStack createConfigurationItem(ItemStack stack, String title, List<String> lore, HashMap<String, Object> replacements, String... nbtData) {
+	public static ItemStack createConfigurationItem(ItemStack stack, int model, String title, List<String> lore, HashMap<String, Object> replacements, String... nbtData) {
 		final ItemMeta meta = stack.getItemMeta();
 		assert meta != null;
 		meta.setDisplayName(TextUtils.formatText(title));
+
+		if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14))
+			meta.setCustomModelData(model);
 
 		if (replacements != null) {
 			for (String key : replacements.keySet()) {
@@ -70,6 +75,17 @@ public class ConfigurationItemHelper {
 	}
 
 	public static ItemStack createConfigurationItem(String item, String title, List<String> lore, HashMap<String, Object> replacements) {
-		return createConfigurationItem(Objects.requireNonNull(CompMaterial.matchCompMaterial(item).get().parseItem()), title, lore, replacements);
+		String[] split = item.split(":");
+
+		if (split.length == 2 && NumberUtils.isInt(split[1])) {
+			return createConfigurationItem(Objects.requireNonNull(CompMaterial.matchCompMaterial(split[0]).get().parseItem()), Integer.parseInt(split[1]), title, lore, replacements);
+		} else {
+			return createConfigurationItem(Objects.requireNonNull(CompMaterial.matchCompMaterial(item).get().parseItem()), -1, title, lore, replacements);
+
+		}
+	}
+
+	public static ItemStack createConfigurationItem(ItemStack item, String title, List<String> lore, HashMap<String, Object> replacements) {
+		return createConfigurationItem(item, 0, title, lore, replacements);
 	}
 }
