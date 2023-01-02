@@ -40,7 +40,6 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -48,7 +47,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -108,44 +106,44 @@ public final class CommandSell extends AbstractCommand {
 		}
 
 		// Check for block items
+//
+//		if (Settings.MAKE_BLOCKED_ITEMS_A_WHITELIST.getBoolean()) {
+//			if (!Settings.BLOCKED_ITEMS.getStringList().contains(itemToSell.getType().name())) {
+//				instance.getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
+//				return ReturnType.FAILURE;
+//			}
+//		} else {
+//			if (Settings.BLOCKED_ITEMS.getStringList().contains(itemToSell.getType().name())) {
+//				instance.getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
+//				return ReturnType.FAILURE;
+//			}
+//		}
+//
+//		boolean blocked = false;
+//
+//		String itemName = ChatColor.stripColor(AuctionAPI.getInstance().getItemName(itemToSell).toLowerCase());
+//		List<String> itemLore = AuctionAPI.getInstance().getItemLore(itemToSell).stream().map(line -> ChatColor.stripColor(line.toLowerCase())).collect(Collectors.toList());
+//
+//		// Check for blocked names and lore
+//		for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
+//			if (AuctionAPI.getInstance().match(s, itemName)) {
+//				instance.getLocale().getMessage("general.blockedname").sendPrefixedMessage(player);
+//				blocked = true;
+//			}
+//		}
+//
+//		if (!itemLore.isEmpty() && !blocked) {
+//			for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
+//				for (String line : itemLore) {
+//					if (AuctionAPI.getInstance().match(s, line)) {
+//						instance.getLocale().getMessage("general.blockedlore").sendPrefixedMessage(player);
+//						blocked = true;
+//					}
+//				}
+//			}
+//		}
 
-		if (Settings.MAKE_BLOCKED_ITEMS_A_WHITELIST.getBoolean()) {
-			if (!Settings.BLOCKED_ITEMS.getStringList().contains(itemToSell.getType().name())) {
-				instance.getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
-				return ReturnType.FAILURE;
-			}
-		} else {
-			if (Settings.BLOCKED_ITEMS.getStringList().contains(itemToSell.getType().name())) {
-				instance.getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
-				return ReturnType.FAILURE;
-			}
-		}
-
-		boolean blocked = false;
-
-		String itemName = ChatColor.stripColor(AuctionAPI.getInstance().getItemName(itemToSell).toLowerCase());
-		List<String> itemLore = AuctionAPI.getInstance().getItemLore(itemToSell).stream().map(line -> ChatColor.stripColor(line.toLowerCase())).collect(Collectors.toList());
-
-		// Check for blocked names and lore
-		for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
-			if (AuctionAPI.getInstance().match(s, itemName)) {
-				instance.getLocale().getMessage("general.blockedname").sendPrefixedMessage(player);
-				blocked = true;
-			}
-		}
-
-		if (!itemLore.isEmpty() && !blocked) {
-			for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
-				for (String line : itemLore) {
-					if (AuctionAPI.getInstance().match(s, line)) {
-						instance.getLocale().getMessage("general.blockedlore").sendPrefixedMessage(player);
-						blocked = true;
-					}
-				}
-			}
-		}
-
-		if (blocked) return ReturnType.FAILURE;
+		if (!AuctionAPI.getInstance().meetsListingRequirements(player, itemToSell)) return ReturnType.FAILURE;
 
 		// get the max allowed time for this player.
 		int allowedTime = 0;

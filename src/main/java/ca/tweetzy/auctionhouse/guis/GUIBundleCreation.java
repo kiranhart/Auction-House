@@ -31,12 +31,10 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
-import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -80,48 +78,14 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 				final ItemStack item = getItem(i);
 				if (item == null || item.getType() == CompMaterial.AIR.parseMaterial()) continue;
 
-				if (Settings.MAKE_BLOCKED_ITEMS_A_WHITELIST.getBoolean()) {
-					if (!Settings.BLOCKED_ITEMS.getStringList().contains(item.getType().name())) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", item.getType().name()).sendPrefixedMessage(e.player);
-						continue;
-					}
-				} else {
-					if (Settings.BLOCKED_ITEMS.getStringList().contains(item.getType().name())) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", item.getType().name()).sendPrefixedMessage(e.player);
-						continue;
-					}
-				}
-
-				boolean blocked = false;
-
-				String itemName = ChatColor.stripColor(AuctionAPI.getInstance().getItemName(item).toLowerCase());
-				List<String> itemLore = AuctionAPI.getInstance().getItemLore(item).stream().map(line -> ChatColor.stripColor(line.toLowerCase())).collect(Collectors.toList());
-
-				// Check for blocked names and lore
-				for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
-					if (AuctionAPI.getInstance().match(s, itemName)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.blockedname").sendPrefixedMessage(e.player);
-						blocked = true;
-					}
-				}
-
-				if (!itemLore.isEmpty() && !blocked) {
-					for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
-						for (String line : itemLore) {
-							if (AuctionAPI.getInstance().match(s, line)) {
-								AuctionHouse.getInstance().getLocale().getMessage("general.blockedlore").sendPrefixedMessage(e.player);
-								blocked = true;
-							}
-						}
-					}
-				}
+				boolean meetsListingRequirements = AuctionAPI.getInstance().meetsListingRequirements(player, item);
 
 				if (NBTEditor.contains(item, "AuctionBundleItem")) {
-					blocked = true;
+					meetsListingRequirements = false;
 					containsBundle = true;
 				}
 
-				if (blocked) continue;
+				if (!meetsListingRequirements) continue;
 
 				if (firstItem == null)
 					firstItem = item;
