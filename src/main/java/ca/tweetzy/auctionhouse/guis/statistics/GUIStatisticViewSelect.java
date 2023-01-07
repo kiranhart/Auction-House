@@ -34,7 +34,7 @@ public final class GUIStatisticViewSelect extends AbstractPlaceholderGui {
 		super(player);
 		this.auctionPlayer = player;
 		setTitle(Settings.GUI_STATS_VIEW_SELECT_TITLE.getString());
-		getConfirmBuyNoItem()(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_VIEW_SELECT_BG_ITEM.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_VIEW_SELECT_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);

@@ -64,7 +64,7 @@ public abstract class AbstractPlaceholderGui extends Gui {
 	}
 
 	protected ItemStack getRefreshButtonItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_NEXT_BTN_ITEM.getString(), Settings.GUI_NEXT_BTN_NAME.getString(), Settings.GUI_NEXT_BTN_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_REFRESH_BTN_ITEM.getString(), Settings.GUI_REFRESH_BTN_NAME.getString(), Settings.GUI_REFRESH_BTN_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getCloseButtonItem() {
