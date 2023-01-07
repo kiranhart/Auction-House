@@ -114,11 +114,12 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 		});
 
 		if (Settings.ALLOW_ITEM_BUNDLES.getBoolean()) {
-			setButton(getRows() - 1, 8, QuickItem
-					.of(Objects.requireNonNull(Settings.ITEM_BUNDLE_ITEM.getMaterial().parseItem()))
-					.name(this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_NAME.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_NAME.getString())
-					.lore(this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_LORE.getStringList() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_LORE.getStringList())
-					.make(), click -> {
+			setButton(getRows() - 1, 8, ConfigurationItemHelper.createConfigurationItem(//todo update quick item to automatically apply model data
+					this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_ITEM.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_ITEM.getString(),
+					this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_NAME.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_NAME.getString(),
+					this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_LORE.getStringList() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_LORE.getStringList(),
+					null
+			), click -> {
 
 				click.gui.close();
 				click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, this.viewMode == ViewMode.SINGLE_ITEM ? ViewMode.BUNDLE_ITEM : ViewMode.SINGLE_ITEM, this.listingType));

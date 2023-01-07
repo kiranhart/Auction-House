@@ -899,6 +899,8 @@ public class Settings {
 			"&7Click to continue to pricing"
 	));
 
+
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_ITEM = new ConfigSetting(config, "gui.sell place item.items.bundle.item", CompMaterial.GOLD_BLOCK.name());
 	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_NAME = new ConfigSetting(config, "gui.sell place item.items.bundle.name", "&e&lListing Bundle");
 	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_LORE = new ConfigSetting(config, "gui.sell place item.items.bundle.lore", Arrays.asList(
 			"&7You are currently in the bundle",
@@ -906,6 +908,8 @@ public class Settings {
 			"",
 			"&7Click to list a single item instead"
 	));
+
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_ITEM = new ConfigSetting(config, "gui.sell place item.items.single.item", CompMaterial.DIAMOND.name());
 
 	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_NAME = new ConfigSetting(config, "gui.sell place item.items.single.name", "&e&lSingle Listing");
 	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_LORE = new ConfigSetting(config, "gui.sell place item.items.single.lore", Arrays.asList(
