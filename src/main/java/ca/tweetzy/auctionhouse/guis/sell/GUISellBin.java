@@ -30,6 +30,7 @@ import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
+import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -64,7 +65,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 		this.allowPartialBuy = allowPartialBuy;
 
 		setTitle(Settings.GUI_SELL_BIN_TITLE.getString());
-		setDefaultItem(GuiUtils.createButtonItem(Settings.GUI_SELL_BIN_BG_ITEM.getMaterial(), " "));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_BIN_BG_ITEM.getString()));
 		setRows(6);
 
 		setOnClose(close -> {

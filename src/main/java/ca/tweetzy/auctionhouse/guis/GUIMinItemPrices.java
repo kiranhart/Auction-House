@@ -24,13 +24,11 @@ import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -57,8 +55,8 @@ public final class GUIMinItemPrices extends AbstractPlaceholderGui {
 
 		pages = (int) Math.max(1, Math.ceil(this.minPrices.size() / (double) 45));
 
-		setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-		setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+		setPrevPage(5, 3, getPreviousPageItem());
+		setNextPage(5, 5, getNextPageItem());
 		setOnPage(e -> draw());
 
 		int slot = 0;

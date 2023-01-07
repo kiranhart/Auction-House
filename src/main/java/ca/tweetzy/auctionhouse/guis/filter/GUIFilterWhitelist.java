@@ -38,7 +38,7 @@ public class GUIFilterWhitelist extends AbstractPlaceholderGui {
 		setTitle(TextUtils.formatText(Settings.GUI_FILTER_WHITELIST_TITLE.getString()));
 		setRows(6);
 		setAcceptsItems(false);
-		setDefaultItem(Settings.GUI_FILTER_WHITELIST_BG_ITEM.getMaterial().parseItem());
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_WHITELIST_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		draw();
 	}

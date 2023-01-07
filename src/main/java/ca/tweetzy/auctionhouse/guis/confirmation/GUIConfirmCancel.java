@@ -28,12 +28,9 @@ import ca.tweetzy.auctionhouse.guis.GUIActiveAuctions;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.inventory.ClickType;
-
-import java.util.Objects;
 
 /**
  * The current file has been created by Kiran Hart
@@ -57,9 +54,9 @@ public class GUIConfirmCancel extends AbstractPlaceholderGui {
 	}
 
 	private void draw() {
-		setItems(0, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_CANCEL_YES_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_CANCEL_YES_NAME.getString()).setLore(Settings.GUI_CONFIRM_CANCEL_YES_LORE.getStringList()).toItemStack());
+		setItems(0, 3, getConfirmCancelYesItem());
 		setItem(0, 4, this.auctionItem.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST));
-		setItems(5, 8, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_CANCEL_NO_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_CANCEL_NO_NAME.getString()).setLore(Settings.GUI_CONFIRM_CANCEL_NO_LORE.getStringList()).toItemStack());
+		setItems(5, 8, getConfirmCancelNoItem());
 
 		setActionForRange(5, 8, ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer)));
 		setActionForRange(0, 3, ClickType.LEFT, e -> {
@@ -81,6 +78,7 @@ public class GUIConfirmCancel extends AbstractPlaceholderGui {
 					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(located.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
 
 			}
+			
 
 			e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
 		});

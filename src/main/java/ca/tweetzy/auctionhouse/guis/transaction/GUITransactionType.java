@@ -52,7 +52,7 @@ public final class GUITransactionType extends AbstractPlaceholderGui {
 		setRows(4);
 		setAcceptsItems(false);
 		setUseLockedCells(true);
-		setDefaultItem(Settings.GUI_TRANSACTIONS_TYPE_BG_ITEM.getMaterial().parseItem());
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_TRANSACTIONS_TYPE_BG_ITEM.getString()));
 		draw();
 	}
 

@@ -36,7 +36,7 @@ public final class GUIStatisticSelf extends AbstractPlaceholderGui {
 		super(player);
 		this.auctionPlayer = player;
 		setTitle(Settings.GUI_STATS_SELF_TITLE.getString());
-		setDefaultItem(Settings.GUI_STATS_SELF_BG_ITEM.getMaterial().parseItem());
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_SELF_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);

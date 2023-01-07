@@ -134,7 +134,7 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 			e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 		});
 
-		setButton(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_REFRESH_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_REFRESH_BTN_NAME.getString()).setLore(Settings.GUI_REFRESH_BTN_LORE.getStringList()).toItemStack(), e -> e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer)));
+		setButton(5, 4, getRefreshButtonItem(), e -> e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer)));
 
 		setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString(), Settings.GUI_ACTIVE_AUCTIONS_NAME.getString(), Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList(), null), e -> {
 			this.auctionPlayer.getItems(false).forEach(item -> item.setExpired(true));
@@ -143,8 +143,8 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 	}
 
 	private void drawPaginationButtons() {
-		setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-		setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+		setPrevPage(5, 3, getPreviousPageItem());
+		setNextPage(5, 5, getNextPageItem());
 		setOnPage(e -> {
 			draw();
 			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString(), 1.0F, 1.0F);

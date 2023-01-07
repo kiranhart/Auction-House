@@ -36,7 +36,6 @@ import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
@@ -46,7 +45,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 /**
  * The current file has been created by Kiran Hart
@@ -81,7 +79,7 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 
 		if (this.buyingSpecificQuantity) {
 			setUseLockedCells(Settings.GUI_CONFIRM_FILL_BG_ON_QUANTITY.getBoolean());
-			setDefaultItem(Settings.GUI_CONFIRM_BG_ITEM.getMaterial().parseItem());
+			setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_BG_ITEM.getString()));
 			this.purchaseQuantity = preAmount;
 			this.maxStackSize = preAmount;
 			this.pricePerItem = this.auctionItem.getBasePrice() / this.maxStackSize;
@@ -103,9 +101,9 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 	private void draw() {
 		ItemStack deserializeItem = this.auctionItem.getItem().clone();
 
-		setItems(this.buyingSpecificQuantity ? 9 : 0, this.buyingSpecificQuantity ? 12 : 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_BUY_YES_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_BUY_YES_NAME.getString()).setLore(Settings.GUI_CONFIRM_BUY_YES_LORE.getStringList()).toItemStack());
+		setItems(this.buyingSpecificQuantity ? 9 : 0, this.buyingSpecificQuantity ? 12 : 3, getConfirmBuyYesItem());
 		setItem(this.buyingSpecificQuantity ? 1 : 0, 4, this.auctionItem.getDisplayStack(AuctionStackType.LISTING_PREVIEW));
-		setItems(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_BUY_NO_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_BUY_NO_NAME.getString()).setLore(Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList()).toItemStack());
+		setItems(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, getConfirmBuyNoItem());
 
 		setAction(this.buyingSpecificQuantity ? 1 : 0, 4, ClickType.LEFT, e -> {
 			if (deserializeItem.getItemMeta() instanceof BlockStateMeta) {
@@ -226,14 +224,14 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 			drawPurchaseInfo(this.maxStackSize);
 
 			// Decrease Button
-			setButton(3, 3, new TItemBuilder(Settings.GUI_CONFIRM_DECREASE_QTY_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_CONFIRM_DECREASE_QTY_NAME.getString()).setLore(Settings.GUI_CONFIRM_DECREASE_QTY_LORE.getStringList()).toItemStack(), e -> {
+			setButton(3, 3, getDecreaseQtyButtonItem(), e -> {
 				if ((this.purchaseQuantity - 1) <= 0) return;
 				this.purchaseQuantity -= 1;
 				drawPurchaseInfo(this.purchaseQuantity);
 			});
 
 			// Increase Button
-			setButton(3, 5, new TItemBuilder(Settings.GUI_CONFIRM_INCREASE_QTY_ITEM.getMaterial().parseMaterial()).setName(Settings.GUI_CONFIRM_INCREASE_QTY_NAME.getString()).setLore(Settings.GUI_CONFIRM_INCREASE_QTY_LORE.getStringList()).toItemStack(), e -> {
+			setButton(3, 5, getIncreaseQtyButtonItem(), e -> {
 				if ((this.purchaseQuantity + 1) > this.maxStackSize) return;
 				this.purchaseQuantity += 1;
 				drawPurchaseInfo(this.purchaseQuantity);

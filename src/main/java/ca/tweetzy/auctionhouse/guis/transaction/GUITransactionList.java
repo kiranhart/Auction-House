@@ -27,12 +27,14 @@ import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -70,9 +72,9 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 		reset();
 
 		pages = (int) Math.max(1, Math.ceil(this.transactions.size() / (double) 45));
-		setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-		setButton(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_REFRESH_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_REFRESH_BTN_NAME.getString()).setLore(Settings.GUI_REFRESH_BTN_LORE.getStringList()).toItemStack(), e -> e.manager.showGUI(e.player, new GUITransactionList(this.player, this.showAll)));
-		setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+		setPrevPage(5, 3, getPreviousPageItem());
+		setButton(5, 4, getRefreshButtonItem(), e -> e.manager.showGUI(e.player, new GUITransactionList(this.player, this.showAll)));
+		setNextPage(5, 5, getNextPageItem());
 		setOnPage(e -> draw());
 
 		// Other Buttons

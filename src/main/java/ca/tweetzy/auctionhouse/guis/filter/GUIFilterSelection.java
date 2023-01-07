@@ -49,7 +49,7 @@ public class GUIFilterSelection extends AbstractPlaceholderGui {
 		setTitle(TextUtils.formatText(Settings.GUI_FILTER_TITLE.getString()));
 		setRows(4);
 		setAcceptsItems(false);
-		setDefaultItem(Settings.GUI_FILTER_BG_ITEM.getMaterial().parseItem());
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		draw();
 

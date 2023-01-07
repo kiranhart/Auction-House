@@ -28,14 +28,11 @@ import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
-
-import java.util.Objects;
 
 /**
  * The current file has been created by Kiran Hart
@@ -84,9 +81,9 @@ public class GUIConfirmBid extends AbstractPlaceholderGui {
 	}
 
 	private void draw() {
-		setItems(0, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_BID_YES_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_BID_YES_NAME.getString()).setLore(Settings.GUI_CONFIRM_BID_YES_LORE.getStringList()).toItemStack());
+		setItems(0, 3, getConfirmBidYesItem());
 		placeAuctionItem();
-		setItems(5, 8, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_BID_NO_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_BID_NO_NAME.getString()).setLore(Settings.GUI_CONFIRM_BID_NO_LORE.getStringList()).toItemStack());
+		setItems(5, 8, getConfirmBidNoItem());
 
 		setActionForRange(5, 8, ClickType.LEFT, e -> {
 			cleanup();

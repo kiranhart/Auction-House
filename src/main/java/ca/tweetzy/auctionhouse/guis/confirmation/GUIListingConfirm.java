@@ -23,11 +23,9 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public final class GUIListingConfirm extends AbstractPlaceholderGui {
@@ -47,9 +45,9 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 	}
 
 	private void draw() {
-		setItems(0, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_LISTING_YES_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_LISTING_YES_NAME.getString()).setLore(Settings.GUI_CONFIRM_LISTING_YES_LORE.getStringList()).toItemStack());
+		setItems(0, 3, getConfirmListingYesItem());
 		setItem(0, 4, this.auctionedItem.getDisplayStack(AuctionStackType.LISTING_PREVIEW));
-		setItems(5, 8, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CONFIRM_LISTING_NO_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CONFIRM_LISTING_NO_NAME.getString()).setLore(Settings.GUI_CONFIRM_LISTING_NO_LORE.getStringList()).toItemStack());
+		setItems(5, 8, getConfirmListingNoItem());
 
 		setActionForRange(5, 8, ClickType.LEFT, e -> {
 			setAllowClose(true);

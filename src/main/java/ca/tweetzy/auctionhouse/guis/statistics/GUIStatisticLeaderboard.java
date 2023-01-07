@@ -26,12 +26,14 @@ import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
@@ -46,7 +48,7 @@ public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
 		this.auctionPlayer = player;
 		this.statisticType = statisticType;
 		setTitle(Settings.GUI_STATS_LEADERBOARD_TITLE.getString());
-		setDefaultItem(Settings.GUI_STATS_LEADERBOARD_BG_ITEM.getMaterial().parseItem());
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_LEADERBOARD_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);
@@ -96,8 +98,8 @@ public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
 	}
 
 	private void drawPaginationButtons() {
-		setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-		setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+		setPrevPage(5, 3, getPreviousPageItem());
+		setNextPage(5, 5, getNextPageItem());
 		setOnPage(e -> {
 			draw();
 			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString(), 1.0F, 1.0F);

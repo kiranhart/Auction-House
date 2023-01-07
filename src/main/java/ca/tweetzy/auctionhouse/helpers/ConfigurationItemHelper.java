@@ -27,6 +27,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -72,6 +73,10 @@ public class ConfigurationItemHelper {
 			}
 		}
 		return stack;
+	}
+
+	public static ItemStack createConfigurationItem(String item) {
+		return createConfigurationItem(item, " ", new ArrayList<>(), null);
 	}
 
 	public static ItemStack createConfigurationItem(String item, String title, List<String> lore, HashMap<String, Object> replacements) {

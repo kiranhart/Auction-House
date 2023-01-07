@@ -25,7 +25,6 @@ import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.TimeUtils;
-import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -35,7 +34,6 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +51,7 @@ public class GUIBans extends AbstractPlaceholderGui {
 	public GUIBans(Player player) {
 		super(player);
 		setTitle(TextUtils.formatText(Settings.GUI_BANS_TITLE.getString()));
-		setDefaultItem(Settings.GUI_BANS_BG_ITEM.getMaterial().parseItem());
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BANS_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);
@@ -75,8 +73,8 @@ public class GUIBans extends AbstractPlaceholderGui {
 			return this.bans.stream().skip((page - 1) * 45L).limit(45L).collect(Collectors.toList());
 		}).asyncLast((data) -> {
 			pages = (int) Math.max(1, Math.ceil(this.bans.size() / (double) 45L));
-			setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-			setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+			setPrevPage(5, 3, getPreviousPageItem());
+			setNextPage(5, 5, getNextPageItem());
 			setOnPage(e -> draw());
 
 			int slot = 0;

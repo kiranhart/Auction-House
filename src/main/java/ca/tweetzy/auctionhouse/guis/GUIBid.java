@@ -52,7 +52,7 @@ public class GUIBid extends AbstractPlaceholderGui {
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		setTitle(TextUtils.formatText(Settings.GUI_BIDDING_TITLE.getString()));
-		setDefaultItem(Settings.GUI_BIDDING_BG_ITEM.getMaterial().parseItem());
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BIDDING_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);

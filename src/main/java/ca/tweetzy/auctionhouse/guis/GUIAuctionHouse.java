@@ -502,8 +502,8 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 	}
 
 	private void drawPaginationButtons() {
-		setPrevPage(Settings.GUI_BACK_BTN_SLOT.getInt(), new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-		setNextPage(Settings.GUI_NEXT_BTN_SLOT.getInt(), new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+		setPrevPage(Settings.GUI_BACK_BTN_SLOT.getInt(), getPreviousPageItem());
+		setNextPage(Settings.GUI_NEXT_BTN_SLOT.getInt(), getNextPageItem());
 
 		setOnPage(e -> {
 			draw();
@@ -539,7 +539,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 		}
 
 		if (Settings.GUI_REFRESH_BTN_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_REFRESH_BTN_SLOT.getInt(), new TItemBuilder(Objects.requireNonNull(Settings.GUI_REFRESH_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_REFRESH_BTN_NAME.getString()).setLore(Settings.GUI_REFRESH_BTN_LORE.getStringList()).toItemStack(), e -> {
+			setButton(Settings.GUI_REFRESH_BTN_SLOT.getInt(), getRefreshButtonItem(), e -> {
 				if (Settings.USE_REFRESH_COOL_DOWN.getBoolean()) {
 					if (AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().containsKey(this.auctionPlayer.getPlayer().getUniqueId())) {
 						if (AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().get(this.auctionPlayer.getPlayer().getUniqueId()) > System.currentTimeMillis()) {

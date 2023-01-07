@@ -53,7 +53,7 @@ public class GUIAdminItem extends AbstractPlaceholderGui {
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		setTitle(TextUtils.formatText(Settings.GUI_ITEM_ADMIN_TITLE.getString()));
-		setDefaultItem(Settings.GUI_ITEM_ADMIN_BG_ITEM.getMaterial().parseItem());
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_ITEM_ADMIN_BG_ITEM.getString()));
 		setRows(3);
 		setAcceptsItems(false);
 		setUseLockedCells(true);

@@ -22,15 +22,14 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
+import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +49,7 @@ public class GUIFilterWhitelistList extends AbstractPlaceholderGui {
 		setTitle(TextUtils.formatText(Settings.GUI_FILTER_WHITELIST_LIST_TITLE.getString().replace("%filter_category%", filerCategory.getTranslatedType())));
 		setRows(6);
 		setAcceptsItems(false);
-		setDefaultItem(Settings.GUI_FILTER_WHITELIST_LIST_BG_ITEM.getMaterial().parseItem());
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_WHITELIST_LIST_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		draw();
 
@@ -59,9 +58,9 @@ public class GUIFilterWhitelistList extends AbstractPlaceholderGui {
 
 	private void draw() {
 		reset();
-		setPrevPage(5, 3, new TItemBuilder(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_BACK_BTN_NAME.getString()).setLore(Settings.GUI_BACK_BTN_LORE.getStringList()).toItemStack());
-		setButton(5, 4, new TItemBuilder(Objects.requireNonNull(Settings.GUI_CLOSE_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_CLOSE_BTN_NAME.getString()).setLore(Settings.GUI_CLOSE_BTN_LORE.getStringList()).toItemStack(), e -> e.manager.showGUI(e.player, new GUIFilterWhitelist(e.player)));
-		setNextPage(5, 5, new TItemBuilder(Objects.requireNonNull(Settings.GUI_NEXT_BTN_ITEM.getMaterial().parseMaterial())).setName(Settings.GUI_NEXT_BTN_NAME.getString()).setLore(Settings.GUI_NEXT_BTN_LORE.getStringList()).toItemStack());
+		setPrevPage(5, 3, getPreviousPageItem());
+		setButton(5, 4, getCloseButtonItem(), e -> e.manager.showGUI(e.player, new GUIFilterWhitelist(e.player)));
+		setNextPage(5, 5, getNextPageItem());
 		setOnPage(e -> draw());
 
 		AuctionHouse.newChain().asyncFirst(() -> {

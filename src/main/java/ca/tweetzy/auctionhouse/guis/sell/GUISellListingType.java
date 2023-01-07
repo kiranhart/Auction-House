@@ -22,8 +22,8 @@ import ca.tweetzy.auctionhouse.ahv3.api.ListingType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.NonNull;
 
@@ -40,7 +40,7 @@ public final class GUISellListingType extends AbstractPlaceholderGui {
 		this.auctionPlayer = auctionPlayer;
 		this.listingType = listingType;
 		setTitle(Settings.GUI_SELL_LISTING_TYPE_TITLE.getString());
-		setDefaultItem(GuiUtils.createButtonItem(Settings.GUI_SELL_LISTING_TYPE_BG_ITEM.getMaterial(), " "));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_LISTING_TYPE_BG_ITEM.getString()));
 		setRows(3);
 		draw();
 	}

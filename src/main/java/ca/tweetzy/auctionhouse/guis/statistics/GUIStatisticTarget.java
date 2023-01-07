@@ -38,7 +38,7 @@ public final class GUIStatisticTarget extends AbstractPlaceholderGui {
 		this.auctionPlayer = player;
 		this.targetPlayer = targetPlayer;
 		setTitle(Settings.GUI_STATS_SEARCH_TITLE.getString().replace("%player_name%", targetPlayer.getPlayer().getName()));
-		setDefaultItem(Settings.GUI_STATS_SEARCH_BG_ITEM.getMaterial().parseItem());
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_SEARCH_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);

@@ -46,7 +46,7 @@ public class GUITransactionView extends AbstractPlaceholderGui {
 		setTitle(TextUtils.formatText(Settings.GUI_TRANSACTION_VIEW_TITLE.getString()));
 		setRows(6);
 		setAcceptsItems(false);
-		setDefaultItem(Settings.GUI_TRANSACTION_VIEW_BACKGROUND_ITEM.getMaterial().parseItem());
+		getConfirmBuyNoItem()(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_TRANSACTION_VIEW_BACKGROUND_ITEM.getString()));
 		setUseLockedCells(Settings.GUI_TRANSACTION_VIEW_BACKGROUND_FILL.getBoolean());
 
 		setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUITransactionList(auctionPlayer.getPlayer(), showAll)));
