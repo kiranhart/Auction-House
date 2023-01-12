@@ -42,6 +42,10 @@ import java.util.stream.Collectors;
 public class ConfigurationItemHelper {
 
 	public static ItemStack createConfigurationItem(ItemStack stack, int model, String title, List<String> lore, HashMap<String, Object> replacements, String... nbtData) {
+		if (stack.getType() == CompMaterial.AIR.parseMaterial())
+			return stack;
+
+
 		final ItemMeta meta = stack.getItemMeta();
 		assert meta != null;
 		meta.setDisplayName(TextUtils.formatText(title));
