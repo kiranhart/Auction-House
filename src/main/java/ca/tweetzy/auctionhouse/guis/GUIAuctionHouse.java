@@ -507,7 +507,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 
 		setOnPage(e -> {
 			draw();
-			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString(), 1.0F, 1.0F);
+			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString());
 		});
 	}
 

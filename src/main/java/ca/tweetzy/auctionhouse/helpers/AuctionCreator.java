@@ -124,7 +124,7 @@ public final class AuctionCreator {
 
 		// A VERY UGLY LISTING MESSAGING THING, IDEK, I GOTTA DEAL WITH THIS EVENTUALLY 💀
 
-		SoundManager.getInstance().playSound(seller, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString(), 1.0F, 1.0F);
+		SoundManager.getInstance().playSound(seller, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString());
 		String NAX = AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage();
 		String msg = AuctionHouse.getInstance().getLocale().getMessage(auctionItem.isBidItem() ? "auction.listed.withbid" : "auction.listed.nobid")
 				.processPlaceholder("amount", finalItemToSell.getAmount())

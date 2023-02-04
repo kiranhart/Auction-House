@@ -147,7 +147,7 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 		setNextPage(5, 5, getNextPageItem());
 		setOnPage(e -> {
 			draw();
-			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString(), 1.0F, 1.0F);
+			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString());
 		});
 	}
 

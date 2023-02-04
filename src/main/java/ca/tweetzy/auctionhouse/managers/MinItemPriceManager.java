@@ -20,6 +20,8 @@ package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.MinItemPrice;
+import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.flight.comp.enums.ServerVersion;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -46,7 +48,23 @@ public final class MinItemPriceManager {
 	}
 
 	public MinItemPrice getMinPrice(ItemStack item) {
+		if (Settings.MIN_ITEM_PRICE_USES_SIMPE_COMPARE.getBoolean())
+			return this.minPrices.stream().filter(mins -> simpleMatching(mins, item)).findFirst().orElse(null);
+
 		return this.minPrices.stream().filter(mins -> mins.getItemStack().isSimilar(item)).findFirst().orElse(null);
+	}
+
+	private boolean simpleMatching(MinItemPrice minItemPrice, ItemStack item) {
+		boolean modelDataMatch = true;
+
+		boolean typeMatch = minItemPrice.getItemStack().getType() == item.getType();
+
+		if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14))
+			if (minItemPrice.getItemStack().getItemMeta() != null && minItemPrice.getItemStack().getItemMeta().hasCustomModelData() && item.getItemMeta() != null && item.getItemMeta().hasCustomModelData())
+				modelDataMatch = minItemPrice.getItemStack().getItemMeta().getCustomModelData() == item.getItemMeta().getCustomModelData();
+
+
+		return typeMatch && modelDataMatch;
 	}
 
 	public List<MinItemPrice> getMinPrices() {

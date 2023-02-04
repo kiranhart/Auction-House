@@ -34,7 +34,6 @@ import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.gui.GuiUtils;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -46,7 +45,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.UUID;
 
 public final class GUISellBin extends AbstractPlaceholderGui {
@@ -84,7 +82,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 		reset();
 
 		setButton(getRows() - 1, 0, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_BACK_BTN_ITEM.getString())
 				.name(Settings.GUI_BACK_BTN_NAME.getString())
 				.lore(Settings.GUI_BACK_BTN_LORE.getStringList())
 				.make(), click -> {
@@ -98,7 +96,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime);
 
 			setButton(3, 1, QuickItem
-					.of(Objects.requireNonNull(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_ITEM.getMaterial().parseItem()))
+					.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_ITEM.getString())
 					.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_NAME.getString())
 					.lore(Replacer.replaceVariables(
 							Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_LORE.getStringList(),
@@ -142,7 +140,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 		}
 
 		setButton(3, 4, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_ITEM.getString())
 				.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_NAME.getString())
 				.lore(Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(this.listingPrice))).make(), click -> {
 
@@ -183,7 +181,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 		setItem(1, 4, createListingItem().getDisplayStack(AuctionStackType.LISTING_PREVIEW));
 
 		setButton(getRows() - 1, 4, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_ITEM.getString())
 				.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_NAME.getString())
 				.lore(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_LORE.getStringList())
 				.make(), click -> {
@@ -227,7 +225,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 	private void drawQtyPurchase() {
 		if (Settings.ALLOW_PURCHASE_OF_SPECIFIC_QUANTITIES.getBoolean()) {
 			setButton(3, 7, QuickItem
-					.of(Objects.requireNonNull(this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_ITEM.getMaterial().parseItem() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_ITEM.getMaterial().parseItem()))
+					.of(this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_ITEM.getString() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_ITEM.getString())
 					.name(this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_NAME.getString() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_NAME.getString())
 					.lore(this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_LORE.getStringList() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_LORE.getStringList()).make(), e -> {
 

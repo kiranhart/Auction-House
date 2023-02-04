@@ -32,7 +32,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 
@@ -50,7 +49,7 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 		this.auctionPlayer = auctionPlayer;
 		this.viewMode = viewMode;
 		this.listingType = listingType;
-		setTitle(Settings.GUI_SELL_PLACE_ITEM_TITLE.getString());
+		setTitle(viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_TITLE.getString() : Settings.GUI_SELL_PLACE_ITEM_BUNDLE_TITLE.getString());
 		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_PLACE_ITEM_BG_ITEM.getString()));
 		setRows(viewMode == ViewMode.SINGLE_ITEM ? 4 : 6);
 
@@ -72,7 +71,7 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 	private void draw() {
 
 		setButton(getRows() - 1, 0, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_CLOSE_BTN_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_CLOSE_BTN_ITEM.getString())
 				.name(Settings.GUI_CLOSE_BTN_NAME.getString())
 				.lore(Settings.GUI_CLOSE_BTN_LORE.getStringList())
 				.make(), click -> {
@@ -84,7 +83,7 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 		});
 
 		setButton(getRows() - 1, 4, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM.getString())
 				.name(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_NAME.getString())
 				.lore(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_LORE.getStringList())
 				.make(), click -> {

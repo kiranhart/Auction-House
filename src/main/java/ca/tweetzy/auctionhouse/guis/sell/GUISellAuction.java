@@ -45,7 +45,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.UUID;
 
 public final class GUISellAuction extends AbstractPlaceholderGui {
@@ -87,7 +86,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 		reset();
 
 		setButton(getRows() - 1, 0, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_BACK_BTN_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_BACK_BTN_ITEM.getString())
 				.name(Settings.GUI_BACK_BTN_NAME.getString())
 				.lore(Settings.GUI_BACK_BTN_LORE.getStringList())
 				.make(), click -> {
@@ -101,7 +100,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime);
 
 			setButton(3, 1, QuickItem
-					.of(Objects.requireNonNull(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM.getMaterial().parseItem()))
+					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM.getString())
 					.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_NAME.getString())
 					.lore(Replacer.replaceVariables(
 							Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_LORE.getStringList(),
@@ -153,7 +152,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 
 		if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean())
 			setButton(3, 4, QuickItem
-					.of(Objects.requireNonNull(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_ITEM.getMaterial().parseItem()))
+					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_ITEM.getString())
 					.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_NAME.getString())
 					.lore(Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(this.binPrice))).make(), click -> {
 
@@ -197,7 +196,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 			});
 
 		setButton(3, 3, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_ITEM.getString())
 				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_NAME.getString())
 				.lore(Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(), "listing_start_price", AuctionAPI.getInstance().formatNumber(this.startingBid))).make(), click -> {
 
@@ -247,7 +246,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 		});
 
 		setButton(3, 5, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getString())
 				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME.getString())
 				.lore(Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(), "listing_increment_price", AuctionAPI.getInstance().formatNumber(this.bidIncrement))).make(), click -> {
 
@@ -294,7 +293,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 		drawBuyoutToggle();
 
 		setButton(getRows() - 1, 4, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_ITEM.getString())
 				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_NAME.getString())
 				.lore(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_LORE.getStringList())
 				.make(), click -> {
@@ -324,7 +323,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 	private void drawBuyoutToggle() {
 		if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
 			setButton(3, 7, QuickItem
-					.of(Objects.requireNonNull(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_ITEM.getMaterial().parseItem() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_ITEM.getMaterial().parseItem()))
+					.of(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_ITEM.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_ITEM.getString())
 					.name(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_NAME.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_NAME.getString())
 					.lore(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_LORE.getStringList() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_LORE.getStringList()).make(), e -> {
 

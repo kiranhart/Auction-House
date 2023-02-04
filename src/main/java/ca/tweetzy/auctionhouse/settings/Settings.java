@@ -119,6 +119,8 @@ public class Settings {
 	public static final ConfigSetting FORCE_AUCTION_USAGE = new ConfigSetting(config, "auction setting.force auction usage", false, "If enabled, all items sold on the auction house must be an auction (biddable) items");
 	public static final ConfigSetting ALLOW_INDIVIDUAL_ITEM_CLAIM = new ConfigSetting(config, "auction setting.allow individual item claim", true, "If enabled, you will be able to click individual items from the expiration menu to claim them back. Otherwise you will have to use the claim all button");
 	public static final ConfigSetting FORCE_CUSTOM_BID_AMOUNT = new ConfigSetting(config, "auction setting.force custom bid amount", false, "If enabled, the bid increment line on auction items will be hidden, bid increment values will be ignored, and when you go to bid on an item, it will ask you to enter a custom amount.");
+	public static final ConfigSetting SOUND_PITCH = new ConfigSetting(config, "auction setting.sound.pitch", 1.0, "The pitch value for sounds played by auction house");
+	public static final ConfigSetting SOUND_VOLUME = new ConfigSetting(config, "auction setting.sound.volume", 1.0, "The volume value for sounds played by auction house");
 
 	public static final ConfigSetting BIDDING_TAKES_MONEY = new ConfigSetting(config, "auction setting.bidding takes money", false, "If enabled, players will be outright charged the current bid for the item", "If they are outbid or the item is cancelled, they will get their money back. Disables ability for owners to bid on their own items!");
 	public static final ConfigSetting LIST_ITEM_DELAY = new ConfigSetting(config, "auction setting.list item delay", -1, "If not set to -1 (disabled) how many seconds must a player wait to list another item after listing 1?");
@@ -184,6 +186,7 @@ public class Settings {
 
 	public static final ConfigSetting ALLOW_ITEM_BUNDLES = new ConfigSetting(config, "auction setting.bundles.enabled", true, "If true, players can use -b in the sell command to bundle all similar items into a single item.");
 	public static final ConfigSetting ITEM_BUNDLE_ITEM = new ConfigSetting(config, "auction setting.bundles.item", CompMaterial.GOLD_BLOCK.name());
+	public static final ConfigSetting MIN_ITEM_PRICE_USES_SIMPE_COMPARE = new ConfigSetting(config, "auction setting.use simple compare for min item price", true, "If true, AH will just compare material and model data types");
 	public static final ConfigSetting ITEM_BUNDLE_NAME = new ConfigSetting(config, "auction setting.bundles.name", "%item_name% &7Bundle");
 	public static final ConfigSetting ITEM_BUNDLE_LORE = new ConfigSetting(config, "auction setting.bundles.lore", Arrays.asList(
 			"&7This is a bundle item, it contains",
@@ -889,7 +892,8 @@ public class Settings {
 	/*  ===============================
 	 *    ITEM SELL PLACE ITEM GUI
 	 *  ===============================*/
-	public static final ConfigSetting GUI_SELL_PLACE_ITEM_TITLE = new ConfigSetting(config, "gui.sell place item.title", "&7Auction House - &ePlace Item(s)");
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_TITLE = new ConfigSetting(config, "gui.sell place item.title", "&7Auction House - &ePlace Item");
+	public static final ConfigSetting GUI_SELL_PLACE_ITEM_BUNDLE_TITLE = new ConfigSetting(config, "gui.sell place item.bundle title", "&7Auction House - &ePlace Item(s)");
 	public static final ConfigSetting GUI_SELL_PLACE_ITEM_BG_ITEM = new ConfigSetting(config, "gui.sell place item.bg item", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 
 	public static final ConfigSetting GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM = new ConfigSetting(config, "gui.sell place item.items.continue.item", CompMaterial.LIME_STAINED_GLASS_PANE.name());

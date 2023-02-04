@@ -18,13 +18,9 @@
 
 package ca.tweetzy.auctionhouse.managers;
 
-import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompSound;
-import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-
-import java.util.Arrays;
 
 /**
  * The current file has been created by Kiran Hart
@@ -46,16 +42,7 @@ public class SoundManager {
 	private SoundManager() {
 	}
 
-	public void playSound(Player player, String sound, float volume, float pitch) {
-		player.playSound(player.getLocation(), CompSound.matchCompSound(sound).get().parseSound(), volume, pitch);
-	}
-
-	public void playSound(Player[] players, String sound, float volume, float pitch) {
-		final Sound xsound = CompSound.matchCompSound(sound).get().parseSound();
-		Arrays.stream(players).forEach(p -> p.playSound(p.getLocation(), xsound, volume, pitch));
-	}
-
-	public void playSound(Player player, String sound, float volume, float pitch, int delay) {
-		Bukkit.getServer().getScheduler().runTaskLater(AuctionHouse.getInstance(), () -> playSound(player, sound, volume, pitch), delay);
+	public void playSound(Player player, String sound) {
+		player.playSound(player.getLocation(), CompSound.matchCompSound(sound).get().parseSound(), Float.parseFloat(Settings.SOUND_VOLUME.getString()), Float.parseFloat(Settings.SOUND_PITCH.getString()));
 	}
 }

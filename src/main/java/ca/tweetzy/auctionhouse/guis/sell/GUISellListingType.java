@@ -27,7 +27,6 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.NonNull;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public final class GUISellListingType extends AbstractPlaceholderGui {
@@ -58,7 +57,7 @@ public final class GUISellListingType extends AbstractPlaceholderGui {
 		}
 
 		setButton(getRows() - 1, 0, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_ITEM.getString())
 				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_NAME.getString())
 				.lore(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_LORE.getStringList())
 				.make(), click -> click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer)));
@@ -66,7 +65,7 @@ public final class GUISellListingType extends AbstractPlaceholderGui {
 
 	private void drawAuctionButton(int col) {
 		setButton(1, col, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_ITEM.getString())
 				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_NAME.getString())
 				.lore(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_LORE.getStringList())
 				.make(), click -> {
@@ -78,7 +77,7 @@ public final class GUISellListingType extends AbstractPlaceholderGui {
 
 	private void drawBinButton(int col) {
 		setButton(1, col, QuickItem
-				.of(Objects.requireNonNull(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_ITEM.getMaterial().parseItem()))
+				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_ITEM.getString())
 				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_NAME.getString())
 				.lore(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_LORE.getStringList())
 				.make(), click -> {
