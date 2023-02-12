@@ -18,9 +18,16 @@
 
 package ca.tweetzy.auctionhouse.ahv3.api;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.function.Consumer;
 
 public interface Storeable<T> {
 
 	void store(Consumer<T> storedItem);
+
+	default void unStore(@Nullable final Consumer<SynchronizeResult> syncResult) {
+		if (syncResult != null)
+			syncResult.accept(SynchronizeResult.SUCCESS);
+	}
 }

@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class BinAuctionItem extends AuctionItem {
+public class BinListing extends AuctionItem {
 
 	private final UUID uuid;
 	private final UUID ownerUUID;
@@ -41,7 +41,8 @@ public final class BinAuctionItem extends AuctionItem {
 	private final long listedAt;
 	private long expiresAt;
 
-	public BinAuctionItem(
+	public BinListing(
+			@NonNull final ListingType listingType,
 			@NonNull final UUID uuid,
 			@NonNull final UUID ownerUUID,
 			@NonNull final String ownerName,
@@ -52,7 +53,7 @@ public final class BinAuctionItem extends AuctionItem {
 			final long listedAt,
 			final long expiresAt
 	) {
-		super(item, ListingType.BIN);
+		super(item, listingType);
 		this.uuid = uuid;
 		this.ownerUUID = ownerUUID;
 		this.ownerName = ownerName;
@@ -63,8 +64,13 @@ public final class BinAuctionItem extends AuctionItem {
 		this.expiresAt = expiresAt;
 	}
 
-	public BinAuctionItem(@NonNull final Player player, @NonNull final ItemStack item, @NonNull final BigDecimal price) {
-		this(UUID.randomUUID(), player.getUniqueId(), player.getName(), item, price, player.getWorld().getName(), player.getServer().getName(), System.currentTimeMillis(), System.currentTimeMillis() + 1000 * 60 * 60);
+	public BinListing(
+			@NonNull final ListingType listingType,
+			@NonNull final Player player,
+			@NonNull final ItemStack item,
+			@NonNull final BigDecimal price
+	) {
+		this(listingType, UUID.randomUUID(), player.getUniqueId(), player.getName(), item, price, player.getWorld().getName(), player.getServer().getName(), System.currentTimeMillis(), System.currentTimeMillis() + 1000 * 60 * 60);
 	}
 
 	@NonNull
