@@ -30,6 +30,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -54,6 +55,9 @@ public abstract class Input implements Listener, Runnable {
 	public void onExit(final Player player) {
 	}
 
+	public void onDeath(final Player player) {
+	}
+
 	public abstract boolean onInput(final String input);
 
 	public abstract String getTitle();
@@ -74,8 +78,7 @@ public abstract class Input implements Listener, Runnable {
 			this.subtitle = subTitle;
 		}
 
-		if (actionBar != null)
-			ActionBar.sendActionBar(this.player, actionBar);
+		if (actionBar != null) ActionBar.sendActionBar(this.player, actionBar);
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -83,7 +86,7 @@ public abstract class Input implements Listener, Runnable {
 		if (e.getPlayer().equals(this.player)) {
 			if (ChatColor.stripColor(e.getMessage()).equals(Settings.TITLE_INPUT_CANCEL_WORD.getString())) {
 				e.setCancelled(true);
-				this.close(false);
+				this.close(false, false);
 			}
 
 			this.onInput(e.getMessage());
@@ -101,22 +104,33 @@ public abstract class Input implements Listener, Runnable {
 	@EventHandler
 	public void close(PlayerQuitEvent e) {
 		if (e.getPlayer().equals(this.player)) {
-			this.close(false);
+			this.close(false, false);
 		}
 	}
 
 	@EventHandler
 	public void close(InventoryOpenEvent e) {
 		if (e.getPlayer().equals(this.player)) {
-			this.close(false);
+			this.close(false, false);
 		}
 	}
 
-	public void close(boolean completed) {
+	@EventHandler
+	public void death(PlayerDeathEvent e) {
+		if (e.getEntity().equals(this.player)) {
+			this.close(true, false);
+		}
+	}
+
+	public void close(boolean byDeath, boolean completed) {
 		HandlerList.unregisterAll(this);
 		this.task.cancel();
-		if (!completed) {
-			this.onExit(this.player);
+
+		if (byDeath) this.onDeath(this.player);
+		else {
+			if (!completed) {
+				this.onExit(this.player);
+			}
 		}
 
 		Titles.clearTitle(this.player);

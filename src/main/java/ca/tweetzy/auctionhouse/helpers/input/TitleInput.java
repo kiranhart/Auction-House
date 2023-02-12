@@ -54,7 +54,7 @@ public abstract class TitleInput extends Input {
 
 	public boolean onInput(String text) {
 		if (this.onResult(text)) {
-			this.close(true);
+			this.close(true, false);
 		}
 		return true;
 	}
@@ -62,7 +62,7 @@ public abstract class TitleInput extends Input {
 	@EventHandler
 	public void close(PlayerInteractEvent e) {
 		if (e.getPlayer().equals(this.player) && (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)) {
-			this.close(false);
+			this.close(false, false);
 		}
 	}
 
