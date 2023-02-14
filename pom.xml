@@ -10,7 +10,6 @@
 	<description>The ultimate auction solution for your server</description>
 	<version>2.82.4</version>
 	<packaging>jar</packaging>
-
 	<properties>
 		<author>Kiran Hart</author>
 		<jarName>${project.name}</jarName>
