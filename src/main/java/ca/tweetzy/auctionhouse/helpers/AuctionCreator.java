@@ -155,6 +155,9 @@ public final class AuctionCreator {
 			auctionPlayer.setItemBeingListed(null);
 
 			if (error != null) {
+				if (Settings.SHOW_LISTING_ERROR_IN_CONSOLE.getBoolean())
+					error.printStackTrace();
+
 				instance.getLocale().getMessage("general.something_went_wrong_while_listing").sendPrefixedMessage(seller);
 				ItemStack originalCopy = auctionItem.getItem().clone();
 				int totalOriginal = NBTEditor.contains(originalCopy, "AuctionBundleItem") ? AuctionAPI.getInstance().getItemCountInPlayerInventory(seller, originalCopy) : originalCopy.getAmount();
