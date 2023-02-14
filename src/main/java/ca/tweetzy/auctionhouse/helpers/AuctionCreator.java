@@ -114,7 +114,12 @@ public final class AuctionCreator {
 			auctionItem.setListedWorld(seller.getWorld().getName());
 
 		AuctionStartEvent startEvent = new AuctionStartEvent(seller, auctionItem, listingFee);
-		Bukkit.getServer().getPluginManager().callEvent(startEvent);
+
+		if (Bukkit.isPrimaryThread())
+			Bukkit.getServer().getPluginManager().callEvent(startEvent);
+		else
+			Bukkit.getScheduler().runTask(AuctionHouse.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(startEvent));
+
 		if (startEvent.isCancelled()) {
 			result.accept(auctionItem, EVENT_CANCELED);
 			return;
