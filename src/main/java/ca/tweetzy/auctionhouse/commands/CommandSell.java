@@ -338,9 +338,9 @@ public final class CommandSell extends AbstractCommand {
 		auctionedItem.setInfinite(isInfinite);
 		auctionedItem.setAllowPartialBuy(partialBuy);
 
-		player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
-
 		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
+			player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
+
 			instance.getGuiManager().showGUI(player, new GUIListingConfirm(player, auctionedItem, result -> {
 				if (!result) {
 					player.closeInventory();
@@ -349,9 +349,36 @@ public final class CommandSell extends AbstractCommand {
 					return;
 				}
 
+				Bukkit.getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
+					if (auctionPlayer.getPlayer() == null || !auctionPlayer.getPlayer().isOnline()) {
+						return;
+					}
+
+					player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
+
+					AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
+						if (listingResult != ListingResult.SUCCESS) {
+							PlayerUtils.giveItem(player, auction.getItem());
+							auctionPlayer.setItemBeingListed(null);
+							return;
+						}
+
+						if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
+							instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
+					});
+
+				}, Settings.INTERNAL_CREATE_DELAY.getInt());
+			}));
+		} else {
+			Bukkit.getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
+				if (auctionPlayer.getPlayer() == null || !auctionPlayer.getPlayer().isOnline()) {
+					return;
+				}
+
+				player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
+
 				AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
 					if (listingResult != ListingResult.SUCCESS) {
-						player.closeInventory();
 						PlayerUtils.giveItem(player, auction.getItem());
 						auctionPlayer.setItemBeingListed(null);
 						return;
@@ -360,18 +387,9 @@ public final class CommandSell extends AbstractCommand {
 					if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
 						instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
 				});
-			}));
-		} else {
-			AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
-				if (listingResult != ListingResult.SUCCESS) {
-					PlayerUtils.giveItem(player, auction.getItem());
-					auctionPlayer.setItemBeingListed(null);
-					return;
-				}
 
-				if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
-					instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
-			});
+			}, Settings.INTERNAL_CREATE_DELAY.getInt());
+
 		}
 
 		return ReturnType.SUCCESS;

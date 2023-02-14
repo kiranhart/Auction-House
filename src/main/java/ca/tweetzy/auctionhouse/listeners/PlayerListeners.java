@@ -101,6 +101,7 @@ public class PlayerListeners implements Listener {
 
 			player.getInventory().addItem(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed());
 			instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setItemBeingListed(null);
+			instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setPlayer(null);
 		}
 
 
