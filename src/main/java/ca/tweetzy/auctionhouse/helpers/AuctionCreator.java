@@ -37,6 +37,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
@@ -148,7 +149,6 @@ public final class AuctionCreator {
 		}
 
 		//====================================================================================
-
 
 		// Actually attempt the insertion now
 		AuctionHouse.getInstance().getDataManager().insertAuctionAsync(auctionItem, (error, inserted) -> {

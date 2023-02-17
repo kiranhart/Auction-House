@@ -26,12 +26,17 @@ import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public final class GUIListingConfirm extends AbstractPlaceholderGui {
 
 	private final AuctionedItem auctionedItem;
 	private final Consumer<Boolean> result;
+
+	private final Set<UUID> resulted = new HashSet<>();
 
 	public GUIListingConfirm(Player player, AuctionedItem auctionedItem, Consumer<Boolean> result) {
 		super(player);
@@ -44,16 +49,23 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 		draw();
 	}
 
+
 	private void draw() {
 		setItems(0, 3, getConfirmListingYesItem());
 		setItem(0, 4, this.auctionedItem.getDisplayStack(AuctionStackType.LISTING_PREVIEW));
 		setItems(5, 8, getConfirmListingNoItem());
 
 		setActionForRange(5, 8, ClickType.LEFT, e -> {
+			if (resulted.contains(e.player.getUniqueId())) return;
+			resulted.add(e.player.getUniqueId());
+
 			setAllowClose(true);
 			this.result.accept(false);
 		});
 		setActionForRange(0, 3, ClickType.LEFT, e -> {
+			if (resulted.contains(e.player.getUniqueId())) return;
+			resulted.add(e.player.getUniqueId());
+
 			setAllowClose(true);
 			this.result.accept(true);
 		});
