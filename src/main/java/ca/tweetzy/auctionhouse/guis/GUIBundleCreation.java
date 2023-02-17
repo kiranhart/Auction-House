@@ -146,6 +146,8 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 
 						if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
 							instance.getGuiManager().showGUI(auctionPlayer.getPlayer(), new GUIAuctionHouse(auctionPlayer));
+						else
+							AuctionHouse.newChain().sync(player::closeInventory).execute();
 					});
 				}));
 			} else {
@@ -159,6 +161,8 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 
 					if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
 						instance.getGuiManager().showGUI(auctionPlayer.getPlayer(), new GUIAuctionHouse(auctionPlayer));
+					else
+						AuctionHouse.newChain().sync(player::closeInventory).execute();
 				});
 			}
 		});

@@ -209,6 +209,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 	}
 
 	private void performAuctionListing(GuiClickEvent click) {
+
 		AuctionCreator.create(this.auctionPlayer, createListingItem(), (originalListing, listingResult) -> {
 			if (listingResult != ListingResult.SUCCESS) {
 				click.player.closeInventory();
@@ -219,6 +220,8 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 
 			if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
 				click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
+			else
+				AuctionHouse.newChain().sync(click.player::closeInventory).execute();
 		});
 	}
 

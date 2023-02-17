@@ -46,7 +46,6 @@ import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.items.TItemBuilder;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -79,6 +78,10 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 	public GUIAuctionHouse(AuctionPlayer auctionPlayer) {
 		super(auctionPlayer);
 		this.auctionPlayer = auctionPlayer;
+
+		if (!Bukkit.getOfflinePlayer(this.auctionPlayer.getUuid()).isOnline())
+			return;
+
 		setTitle(TextUtils.formatText(Settings.GUI_AUCTION_HOUSE_TITLE.getString()));
 		setRows(6);
 		setAcceptsItems(false);
