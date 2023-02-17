@@ -44,9 +44,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -65,6 +63,9 @@ public class PlayerListeners implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		final Player player = event.getEntity();
 		final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
+
+		AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
+
 		if (auctionPlayer != null) {
 			// task id cancel
 			Bukkit.getServer().getScheduler().cancelTask(auctionPlayer.getAssignedTaskId());
@@ -81,7 +82,6 @@ public class PlayerListeners implements Listener {
 		final AuctionHouse instance = AuctionHouse.getInstance();
 		Titles.sendTitle(player, 1, 1, 1, " ", " ");
 
-
 		instance.getAuctionPlayerManager().addPlayer(player);
 
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
@@ -96,6 +96,8 @@ public class PlayerListeners implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		final Player player = e.getPlayer();
 		final AuctionHouse instance = AuctionHouse.getInstance();
+
+		AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
 
 		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) != null && instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed() != null) {
 
@@ -168,6 +170,22 @@ public class PlayerListeners implements Listener {
 		}
 
 		PlayerUtils.giveItem(player, items);
+	}
+
+	@EventHandler
+	public void onItemDropDuringSell(final PlayerDropItemEvent event) {
+		final Player player = event.getPlayer();
+
+		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
+			event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onHotbarSwapDuringSell(final PlayerItemHeldEvent event) {
+		final Player player = event.getPlayer();
+
+		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
+			event.setCancelled(true);
 	}
 
 	@EventHandler

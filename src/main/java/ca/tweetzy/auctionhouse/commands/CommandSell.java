@@ -73,6 +73,8 @@ public final class CommandSell extends AbstractCommand {
 		}
 
 		AuctionPlayer auctionPlayer = instance.getAuctionPlayerManager().getPlayer(player.getUniqueId());
+		if (!Bukkit.getOfflinePlayer(player.getUniqueId()).isOnline())
+			return ReturnType.FAILURE;
 
 		ItemStack originalItem = PlayerHelper.getHeldItem(player).clone();
 		ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
@@ -338,11 +340,13 @@ public final class CommandSell extends AbstractCommand {
 		auctionedItem.setInfinite(isInfinite);
 		auctionedItem.setAllowPartialBuy(partialBuy);
 
-		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
-			player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
+		AuctionHouse.getInstance().getAuctionPlayerManager().addToSellProcess(player);
 
+		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
 			instance.getGuiManager().showGUI(player, new GUIListingConfirm(player, auctionedItem, result -> {
 				if (!result) {
+					AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
+
 					player.closeInventory();
 					PlayerUtils.giveItem(player, auctionedItem.getItem());
 					auctionPlayer.setItemBeingListed(null);
@@ -357,6 +361,8 @@ public final class CommandSell extends AbstractCommand {
 					player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
 
 					AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
+						AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
+
 						if (listingResult != ListingResult.SUCCESS) {
 							PlayerUtils.giveItem(player, auction.getItem());
 							auctionPlayer.setItemBeingListed(null);
@@ -365,6 +371,8 @@ public final class CommandSell extends AbstractCommand {
 
 						if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
 							instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
+						else
+							AuctionHouse.newChain().sync(player::closeInventory).execute();
 					});
 
 				}, Settings.INTERNAL_CREATE_DELAY.getInt());
@@ -378,6 +386,8 @@ public final class CommandSell extends AbstractCommand {
 				player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
 
 				AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
+					AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
+
 					if (listingResult != ListingResult.SUCCESS) {
 						PlayerUtils.giveItem(player, auction.getItem());
 						auctionPlayer.setItemBeingListed(null);
@@ -386,6 +396,8 @@ public final class CommandSell extends AbstractCommand {
 
 					if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
 						instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
+					else
+						AuctionHouse.newChain().sync(player::closeInventory).execute();
 				});
 
 			}, Settings.INTERNAL_CREATE_DELAY.getInt());

@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -47,6 +48,9 @@ public class AuctionPlayerManager {
 	private final HashMap<UUID, ItemStack> sellHolding = new HashMap<>();
 	private final HashSet<UUID> usingSellGUI = new HashSet<>();
 	private final HashMap<UUID, Long> cooldowns = new HashMap<>();
+
+	@Getter
+	private final HashSet<UUID> processingSell = new HashSet<>();
 
 	public void addPlayer(AuctionPlayer auctionPlayer) {
 		if (auctionPlayer == null) return;
@@ -125,6 +129,23 @@ public class AuctionPlayerManager {
 	public HashMap<UUID, Long> getCooldowns() {
 		return this.cooldowns;
 	}
+
+	public void addToSellProcess(@NonNull final Player player) {
+		if (this.processingSell.contains(player.getUniqueId()))
+			return;
+		this.processingSell.add(player.getUniqueId());
+	}
+
+	public boolean isInSellProcess(@NonNull final Player player) {
+		return this.processingSell.contains(player.getUniqueId());
+	}
+
+	public void processSell(@NonNull final Player player) {
+		if (!this.processingSell.contains(player.getUniqueId()))
+			return;
+		this.processingSell.remove(player.getUniqueId());
+	}
+
 
 	public void loadPlayers() {
 		this.auctionPlayers.clear();
