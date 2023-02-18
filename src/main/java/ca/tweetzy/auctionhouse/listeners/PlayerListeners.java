@@ -41,6 +41,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
@@ -186,6 +187,24 @@ public class PlayerListeners implements Listener {
 
 		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
 			event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onCommandDuringSell(final PlayerCommandPreprocessEvent event) {
+		final Player player = event.getPlayer();
+
+		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
+			event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onBuildDuringSell(final BlockPlaceEvent event) {
+		final Player player = event.getPlayer();
+
+		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
+			event.setBuild(false);
+			event.setCancelled(true);
+		}
 	}
 
 	@EventHandler
