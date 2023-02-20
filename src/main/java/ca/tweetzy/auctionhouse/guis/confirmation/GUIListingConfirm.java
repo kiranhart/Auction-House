@@ -18,6 +18,7 @@
 
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
@@ -25,6 +26,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,6 +47,17 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 		super.setTitle(TextUtils.formatText(Settings.GUI_CONFIRM_LISTING_TITLE.getString()));
 		setAcceptsItems(false);
 		setAllowClose(false);
+		setOnOpen(open -> {
+			if (open.player.hasMetadata("AuctionHouseConfirmListing")) {
+				open.gui.close();
+				return;
+			}
+
+			open.player.setMetadata("AuctionHouseConfirmListing", new FixedMetadataValue(AuctionHouse.getInstance(), "ConfirmListing"));
+		});
+
+		setOnClose(close -> close.player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance()));
+
 		setRows(1);
 		draw();
 	}
