@@ -23,6 +23,7 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
+import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -89,7 +90,7 @@ public class ConfigurationItemHelper {
 		if (split.length == 2 && NumberUtils.isInt(split[1])) {
 			return createConfigurationItem(Objects.requireNonNull(CompMaterial.matchCompMaterial(split[0]).get().parseItem()), Integer.parseInt(split[1]), title, lore, replacements);
 		} else {
-			return createConfigurationItem(Objects.requireNonNull(CompMaterial.matchCompMaterial(item).get().parseItem()), -1, title, lore, replacements);
+			return createConfigurationItem(Objects.requireNonNull(QuickItem.of(item).make()), -1, title, lore, replacements);
 
 		}
 	}
