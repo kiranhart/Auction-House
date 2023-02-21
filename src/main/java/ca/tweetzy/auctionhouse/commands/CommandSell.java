@@ -369,9 +369,10 @@ public final class CommandSell extends AbstractCommand {
 							return;
 						}
 
-						if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
+						if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+							player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
 							instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
-						else
+						} else
 							AuctionHouse.newChain().sync(player::closeInventory).execute();
 					});
 
@@ -394,9 +395,10 @@ public final class CommandSell extends AbstractCommand {
 						return;
 					}
 
-					if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
+					if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+						player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
 						instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
-					else
+					} else
 						AuctionHouse.newChain().sync(player::closeInventory).execute();
 				});
 

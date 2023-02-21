@@ -58,7 +58,7 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 		for (int i = 0; i < 45; i++)
 			setItem(i, CompMaterial.AIR.parseItem());
 
-		Arrays.asList(45, 46, 47, 48, 49,50, 51, 52, 53).forEach(i -> setAction(i, e -> e.event.setCancelled(true)));
+		Arrays.asList(45, 46, 47, 48, 49, 50, 51, 52, 53).forEach(i -> setAction(i, e -> e.event.setCancelled(true)));
 
 		setOnClose(close -> {
 			for (int i = 0; i < 45; i++) {
@@ -144,9 +144,10 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 							return;
 						}
 
-						if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
+						if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+							player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
 							instance.getGuiManager().showGUI(auctionPlayer.getPlayer(), new GUIAuctionHouse(auctionPlayer));
-						else
+						} else
 							AuctionHouse.newChain().sync(player::closeInventory).execute();
 					});
 				}));
@@ -159,9 +160,10 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 						return;
 					}
 
-					if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
+					if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+						player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
 						instance.getGuiManager().showGUI(auctionPlayer.getPlayer(), new GUIAuctionHouse(auctionPlayer));
-					else
+					} else
 						AuctionHouse.newChain().sync(player::closeInventory).execute();
 				});
 			}

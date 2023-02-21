@@ -169,7 +169,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 						string = ChatColor.stripColor(string);
 
 						if (!NumberUtils.isDouble(string)) {
-							AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value",  string).sendPrefixedMessage(player);
+							AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
 							return false;
 						}
 
@@ -213,7 +213,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 					string = ChatColor.stripColor(string);
 
 					if (!NumberUtils.isDouble(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value",  string).sendPrefixedMessage(player);
+						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
 						return false;
 					}
 
@@ -263,7 +263,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 					string = ChatColor.stripColor(string);
 
 					if (!NumberUtils.isDouble(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value",  string).sendPrefixedMessage(player);
+						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
 						return false;
 					}
 
@@ -299,7 +299,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 				.make(), click -> {
 
 			if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, this.auctionPlayer.getItemBeingListed())) return;
-			if (!auctionPlayer.canListItem())  return;
+			if (!auctionPlayer.canListItem()) return;
 
 			click.gui.exit();
 
@@ -343,9 +343,10 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 				return;
 			}
 
-			if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean())
+			if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+				player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
 				click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
-			else
+			} else
 				AuctionHouse.newChain().sync(click.player::closeInventory).execute();
 		});
 	}
