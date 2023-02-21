@@ -133,7 +133,7 @@ public class AuctionPlayer {
 
 		int defaultTime = auctionSaleType == AuctionSaleType.USED_BIDDING_SYSTEM ? Settings.DEFAULT_AUCTION_LISTING_TIME.getInt() : Settings.DEFAULT_BIN_LISTING_TIME.getInt();
 
-		return possibleTimes.size() <= 0 ? defaultTime : Math.max(defaultTime, Collections.max(possibleTimes));
+		return possibleTimes.isEmpty() ? defaultTime : Math.max(defaultTime, Collections.max(possibleTimes));
 	}
 
 }
