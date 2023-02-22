@@ -19,10 +19,7 @@
 package ca.tweetzy.auctionhouse.api;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.hook.MMOItemsHook;
-import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.MinItemPrice;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.ServerVersion;
@@ -51,14 +48,11 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -258,99 +252,6 @@ public class AuctionAPI {
 		meta.setOwner(name);
 		stack.setItemMeta(meta);
 		return stack;
-	}
-
-	/**
-	 * Used to send a discord message to a webhook link
-	 *
-	 * @param seller      The Seller of the auction item
-	 * @param buyer       The Buyer of the auction item
-	 * @param auctionItem The object of the auction item
-	 * @param saleType    The sale type, was it a bid won or an immediate purchase?
-	 * @param isNew       Is this the start of a new auction or the end of one?
-	 * @param isBid       Is this auction a bid enabled auction, or a single sale auction?
-	 */
-	public void sendDiscordMessage(String webhook, OfflinePlayer seller, OfflinePlayer buyer, AuctionedItem auctionItem, AuctionSaleType saleType, boolean isNew, boolean isBid) {
-		final DiscordWebhook hook = new DiscordWebhook(webhook);
-		hook.setUsername(Settings.DISCORD_MSG_USERNAME.getString());
-		hook.setAvatarUrl(Settings.DISCORD_MSG_PFP.getString());
-
-		final String color = isBid ? Settings.DISCORD_MSG_DEFAULT_COLOUR_BID.getString() : isNew ? Settings.DISCORD_MSG_DEFAULT_COLOUR.getString() : Settings.DISCORD_MSG_DEFAULT_COLOUR_SALE.getString();
-
-		final String[] possibleColours = color.split("-");
-		final Color colour = Settings.DISCORD_MSG_USE_RANDOM_COLOUR.getBoolean()
-				? Color.getHSBColor(ThreadLocalRandom.current().nextFloat() * 360F, ThreadLocalRandom.current().nextFloat() * 101F, ThreadLocalRandom.current().nextFloat() * 101F)
-				: Color.getHSBColor(Float.parseFloat(possibleColours[0]) / 360, Float.parseFloat(possibleColours[1]) / 100, Float.parseFloat(possibleColours[2]) / 100);
-
-		final ItemStack itemStack = auctionItem.getItem();
-		final String itemName = MMOItemsHook.isEnabled() ? MMOItemsHook.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
-		final DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
-
-		final String playerLost = AuctionHouse.getInstance().getLocale().getMessage("discord.player_lost").getMessage();
-		final String notSold = AuctionHouse.getInstance().getLocale().getMessage("discord.not_sold").getMessage();
-		final String noBuyer = AuctionHouse.getInstance().getLocale().getMessage("discord.no_buyer").getMessage();
-		final String wasNotBought = AuctionHouse.getInstance().getLocale().getMessage("discord.not_bought").getMessage();
-		final String isBidTrue = AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_true").getMessage();
-		final String isBidFalse = AuctionHouse.getInstance().getLocale().getMessage("discord.is_bid_false").getMessage();
-		final String isBidWin = AuctionHouse.getInstance().getLocale().getMessage("discord.sale_bid_win").getMessage();
-		final String immediateBuy = AuctionHouse.getInstance().getLocale().getMessage("discord.sale_immediate_buy").getMessage();
-
-		embedObject.setTitle(isNew ? isBid ? Settings.DISCORD_MSG_START_TITLE_BID.getString() : Settings.DISCORD_MSG_START_TITLE.getString() : Settings.DISCORD_MSG_FINISH_TITLE.getString());
-		embedObject.setColor(colour);
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_SELLER_NAME.getString(), Settings.DISCORD_MSG_FIELD_SELLER_VALUE.getString().replace("%seller%", seller.getName() != null ? seller.getName() : playerLost), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_BUYER_NAME.getString(), isNew ? noBuyer : Settings.DISCORD_MSG_FIELD_BUYER_VALUE.getString().replace("%buyer%", buyer.getName() != null ? buyer.getName() : playerLost), Settings.DISCORD_MSG_FIELD_BUYER_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_BUY_NOW_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_BUY_NOW_PRICE_VALUE.getString().replace("%buy_now_price%", this.getFriendlyNumber(auctionItem.getBasePrice())), Settings.DISCORD_MSG_FIELD_BUY_NOW_PRICE_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_FINAL_PRICE_NAME.getString(), isNew ? notSold : Settings.DISCORD_MSG_FIELD_FINAL_PRICE_VALUE.getString().replace("%final_price%", this.getFriendlyNumber(isBid ? auctionItem.getCurrentPrice() : auctionItem.getBasePrice())), Settings.DISCORD_MSG_FIELD_FINAL_PRICE_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_IS_BID_NAME.getString(), Settings.DISCORD_MSG_FIELD_IS_BID_VALUE.getString().replace("%is_bid%", isBid ? isBidTrue : isBidFalse), Settings.DISCORD_MSG_FIELD_IS_BID_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_NAME.getString(), isNew ? wasNotBought : Settings.DISCORD_MSG_FIELD_PURCHASE_TYPE_VALUE.getString().replace("%purchase_type%", saleType == AuctionSaleType.USED_BIDDING_SYSTEM ? isBidWin : immediateBuy), Settings.DISCORD_MSG_FIELD_PURCHASE_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", itemName), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_VALUE.getString().replace("%item_amount%", String.valueOf(itemStack.getAmount())), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_INLINE.getBoolean());
-
-		hook.addEmbed(embedObject);
-
-		try {
-			hook.execute();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * A simplified version of {@link #sendDiscordMessage(String, OfflinePlayer, OfflinePlayer, AuctionedItem, AuctionSaleType, boolean, boolean)} used
-	 * to just send bid updates
-	 *
-	 * @param webhook     the webhook url
-	 * @param auctionItem The object of the auction item
-	 */
-	public void sendDiscordBidMessage(String webhook, AuctionedItem auctionItem, double newBid) {
-		// oh boy the code repetition is high with this one
-		final DiscordWebhook hook = new DiscordWebhook(webhook);
-		hook.setUsername(Settings.DISCORD_MSG_USERNAME.getString());
-		hook.setAvatarUrl(Settings.DISCORD_MSG_PFP.getString());
-
-		final String[] possibleColours = Settings.DISCORD_MSG_DEFAULT_COLOUR_BID.getString().split("-");
-		final Color colour = Settings.DISCORD_MSG_USE_RANDOM_COLOUR.getBoolean()
-				? Color.getHSBColor(ThreadLocalRandom.current().nextFloat() * 360F, ThreadLocalRandom.current().nextFloat() * 101F, ThreadLocalRandom.current().nextFloat() * 101F)
-				: Color.getHSBColor(Float.parseFloat(possibleColours[0]) / 360, Float.parseFloat(possibleColours[1]) / 100, Float.parseFloat(possibleColours[2]) / 100);
-
-		final ItemStack itemStack = auctionItem.getItem();
-		final String itemName = MMOItemsHook.isEnabled() ? MMOItemsHook.getItemType(itemStack) : ChatColor.stripColor(getItemName(itemStack));
-
-		final DiscordWebhook.EmbedObject embedObject = new DiscordWebhook.EmbedObject();
-		embedObject.setTitle(Settings.DISCORD_MSG_BID_TITLE.getString());
-		embedObject.setColor(colour);
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_BIDDER_NAME.getString(), Settings.DISCORD_MSG_FIELD_BIDDER_VALUE.getString().replace("%bidder%", auctionItem.getHighestBidderName() != null ? auctionItem.getHighestBidderName() : AuctionHouse.getInstance().getLocale().getMessage("discord.player_lost").getMessage()), Settings.DISCORD_MSG_FIELD_BIDDER_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_BID_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_BID_PRICE_VALUE.getString().replace("%bid_price%", formatNumber(newBid)), Settings.DISCORD_MSG_FIELD_BID_PRICE_INLINE.getBoolean());
-
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", itemName), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean());
-		embedObject.addField(Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_VALUE.getString().replace("%item_amount%", String.valueOf(itemStack.getAmount())), Settings.DISCORD_MSG_FIELD_ITEM_AMOUNT_INLINE.getBoolean());
-		hook.addEmbed(embedObject);
-
-		try {
-			hook.execute();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**

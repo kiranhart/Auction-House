@@ -19,7 +19,6 @@
 package ca.tweetzy.auctionhouse.listeners;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.events.AuctionAdminEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
@@ -28,8 +27,10 @@ import ca.tweetzy.auctionhouse.auction.AuctionStatistic;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
+import ca.tweetzy.auctionhouse.helpers.DiscordMessageCreator;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,21 +53,29 @@ public class AuctionListeners implements Listener {
 		final AuctionedItem auctionedItem = e.getAuctionItem();
 		new AuctionStatistic(seller.getUniqueId(), auctionedItem.isBidItem() ? AuctionStatisticType.CREATED_AUCTION : AuctionStatisticType.CREATED_BIN, 1).store(null);
 
-		if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean()) {
-			AuctionHouse.newChain().async(() -> {
-				final AuctionAPI instance = AuctionAPI.getInstance();
-				Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
-					instance.sendDiscordMessage(
-							hook,
-							seller,
-							seller,
-							auctionedItem,
-							AuctionSaleType.USED_BIDDING_SYSTEM,
-							true,
-							auctionedItem.isBidItem()
-					);
-				});
-			}).execute();
+		if (Settings.DISCORD_ENABLED.getBoolean()) {
+
+			if (Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean())
+				AuctionHouse.newChain().async(() -> {
+					Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
+						DiscordMessageCreator
+								.of(hook, DiscordMessageCreator.MessageType.NEW_AUCTION_LISTING)
+								.seller(seller)
+								.listing(auctionedItem)
+								.send();
+					});
+				}).execute();
+
+			if (Settings.DISCORD_ALERT_ON_BIN_START.getBoolean())
+				AuctionHouse.newChain().async(() -> {
+					Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
+						DiscordMessageCreator
+								.of(hook, DiscordMessageCreator.MessageType.NEW_BIN_LISTING)
+								.seller(seller)
+								.listing(auctionedItem)
+								.send();
+					});
+				}).execute();
 		}
 	}
 
@@ -100,20 +109,44 @@ public class AuctionListeners implements Listener {
 				});
 			}
 
-			if (Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_FINISH.getBoolean()) {
-				final AuctionAPI instance = AuctionAPI.getInstance();
-				Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> instance.sendDiscordMessage(hook, originalOwner, buyer, auctionedItem, e.getSaleType(), false, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM));
+			if (Settings.DISCORD_ENABLED.getBoolean()) {
+				if (Settings.DISCORD_ALERT_ON_AUCTION_WON.getBoolean() && e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM)
+					Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
+						DiscordMessageCreator
+								.of(hook, DiscordMessageCreator.MessageType.AUCTION_LISTING_WON)
+								.seller(originalOwner)
+								.buyer(e.getBuyer())
+								.listing(auctionedItem)
+								.send();
+					});
+
+				if (Settings.DISCORD_ALERT_ON_BIN_BUY.getBoolean() && e.getSaleType() != AuctionSaleType.USED_BIDDING_SYSTEM)
+					Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
+						DiscordMessageCreator
+								.of(hook, DiscordMessageCreator.MessageType.BIN_LISTING_BOUGHT)
+								.seller(originalOwner)
+								.buyer(e.getBuyer())
+								.listing(auctionedItem)
+								.send();
+					});
 			}
 		}).execute();
 	}
 
 	@EventHandler
 	public void onAuctionBid(AuctionBidEvent e) {
-		if (!Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_AUCTION_BID.getBoolean()) return;
+		if (!Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_BID.getBoolean()) return;
 		AuctionHouse.newChain().async(() -> {
-			final AuctionAPI instance = AuctionAPI.getInstance();
 			final AuctionedItem auctionedItem = e.getAuctionedItem();
-			Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> instance.sendDiscordBidMessage(hook, auctionedItem, e.getNewBidAmount()));
+			Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
+				DiscordMessageCreator
+						.of(hook, DiscordMessageCreator.MessageType.BID_PLACED)
+						.seller(Bukkit.getOfflinePlayer(auctionedItem.getOwner()))
+						.bidder(e.getBidder())
+						.bidAmount(e.getNewBidAmount())
+						.listing(auctionedItem)
+						.send();
+			});
 		}).execute();
 	}
 
