@@ -127,11 +127,13 @@ public class AuctionedItem {
 			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_INFINITE.getStringList()));
 		} else {
 			long[] times = AuctionAPI.getInstance().getRemainingTimeValues((this.expiresAt - System.currentTimeMillis()) / 1000);
+
 			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_TIME_LEFT.getStringList().stream().map(s -> s
 					.replace("%remaining_days%", String.valueOf(times[0]))
 					.replace("%remaining_hours%", String.valueOf(times[1]))
 					.replace("%remaining_minutes%", String.valueOf(times[2]))
 					.replace("%remaining_seconds%", String.valueOf(times[3]))
+					.replace("%remaining_total_hours%", String.valueOf(((this.expiresAt - System.currentTimeMillis()) / 1000) / 3600))
 			).collect(Collectors.toList())));
 		}
 
@@ -177,6 +179,7 @@ public class AuctionedItem {
 					.replace("%remaining_hours%", String.valueOf(times[1]))
 					.replace("%remaining_minutes%", String.valueOf(times[2]))
 					.replace("%remaining_seconds%", String.valueOf(times[3]))
+					.replace("%remaining_total_hours%", String.valueOf(((this.expiresAt - System.currentTimeMillis()) / 1000) / 3600))
 			).collect(Collectors.toList())));
 		}
 
