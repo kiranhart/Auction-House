@@ -526,8 +526,13 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 						return;
 					}
 
-					AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellListingType(auctionPlayer, selected -> {
-						AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellPlaceItem(auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, selected));
+					if (this.auctionPlayer.isAtSellLimit()) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(player);
+						return;
+					}
+
+					AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellListingType(this.auctionPlayer, selected -> {
+						AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellPlaceItem(this.auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, selected));
 					}));
 				});
 			}

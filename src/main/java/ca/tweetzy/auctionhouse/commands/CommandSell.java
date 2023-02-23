@@ -299,13 +299,11 @@ public final class CommandSell extends AbstractCommand {
 		}
 
 		// update the listing time to the max allowed time if it wasn't set using the command flag
-//		allowedTime = allowedTime != 0 ? allowedTime : auctionPlayer.getAllowedSellTime(
-//				buyNowPrice != null && startingBid != null ?
-//				/*isBiddingItem ?*/ AuctionSaleType.USED_BIDDING_SYSTEM : AuctionSaleType.WITHOUT_BIDDING_SYSTEM
-//		);
+		allowedTime = allowedTime != 0 ? allowedTime : auctionPlayer.getAllowedSellTime(
+				isBiddingItem ? AuctionSaleType.USED_BIDDING_SYSTEM : AuctionSaleType.WITHOUT_BIDDING_SYSTEM
+		);
 
-		allowedTime = allowedTime != 0 ? allowedTime : auctionPlayer.getAllowedSellTime(AuctionSaleType.WITHOUT_BIDDING_SYSTEM);
-		Bukkit.broadcastMessage(""+allowedTime);
+
 
 		// Check list delay
 		if (!auctionPlayer.canListItem()) {
