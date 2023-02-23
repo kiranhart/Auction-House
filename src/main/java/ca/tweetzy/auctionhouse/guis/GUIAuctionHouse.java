@@ -305,6 +305,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 
 					if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, newBiddingAmount)) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
+						AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(GUIAuctionHouse.this.auctionPlayer));
 						return true;
 					}
 
@@ -388,6 +389,8 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 					return true;
 				}
 			};
+
+			return;
 		}
 
 		e.manager.showGUI(e.player, new GUIBid(this.auctionPlayer, auctionItem));

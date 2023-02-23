@@ -583,7 +583,6 @@ public class DataManager extends DataManagerAbstract {
 	public void updateAuctionPlayer(@NonNull final AuctionPlayer auctionPlayer, Callback<Boolean> callback) {
 		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "player SET filter_sale_type = ?, filter_item_category = ?, filter_sort_type = ?, last_listed_item = ? WHERE uuid = ?")) {
-
 				statement.setString(1, auctionPlayer.getSelectedSaleType().name());
 				statement.setString(2, auctionPlayer.getSelectedFilter().name());
 				statement.setString(3, auctionPlayer.getAuctionSortType().name());
