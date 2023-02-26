@@ -157,14 +157,12 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 					ItemStack item = auctionItem.getItem().clone();
 					ItemStack toGive = auctionItem.getItem().clone();
 
-					if (item.getAmount() - this.purchaseQuantity >= 1) {
+					if (item.getAmount() - this.purchaseQuantity >= 1 && !located.isInfinite()) {
 						item.setAmount(item.getAmount() - this.purchaseQuantity);
 						toGive.setAmount(this.purchaseQuantity);
 
-						if (!located.isInfinite()) {
-							located.setItem(item);
-							located.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(located.getBasePrice() - buyNowPrice) : located.getBasePrice() - buyNowPrice);
-						}
+						located.setItem(item);
+						located.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(located.getBasePrice() - buyNowPrice) : located.getBasePrice() - buyNowPrice);
 
 						transferFunds(e.player, buyNowPrice);
 					} else {
@@ -209,12 +207,13 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 							.sendPrefixedMessage(player));
 				}
 
-
 				AuctionHouse.getInstance().getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(player -> {
 					AuctionHouse.getInstance().getTransactionManager().removeAllRelatedPlayers(auctionItem.getId());
 					player.closeInventory();
 				});
+
 				e.gui.close();
+
 			} catch (ItemNotFoundException exception) {
 				AuctionHouse.getInstance().getLogger().info("Tried to purchase item that was bought, or does not exist");
 			}
