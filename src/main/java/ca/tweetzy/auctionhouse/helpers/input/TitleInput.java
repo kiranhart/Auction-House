@@ -23,6 +23,7 @@ import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
@@ -63,6 +64,14 @@ public abstract class TitleInput extends Input {
 	public void close(PlayerInteractEvent e) {
 		if (e.getPlayer().equals(this.player) && (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK)) {
 			this.close(false, false);
+		}
+	}
+
+	@EventHandler
+	public void onDeath(PlayerDeathEvent e) {
+		if (e.getEntity().equals(this.player)) {
+			this.onDeath(e.getEntity());
+			this.close(true, false);
 		}
 	}
 

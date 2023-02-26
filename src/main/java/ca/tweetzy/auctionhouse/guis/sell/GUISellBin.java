@@ -69,8 +69,10 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 		setOnClose(close -> {
 			if (BundleUtil.isBundledItem(this.auctionPlayer.getItemBeingListed()))
 				PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(this.auctionPlayer.getItemBeingListed()));
-			else
+			else {
 				PlayerUtils.giveItem(close.player, this.auctionPlayer.getItemBeingListed());
+			}
+
 
 			this.auctionPlayer.setItemBeingListed(null);
 		});
@@ -113,6 +115,8 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 						AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage(),
 						AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage()
 				) {
+
+
 
 					@Override
 					public void onExit(Player player) {
