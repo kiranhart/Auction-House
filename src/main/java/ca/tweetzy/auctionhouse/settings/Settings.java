@@ -53,6 +53,7 @@ public class Settings {
 	 *          BASIC SETTINGS
 	 *  ===============================*/
 	public static final ConfigSetting SHOW_LISTING_ERROR_IN_CONSOLE = new ConfigSetting(config, "auction setting.show listing error in console", false, "If true, an exception will be thrown and shown in the console if something goes wrong during item listing");
+	public static final ConfigSetting STORE_PAYMENTS_FOR_MANUAL_COLLECTION = new ConfigSetting(config, "auction setting.store payments for manual collection", false, "If true, auction house will store the payments to be manually collected rather than automatically given to the player");
 	public static final ConfigSetting DEFAULT_BIN_LISTING_TIME = new ConfigSetting(config, "auction setting.listings times.bin item", 86400, "The default listing time for bin items (buy only items) before they expire");
 	public static final ConfigSetting DEFAULT_AUCTION_LISTING_TIME = new ConfigSetting(config, "auction setting.listings times.auction item", 604800, "The default listing time for auction items before they expire");
 	public static final ConfigSetting INTERNAL_CREATE_DELAY = new ConfigSetting(config, "auction setting.internal create delay", 2, "How many ticks should auction house wait before actually creating the item.");

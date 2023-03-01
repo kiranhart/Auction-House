@@ -34,6 +34,10 @@ public final class AuctionPayment {
 	private final double amount;
 	private final long time;
 
+	public AuctionPayment(UUID to, double amount) {
+		this(UUID.randomUUID(), to, amount, System.currentTimeMillis());
+	}
+
 
 	public void pay(Player player) {
 		EconomyManager.withdrawBalance(player, this.amount);

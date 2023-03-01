@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.api;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -684,6 +685,11 @@ public class AuctionAPI {
 	}
 
 	public void depositBalance(OfflinePlayer player, double amount) {
+		if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean()){
+			AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount), null);
+			return;
+		}
+
 		if (Settings.PAYMENT_HANDLE_USE_CMD.getBoolean()) {
 			AuctionHouse.newChain().sync(() -> {
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.PAYMENT_HANDLE_DEPOSIT_CMD.getString().replace("%player%", player.getName()).replace("%price%", String.valueOf(amount)));

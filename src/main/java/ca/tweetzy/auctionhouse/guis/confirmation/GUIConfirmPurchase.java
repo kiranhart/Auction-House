@@ -21,6 +21,7 @@ package ca.tweetzy.auctionhouse.guis.confirmation;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.events.AuctionEndEvent;
+import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
@@ -182,7 +183,10 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 					if (Settings.BIDDING_TAKES_MONEY.getBoolean() && !located.getHighestBidder().equals(located.getOwner())) {
 						final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(located.getHighestBidder());
 
-						EconomyManager.deposit(oldBidder, auctionItem.getCurrentPrice());
+						if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
+							AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), auctionItem.getCurrentPrice()), null);
+						else
+							EconomyManager.deposit(oldBidder, auctionItem.getCurrentPrice());
 
 						if (oldBidder.isOnline())
 							AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(located.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());

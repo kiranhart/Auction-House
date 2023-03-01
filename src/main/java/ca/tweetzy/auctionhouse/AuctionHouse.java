@@ -111,6 +111,9 @@ public class AuctionHouse extends TweetyPlugin {
 	private MinItemPriceManager minItemPriceManager;
 
 	@Getter
+	private PaymentsManager paymentsManager;
+
+	@Getter
 	private DatabaseConnector databaseConnector;
 
 	@Getter
@@ -246,6 +249,10 @@ public class AuctionHouse extends TweetyPlugin {
 		// auction players
 		this.auctionPlayerManager = new AuctionPlayerManager();
 		this.auctionPlayerManager.loadPlayers();
+
+		// payments
+		this.paymentsManager = new PaymentsManager();
+		this.paymentsManager.loadPayments();
 
 		// gui manager
 		this.guiManager.init();
