@@ -600,6 +600,69 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void getAuctionPayments(Callback<ArrayList<AuctionPayment>> callback) {
+		ArrayList<AuctionPayment> payments = new ArrayList<>();
+		this.async(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "payments")) {
+				ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					payments.add(extractAuctionPayment(resultSet));
+				}
+
+				callback.accept(null, payments);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void insertAuctionPayment(AuctionPayment auctionPayment, Callback<AuctionPayment> callback) {
+		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "payments (uuid, payment_for, amount, time) VALUES (?, ?, ?, ?)")) {
+				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "payments WHERE uuid = ?");
+
+				fetch.setString(1, auctionPayment.getId().toString());
+				statement.setString(1, auctionPayment.getId().toString());
+				statement.setString(2, auctionPayment.getTo().toString());
+				statement.setDouble(3, auctionPayment.getAmount());
+				statement.setLong(4, auctionPayment.getTime());
+				statement.executeUpdate();
+
+				if (callback != null) {
+					ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractAuctionPayment(res));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void deletePayments(Collection<UUID> payments) {
+		this.async(() -> this.databaseConnector.connect(connection -> {
+			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "payments WHERE uuid = ?");
+			for (UUID id : payments) {
+				statement.setString(1, id.toString());
+				statement.addBatch();
+			}
+
+			statement.executeBatch();
+
+		}));
+	}
+
+	private AuctionPayment extractAuctionPayment(ResultSet resultSet) throws SQLException {
+		return new AuctionPayment(
+				UUID.fromString(resultSet.getString("uuid")),
+				UUID.fromString(resultSet.getString("payment_for")),
+				resultSet.getDouble("amount"),
+				resultSet.getLong("time")
+		);
+	}
+
 	private AuctionStatistic extractAuctionStatistic(ResultSet resultSet) throws SQLException {
 		return new AuctionStatistic(
 				UUID.fromString(resultSet.getString("uuid")),
