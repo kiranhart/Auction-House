@@ -18,8 +18,10 @@
 
 package ca.tweetzy.auctionhouse.auction;
 
+import ca.tweetzy.core.hooks.EconomyManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -32,4 +34,8 @@ public final class AuctionPayment {
 	private final double amount;
 	private final long time;
 
+
+	public void pay(Player player) {
+		EconomyManager.withdrawBalance(player, this.amount);
+	}
 }
