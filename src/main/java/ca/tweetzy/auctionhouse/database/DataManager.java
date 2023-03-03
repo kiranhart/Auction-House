@@ -628,6 +628,9 @@ public class DataManager extends DataManagerAbstract {
 				statement.setLong(4, auctionPayment.getTime());
 				statement.executeUpdate();
 
+				// insert into storage
+				AuctionHouse.getInstance().getPaymentsManager().addPayment(auctionPayment);
+
 				if (callback != null) {
 					ResultSet res = fetch.executeQuery();
 					res.next();

@@ -71,7 +71,7 @@ public class GUIPaymentCollection extends AbstractPlaceholderGui {
 		}).asyncLast((data) -> {
 			pages = (int) Math.max(1, Math.ceil(AuctionHouse.getInstance().getPaymentsManager().getPaymentsByPlayer(this.player).size() / (double) 45));
 			setPrevPage(5, 3, getPreviousPageItem());
-			setButton(5, 4, getRefreshButtonItem(), e -> draw());
+//			setButton(5, 4, getRefreshButtonItem(), e -> draw());
 			setNextPage(5, 5, getNextPageItem());
 			setOnPage(e -> {
 				draw();
