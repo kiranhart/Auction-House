@@ -26,12 +26,10 @@ import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.items.TItemBuilder;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -83,6 +81,11 @@ public class GUIExpiredItems extends AbstractPlaceholderGui {
 				draw();
 				SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString());
 			});
+
+			if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
+				setButton(5, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_LORE.getStringList(), null), e -> {
+					e.manager.showGUI(e.player, new GUIPaymentCollection(this.auctionPlayer));
+				});
 
 
 			setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_EXPIRED_AUCTIONS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList(), null), e -> {

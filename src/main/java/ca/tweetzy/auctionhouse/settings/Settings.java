@@ -665,6 +665,12 @@ public class Settings {
 			"&7Click here to claim all of your expired auctions"
 	));
 
+	public static final ConfigSetting GUI_EXPIRED_AUCTIONS_PAYMENTS_ITEM = new ConfigSetting(config, "gui.expired auctions.collect payments.item", "GOLD_INGOT");
+	public static final ConfigSetting GUI_EXPIRED_AUCTIONS_PAYMENTS_NAME = new ConfigSetting(config, "gui.expired auctions.collect payments.name", "&e&lCollect Payments");
+	public static final ConfigSetting GUI_EXPIRED_AUCTIONS_PAYMENTS_LORE = new ConfigSetting(config, "gui.expired auctions.collect payments.lore", Collections.singletonList(
+			"&7Click here to view your payments"
+	));
+
 	/*  ===============================
 	 *       PAYMENT COLLECTION GUI
 	 *  ===============================*/
