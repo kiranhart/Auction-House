@@ -56,7 +56,10 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 			open.player.setMetadata("AuctionHouseConfirmListing", new FixedMetadataValue(AuctionHouse.getInstance(), "ConfirmListing"));
 		});
 
-		setOnClose(close -> close.player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance()));
+		setOnClose(close -> {
+			close.player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
+			AuctionHouse.getInstance().getAuctionPlayerManager().processSell(close.player);
+		});
 
 		setRows(1);
 		draw();
