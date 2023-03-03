@@ -666,6 +666,24 @@ public class Settings {
 	));
 
 	/*  ===============================
+	 *       PAYMENT COLLECTION GUI
+	 *  ===============================*/
+
+	public static final ConfigSetting GUI_PAYMENT_COLLECTION_TITLE = new ConfigSetting(config, "gui.payment collection.title", "&7Payment Collection");
+
+	public static final ConfigSetting GUI_PAYMENT_COLLECTION_ITEM = new ConfigSetting(config, "gui.payment collection.claim all.item", "ENDER_CHEST");
+	public static final ConfigSetting GUI_PAYMENT_COLLECTION_NAME = new ConfigSetting(config, "gui.payment collection.claim all.name", "&e&lClaim All");
+	public static final ConfigSetting GUI_PAYMENT_COLLECTION_LORE = new ConfigSetting(config, "gui.payment collection.claim all.lore", Collections.singletonList(
+			"&7Click here to claim all of your payments"
+	));
+
+	public static final ConfigSetting GUI_PAYMENT_COLLECTION_PAYMENT_ITEM = new ConfigSetting(config, "gui.payment collection.payment.item", "PAPER");
+	public static final ConfigSetting GUI_PAYMENT_COLLECTION_PAYMENT_NAME = new ConfigSetting(config, "gui.payment collection.payment.name", "&a&l$%payment_amount%");
+	public static final ConfigSetting GUI_PAYMENT_COLLECTION_PAYMENT_LORE = new ConfigSetting(config, "gui.payment collection.payment.lore", Collections.singletonList(
+			"&7Click here to claim this payment"
+	));
+
+	/*  ===============================
 	 *      TRANSACTIONS TYPE GUI
 	 *  ===============================*/
 	public static final ConfigSetting GUI_TRANSACTIONS_TYPE_TITLE = new ConfigSetting(config, "gui.transactions type.title", "&7&LTransactions");
