@@ -108,43 +108,6 @@ public final class CommandSell extends AbstractCommand {
 		}
 
 		// Check for block items
-//
-//		if (Settings.MAKE_BLOCKED_ITEMS_A_WHITELIST.getBoolean()) {
-//			if (!Settings.BLOCKED_ITEMS.getStringList().contains(itemToSell.getType().name())) {
-//				instance.getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
-//				return ReturnType.FAILURE;
-//			}
-//		} else {
-//			if (Settings.BLOCKED_ITEMS.getStringList().contains(itemToSell.getType().name())) {
-//				instance.getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemToSell.getType().name()).sendPrefixedMessage(player);
-//				return ReturnType.FAILURE;
-//			}
-//		}
-//
-//		boolean blocked = false;
-//
-//		String itemName = ChatColor.stripColor(AuctionAPI.getInstance().getItemName(itemToSell).toLowerCase());
-//		List<String> itemLore = AuctionAPI.getInstance().getItemLore(itemToSell).stream().map(line -> ChatColor.stripColor(line.toLowerCase())).collect(Collectors.toList());
-//
-//		// Check for blocked names and lore
-//		for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
-//			if (AuctionAPI.getInstance().match(s, itemName)) {
-//				instance.getLocale().getMessage("general.blockedname").sendPrefixedMessage(player);
-//				blocked = true;
-//			}
-//		}
-//
-//		if (!itemLore.isEmpty() && !blocked) {
-//			for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
-//				for (String line : itemLore) {
-//					if (AuctionAPI.getInstance().match(s, line)) {
-//						instance.getLocale().getMessage("general.blockedlore").sendPrefixedMessage(player);
-//						blocked = true;
-//					}
-//				}
-//			}
-//		}
-
 		if (!AuctionAPI.getInstance().meetsListingRequirements(player, itemToSell)) return ReturnType.FAILURE;
 
 		// get the max allowed time for this player.
@@ -303,8 +266,6 @@ public final class CommandSell extends AbstractCommand {
 				isBiddingItem ? AuctionSaleType.USED_BIDDING_SYSTEM : AuctionSaleType.WITHOUT_BIDDING_SYSTEM
 		);
 
-
-
 		// Check list delay
 		if (!auctionPlayer.canListItem()) {
 			return ReturnType.FAILURE;
@@ -335,10 +296,20 @@ public final class CommandSell extends AbstractCommand {
 		auctionedItem.setBidItem(isBiddingItem);
 		auctionedItem.setExpired(false);
 
-		auctionedItem.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(buyNowAllow ? buyNowPrice : -1) : buyNowAllow ? buyNowPrice : -1);
-		auctionedItem.setBidStartingPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(isBiddingItem ? startingBid : 0) : isBiddingItem ? startingBid : 0);
-		auctionedItem.setBidIncrementPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0) : isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0);
-		auctionedItem.setCurrentPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice) : isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice);
+		double theStartingPrice = buyNowAllow ? buyNowPrice : -1;
+
+		if (Settings.FORCE_AUCTION_USAGE.getBoolean()) {
+			theStartingPrice = buyNowPrice;
+			auctionedItem.setBasePrice(-1);
+			auctionedItem.setBidStartingPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(theStartingPrice) : theStartingPrice);
+			auctionedItem.setBidIncrementPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(startingBid != null ? startingBid : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()) : startingBid != null ? startingBid : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble());
+			auctionedItem.setCurrentPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(theStartingPrice) : theStartingPrice);
+		} else {
+			auctionedItem.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(theStartingPrice) : theStartingPrice);
+			auctionedItem.setBidStartingPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(isBiddingItem ? startingBid : 0) : isBiddingItem ? startingBid : 0);
+			auctionedItem.setBidIncrementPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0) : isBiddingItem ? bidIncrement != null ? bidIncrement : Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble() : 0);
+			auctionedItem.setCurrentPrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice) : isBiddingItem ? startingBid : buyNowPrice <= -1 ? startingBid : buyNowPrice);
+		}
 
 		auctionedItem.setListedWorld(player.getWorld().getName());
 		auctionedItem.setInfinite(isInfinite);
