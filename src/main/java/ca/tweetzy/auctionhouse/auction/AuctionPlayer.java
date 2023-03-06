@@ -67,6 +67,9 @@ public class AuctionPlayer {
 	}
 
 	public boolean canListItem() {
+		if (this.player == null)
+			this.player = Bukkit.getPlayer(this.uuid);
+
 		if (Settings.LIST_ITEM_DELAY.getInt() == -1) {
 			return true;
 		}
@@ -87,6 +90,9 @@ public class AuctionPlayer {
 	}
 
 	public List<AuctionedItem> getItems(boolean getExpired) {
+		if (this.player == null)
+			this.player = Bukkit.getPlayer(this.uuid);
+
 		final List<AuctionedItem> items = new ArrayList<>();
 		final AuctionHouse instance = AuctionHouse.getInstance();
 		for (Map.Entry<UUID, AuctionedItem> entry : instance.getAuctionItemManager().getItems().entrySet()) {
@@ -123,6 +129,9 @@ public class AuctionPlayer {
 	}
 
 	public int getAllowedSellTime(AuctionSaleType auctionSaleType) {
+		if (this.player == null)
+			this.player = Bukkit.getPlayer(this.uuid);
+
 		List<Integer> possibleTimes = new ArrayList<>();
 		Settings.AUCTION_TIME.getStringList().forEach(line -> {
 			String[] split = line.split(":");
