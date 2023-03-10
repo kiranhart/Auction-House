@@ -27,6 +27,7 @@ import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations.*;
 import ca.tweetzy.auctionhouse.listeners.AuctionListeners;
 import ca.tweetzy.auctionhouse.listeners.CMIListener;
+import ca.tweetzy.auctionhouse.listeners.ChestShopListener;
 import ca.tweetzy.auctionhouse.listeners.PlayerListeners;
 import ca.tweetzy.auctionhouse.managers.*;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
@@ -184,6 +185,9 @@ public class AuctionHouse extends TweetyPlugin {
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new AuctionListeners(), this);
 
+		if (getServer().getPluginManager().isPluginEnabled("ChestShop"))
+			Bukkit.getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
+
 		if (getServer().getPluginManager().isPluginEnabled("CMI"))
 			Bukkit.getServer().getPluginManager().registerEvents(new CMIListener(), this);
 
@@ -279,7 +283,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new CommandUpload(),
 				new CommandMinPrice(),
 				new CommandStats(),
-				new CommandPayments()
+				new CommandPayments(),
+				new CommandBids()
 		);
 
 		// Placeholder API

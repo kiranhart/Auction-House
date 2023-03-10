@@ -654,6 +654,13 @@ public class Settings {
 	));
 
 	/*  ===============================
+	 *         ACTIVE BIDS GUI
+	 *  ===============================*/
+
+	public static final ConfigSetting GUI_ACTIVE_BIDS_TITLE = new ConfigSetting(config, "gui.active bids.title", "&7Your Winning Bids");
+
+
+	/*  ===============================
 	 *         EXPIRED AUCTION GUI
 	 *  ===============================*/
 

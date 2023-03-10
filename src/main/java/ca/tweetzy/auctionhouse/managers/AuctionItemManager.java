@@ -22,9 +22,12 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import lombok.Getter;
 import lombok.NonNull;
+import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -46,6 +49,10 @@ public class AuctionItemManager {
 
 	@Getter
 	private final ConcurrentHashMap<UUID, AuctionedItem> deletedItems = new ConcurrentHashMap<>();
+
+	public List<AuctionedItem> getHighestBidItems(Player player) {
+		return getItems().values().stream().filter(item -> item.isBidItem() && !item.isExpired() && !item.getOwner().equals(player.getUniqueId()) && item.getHighestBidder().equals(player.getUniqueId())).collect(Collectors.toList());
+	}
 
 
 	public void start() {

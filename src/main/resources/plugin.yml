@@ -5,7 +5,7 @@ main: ca.tweetzy.auctionhouse.AuctionHouse
 description: Auction House is a premium auction solution for your server.
 website: https://tweetzy.ca/
 authors: [ Kiran Hart ]
-softdepend: [ Vault, PlayerPoints, PlaceholderAPIHook, MMOItemsHook, UltraEconomy, CMI, Essentials, CityBuildStuff ]
+softdepend: [ Vault, PlayerPoints, PlaceholderAPIHook, MMOItemsHook, UltraEconomy, CMI, Essentials, CityBuildStuff, ChestShop ]
 
 commands:
     auctionhouse:
