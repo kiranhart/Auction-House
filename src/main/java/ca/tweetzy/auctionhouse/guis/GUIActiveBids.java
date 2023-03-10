@@ -73,7 +73,7 @@ public class GUIActiveBids extends AbstractPlaceholderGui {
 
 			int slot = 0;
 			for (AuctionedItem item : data) {
-				setItem(slot++, item.getDisplayStack(AuctionStackType.LISTING_PREVIEW));
+				setItem(slot++, item.getDisplayStack(AuctionStackType.HIGHEST_BID_PREVIEW));
 			}
 		}).execute();
 	}
