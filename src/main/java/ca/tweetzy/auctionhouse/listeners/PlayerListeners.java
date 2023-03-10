@@ -25,12 +25,12 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import ca.tweetzy.flight.comp.Titles;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -216,4 +216,18 @@ public class PlayerListeners implements Listener {
 		stack = NBTEditor.set(stack, "AUCTION_REPAIRED", "AuctionHouseRepaired");
 		event.setResult(stack);
 	}
+
+//	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+//	public void onInteractDuringSell(final PlayerInteractEvent event) {
+//		final Player player = event.getPlayer();
+//		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
+//
+//			Bukkit.broadcastMessage("in sell");
+//			event.setUseItemInHand(Event.Result.DENY);
+//			event.setUseInteractedBlock(Event.Result.DENY);
+//			event.setCancelled(true);
+//			return;
+//		}
+//
+//	}
 }
