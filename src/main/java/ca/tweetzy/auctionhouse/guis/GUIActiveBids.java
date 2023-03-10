@@ -26,7 +26,6 @@ import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Comparator;
 import java.util.List;
@@ -41,8 +40,6 @@ import java.util.stream.Collectors;
 public class GUIActiveBids extends AbstractPlaceholderGui {
 
 	private final AuctionPlayer auctionPlayer;
-	private BukkitTask task;
-
 	private List<AuctionedItem> items;
 
 	public GUIActiveBids(AuctionPlayer auctionPlayer) {
