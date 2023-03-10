@@ -207,7 +207,7 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 							.processPlaceholder("seller_displayname", AuctionAPI.getInstance().getDisplayName(seller))
 							.processPlaceholder("amount", auctionItem.getItem().getAmount())
 							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(auctionItem.getItem()))
-							.processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice()))
+							.processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Math.max(auctionItem.getBasePrice(), auctionItem.getCurrentPrice())))
 							.sendPrefixedMessage(player));
 				}
 

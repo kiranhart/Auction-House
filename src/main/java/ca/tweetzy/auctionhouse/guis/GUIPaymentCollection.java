@@ -20,6 +20,7 @@ package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
@@ -79,7 +80,10 @@ public class GUIPaymentCollection extends AbstractPlaceholderGui {
 			});
 
 
-			setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_PAYMENT_COLLECTION_ITEM.getString(), Settings.GUI_PAYMENT_COLLECTION_NAME.getString(), Settings.GUI_PAYMENT_COLLECTION_LORE.getStringList(), null), e -> {
+			setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(
+					Settings.GUI_PAYMENT_COLLECTION_ITEM.getString(),
+					PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_NAME.getString()),
+					PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_LORE.getStringList()), null), e -> {
 
 				if (this.lastClicked == null) {
 					this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
@@ -104,8 +108,8 @@ public class GUIPaymentCollection extends AbstractPlaceholderGui {
 
 				setButton(slot++, QuickItem
 						.of(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_ITEM.getString())
-						.name(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_NAME.getString().replace("%payment_amount%", AuctionAPI.getInstance().formatNumber(auctionPayment.getAmount())))
-						.lore(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList())
+						.name(PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_NAME.getString().replace("%payment_amount%", AuctionAPI.getInstance().formatNumber(auctionPayment.getAmount()))))
+						.lore(PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList()))
 						.make(), ClickType.LEFT, e -> {
 
 					if (this.lastClicked == null) {
