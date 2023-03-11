@@ -28,6 +28,7 @@ import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.Collections;
@@ -109,7 +110,12 @@ public class GUIPaymentCollection extends AbstractPlaceholderGui {
 				setButton(slot++, QuickItem
 						.of(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_ITEM.getString())
 						.name(PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_NAME.getString().replace("%payment_amount%", AuctionAPI.getInstance().formatNumber(auctionPayment.getAmount()))))
-						.lore(PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList()))
+						.lore(Replacer.replaceVariables(
+								PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList()),
+								"item_name", auctionPayment.getItem() == null ? "&cN/A" : AuctionAPI.getInstance().getItemName(auctionPayment.getItem()),
+								"from_name",auctionPayment.getFromName(),
+								"payment_reason", auctionPayment.getReason().getTranslation()
+						))
 						.make(), ClickType.LEFT, e -> {
 
 					if (this.lastClicked == null) {

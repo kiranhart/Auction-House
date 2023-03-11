@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.api.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
@@ -154,7 +155,13 @@ public class GUIBid extends AbstractPlaceholderGui {
 
 						if (!auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
 							if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-								AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), oldBidAmount), null);
+								AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+										oldBidder.getUniqueId(),
+										oldBidAmount,
+										auctionItem.getItem(),
+										AuctionHouse.getInstance().getLocale().getMessage("prefix").getMessage(),
+										PaymentReason.BID_RETURNED
+								), null);
 							else
 								EconomyManager.deposit(oldBidder, oldBidAmount);
 							if (oldBidder.isOnline())

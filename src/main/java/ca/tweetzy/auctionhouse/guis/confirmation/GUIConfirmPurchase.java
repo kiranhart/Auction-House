@@ -26,6 +26,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
+import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.exception.ItemNotFoundException;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
@@ -184,7 +185,13 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 						final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(located.getHighestBidder());
 
 						if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-							AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), auctionItem.getCurrentPrice()), null);
+							AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+									oldBidder.getUniqueId(),
+									auctionItem.getCurrentPrice(),
+									auctionItem.getItem(),
+									AuctionHouse.getInstance().getLocale().getMessage("prefix").getMessage(),
+									PaymentReason.BID_RETURNED
+							), null);
 						else
 							EconomyManager.deposit(oldBidder, auctionItem.getCurrentPrice());
 
@@ -246,7 +253,7 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 		double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * amount : 0D;
 
 		AuctionAPI.getInstance().withdrawBalance(from, Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount) : Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount);
-		AuctionAPI.getInstance().depositBalance(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax) : Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax);
+		AuctionAPI.getInstance().depositBalance(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax) : Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax, auctionItem.getItem(), from);
 	}
 
 	private void sendMessages(GuiClickEvent e, AuctionedItem located, boolean overwritePrice, double price, int qtyOverride) {

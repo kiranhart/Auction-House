@@ -189,6 +189,11 @@ public class LocaleSettings {
 		languageNodes.put("admin action.delete", "Deleted");
 		languageNodes.put("admin action.copy", "Copied");
 
+		languageNodes.put("payments.listing failed", "&cItem could not listed, fee returned");
+		languageNodes.put("payments.item sold", "&aThis item was sold/won by someone");
+		languageNodes.put("payments.admin removed", "&cItem was removed by an admin");
+		languageNodes.put("payments.bid returned", "&bOutbid, your original bid was returned");
+
 		languageNodes.put("commands.invalid_syntax", "&7The valid syntax is: &6%syntax%&7.");
 		languageNodes.put("commands.no_permission", "&dYou do not have permission to do that.");
 		languageNodes.put("commands.sell.args.suggestion one", "100");

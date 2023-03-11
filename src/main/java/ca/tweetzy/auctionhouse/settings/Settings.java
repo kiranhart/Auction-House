@@ -692,7 +692,12 @@ public class Settings {
 
 	public static final ConfigSetting GUI_PAYMENT_COLLECTION_PAYMENT_ITEM = new ConfigSetting(config, "gui.payment collection.payment.item", "PAPER");
 	public static final ConfigSetting GUI_PAYMENT_COLLECTION_PAYMENT_NAME = new ConfigSetting(config, "gui.payment collection.payment.name", "&a&l$%payment_amount%");
-	public static final ConfigSetting GUI_PAYMENT_COLLECTION_PAYMENT_LORE = new ConfigSetting(config, "gui.payment collection.payment.lore", Collections.singletonList(
+	public static final ConfigSetting GUI_PAYMENT_COLLECTION_PAYMENT_LORE = new ConfigSetting(config, "gui.payment collection.payment.lore", Arrays.asList(
+			"&7Item&f: &e%item_name%",
+			"&7From&f: &e%from_name%",
+			"&7Reason&f:",
+			"&e%payment_reason%",
+			"",
 			"&7Click here to claim this payment"
 	));
 

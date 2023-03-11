@@ -60,6 +60,38 @@ import java.util.List;
  */
 public class PlayerListeners implements Listener {
 
+//	@EventHandler
+//	public void onUserDeath(final PlayerDeathEvent event) {
+//		final Player player = event.getEntity().getPlayer();
+//		if (player == null) return;
+//		if (event.getDrops().isEmpty()) return;
+//
+//		// get the death location
+//		final Location deathLocation = player.getLocation();
+//
+//		// get the block at the location
+//		final Block blockAtDeath = deathLocation.getBlock();
+//
+//		// if the block at death location is not a chest, then set as chest
+//		if (blockAtDeath.getType() != Material.CHEST)
+//			blockAtDeath.setType(Material.CHEST);
+//
+//		final Chest chest = (Chest) blockAtDeath.getState();
+//
+//		for (ItemStack itemToFill : player.getInventory().getContents()) {
+//			if (itemToFill == null) continue;
+//
+//			// check if full otherwise just drop to ground
+//			if (chest.getInventory().firstEmpty() == -1)
+//				chest.getWorld().dropItemNaturally(deathLocation, itemToFill);
+//			else
+//				chest.getInventory().addItem(itemToFill);
+//		}
+//
+//		// clear drops (to prevent dropping to ground after placed in chest)
+//		event.getDrops().clear();
+//	}
+
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		final Player player = event.getEntity();

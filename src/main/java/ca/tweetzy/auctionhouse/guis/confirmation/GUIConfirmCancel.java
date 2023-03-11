@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
+import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIActiveAuctions;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -74,7 +75,14 @@ public class GUIConfirmCancel extends AbstractPlaceholderGui {
 				final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(located.getHighestBidder());
 
 				if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-					AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(auctionItem.getOwner(), located.getCurrentPrice()), null);
+					AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+							auctionItem.getOwner(),
+							located.getCurrentPrice(),
+							auctionItem.getItem(),
+							AuctionHouse.getInstance().getLocale().getMessage("prefix").getMessage(),
+							PaymentReason.BID_RETURNED
+
+					), null);
 				else
 					EconomyManager.deposit(oldBidder, located.getCurrentPrice());
 

@@ -26,10 +26,7 @@ import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
+import ca.tweetzy.auctionhouse.auction.enums.*;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
@@ -338,7 +335,13 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 
 						if (!auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
 							if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-								AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), oldBidAmount), null);
+								AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+										oldBidder.getUniqueId(),
+										oldBidAmount,
+										auctionItem.getItem(),
+										AuctionHouse.getInstance().getLocale().getMessage("prefix").getMessage(),
+										PaymentReason.BID_RETURNED
+								), null);
 							else
 								EconomyManager.deposit(oldBidder, oldBidAmount);
 							if (oldBidder.isOnline())

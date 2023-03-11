@@ -618,7 +618,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void insertAuctionPayment(AuctionPayment auctionPayment, Callback<AuctionPayment> callback) {
 		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "payments (uuid, payment_for, amount, time) VALUES (?, ?, ?, ?)")) {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "payments (uuid, payment_for, amount, time, item, from_name, reason) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "payments WHERE uuid = ?");
 
 				fetch.setString(1, auctionPayment.getId().toString());
@@ -626,6 +626,10 @@ public class DataManager extends DataManagerAbstract {
 				statement.setString(2, auctionPayment.getTo().toString());
 				statement.setDouble(3, auctionPayment.getAmount());
 				statement.setLong(4, auctionPayment.getTime());
+				statement.setString(5, AuctionAPI.encodeItem(auctionPayment.getItem()));
+				statement.setString(6, auctionPayment.getFromName());
+				statement.setString(7, auctionPayment.getReason().name());
+
 				statement.executeUpdate();
 
 				// insert into storage
@@ -661,6 +665,9 @@ public class DataManager extends DataManagerAbstract {
 		return new AuctionPayment(
 				UUID.fromString(resultSet.getString("uuid")),
 				UUID.fromString(resultSet.getString("payment_for")),
+				(resultSet.getString("item") == null || resultSet.getString("item").trim().isEmpty()) ? null : AuctionAPI.decodeItem(resultSet.getString("item")),
+				(resultSet.getString("from_name") == null || resultSet.getString("from_name").trim().isEmpty()) ? null : resultSet.getString("from_name"),
+				(resultSet.getString("reason") == null || resultSet.getString("reason").trim().isEmpty()) ? PaymentReason.ITEM_SOLD : PaymentReason.valueOf(resultSet.getString("reason")),
 				resultSet.getDouble("amount"),
 				resultSet.getLong("time")
 		);

@@ -20,10 +20,12 @@ package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.core.hooks.EconomyManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
@@ -33,11 +35,16 @@ public final class AuctionPayment {
 
 	private final UUID id;
 	private final UUID to;
+	private final ItemStack item;
+	private final String fromName;
+	private final PaymentReason reason;
+
+
 	private final double amount;
 	private final long time;
 
-	public AuctionPayment(UUID to, double amount) {
-		this(UUID.randomUUID(), to, amount, System.currentTimeMillis());
+	public AuctionPayment(UUID to, double amount, ItemStack item, String fromName, PaymentReason reason) {
+		this(UUID.randomUUID(), to, item, fromName, reason, amount, System.currentTimeMillis());
 	}
 
 

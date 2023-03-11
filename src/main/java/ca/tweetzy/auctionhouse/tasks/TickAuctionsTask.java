@@ -143,7 +143,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 				if (!Settings.BIDDING_TAKES_MONEY.getBoolean())
 					AuctionAPI.getInstance().withdrawBalance(auctionWinner, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice);
 
-				AuctionAPI.getInstance().depositBalance(Bukkit.getOfflinePlayer(auctionItem.getOwner()), Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice : finalPrice - tax);
+				AuctionAPI.getInstance().depositBalance(Bukkit.getOfflinePlayer(auctionItem.getOwner()), Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice : finalPrice - tax, auctionItem.getItem(), auctionWinner);
 
 				// alert seller and buyer
 				if (Bukkit.getOfflinePlayer(auctionItem.getOwner()).isOnline()) {

@@ -26,6 +26,7 @@ import ca.tweetzy.auctionhouse.api.hook.McMMOHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
@@ -173,7 +174,13 @@ public final class AuctionCreator {
 				// If the item could not be added for whatever reason and the tax listing fee is enabled, refund them
 				if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
 					if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-						AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(seller.getUniqueId(), listingFee), null);
+						AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+								seller.getUniqueId(),
+								listingFee,
+								auctionItem.getItem(),
+								AuctionHouse.getInstance().getLocale().getMessage("prefix").getMessage(),
+								PaymentReason.LISTING_FAILED
+						), null);
 					else
 						EconomyManager.deposit(seller, listingFee);
 					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(listingFee)).sendPrefixedMessage(seller);
