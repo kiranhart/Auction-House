@@ -35,6 +35,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -43,6 +44,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.*;
@@ -59,38 +61,6 @@ import java.util.List;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 public class PlayerListeners implements Listener {
-
-//	@EventHandler
-//	public void onUserDeath(final PlayerDeathEvent event) {
-//		final Player player = event.getEntity().getPlayer();
-//		if (player == null) return;
-//		if (event.getDrops().isEmpty()) return;
-//
-//		// get the death location
-//		final Location deathLocation = player.getLocation();
-//
-//		// get the block at the location
-//		final Block blockAtDeath = deathLocation.getBlock();
-//
-//		// if the block at death location is not a chest, then set as chest
-//		if (blockAtDeath.getType() != Material.CHEST)
-//			blockAtDeath.setType(Material.CHEST);
-//
-//		final Chest chest = (Chest) blockAtDeath.getState();
-//
-//		for (ItemStack itemToFill : player.getInventory().getContents()) {
-//			if (itemToFill == null) continue;
-//
-//			// check if full otherwise just drop to ground
-//			if (chest.getInventory().firstEmpty() == -1)
-//				chest.getWorld().dropItemNaturally(deathLocation, itemToFill);
-//			else
-//				chest.getInventory().addItem(itemToFill);
-//		}
-//
-//		// clear drops (to prevent dropping to ground after placed in chest)
-//		event.getDrops().clear();
-//	}
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
@@ -223,6 +193,27 @@ public class PlayerListeners implements Listener {
 	}
 
 	@EventHandler
+	public void onOffhandSwap(final PlayerSwapHandItemsEvent event) {
+		final Player player = event.getPlayer();
+
+		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onItemRemove(final InventoryClickEvent event) {
+		final HumanEntity clicker = event.getWhoClicked();
+		if (!(clicker instanceof Player)) return;
+
+		final Player player = (Player) clicker;
+		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
+			event.setCancelled(true);
+		}
+	}
+
+
+	@EventHandler
 	public void onCommandDuringSell(final PlayerCommandPreprocessEvent event) {
 		final Player player = event.getPlayer();
 
@@ -248,18 +239,4 @@ public class PlayerListeners implements Listener {
 		stack = NBTEditor.set(stack, "AUCTION_REPAIRED", "AuctionHouseRepaired");
 		event.setResult(stack);
 	}
-
-//	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-//	public void onInteractDuringSell(final PlayerInteractEvent event) {
-//		final Player player = event.getPlayer();
-//		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
-//
-//			Bukkit.broadcastMessage("in sell");
-//			event.setUseItemInHand(Event.Result.DENY);
-//			event.setUseInteractedBlock(Event.Result.DENY);
-//			event.setCancelled(true);
-//			return;
-//		}
-//
-//	}
 }
