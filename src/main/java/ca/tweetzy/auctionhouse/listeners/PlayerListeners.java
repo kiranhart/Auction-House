@@ -35,19 +35,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -72,7 +71,8 @@ public class PlayerListeners implements Listener {
 			Bukkit.getServer().getScheduler().cancelTask(auctionPlayer.getAssignedTaskId());
 
 			if (auctionPlayer.getItemBeingListed() != null && player.getLocation().getWorld() != null) {
-				player.getLocation().getWorld().dropItemNaturally(player.getLocation(), auctionPlayer.getItemBeingListed());
+				if (!AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
+					player.getLocation().getWorld().dropItemNaturally(player.getLocation(), auctionPlayer.getItemBeingListed());
 				auctionPlayer.setItemBeingListed(CompMaterial.AIR.parseItem());
 			}
 		}
@@ -174,61 +174,6 @@ public class PlayerListeners implements Listener {
 		}
 
 		PlayerUtils.giveItem(player, items);
-	}
-
-	@EventHandler
-	public void onItemDropDuringSell(final PlayerDropItemEvent event) {
-		final Player player = event.getPlayer();
-
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
-			event.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onHotbarSwapDuringSell(final PlayerItemHeldEvent event) {
-		final Player player = event.getPlayer();
-
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
-			event.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onOffhandSwap(final PlayerSwapHandItemsEvent event) {
-		final Player player = event.getPlayer();
-
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
-			event.setCancelled(true);
-		}
-	}
-
-	@EventHandler
-	public void onItemRemove(final InventoryClickEvent event) {
-		final HumanEntity clicker = event.getWhoClicked();
-		if (!(clicker instanceof Player)) return;
-
-		final Player player = (Player) clicker;
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
-			event.setCancelled(true);
-		}
-	}
-
-
-	@EventHandler
-	public void onCommandDuringSell(final PlayerCommandPreprocessEvent event) {
-		final Player player = event.getPlayer();
-
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
-			event.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onBuildDuringSell(final BlockPlaceEvent event) {
-		final Player player = event.getPlayer();
-
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
-			event.setBuild(false);
-			event.setCancelled(true);
-		}
 	}
 
 	@EventHandler

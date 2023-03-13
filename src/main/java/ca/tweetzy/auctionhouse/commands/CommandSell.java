@@ -318,12 +318,15 @@ public final class CommandSell extends AbstractCommand {
 		AuctionHouse.getInstance().getAuctionPlayerManager().addToSellProcess(player);
 
 		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
+			player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
+			auctionPlayer.setItemBeingListed(auctionedItem.getItem());
+
 			instance.getGuiManager().showGUI(player, new GUIListingConfirm(player, auctionedItem, result -> {
 				if (!result) {
 					AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
 
 					player.closeInventory();
-//					PlayerUtils.giveItem(player, auctionedItem.getItem());
+					PlayerUtils.giveItem(player, auctionedItem.getItem());
 					auctionPlayer.setItemBeingListed(null);
 					return;
 				}
@@ -332,8 +335,6 @@ public final class CommandSell extends AbstractCommand {
 					if (auctionPlayer.getPlayer() == null || !auctionPlayer.getPlayer().isOnline()) {
 						return;
 					}
-
-					player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
 
 					AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
 						AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
