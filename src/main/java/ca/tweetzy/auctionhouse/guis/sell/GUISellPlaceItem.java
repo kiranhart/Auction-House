@@ -26,7 +26,6 @@ import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.flight.utils.QuickItem;
 import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -70,11 +69,7 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 
 	private void draw() {
 
-		setButton(getRows() - 1, 0, QuickItem
-				.of(Settings.GUI_CLOSE_BTN_ITEM.getString())
-				.name(Settings.GUI_CLOSE_BTN_NAME.getString())
-				.lore(Settings.GUI_CLOSE_BTN_LORE.getStringList())
-				.make(), click -> {
+		setButton(getRows() - 1, 0, getCloseButtonItem(), click -> {
 
 			if (click.cursor.getType() == Material.AIR) {
 				click.gui.close();
@@ -82,11 +77,12 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 			}
 		});
 
-		setButton(getRows() - 1, 4, QuickItem
-				.of(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM.getString())
-				.name(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_NAME.getString())
-				.lore(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_LORE.getStringList())
-				.make(), click -> {
+		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(
+				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM.getString(),
+				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_NAME.getString(),
+				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_LORE.getStringList(),
+				null
+		), click -> {
 
 			final ArrayList<ItemStack> items = gatherSellableItems();
 

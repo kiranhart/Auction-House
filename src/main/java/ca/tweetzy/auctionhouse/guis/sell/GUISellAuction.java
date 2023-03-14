@@ -38,13 +38,12 @@ import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
-import ca.tweetzy.flight.utils.QuickItem;
-import ca.tweetzy.flight.utils.Replacer;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.UUID;
 
 public final class GUISellAuction extends AbstractPlaceholderGui {
@@ -85,11 +84,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 	private void draw() {
 		reset();
 
-		setButton(getRows() - 1, 0, QuickItem
-				.of(Settings.GUI_BACK_BTN_ITEM.getString())
-				.name(Settings.GUI_BACK_BTN_NAME.getString())
-				.lore(Settings.GUI_BACK_BTN_LORE.getStringList())
-				.make(), click -> {
+		setButton(getRows() - 1, 0, getPreviousPageItem(), click -> {
 
 			click.gui.close();
 			click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, NBTEditor.contains(this.auctionPlayer.getItemBeingListed(), "AuctionBundleItem") ? GUISellPlaceItem.ViewMode.BUNDLE_ITEM : GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.BIN));
@@ -99,16 +94,12 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 
 			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime);
 
-			setButton(3, 1, QuickItem
-					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM.getString())
-					.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_NAME.getString())
-					.lore(Replacer.replaceVariables(
-							Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_LORE.getStringList(),
-							"remaining_days", times[0],
-							"remaining_hours", times[1],
-							"remaining_minutes", times[2],
-							"remaining_seconds", times[3]
-					)).make(), click -> {
+			setButton(3, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM.getString(), Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_NAME.getString(), Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_LORE.getStringList(), new HashMap<String, Object>() {{
+				put("%remaining_days%", times[0]);
+				put("%remaining_hours%", times[1]);
+				put("%remaining_minutes%", times[2]);
+				put("%remaining_seconds%", times[3]);
+			}}), click -> {
 
 				click.gui.exit();
 				new TitleInput(
@@ -151,10 +142,14 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 		}
 
 		if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean())
-			setButton(3, 4, QuickItem
-					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_ITEM.getString())
-					.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_NAME.getString())
-					.lore(Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(this.binPrice))).make(), click -> {
+			setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(
+					Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_ITEM.getString(),
+					Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_NAME.getString(),
+					Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(),
+					new HashMap<String, Object>() {{
+						put("%listing_bin_price%", AuctionAPI.getInstance().formatNumber(binPrice));
+					}}
+			), click -> {
 
 				click.gui.exit();
 				new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.subtitle").getMessage()) {
@@ -195,10 +190,15 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 				};
 			});
 
-		setButton(3, 3, QuickItem
-				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_ITEM.getString())
-				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(), "listing_start_price", AuctionAPI.getInstance().formatNumber(this.startingBid))).make(), click -> {
+
+		setButton(3, 3, ConfigurationItemHelper.createConfigurationItem(
+				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_ITEM.getString(),
+				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_NAME.getString(),
+				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(),
+				new HashMap<String, Object>() {{
+					put("%listing_start_price%", AuctionAPI.getInstance().formatNumber(startingBid));
+				}}
+		), click -> {
 
 			click.gui.exit();
 			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.starting bid price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.starting bid price.subtitle").getMessage()) {
@@ -245,10 +245,14 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 			};
 		});
 
-		setButton(3, 5, QuickItem
-				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getString())
-				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(), "listing_increment_price", AuctionAPI.getInstance().formatNumber(this.bidIncrement))).make(), click -> {
+		setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(
+				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getString(),
+				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME.getString(),
+				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(),
+				new HashMap<String, Object>() {{
+					put("%listing_increment_price%", AuctionAPI.getInstance().formatNumber(bidIncrement));
+				}}
+		), click -> {
 
 			click.gui.exit();
 			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.subtitle").getMessage()) {
@@ -292,11 +296,12 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 		drawAuctionItem();
 		drawBuyoutToggle();
 
-		setButton(getRows() - 1, 4, QuickItem
-				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_ITEM.getString())
-				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_NAME.getString())
-				.lore(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_LORE.getStringList())
-				.make(), click -> {
+		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(
+				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_ITEM.getString(),
+				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_NAME.getString(),
+				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_LORE.getStringList(),
+				null
+		), click -> {
 
 			if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, this.auctionPlayer.getItemBeingListed())) return;
 			if (!auctionPlayer.canListItem()) return;
@@ -322,10 +327,12 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 
 	private void drawBuyoutToggle() {
 		if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
-			setButton(3, 7, QuickItem
-					.of(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_ITEM.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_ITEM.getString())
-					.name(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_NAME.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_NAME.getString())
-					.lore(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_LORE.getStringList() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_LORE.getStringList()).make(), e -> {
+			setButton(3, 7, ConfigurationItemHelper.createConfigurationItem(
+					this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_ITEM.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_ITEM.getString(),
+					this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_NAME.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_NAME.getString(),
+					this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_LORE.getStringList() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_LORE.getStringList(),
+					null
+			), e -> {
 
 				this.allowBuyNow = !allowBuyNow;
 				drawBuyoutToggle();

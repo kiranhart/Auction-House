@@ -24,7 +24,6 @@ import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.flight.utils.QuickItem;
 import lombok.NonNull;
 
 import java.util.function.Consumer;
@@ -56,19 +55,22 @@ public final class GUISellListingType extends AbstractPlaceholderGui {
 			drawBinButton(2);
 		}
 
-		setButton(getRows() - 1, 0, QuickItem
-				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_ITEM.getString())
-				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_NAME.getString())
-				.lore(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_LORE.getStringList())
-				.make(), click -> click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer)));
+		setButton(getRows() - 1, 0, ConfigurationItemHelper.createConfigurationItem(
+				Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_ITEM.getString(),
+				Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_NAME.getString(),
+				Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_LORE.getStringList(),
+				null
+		), click -> click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer)));
+
 	}
 
 	private void drawAuctionButton(int col) {
-		setButton(1, col, QuickItem
-				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_ITEM.getString())
-				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_NAME.getString())
-				.lore(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_LORE.getStringList())
-				.make(), click -> {
+		setButton(1, col, ConfigurationItemHelper.createConfigurationItem(
+				Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_ITEM.getString(),
+				Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_NAME.getString(),
+				Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_LORE.getStringList(),
+				null
+		), click -> {
 
 			if (this.listingType != null)
 				this.listingType.accept(ListingType.AUCTION);
@@ -76,11 +78,12 @@ public final class GUISellListingType extends AbstractPlaceholderGui {
 	}
 
 	private void drawBinButton(int col) {
-		setButton(1, col, QuickItem
-				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_ITEM.getString())
-				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_NAME.getString())
-				.lore(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_LORE.getStringList())
-				.make(), click -> {
+		setButton(1, col, ConfigurationItemHelper.createConfigurationItem(
+				Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_ITEM.getString(),
+				Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_NAME.getString(),
+				Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_LORE.getStringList(),
+				null
+		), click -> {
 
 			if (this.listingType != null)
 				this.listingType.accept(ListingType.BIN);
