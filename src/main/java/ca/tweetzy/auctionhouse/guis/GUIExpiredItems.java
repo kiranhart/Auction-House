@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.ahv3.model.BundleUtil;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
@@ -27,6 +28,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Comparator;
 import java.util.List;
@@ -99,12 +101,24 @@ public class GUIExpiredItems extends AbstractPlaceholderGui {
 				}
 
 				for (AuctionedItem auctionItem : data) {
+					final boolean isBundle = BundleUtil.isBundledItem(auctionItem.getItem());
+
 					if (e.player.getInventory().firstEmpty() == -1) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.noroomclaim").sendPrefixedMessage(e.player);
 						break;
 					}
 
-					PlayerUtils.giveItem(e.player, auctionItem.getItem());
+					if (isBundle) {
+						if (Settings.BUNDLE_IS_OPENED_ON_RECLAIM.getBoolean()) {
+							final List<ItemStack> bundleItems = BundleUtil.extractBundleItems(auctionItem.getItem());
+							PlayerUtils.giveItem(e.player, bundleItems);
+						} else {
+							PlayerUtils.giveItem(e.player, auctionItem.getItem());
+						}
+					} else {
+						PlayerUtils.giveItem(e.player, auctionItem.getItem()); // I despise these else statements
+					}
+
 					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
 				}
 
@@ -115,6 +129,8 @@ public class GUIExpiredItems extends AbstractPlaceholderGui {
 			for (AuctionedItem auctionItem : data) {
 				setButton(slot++, auctionItem.getItem(), ClickType.LEFT, e -> {
 					if (!Settings.ALLOW_INDIVIDUAL_ITEM_CLAIM.getBoolean()) return;
+
+					final boolean isBundle = BundleUtil.isBundledItem(auctionItem.getItem());
 
 					if (e.player.getInventory().firstEmpty() == -1) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.noroomclaim").sendPrefixedMessage(e.player);
@@ -129,8 +145,20 @@ public class GUIExpiredItems extends AbstractPlaceholderGui {
 						this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
 					}
 
-					PlayerUtils.giveItem(e.player, auctionItem.getItem());
+					if (isBundle) {
+						if (Settings.BUNDLE_IS_OPENED_ON_RECLAIM.getBoolean()) {
+							final List<ItemStack> bundleItems = BundleUtil.extractBundleItems(auctionItem.getItem());
+							PlayerUtils.giveItem(e.player, bundleItems);
+						} else {
+							PlayerUtils.giveItem(e.player, auctionItem.getItem());
+						}
+					} else {
+						PlayerUtils.giveItem(e.player, auctionItem.getItem()); // I despise these else statements
+					}// todo this is repeated code, put into own method
+
 					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
+
+
 					e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer, this.lastClicked));
 				});
 			}
