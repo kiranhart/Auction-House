@@ -94,8 +94,8 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 			}
 
 			// are they even allowed to sell more items
-			if (auctionPlayer.isAtSellLimit()) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(e.player);
+			if (auctionPlayer.isAtItemLimit(e.player)) {
+//				AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(e.player);
 				return;
 			}
 

@@ -53,6 +53,7 @@ public class LocaleSettings {
 		languageNodes.put("general.min item price air", "&cSorry, but you cannot add a price to air");
 		languageNodes.put("general.blocked", "&cSorry, you are not allowed to sell &e%item%");
 		languageNodes.put("general.sellinglimit", "&cYou cannot sell more items, please remove/sell current active items");
+		languageNodes.put("general.collectionbinlimit", "&cCollection is full, please claim your items first.");
 		languageNodes.put("general.noroom", "&cPlease clear room in your inventory to purchase that item.");
 		languageNodes.put("general.noroomclaim", "&cYou do not have enough space in your inventory");
 		languageNodes.put("general.buynowdisabledonitem", "&cBuy now is disabled on this item.");

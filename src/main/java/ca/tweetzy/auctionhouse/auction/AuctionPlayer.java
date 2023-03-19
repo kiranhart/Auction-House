@@ -97,7 +97,7 @@ public class AuctionPlayer {
 		final AuctionHouse instance = AuctionHouse.getInstance();
 		for (Map.Entry<UUID, AuctionedItem> entry : instance.getAuctionItemManager().getItems().entrySet()) {
 			final AuctionedItem auctionItem = entry.getValue();
-			if (auctionItem.getOwner().equals(this.player.getUniqueId()) && auctionItem.isExpired() == getExpired && !instance.getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
+			if (auctionItem.getOwner().equals(this.uuid) && auctionItem.isExpired() == getExpired && !instance.getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
 				items.add(auctionItem);
 			}
 		}
@@ -124,8 +124,22 @@ public class AuctionPlayer {
 		return 0;
 	}
 
-	public boolean isAtSellLimit() {
-		return getSellLimit() - 1 < getItems(false).size();
+	public boolean isAtItemLimit(Player target) {
+		if (isAtCollectionBinLimit()) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.collectionbinlimit").sendPrefixedMessage(target);
+			return true;
+		}
+
+		if (getSellLimit() - 1 < getItems(false).size()) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(target);
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isAtCollectionBinLimit() {
+		return getItems(true).size() >= Settings.COLLECTION_BIN_ITEM_LIMIT.getInt();
 	}
 
 	public int getAllowedSellTime(AuctionSaleType auctionSaleType) {

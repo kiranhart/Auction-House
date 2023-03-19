@@ -80,8 +80,8 @@ public final class CommandSell extends AbstractCommand {
 		ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 
 		// check if player is at their selling limit
-		if (auctionPlayer.isAtSellLimit()) {
-			instance.getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(player);
+		if (auctionPlayer.isAtItemLimit(player)) {
+//			instance.getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(player);
 			return ReturnType.FAILURE;
 		}
 

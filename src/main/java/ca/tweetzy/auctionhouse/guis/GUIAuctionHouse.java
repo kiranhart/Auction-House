@@ -536,8 +536,8 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 						return;
 					}
 
-					if (this.auctionPlayer.isAtSellLimit()) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(player);
+					if (this.auctionPlayer.isAtItemLimit(this.player)) {
+//						AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(player);
 						return;
 					}
 
