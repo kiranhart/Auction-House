@@ -105,7 +105,7 @@ public class GUIContainerInspect extends AbstractPlaceholderGui {
 
 	private void draw() {
 		reset();
-		pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 27L));
+		pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 36L));
 
 		for (int i : fillSlots) setItem(i, getDefaultItem());
 
@@ -121,8 +121,8 @@ public class GUIContainerInspect extends AbstractPlaceholderGui {
 		setNextPage(5, 5, getNextPageItem());
 		setOnPage(e -> draw());
 
-		int slot = 9;
-		List<ItemStack> data = this.items.stream().skip((page - 1) * 27L).limit(27L).collect(Collectors.toList());
+		int slot = 0;
+		List<ItemStack> data = this.items.stream().skip((page - 1) * 36L).limit(36L).collect(Collectors.toList());
 		for (ItemStack item : data) {
 			setItem(slot++, item);
 		}
