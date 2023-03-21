@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.ahv3.model.BundleUtil;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
@@ -130,6 +131,11 @@ public class AuctionPlayer {
 			return true;
 		}
 
+		if (isAtBundleLimit()) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.bundlelistlimit").sendPrefixedMessage(target);
+			return true;
+		}
+
 		if (getSellLimit() - 1 < getItems(false).size()) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(target);
 			return true;
@@ -140,6 +146,17 @@ public class AuctionPlayer {
 
 	public boolean isAtCollectionBinLimit() {
 		return getItems(true).size() >= Settings.COLLECTION_BIN_ITEM_LIMIT.getInt();
+	}
+
+	public boolean isAtBundleLimit() {
+		long nonExpiredItems = getItems(false).stream().filter(item -> BundleUtil.isBundledItem(item.getItem())).count();
+		long expiredItems = getItems(true).stream().filter(item -> BundleUtil.isBundledItem(item.getItem())).count();
+
+		if (Settings.BUNDLE_LIST_LIMIT_INCLUDE_COLLECTION_BIN.getBoolean()) {
+			return nonExpiredItems + expiredItems >= Settings.BUNDLE_LIST_LIMIT.getInt();
+		}
+
+		return nonExpiredItems >= Settings.BUNDLE_LIST_LIMIT.getInt();
 	}
 
 	public int getAllowedSellTime(AuctionSaleType auctionSaleType) {
