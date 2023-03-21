@@ -254,6 +254,11 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 			return;
 		}
 
+		if (e.player.getUniqueId().equals(auctionItem.getHighestBidder()) && !Settings.ALLOW_REPEAT_BIDS.getBoolean()) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.alreadyhighestbidder").sendPrefixedMessage(e.player);
+			return;
+		}
+
 		cleanup();
 
 		if (Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean()) {

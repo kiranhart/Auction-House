@@ -44,6 +44,7 @@ public class LocaleSettings {
 		languageNodes.put("general.playernotfound", "&cCould not find the player &4%player%");
 		languageNodes.put("general.notenoughmoney", "&cYou do not have enough money!");
 		languageNodes.put("general.cantbidonown", "&cYou cannot bid on your own item!");
+		languageNodes.put("general.alreadyhighestbidder", "&cYou are already the highest bidder!");
 		languageNodes.put("general.cantbuyown", "&cYou cannot buy your own item!");
 		languageNodes.put("general.blockeditem", "&cYou are not allowed to auction that item. (%item%)");
 		languageNodes.put("general.blockedname", "&cThat item contains a blocked name phrase");
