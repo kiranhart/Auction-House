@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.ahv3.api.ListingType;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
@@ -29,9 +30,9 @@ import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -135,9 +136,28 @@ public class CommandAdmin extends AbstractCommand {
 					instance.getLocale().getMessage("general.air").sendPrefixedMessage(player);
 					return ReturnType.FAILURE;
 				} else {
-					instance.getGuiManager().showGUI(player, new GUISellListingType(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()), selected -> {
-						instance.getGuiManager().showGUI(player, new GUISellPlaceItem(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()), GUISellPlaceItem.ViewMode.SINGLE_ITEM, selected));
-					}));
+					final AuctionPlayer auctionPlayer = instance.getAuctionPlayerManager().getPlayer(player.getUniqueId());
+
+					if (Settings.SELL_MENU_SKIPS_TYPE_SELECTION.getBoolean()) {
+						if (Settings.FORCE_AUCTION_USAGE.getBoolean()) {
+							AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellPlaceItem(auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.AUCTION));
+							return ReturnType.SUCCESS;
+						}
+
+						if (!Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
+							AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellPlaceItem(auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.BIN));
+							return ReturnType.SUCCESS;
+						}
+
+						AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellListingType(auctionPlayer, selected -> {
+							AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellPlaceItem(auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, selected));
+						}));
+
+					} else {
+						instance.getGuiManager().showGUI(player, new GUISellListingType(auctionPlayer, selected -> {
+							instance.getGuiManager().showGUI(player, new GUISellPlaceItem(auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, selected));
+						}));
+					}
 				}
 				break;
 			case "open":

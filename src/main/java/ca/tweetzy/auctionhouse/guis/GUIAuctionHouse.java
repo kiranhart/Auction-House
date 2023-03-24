@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.ahv3.api.ListingType;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.api.hook.FloodGateHook;
@@ -546,9 +547,27 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 						return;
 					}
 
-					AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellListingType(this.auctionPlayer, selected -> {
-						AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellPlaceItem(this.auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, selected));
-					}));
+					if (Settings.SELL_MENU_SKIPS_TYPE_SELECTION.getBoolean()) {
+						if (Settings.FORCE_AUCTION_USAGE.getBoolean()) {
+							AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellPlaceItem(auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.AUCTION));
+							return;
+						}
+
+						if (!Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
+							AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellPlaceItem(auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.BIN));
+							return;
+						}
+
+						AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellListingType(this.auctionPlayer, selected -> {
+							AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellPlaceItem(this.auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, selected));
+						}));
+
+					} else {
+						AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellListingType(this.auctionPlayer, selected -> {
+							AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUISellPlaceItem(this.auctionPlayer, GUISellPlaceItem.ViewMode.SINGLE_ITEM, selected));
+						}));
+					}
+
 				});
 			}
 		} else {

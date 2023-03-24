@@ -56,6 +56,7 @@ public class Settings {
 	public static final ConfigSetting STORE_PAYMENTS_FOR_MANUAL_COLLECTION = new ConfigSetting(config, "auction setting.store payments for manual collection", false, "If true, auction house will store the payments to be manually collected rather than automatically given to the player");
 	public static final ConfigSetting ALLOW_REPEAT_BIDS = new ConfigSetting(config, "auction setting.allow repeated bids", true, "If true, the highest bidder on an item can keep placing bids to raise their initial bid.");
 	public static final ConfigSetting COLLECTION_BIN_ITEM_LIMIT = new ConfigSetting(config, "auction setting.collection bin item limit", 45, "How many items can be stored in the collection bin. If this is reached the player cannot list anymore items, regardless of active listings");
+	public static final ConfigSetting SELL_MENU_SKIPS_TYPE_SELECTION = new ConfigSetting(config, "auction setting.skip type selection for sell menu", false, "If true the sell menu process will skip asking for the listing type depending on your auction settings (ie. bin only or auction only)");
 
 	public static final ConfigSetting BUNDLE_LIST_LIMIT = new ConfigSetting(config, "auction setting.bundle listing limit.listing limit", 45, "How many bundled listings can a player sell at any given time");
 	public static final ConfigSetting BUNDLE_LIST_LIMIT_INCLUDE_COLLECTION_BIN = new ConfigSetting(config, "auction setting.bundle listing limit.include collection bin", false, "If true, collection bin bundles will also count towards this limit");
