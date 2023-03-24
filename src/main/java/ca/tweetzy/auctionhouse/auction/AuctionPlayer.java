@@ -131,13 +131,13 @@ public class AuctionPlayer {
 			return true;
 		}
 
-		if (isAtBundleLimit()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.bundlelistlimit").sendPrefixedMessage(target);
+		if (getSellLimit() - 1 < getItems(false).size()) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(target);
 			return true;
 		}
 
-		if (getSellLimit() - 1 < getItems(false).size()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(target);
+		if (isAtBundleLimit()) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.bundlelistlimit").sendPrefixedMessage(target);
 			return true;
 		}
 
