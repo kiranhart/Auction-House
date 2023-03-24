@@ -291,6 +291,11 @@ public final class CommandSell extends AbstractCommand {
 			return ReturnType.FAILURE;
 		}
 
+		if (auctionPlayer.isAtBundleLimit() && isBundle) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.bundlelistlimit").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
+
 		if (isBundle) {
 			instance.getGuiManager().showGUI(player, new GUIBundleCreation(
 					auctionPlayer,

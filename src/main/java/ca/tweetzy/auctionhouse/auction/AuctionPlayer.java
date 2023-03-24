@@ -136,11 +136,6 @@ public class AuctionPlayer {
 			return true;
 		}
 
-		if (isAtBundleLimit()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.bundlelistlimit").sendPrefixedMessage(target);
-			return true;
-		}
-
 		return false;
 	}
 

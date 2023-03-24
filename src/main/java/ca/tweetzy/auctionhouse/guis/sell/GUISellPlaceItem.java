@@ -18,6 +18,7 @@
 
 package ca.tweetzy.auctionhouse.guis.sell;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.ahv3.api.ListingType;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -115,6 +116,12 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 					this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_LORE.getStringList() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_LORE.getStringList(),
 					null
 			), click -> {
+
+				if (auctionPlayer.isAtBundleLimit()) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.bundlelistlimit").sendPrefixedMessage(player);
+					return;
+				}
+
 
 				click.gui.close();
 				click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, this.viewMode == ViewMode.SINGLE_ITEM ? ViewMode.BUNDLE_ITEM : ViewMode.SINGLE_ITEM, this.listingType));
