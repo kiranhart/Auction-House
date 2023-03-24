@@ -92,6 +92,12 @@ public class AuctionListeners implements Listener {
 		AuctionHouse.newChain().async(() -> {
 			if (Settings.RECORD_TRANSACTIONS.getBoolean()) {
 				final AuctionHouse instance = AuctionHouse.getInstance();
+
+				double price = auctionedItem.getBasePrice();
+				if (e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM) {
+					price = auctionedItem.getCurrentPrice();
+				}
+
 				instance.getDataManager().insertTransactionAsync(new Transaction(
 						UUID.randomUUID(),
 						originalOwnerUUID,
@@ -101,7 +107,7 @@ public class AuctionListeners implements Listener {
 						System.currentTimeMillis(),
 						auctionedItem.getItem(),
 						e.getSaleType(),
-						auctionedItem.getCurrentPrice()
+						price
 				), (error, transaction) -> {
 					if (error == null) {
 						instance.getTransactionManager().addTransaction(transaction);
