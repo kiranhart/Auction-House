@@ -76,10 +76,10 @@ public class GUIConfirmCancel extends AbstractPlaceholderGui {
 
 				if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
 					AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
-							auctionItem.getOwner(),
+							oldBidder.getUniqueId(),
 							located.getCurrentPrice(),
 							auctionItem.getItem(),
-							AuctionHouse.getInstance().getLocale().getMessage("prefix").getMessage(),
+							AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
 							PaymentReason.BID_RETURNED
 
 					), null);

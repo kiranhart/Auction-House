@@ -178,7 +178,7 @@ public final class AuctionCreator {
 								seller.getUniqueId(),
 								listingFee,
 								auctionItem.getItem(),
-								AuctionHouse.getInstance().getLocale().getMessage("prefix").getMessage(),
+								AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
 								PaymentReason.LISTING_FAILED
 						), null);
 					else

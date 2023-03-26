@@ -159,7 +159,7 @@ public class GUIBid extends AbstractPlaceholderGui {
 										oldBidder.getUniqueId(),
 										oldBidAmount,
 										auctionItem.getItem(),
-										AuctionHouse.getInstance().getLocale().getMessage("prefix").getMessage(),
+										AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
 										PaymentReason.BID_RETURNED
 								), null);
 							else

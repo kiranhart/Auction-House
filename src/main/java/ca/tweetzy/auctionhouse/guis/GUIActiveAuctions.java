@@ -103,7 +103,7 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 													oldBidder.getUniqueId(),
 													item.getCurrentPrice(),
 													item.getItem(),
-													AuctionHouse.getInstance().getLocale().getMessage("prefix").getMessage(),
+													AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
 													PaymentReason.BID_RETURNED
 											), null);
 										else

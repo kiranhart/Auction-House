@@ -189,7 +189,7 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 									oldBidder.getUniqueId(),
 									auctionItem.getCurrentPrice(),
 									auctionItem.getItem(),
-									AuctionHouse.getInstance().getLocale().getMessage("prefix").getMessage(),
+									AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
 									PaymentReason.BID_RETURNED
 							), null);
 						else
