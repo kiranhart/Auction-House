@@ -147,6 +147,8 @@ public class PlayerListeners implements Listener {
 				return;
 			}
 
+			if (!player.hasPermission("auctionhouse.useauctionchest")) return;
+
 			instance.getGuiManager().showGUI(player, new GUIAuctionHouse(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 		}
 	}
