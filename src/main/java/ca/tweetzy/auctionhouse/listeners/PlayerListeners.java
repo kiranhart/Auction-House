@@ -71,8 +71,11 @@ public class PlayerListeners implements Listener {
 			Bukkit.getServer().getScheduler().cancelTask(auctionPlayer.getAssignedTaskId());
 
 			if (auctionPlayer.getItemBeingListed() != null && player.getLocation().getWorld() != null) {
-				if (!AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
-					player.getLocation().getWorld().dropItemNaturally(player.getLocation(), auctionPlayer.getItemBeingListed());
+				if (!AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
+
+					if (!player.hasMetadata("AuctionHouseConfirmListing"))
+						player.getLocation().getWorld().dropItemNaturally(player.getLocation(), auctionPlayer.getItemBeingListed());
+				}
 				auctionPlayer.setItemBeingListed(CompMaterial.AIR.parseItem());
 			}
 		}

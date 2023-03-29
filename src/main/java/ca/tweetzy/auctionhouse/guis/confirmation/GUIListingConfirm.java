@@ -26,6 +26,7 @@ import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -59,7 +60,6 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 		});
 
 		setOnClose(close -> {
-			close.player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
 			final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(close.player.getUniqueId());
 
 			if (auctionPlayer.getItemBeingListed() != null) {
@@ -67,6 +67,7 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 				auctionPlayer.setItemBeingListed(null);
 			}
 
+			close.player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
 			AuctionHouse.getInstance().getAuctionPlayerManager().processSell(close.player);
 		});
 
@@ -85,8 +86,13 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 			resulted.add(e.player.getUniqueId());
 
 			setAllowClose(true);
+			final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId());
+			auctionPlayer.setItemBeingListed(CompMaterial.AIR.parseItem());
+
 			this.result.accept(false);
 		});
+
+
 		setActionForRange(0, 3, ClickType.LEFT, e -> {
 			if (resulted.contains(e.player.getUniqueId())) return;
 			resulted.add(e.player.getUniqueId());
