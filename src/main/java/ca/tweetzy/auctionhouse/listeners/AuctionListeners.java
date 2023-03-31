@@ -55,27 +55,27 @@ public class AuctionListeners implements Listener {
 
 		if (Settings.DISCORD_ENABLED.getBoolean()) {
 
-			if (Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean())
-				AuctionHouse.newChain().async(() -> {
-					Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
+			AuctionHouse.newChain().async(() -> {
+				Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
+					final boolean isBid = e.getAuctionItem().isBidItem();
+
+					if (isBid && Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean())
 						DiscordMessageCreator
 								.of(hook, DiscordMessageCreator.MessageType.NEW_AUCTION_LISTING)
 								.seller(seller)
 								.listing(auctionedItem)
 								.send();
-					});
-				}).execute();
 
-			if (Settings.DISCORD_ALERT_ON_BIN_START.getBoolean())
-				AuctionHouse.newChain().async(() -> {
-					Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
+					if (!isBid && Settings.DISCORD_ALERT_ON_BIN_START.getBoolean())
 						DiscordMessageCreator
 								.of(hook, DiscordMessageCreator.MessageType.NEW_BIN_LISTING)
 								.seller(seller)
 								.listing(auctionedItem)
 								.send();
-					});
-				}).execute();
+
+				});
+			}).execute();
+
 		}
 	}
 
