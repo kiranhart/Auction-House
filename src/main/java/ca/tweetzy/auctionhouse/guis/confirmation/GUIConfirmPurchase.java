@@ -200,7 +200,8 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 
 					}
 
-					PlayerUtils.giveItem(e.player, located.getItem());
+//					PlayerUtils.giveItem(e.player, located.getItem());
+					PlayerUtils.giveItem(e.player, located.getItem().clone());
 					sendMessages(e, located, false, 0, deserializeItem.getAmount());
 				}
 
