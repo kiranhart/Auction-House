@@ -92,11 +92,16 @@ public class GUIBid extends AbstractPlaceholderGui {
 					string = ChatColor.stripColor(string);
 
 					if (!NumberUtils.isDouble(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value",  string).sendPrefixedMessage(player);
+						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
 						return false;
 					}
 
 					double value = Double.parseDouble(string);
+
+					if (value <= 0) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.cannotbezero").sendPrefixedMessage(e.player);
+						return false;
+					}
 
 					if (value > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
 						AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(e.player);
