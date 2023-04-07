@@ -21,7 +21,10 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.ahv3.api.ListingType;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminExpired;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminLogs;
@@ -30,6 +33,7 @@ import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
@@ -123,6 +127,20 @@ public class CommandAdmin extends AbstractCommand {
 				if (!sender.hasPermission("auctionhouse.cmd.admin.clearall")) return ReturnType.FAILURE;
 				// Don't tell ppl that this exists
 				instance.getAuctionItemManager().getItems().clear();
+				break;
+			case "clear":
+				if (args.length < 4) return ReturnType.FAILURE;
+				if (!sender.hasPermission("auctionhouse.cmd.admin.clear")) return ReturnType.FAILURE;
+
+				player = PlayerUtils.findPlayer(args[1]);
+				if (player == null) return ReturnType.FAILURE;
+
+				final boolean returnItems  = Boolean.parseBoolean(args[2]);
+				final boolean returnMoney  = Boolean.parseBoolean(args[3]);
+
+				handleUserClear(player, returnMoney, returnItems);
+
+				break;
 			case "opensell":
 				if (args.length < 2) return ReturnType.FAILURE;
 				if (!sender.hasPermission("auctionhouse.cmd.admin.opensell")) return ReturnType.FAILURE;
@@ -183,7 +201,7 @@ public class CommandAdmin extends AbstractCommand {
 
 	@Override
 	protected List<String> onTab(CommandSender sender, String... args) {
-		if (args.length == 1) return Arrays.asList("endall", "relistall", "logs", "viewexpired", "open");
+		if (args.length == 1) return Arrays.asList("endall", "relistall", "logs", "viewexpired", "open", "clear");
 		if (args.length == 2 && args[0].equalsIgnoreCase("relistAll")) return Arrays.asList("1", "2", "3", "4", "5");
 		if (args.length == 2 && (args[0].equalsIgnoreCase("viewexpired") || args[0].equalsIgnoreCase("open")))
 			return Bukkit.getOnlinePlayers().stream().map(OfflinePlayer::getName).collect(Collectors.toList());
@@ -203,5 +221,40 @@ public class CommandAdmin extends AbstractCommand {
 	@Override
 	public String getDescription() {
 		return "Admin options for auction house.";
+	}
+
+	private void handleUserClear(final Player player, final boolean returnBids, final boolean giveItemsBack) {
+		final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
+		final List<AuctionedItem> items = auctionPlayer.getItems(false);
+
+		for (AuctionedItem auctionItem : items) {
+			if (returnBids) {
+				if (Settings.BIDDING_TAKES_MONEY.getBoolean() && !auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
+					final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
+
+					if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
+						AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+								oldBidder.getUniqueId(),
+								auctionItem.getCurrentPrice(),
+								auctionItem.getItem(),
+								player.getName(),
+								PaymentReason.ADMIN_REMOVED
+						), null);
+					else
+						EconomyManager.deposit(oldBidder, auctionItem.getCurrentPrice());
+
+					if (oldBidder.isOnline())
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+
+				}
+			}
+
+			if (giveItemsBack) {
+				auctionItem.setExpiresAt(System.currentTimeMillis());
+				auctionItem.setExpired(true);
+			} else {
+				AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
+			}
+		}
 	}
 }
