@@ -221,7 +221,10 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 
 					if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && GUISellAuction.this.allowBuyNow)
 						if (Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && listingAmount >= GUISellAuction.this.binPrice) {
-							listingAmount = GUISellAuction.this.binPrice / 2 <= 0 ? Settings.MIN_AUCTION_START_PRICE.getDouble() : GUISellAuction.this.binPrice / 2;
+//							listingAmount = GUISellAuction.this.binPrice / 2 <= 0 ? Settings.MIN_AUCTION_START_PRICE.getDouble() : GUISellAuction.this.binPrice / 2;
+							AuctionHouse.getInstance().getLocale().getMessage("pricing.startingpricetoohigh").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(GUISellAuction.this.binPrice)).sendPrefixedMessage(player);
+
+							return false;
 						}
 
 					if (listingAmount < Settings.MIN_AUCTION_START_PRICE.getDouble())

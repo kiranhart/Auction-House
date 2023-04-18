@@ -98,6 +98,7 @@ public class LocaleSettings {
 		languageNodes.put("pricing.maxstartingprice", "&cThe maximum starting bid price is &a$%price%");
 		languageNodes.put("pricing.maxbidincrementprice", "&cThe maximum bid increment is &a$%price%");
 		languageNodes.put("pricing.basepricetoolow", "&cThe buy now price must be higher than the starting bid.");
+		languageNodes.put("pricing.startingpricetoohigh", "&cThe starting bid cannot be higher than buyout. &f(&a%price%&f)");
 		languageNodes.put("pricing.moneyremove", "&c&l- $%price% &7(%player_balance%)");
 		languageNodes.put("pricing.moneyadd", "&a&l+ $%price% &7(%player_balance%)");
 		languageNodes.put("pricing.bidmusthigherthanprevious", "&cYour bid must be higher than &4%current_bid%");
