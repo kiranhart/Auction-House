@@ -90,6 +90,21 @@ public class AuctionPlayer {
 		return false;
 	}
 
+	public List<AuctionedItem> getAllItems() {
+		if (this.player == null)
+			this.player = Bukkit.getPlayer(this.uuid);
+
+		final List<AuctionedItem> items = new ArrayList<>();
+		final AuctionHouse instance = AuctionHouse.getInstance();
+		for (Map.Entry<UUID, AuctionedItem> entry : instance.getAuctionItemManager().getItems().entrySet()) {
+			final AuctionedItem auctionItem = entry.getValue();
+			if (auctionItem.getOwner().equals(this.uuid) && !instance.getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
+				items.add(auctionItem);
+			}
+		}
+		return items;
+	}
+
 	public List<AuctionedItem> getItems(boolean getExpired) {
 		if (this.player == null)
 			this.player = Bukkit.getPlayer(this.uuid);

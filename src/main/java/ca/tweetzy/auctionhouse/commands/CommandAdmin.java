@@ -135,8 +135,8 @@ public class CommandAdmin extends AbstractCommand {
 				player = PlayerUtils.findPlayer(args[1]);
 				if (player == null) return ReturnType.FAILURE;
 
-				final boolean returnItems  = Boolean.parseBoolean(args[2]);
-				final boolean returnMoney  = Boolean.parseBoolean(args[3]);
+				final boolean returnItems = Boolean.parseBoolean(args[2]);
+				final boolean returnMoney = Boolean.parseBoolean(args[3]);
 
 				handleUserClear(player, returnMoney, returnItems);
 
@@ -225,9 +225,15 @@ public class CommandAdmin extends AbstractCommand {
 
 	private void handleUserClear(final Player player, final boolean returnBids, final boolean giveItemsBack) {
 		final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
-		final List<AuctionedItem> items = auctionPlayer.getItems(false);
+		final List<AuctionedItem> items = auctionPlayer.getAllItems();
 
 		for (AuctionedItem auctionItem : items) {
+			if (auctionItem.isExpired()) {
+				if (!giveItemsBack)
+					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
+				continue;
+			}
+
 			if (returnBids) {
 				if (Settings.BIDDING_TAKES_MONEY.getBoolean() && !auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
 					final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
