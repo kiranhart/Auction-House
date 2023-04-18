@@ -84,7 +84,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 	private void draw() {
 		reset();
 
-		setButton(getRows() - 1, 0, getPreviousPageItem(), click -> {
+		setButton(getRows() - 1, 0, getBackButtonItem(), click -> {
 
 			click.gui.close();
 			click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, NBTEditor.contains(this.auctionPlayer.getItemBeingListed(), "AuctionBundleItem") ? GUISellPlaceItem.ViewMode.BUNDLE_ITEM : GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.BIN));

@@ -77,7 +77,7 @@ public final class GUIStatisticSelf extends AbstractPlaceholderGui {
 			put("%money_spent%", AuctionAPI.getInstance().formatNumber(instance.getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.MONEY_SPENT)));
 		}}));
 
-		setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
+		setButton(5, 4, getBackButtonItem(), e -> {
 			e.manager.showGUI(e.player, new GUIStatisticViewSelect(this.auctionPlayer));
 		});
 	}

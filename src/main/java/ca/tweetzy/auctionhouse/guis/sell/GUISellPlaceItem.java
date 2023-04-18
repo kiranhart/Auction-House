@@ -70,7 +70,7 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 
 	private void draw() {
 
-		setButton(getRows() - 1, 0, getCloseButtonItem(), click -> {
+		setButton(getRows() - 1, 0, getBackButtonItem(), click -> {
 
 			if (click.cursor.getType() == Material.AIR) {
 				click.gui.close();

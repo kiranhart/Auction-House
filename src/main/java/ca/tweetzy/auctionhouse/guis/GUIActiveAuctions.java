@@ -138,7 +138,7 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 	}
 
 	private void drawFixedButtons() {
-		setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
+		setButton(5, 0, getBackButtonItem(), e -> {
 			cleanup();
 			e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 		});

@@ -49,7 +49,7 @@ public class GUITransactionView extends AbstractPlaceholderGui {
 		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_TRANSACTION_VIEW_BACKGROUND_ITEM.getString()));
 		setUseLockedCells(Settings.GUI_TRANSACTION_VIEW_BACKGROUND_FILL.getBoolean());
 
-		setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUITransactionList(auctionPlayer.getPlayer(), showAll)));
+		setButton(5, 0, getBackButtonItem(), e -> e.manager.showGUI(e.player, new GUITransactionList(auctionPlayer.getPlayer(), showAll)));
 		setItem(1, 4, transaction.getItem());
 
 		setItem(3, 2, GuiUtils.createButtonItem(AuctionAPI.getInstance().getPlayerHead(Bukkit.getOfflinePlayer(transaction.getSeller()).getName()), TextUtils.formatText(Settings.GUI_TRANSACTION_VIEW_ITEM_SELLER_NAME.getString().replace("%seller_name%", Bukkit.getOfflinePlayer(transaction.getSeller()).getName())),

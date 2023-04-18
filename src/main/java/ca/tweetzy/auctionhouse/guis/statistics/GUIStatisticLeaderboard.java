@@ -90,7 +90,7 @@ public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
 			}
 		}).execute();
 
-		setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
+		setButton(5, 0, getBackButtonItem(), e -> {
 			e.manager.showGUI(e.player, new GUIStatisticViewSelect(this.auctionPlayer));
 		});
 

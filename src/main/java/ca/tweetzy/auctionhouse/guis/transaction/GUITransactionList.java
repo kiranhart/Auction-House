@@ -78,7 +78,7 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 		setOnPage(e -> draw());
 
 		// Other Buttons
-		setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BACK_BTN_ITEM.getString(), Settings.GUI_BACK_BTN_NAME.getString(), Settings.GUI_BACK_BTN_LORE.getStringList(), null), e -> {
+		setButton(5, 0, getBackButtonItem(), e -> {
 			if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !e.player.hasPermission("auctionhouse.transactions.viewall")) {
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			} else {

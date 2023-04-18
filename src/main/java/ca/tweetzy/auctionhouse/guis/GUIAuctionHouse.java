@@ -530,8 +530,8 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 	}
 
 	private void drawPaginationButtons() {
-		setPrevPage(Settings.GUI_BACK_BTN_SLOT.getInt(), getPreviousPageItem());
-		setNextPage(Settings.GUI_NEXT_BTN_SLOT.getInt(), getNextPageItem());
+		setPrevPage(Settings.GUI_PREV_PAGE_BTN_SLOT.getInt(), getPreviousPageItem());
+		setNextPage(Settings.GUI_NEXT_PAGE_BTN_SLOT.getInt(), getNextPageItem());
 
 		setOnPage(e -> {
 			draw();

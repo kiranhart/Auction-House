@@ -110,7 +110,7 @@ public class GUIContainerInspect extends AbstractPlaceholderGui {
 		for (int i : fillSlots) setItem(i, getDefaultItem());
 
 		setPrevPage(5, 3, getPreviousPageItem());
-		setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> {
+		setButton(5, 4, getBackButtonItem(), e -> {
 			if (fromPurchaseGUI) {
 				AuctionHouse.getInstance().getTransactionManager().addPrePurchase(e.player, auctionItem.getId());
 				e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));

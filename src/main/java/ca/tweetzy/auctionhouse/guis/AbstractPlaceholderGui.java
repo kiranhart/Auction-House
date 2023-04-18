@@ -55,12 +55,16 @@ public abstract class AbstractPlaceholderGui extends Gui {
 		return this;
 	}
 
-	protected ItemStack getPreviousPageItem() {
+	protected ItemStack getBackButtonItem() {
 		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BACK_BTN_ITEM.getString(), Settings.GUI_BACK_BTN_NAME.getString(), Settings.GUI_BACK_BTN_LORE.getStringList(), null);
 	}
 
+	protected ItemStack getPreviousPageItem() {
+		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_PREV_PAGE_BTN_ITEM.getString(), Settings.GUI_PREV_PAGE_BTN_NAME.getString(), Settings.GUI_PREV_PAGE_BTN_LORE.getStringList(), null);
+	}
+
 	protected ItemStack getNextPageItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_NEXT_BTN_ITEM.getString(), Settings.GUI_NEXT_BTN_NAME.getString(), Settings.GUI_NEXT_BTN_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString(), Settings.GUI_NEXT_PAGE_BTN_NAME.getString(), Settings.GUI_NEXT_PAGE_BTN_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getRefreshButtonItem() {

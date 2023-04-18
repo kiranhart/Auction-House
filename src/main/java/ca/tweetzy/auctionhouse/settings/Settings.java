@@ -436,20 +436,24 @@ public class Settings {
 
 	public static final ConfigSetting GUI_FILLER = new ConfigSetting(config, "gui.filler item", CompMaterial.BLACK_STAINED_GLASS_PANE.name(), "An item to be used to fill empty gui slots, this will be", "removed in later versions to be done on a per gui basis");
 
-
-	public static final ConfigSetting GUI_BACK_BTN_SLOT = new ConfigSetting(config, "gui.global items.back button.slot", 48, "Valid Slots: 45 - 53");
-	public static final ConfigSetting GUI_BACK_BTN_ITEM = new ConfigSetting(config, "gui.global items.back button.item", "ARROW", "Settings for the back button");
-	public static final ConfigSetting GUI_BACK_BTN_NAME = new ConfigSetting(config, "gui.global items.back button.name", "&e<< Back");
+	public static final ConfigSetting GUI_BACK_BTN_ITEM = new ConfigSetting(config, "gui.global items.back button.item", "ARROW", "Settings for the previous page button");
+	public static final ConfigSetting GUI_BACK_BTN_NAME = new ConfigSetting(config, "gui.global items.back button.name", "&e<< Previous Page");
 	public static final ConfigSetting GUI_BACK_BTN_LORE = new ConfigSetting(config, "gui.global items.back button.lore", Arrays.asList("&7Click the button to go", "&7back to the previous page."));
+
+
+	public static final ConfigSetting GUI_PREV_PAGE_BTN_SLOT = new ConfigSetting(config, "gui.global items.previous page button.slot", 48, "Valid Slots: 45 - 53");
+	public static final ConfigSetting GUI_PREV_PAGE_BTN_ITEM = new ConfigSetting(config, "gui.global items.previous page button.item", "ARROW", "Settings for the previous page button");
+	public static final ConfigSetting GUI_PREV_PAGE_BTN_NAME = new ConfigSetting(config, "gui.global items.previous page button.name", "&e<< Previous Page");
+	public static final ConfigSetting GUI_PREV_PAGE_BTN_LORE = new ConfigSetting(config, "gui.global items.previous page button.lore", Arrays.asList("&7Click the button to go", "&7back to the previous page."));
 
 	public static final ConfigSetting GUI_CLOSE_BTN_ITEM = new ConfigSetting(config, "gui.global items.close button.item", "BARRIER", "Settings for the close button");
 	public static final ConfigSetting GUI_CLOSE_BTN_NAME = new ConfigSetting(config, "gui.global items.close button.name", "&cClose");
 	public static final ConfigSetting GUI_CLOSE_BTN_LORE = new ConfigSetting(config, "gui.global items.close button.lore", Collections.singletonList("&7Click to close this menu."));
 
-	public static final ConfigSetting GUI_NEXT_BTN_SLOT = new ConfigSetting(config, "gui.global items.next button.slot", 50, "Valid Slots: 45 - 53");
-	public static final ConfigSetting GUI_NEXT_BTN_ITEM = new ConfigSetting(config, "gui.global items.next button.item", "ARROW", "Settings for the next button");
-	public static final ConfigSetting GUI_NEXT_BTN_NAME = new ConfigSetting(config, "gui.global items.next button.name", "&eNext >>");
-	public static final ConfigSetting GUI_NEXT_BTN_LORE = new ConfigSetting(config, "gui.global items.next button.lore", Arrays.asList("&7Click the button to go", "&7to the next page."));
+	public static final ConfigSetting GUI_NEXT_PAGE_BTN_SLOT = new ConfigSetting(config, "gui.global items.next page button.slot", 50, "Valid Slots: 45 - 53");
+	public static final ConfigSetting GUI_NEXT_PAGE_BTN_ITEM = new ConfigSetting(config, "gui.global items.next page button.item", "ARROW", "Settings for the next button");
+	public static final ConfigSetting GUI_NEXT_PAGE_BTN_NAME = new ConfigSetting(config, "gui.global items.next page button.name", "&eNext Page >>");
+	public static final ConfigSetting GUI_NEXT_PAGE_BTN_LORE = new ConfigSetting(config, "gui.global items.next page button.lore", Arrays.asList("&7Click the button to go", "&7to the next page."));
 
 	public static final ConfigSetting GUI_REFRESH_BTN_ENABLED = new ConfigSetting(config, "gui.global items.refresh button.enabled", true);
 	public static final ConfigSetting GUI_REFRESH_BTN_SLOT = new ConfigSetting(config, "gui.global items.refresh button.slot", 49, "Valid Slots: 45 - 53");

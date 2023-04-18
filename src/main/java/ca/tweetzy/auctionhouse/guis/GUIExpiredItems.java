@@ -64,7 +64,7 @@ public class GUIExpiredItems extends AbstractPlaceholderGui {
 	private void draw() {
 		reset();
 
-		setButton(5, 0, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
+		setButton(5, 0, getBackButtonItem(), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
 
 		AuctionHouse.newChain().asyncFirst(() -> {
 			this.items = this.auctionPlayer.getItems(true);
