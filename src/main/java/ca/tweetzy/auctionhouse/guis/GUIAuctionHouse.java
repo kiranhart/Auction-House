@@ -442,6 +442,10 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 	}
 
 	private void placeItems(List<AuctionedItem> data) {
+
+		if (Settings.AUTO_REFRESH_DOES_SLOT_CLEAR.getBoolean())
+			setItems(0, 44, getDefaultItem());
+
 		int slot = 0;
 		for (AuctionedItem auctionItem : data) {
 			setButton(slot++, auctionItem.getDisplayStack(AuctionStackType.MAIN_AUCTION_HOUSE), e -> {
