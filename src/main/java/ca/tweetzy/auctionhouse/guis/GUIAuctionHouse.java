@@ -530,11 +530,16 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 	}
 
 	private void drawPaginationButtons() {
-		setPrevPage(Settings.GUI_PREV_PAGE_BTN_SLOT.getInt(), getPreviousPageItem());
-		setNextPage(Settings.GUI_NEXT_PAGE_BTN_SLOT.getInt(), getNextPageItem());
+		setItems(new int[]{Settings.GUI_PREV_PAGE_BTN_SLOT.getInt(), Settings.GUI_NEXT_PAGE_BTN_SLOT.getInt()}, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILLER.getString()));
+
+		setPrevPage(Settings.GUI_PREV_PAGE_BTN_SLOT.getInt(), page == 1 ? ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILLER.getString()) : getPreviousPageItem());
+
+		if (pages > page)
+			setNextPage(Settings.GUI_NEXT_PAGE_BTN_SLOT.getInt(), getNextPageItem());
 
 		setOnPage(e -> {
 			draw();
+			drawPaginationButtons();
 			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString());
 		});
 	}
