@@ -733,6 +733,14 @@ public class AuctionAPI {
 			}
 		}
 
+		// Check NBT tags
+		for (String nbtTag : Settings.BLOCKED_NBT_TAGS.getStringList()) {
+			if (NBTEditor.contains(itemStack, nbtTag)) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.blockednbttag").processPlaceholder("nbttag", nbtTag).sendPrefixedMessage(player);
+				return false;
+			}
+		}
+
 		String itemName = ChatColor.stripColor(getItemName(itemStack).toLowerCase());
 		List<String> itemLore = getItemLore(itemStack).stream().map(line -> ChatColor.stripColor(line.toLowerCase())).collect(Collectors.toList());
 

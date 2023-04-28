@@ -412,6 +412,7 @@ public class Settings {
 	 *          BLACK LISTED
 	 *  ===============================*/
 	public static final ConfigSetting BLOCKED_ITEMS = new ConfigSetting(config, "blocked items", Collections.singletonList("ENDER_CHEST"), "Materials that should be blocked (not allowed to sell)");
+	public static final ConfigSetting BLOCKED_NBT_TAGS = new ConfigSetting(config, "blocked nbt tags", Collections.singletonList("example_tag"), "A list of NBT tags that are blocked from the auction house. These are case sensitive");
 	public static final ConfigSetting MAKE_BLOCKED_ITEMS_A_WHITELIST = new ConfigSetting(config, "blocked items is whitelist", false, "If true, blocked items will become a whitelist, meaning only items specified in blacked list will be allowed in the ah");
 	public static final ConfigSetting BLOCKED_ITEM_NAMES = new ConfigSetting(config, "blocked item names", Arrays.asList(
 			"fuck",

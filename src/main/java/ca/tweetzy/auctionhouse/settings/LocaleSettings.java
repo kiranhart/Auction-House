@@ -48,6 +48,7 @@ public class LocaleSettings {
 		languageNodes.put("general.alreadyhighestbidder", "&cYou are already the highest bidder!");
 		languageNodes.put("general.cantbuyown", "&cYou cannot buy your own item!");
 		languageNodes.put("general.blockeditem", "&cYou are not allowed to auction that item. (%item%)");
+		languageNodes.put("general.blockednbttag", "&cThat item contains a blocked tag.");
 		languageNodes.put("general.blockedname", "&cThat item contains a blocked name phrase");
 		languageNodes.put("general.blockedlore", "&cThat item contains a blocked lore phrase");
 		languageNodes.put("general.air", "&cSorry, but you cannot sell air o.O");
