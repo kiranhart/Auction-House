@@ -98,15 +98,22 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 
 			if (this.listingType == ListingType.BIN)
 				click.manager.showGUI(click.player, new GUISellBin(this.auctionPlayer, Settings.MIN_AUCTION_PRICE.getDouble(), this.auctionPlayer.getAllowedSellTime(AuctionSaleType.WITHOUT_BIDDING_SYSTEM), false));
-			else
+			else {
+				boolean buyOutOnByDefault = Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean();
+				if (Settings.BUY_NOW_DISABLED_BY_DEFAULT_IN_SELL_MENU.getBoolean()) {
+					buyOutOnByDefault = false;
+				}
+
 				click.manager.showGUI(click.player, new GUISellAuction(
 						this.auctionPlayer,
 						Settings.MIN_AUCTION_PRICE.getDouble(),
 						Settings.MIN_AUCTION_START_PRICE.getDouble(),
 						Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(),
 						this.auctionPlayer.getAllowedSellTime(AuctionSaleType.USED_BIDDING_SYSTEM),
-						Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()
+						buyOutOnByDefault
 				));
+			}
+
 		});
 
 		if (Settings.ALLOW_ITEM_BUNDLES.getBoolean()) {
