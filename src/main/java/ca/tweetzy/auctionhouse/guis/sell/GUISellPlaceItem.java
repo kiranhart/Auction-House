@@ -26,9 +26,12 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.PlayerUtils;
 import lombok.NonNull;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -58,6 +61,8 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 		if (viewMode == ViewMode.SINGLE_ITEM) {
 			setUnlocked(1, 4);
 			setItem(1, 4, AIR);
+
+
 		} else {
 			setUnlockedRange(0, 35);
 			setItems(0, 35, AIR);
@@ -65,7 +70,22 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 
 		setOnClose(close -> gatherSellableItems().forEach(item -> PlayerUtils.giveItem(close.player, item)));
 
+		setPlayerInventoryAction(this::handleBlockedItemClick);
+		setDefaultAction(click -> {
+			if (click.clickType == ClickType.NUMBER_KEY)
+				click.event.setCancelled(true);
+		});
+
 		draw();
+	}
+
+	private void handleBlockedItemClick(GuiClickEvent click) {
+		final ItemStack clicked = click.clickedItem;
+		if (clicked == null || clicked.getType() == XMaterial.AIR.parseMaterial()) return;
+
+		if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, clicked)) {
+			click.event.setCancelled(true);
+		}
 	}
 
 	private void draw() {

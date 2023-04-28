@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.ahv3.model.BundleUtil;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
@@ -63,7 +64,11 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 			final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(close.player.getUniqueId());
 
 			if (auctionPlayer.getItemBeingListed() != null) {
-				PlayerUtils.giveItem(close.player, auctionedItem.getItem());
+				if (BundleUtil.isBundledItem(auctionedItem.getItem())) PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(auctionedItem.getItem()));
+				else {
+					PlayerUtils.giveItem(close.player, auctionedItem.getItem());
+				}
+
 				auctionPlayer.setItemBeingListed(null);
 			}
 

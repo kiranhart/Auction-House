@@ -20,6 +20,7 @@ package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.ahv3.api.ListingResult;
+import ca.tweetzy.auctionhouse.ahv3.model.BundleUtil;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -128,11 +129,17 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 			auctionedItem.setInfinite(false);
 			auctionedItem.setAllowPartialBuy(false);
 
+			auctionPlayer.setItemBeingListed(bundle);
+
 			if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
 				instance.getGuiManager().showGUI(auctionPlayer.getPlayer(), new GUIListingConfirm(auctionPlayer.getPlayer(), auctionedItem, result -> {
 					if (!result) {
 						auctionPlayer.getPlayer().closeInventory();
-						PlayerUtils.giveItem(auctionPlayer.getPlayer(), auctionedItem.getItem());
+
+						if (BundleUtil.isBundledItem(auctionedItem.getItem())) PlayerUtils.giveItem(auctionPlayer.getPlayer(), BundleUtil.extractBundleItems(auctionedItem.getItem()));
+						else PlayerUtils.giveItem(auctionPlayer.getPlayer(), auctionedItem.getItem());
+
+
 						auctionPlayer.setItemBeingListed(null);
 						return;
 					}
