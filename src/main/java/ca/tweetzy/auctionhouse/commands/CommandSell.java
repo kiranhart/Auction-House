@@ -205,8 +205,7 @@ public final class CommandSell extends AbstractCommand {
 		final boolean isBiddingItem = Settings.FORCE_AUCTION_USAGE.getBoolean() || buyNowPrice != null && startingBid != null && Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean();
 
 		// NOT USING THE BIDDING SYSTEM
-		if (!isBiddingItem /* && buyNowPrice != null */) {
-			// min item price todo fix it broke
+		if (!isBiddingItem) {
 			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
 				instance.getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(instance.getMinItemPriceManager().getMinPrice(originalItem).getPrice())).sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
@@ -216,8 +215,7 @@ public final class CommandSell extends AbstractCommand {
 			if (!checkBasePrice(player, buyNowPrice, false)) return ReturnType.FAILURE;
 		}
 
-		if (isBiddingItem && /* buyNowPrice != null && */ startingBid != null) {
-			// min item price todo fix it broke
+		if (isBiddingItem && startingBid != null) {
 			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
 				instance.getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(instance.getMinItemPriceManager().getMinPrice(originalItem).getPrice())).sendPrefixedMessage(player);
 				return ReturnType.FAILURE;

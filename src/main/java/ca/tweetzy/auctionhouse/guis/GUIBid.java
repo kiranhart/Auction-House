@@ -73,7 +73,10 @@ public class GUIBid extends AbstractPlaceholderGui {
 			}
 
 			e.gui.exit();
-			e.manager.showGUI(e.player, new GUIConfirmBid(this.auctionPlayer, auctionItem));
+			// THE MINIMUM
+			final double minBid = Settings.USE_REALISTIC_BIDDING.getBoolean() ? this.auctionItem.getCurrentPrice() + this.auctionItem.getBidIncrementPrice() : this.auctionItem.getBidIncrementPrice();
+
+			e.manager.showGUI(e.player, new GUIConfirmBid(this.auctionPlayer, auctionItem, minBid));
 		});
 
 		// TODO UPDATE BID
@@ -110,6 +113,11 @@ public class GUIBid extends AbstractPlaceholderGui {
 
 					double newBiddingAmount = 0;
 					if (Settings.USE_REALISTIC_BIDDING.getBoolean()) {
+						if (value < auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice()) {
+							AuctionHouse.getInstance().getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice())).sendPrefixedMessage(e.player);
+							return false;
+						}
+
 						if (value > GUIBid.this.auctionItem.getCurrentPrice()) {
 							newBiddingAmount = value;
 						} else {
@@ -122,6 +130,11 @@ public class GUIBid extends AbstractPlaceholderGui {
 							newBiddingAmount = GUIBid.this.auctionItem.getCurrentPrice() + value;
 						}
 					} else {
+						if (value < auctionItem.getBidIncrementPrice()) {
+							AuctionHouse.getInstance().getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getBidIncrementPrice())).sendPrefixedMessage(e.player);
+							return false;
+						}
+
 						newBiddingAmount = GUIBid.this.auctionItem.getCurrentPrice() + value;
 					}
 
@@ -181,6 +194,7 @@ public class GUIBid extends AbstractPlaceholderGui {
 					auctionItem.setHighestBidder(e.player.getUniqueId());
 					auctionItem.setHighestBidderName(e.player.getName());
 					auctionItem.setCurrentPrice(newBiddingAmount);
+
 					if (auctionItem.getBasePrice() != -1 && Settings.SYNC_BASE_PRICE_TO_HIGHEST_PRICE.getBoolean() && auctionItem.getCurrentPrice() > auctionItem.getBasePrice()) {
 						auctionItem.setBasePrice(Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(auctionItem.getCurrentPrice()) : auctionItem.getCurrentPrice());
 					}

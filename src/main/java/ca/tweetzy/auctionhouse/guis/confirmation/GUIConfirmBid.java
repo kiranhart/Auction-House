@@ -49,9 +49,9 @@ public class GUIConfirmBid extends AbstractPlaceholderGui {
 	private final double bidAmount;
 	private BukkitTask bukkitTask;
 
-	public GUIConfirmBid(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
-		this(auctionPlayer, auctionItem, -1);
-	}
+//	public GUIConfirmBid(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
+//		this(auctionPlayer, auctionItem, -1);
+//	}
 
 	public GUIConfirmBid(AuctionPlayer auctionPlayer, AuctionedItem auctionItem, double bidAmount) {
 		super(auctionPlayer);

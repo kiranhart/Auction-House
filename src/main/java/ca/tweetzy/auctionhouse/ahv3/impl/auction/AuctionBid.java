@@ -68,6 +68,5 @@ public final class AuctionBid implements Bid {
 
 	@Override
 	public void store(Consumer<Bid> storedItem) {
-		// TODO implement auction bid store
 	}
 }
