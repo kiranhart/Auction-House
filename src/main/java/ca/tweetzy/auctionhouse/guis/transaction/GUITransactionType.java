@@ -88,6 +88,10 @@ public final class GUITransactionType extends AbstractPlaceholderGui {
 						string = ChatColor.stripColor(string);
 
 						final String[] parts = ChatColor.stripColor(string).split(" ");
+						if (parts.length < 2) {
+							instance.getLocale().getMessage("general.invalidrange").sendPrefixedMessage(player);
+							return false;
+						}
 
 						if (!NumberUtils.isInt(parts[0]) && Arrays.asList("second", "minute", "hour", "day", "week", "month", "year").contains(parts[1].toLowerCase())) {
 							instance.getLocale().getMessage("prompts.enter deletion range").sendPrefixedMessage(player);

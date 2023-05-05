@@ -47,6 +47,7 @@ public class LocaleSettings {
 		languageNodes.put("general.cantbidonown", "&cYou cannot bid on your own item!");
 		languageNodes.put("general.alreadyhighestbidder", "&cYou are already the highest bidder!");
 		languageNodes.put("general.cantbuyown", "&cYou cannot buy your own item!");
+		languageNodes.put("general.invalidrange", "&cInvalid range format. Example&F: &41 day");
 		languageNodes.put("general.blockeditem", "&cYou are not allowed to auction that item. (%item%)");
 		languageNodes.put("general.blockednbttag", "&cThat item contains a blocked tag.");
 		languageNodes.put("general.blockedname", "&cThat item contains a blocked name phrase");
