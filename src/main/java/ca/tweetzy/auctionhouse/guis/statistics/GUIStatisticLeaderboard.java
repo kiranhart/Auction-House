@@ -24,8 +24,8 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
-import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.compatibility.XSound;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
@@ -53,6 +53,7 @@ public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
 		setAcceptsItems(false);
 		setAllowDrops(false);
 		setRows(6);
+		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
 		draw();
 	}
 
@@ -100,10 +101,7 @@ public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
 	private void drawPaginationButtons() {
 		setPrevPage(5, 3, getPreviousPageItem());
 		setNextPage(5, 5, getNextPageItem());
-		setOnPage(e -> {
-			draw();
-			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString());
-		});
+		setOnPage(e -> draw());
 	}
 
 	private void drawStatisticTypeButton() {

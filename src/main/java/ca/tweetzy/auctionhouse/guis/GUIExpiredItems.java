@@ -23,8 +23,8 @@ import ca.tweetzy.auctionhouse.ahv3.model.BundleUtil;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
-import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.event.inventory.ClickType;
@@ -53,6 +53,7 @@ public class GUIExpiredItems extends AbstractPlaceholderGui {
 		setTitle(TextUtils.formatText(Settings.GUI_EXPIRED_AUCTIONS_TITLE.getString()));
 		setRows(6);
 		setAcceptsItems(false);
+		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
 		draw();
 	}
 
@@ -79,10 +80,7 @@ public class GUIExpiredItems extends AbstractPlaceholderGui {
 			setPrevPage(5, 3, getPreviousPageItem());
 			setButton(5, 4, getRefreshButtonItem(), e -> draw());
 			setNextPage(5, 5, getNextPageItem());
-			setOnPage(e -> {
-				draw();
-				SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString());
-			});
+			setOnPage(e -> 	draw());
 
 			if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
 				setButton(5, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_LORE.getStringList(), null), e -> {

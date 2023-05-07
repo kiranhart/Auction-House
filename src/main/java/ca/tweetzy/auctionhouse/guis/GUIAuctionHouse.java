@@ -38,9 +38,9 @@ import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
-import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.ServerVersion;
+import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.NumberUtils;
@@ -85,6 +85,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 		setRows(6);
 		setAcceptsItems(false);
 		setAllowShiftClick(false);
+		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
 		draw();
 
 		setOnOpen(open -> {
@@ -540,7 +541,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 		setOnPage(e -> {
 			draw();
 			drawPaginationButtons();
-			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString());
+//			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString());
 		});
 	}
 

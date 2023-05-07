@@ -27,8 +27,8 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmCancel;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
-import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
@@ -58,6 +58,7 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 		setTitle(TextUtils.formatText(Settings.GUI_ACTIVE_AUCTIONS_TITLE.getString()));
 		setRows(6);
 		setAcceptsItems(false);
+		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
 		draw();
 
 		if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
@@ -154,10 +155,7 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 	private void drawPaginationButtons() {
 		setPrevPage(5, 3, getPreviousPageItem());
 		setNextPage(5, 5, getNextPageItem());
-		setOnPage(e -> {
-			draw();
-			SoundManager.getInstance().playSound(this.auctionPlayer.getPlayer(), Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString());
-		});
+		setOnPage(e -> draw());
 	}
 
 	/*

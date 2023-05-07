@@ -26,6 +26,7 @@ import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
+import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -65,6 +66,7 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 		setTitle(TextUtils.formatText(showAll ? Settings.GUI_TRANSACTIONS_TITLE_ALL.getString() : Settings.GUI_TRANSACTIONS_TITLE.getString()));
 		setRows(6);
 		setAcceptsItems(false);
+		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
 		draw();
 	}
 

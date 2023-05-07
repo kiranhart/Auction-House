@@ -22,6 +22,7 @@ import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.entity.Player;
@@ -41,12 +42,14 @@ public abstract class AbstractPlaceholderGui extends Gui {
 		this.player = player;
 		setUseLockedCells(true);
 		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILLER.getString()));
+		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
 	}
 
 	public AbstractPlaceholderGui(AuctionPlayer player) {
 		this.player = player.getPlayer();
 		setUseLockedCells(true);
 		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILLER.getString()));
+		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
 }
 
 	@Override
