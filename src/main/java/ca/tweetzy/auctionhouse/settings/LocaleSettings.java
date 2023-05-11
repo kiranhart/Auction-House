@@ -91,6 +91,7 @@ public class LocaleSettings {
 		languageNodes.put("general.qtybuydisabled", "&4%item_owner%&c is only accepting purchases of the entire stack.");
 		languageNodes.put("general.invalid bid amount", "&cBid either too low or too high");
 		languageNodes.put("general.invalid deletion range", "&cPlease enter a valid deletion range");
+		languageNodes.put("general.admin.cleared bids", "&aSuccessfully cleared any bids for the player&F: &e%player%");
 
 
 		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");

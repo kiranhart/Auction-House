@@ -151,7 +151,7 @@ public class CommandAdmin extends AbstractCommand {
 				returnMoney = Boolean.parseBoolean(args[2]);
 
 				handleUserBidClear(player, returnMoney);
-
+				AuctionHouse.getInstance().getLocale().getMessage("general.admin.cleared bids").processPlaceholder("player", args[1]).sendPrefixedMessage(sender);
 				break;
 			case "opensell":
 				if (args.length < 2) return ReturnType.FAILURE;
@@ -213,7 +213,7 @@ public class CommandAdmin extends AbstractCommand {
 
 	@Override
 	protected List<String> onTab(CommandSender sender, String... args) {
-		if (args.length == 1) return Arrays.asList("endall", "relistall", "logs", "viewexpired", "open", "clear");
+		if (args.length == 1) return Arrays.asList("endall", "relistall", "logs", "viewexpired", "open", "clear", "clearbids");
 		if (args.length == 2 && args[0].equalsIgnoreCase("relistAll")) return Arrays.asList("1", "2", "3", "4", "5");
 		if (args.length == 2 && (args[0].equalsIgnoreCase("viewexpired") || args[0].equalsIgnoreCase("open")))
 			return Bukkit.getOnlinePlayers().stream().map(OfflinePlayer::getName).collect(Collectors.toList());

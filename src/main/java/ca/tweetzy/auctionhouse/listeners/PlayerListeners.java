@@ -189,4 +189,5 @@ public class PlayerListeners implements Listener {
 		stack = NBTEditor.set(stack, "AUCTION_REPAIRED", "AuctionHouseRepaired");
 		event.setResult(stack);
 	}
+
 }
