@@ -136,9 +136,21 @@ public class CommandAdmin extends AbstractCommand {
 				if (player == null) return ReturnType.FAILURE;
 
 				final boolean returnItems = Boolean.parseBoolean(args[2]);
-				final boolean returnMoney = Boolean.parseBoolean(args[3]);
+				boolean returnMoney = Boolean.parseBoolean(args[3]);
 
 				handleUserClear(player, returnMoney, returnItems);
+
+				break;
+			case "clearbids":
+				if (args.length < 3) return ReturnType.FAILURE;
+				if (!sender.hasPermission("auctionhouse.cmd.admin.clearbids")) return ReturnType.FAILURE;
+
+				player = PlayerUtils.findPlayer(args[1]);
+				if (player == null) return ReturnType.FAILURE;
+
+				returnMoney = Boolean.parseBoolean(args[2]);
+
+				handleUserBidClear(player, returnMoney);
 
 				break;
 			case "opensell":
@@ -221,6 +233,27 @@ public class CommandAdmin extends AbstractCommand {
 	@Override
 	public String getDescription() {
 		return "Admin options for auction house.";
+	}
+
+	private void handleUserBidClear(final Player player, final boolean returnMoney) {
+		final List<AuctionedItem> items = AuctionHouse.getInstance().getAuctionItemManager().getHighestBidItems(player);
+
+		for (AuctionedItem auctionedItem : items) {
+			auctionedItem.setHighestBidder(auctionedItem.getOwner());
+			auctionedItem.setHighestBidderName(auctionedItem.getOwnerName());
+
+			if (returnMoney && Settings.BIDDING_TAKES_MONEY.getBoolean())
+				if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
+					AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+							player.getUniqueId(),
+							auctionedItem.getCurrentPrice(),
+							auctionedItem.getItem(),
+							player.getName(),
+							PaymentReason.BID_RETURNED
+					), null);
+				else
+					EconomyManager.deposit(player, auctionedItem.getCurrentPrice());
+		}
 	}
 
 	private void handleUserClear(final Player player, final boolean returnBids, final boolean giveItemsBack) {
