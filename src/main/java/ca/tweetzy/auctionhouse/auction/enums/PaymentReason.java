@@ -27,7 +27,7 @@ public enum PaymentReason {
 	ADMIN_REMOVED,
 	BID_RETURNED;
 
-	public  String getTranslation() {
+	public String getTranslation() {
 		switch (this) {
 			case LISTING_FAILED:
 				return AuctionHouse.getInstance().getLocale().getMessage("payments.listing failed").getMessage();

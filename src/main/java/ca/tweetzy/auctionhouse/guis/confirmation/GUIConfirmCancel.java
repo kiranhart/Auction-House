@@ -90,7 +90,7 @@ public class GUIConfirmCancel extends AbstractPlaceholderGui {
 					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(located.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
 
 			}
-			
+
 
 			e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
 		});

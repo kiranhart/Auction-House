@@ -20,8 +20,8 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.compatibility.ServerVersion;
+import ca.tweetzy.core.compatibility.XMaterial;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -51,7 +51,7 @@ public final class CommandMarkChest extends AbstractCommand {
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
 		final Block targetBlock = player.getTargetBlock(null, 10);
-		if (targetBlock.getType() != CompMaterial.CHEST.parseMaterial()) return ReturnType.FAILURE;
+		if (targetBlock.getType() != XMaterial.CHEST.parseMaterial()) return ReturnType.FAILURE;
 
 		final Chest chest = (Chest) targetBlock.getState();
 		final AuctionHouse instance = AuctionHouse.getInstance();

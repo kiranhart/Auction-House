@@ -24,7 +24,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.core.compatibility.XMaterial;
 
 public final class GUIStatisticViewSelect extends AbstractPlaceholderGui {
 
@@ -47,14 +47,14 @@ public final class GUIStatisticViewSelect extends AbstractPlaceholderGui {
 		// self
 		setButton(1, 2, ConfigurationItemHelper.createConfigurationItem(
 				Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_USE_HEAD.getBoolean() ?
-						AuctionAPI.getInstance().getPlayerHead(this.player.getName()) : CompMaterial.matchCompMaterial(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_ITEM.getString()).orElse(CompMaterial.STONE).parseItem(),
+						AuctionAPI.getInstance().getPlayerHead(this.player.getName()) : XMaterial.matchXMaterial(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_ITEM.getString()).orElse(XMaterial.STONE).parseItem(),
 				Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_NAME.getString(),
 				Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_LORE.getStringList(),
 				null
 		), click -> click.manager.showGUI(click.player, new GUIStatisticSelf(this.auctionPlayer)));
 
 		setButton(1, 6, ConfigurationItemHelper.createConfigurationItem(
-				CompMaterial.matchCompMaterial(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_ITEM.getString()).orElse(CompMaterial.STONE).parseItem(),
+				XMaterial.matchXMaterial(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_ITEM.getString()).orElse(XMaterial.STONE).parseItem(),
 				Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_NAME.getString(),
 				Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_LORE.getStringList(),
 				null

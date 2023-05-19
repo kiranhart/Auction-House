@@ -19,7 +19,7 @@
 package ca.tweetzy.auctionhouse.helpers;
 
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.core.compatibility.XMaterial;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -36,10 +36,10 @@ public class MaterialCategorizer {
 	}
 
 	public static AuctionItemCategory getMaterialCategory(Material material) {
-		if (material == CompMaterial.SPAWNER.parseMaterial()) return AuctionItemCategory.SPAWNERS;
+		if (material == XMaterial.SPAWNER.parseMaterial()) return AuctionItemCategory.SPAWNERS;
 		if (material.isEdible()) return AuctionItemCategory.FOOD;
 		if (material.isBlock()) return AuctionItemCategory.BLOCKS;
-		if (material == CompMaterial.ENCHANTED_BOOK.parseMaterial()) return AuctionItemCategory.ENCHANTS;
+		if (material == XMaterial.ENCHANTED_BOOK.parseMaterial()) return AuctionItemCategory.ENCHANTS;
 
 		final String materialName = material.name();
 		// Armor filter

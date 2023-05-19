@@ -50,7 +50,7 @@ public abstract class AbstractPlaceholderGui extends Gui {
 		setUseLockedCells(true);
 		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILLER.getString()));
 		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
-}
+	}
 
 	@Override
 	public Gui setTitle(String message) {

@@ -25,7 +25,6 @@ import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
@@ -55,7 +54,6 @@ public class GUIPaymentCollection extends AbstractPlaceholderGui {
 		setTitle(TextUtils.formatText(Settings.GUI_PAYMENT_COLLECTION_TITLE.getString()));
 		setRows(6);
 		setAcceptsItems(false);
-		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
 		draw();
 	}
 
@@ -111,7 +109,7 @@ public class GUIPaymentCollection extends AbstractPlaceholderGui {
 						.lore(Replacer.replaceVariables(
 								PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList()),
 								"item_name", auctionPayment.getItem() == null ? "&cN/A" : AuctionAPI.getInstance().getItemName(auctionPayment.getItem()),
-								"from_name",auctionPayment.getFromName(),
+								"from_name", auctionPayment.getFromName(),
 								"payment_reason", auctionPayment.getReason().getTranslation()
 						))
 						.make(), ClickType.LEFT, e -> {

@@ -1,6 +1,6 @@
 /*
  * Auction House
- * Copyright 2018-2022 Kiran Hart
+ * Copyright 2023 Kiran Hart
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.ahv3.api;
+package ca.tweetzy.auctionhouse.api;
 
-import org.jetbrains.annotations.Nullable;
+public enum ListingType {
 
-import java.util.function.Consumer;
-
-public interface Storeable<T> {
-
-	void store(Consumer<T> storedItem);
-
-	default void unStore(@Nullable final Consumer<SynchronizeResult> syncResult) {
-		if (syncResult != null)
-			syncResult.accept(SynchronizeResult.SUCCESS);
-	}
+	BIN,
+	AUCTION
 }

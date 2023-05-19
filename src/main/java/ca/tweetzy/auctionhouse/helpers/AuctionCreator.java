@@ -19,8 +19,8 @@
 package ca.tweetzy.auctionhouse.helpers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.ahv3.api.ListingResult;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.ListingResult;
 import ca.tweetzy.auctionhouse.api.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.api.hook.McMMOHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
@@ -32,7 +32,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.flight.comp.NBTEditor;
+import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
@@ -42,7 +42,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
-import static ca.tweetzy.auctionhouse.ahv3.api.ListingResult.*;
+import static ca.tweetzy.auctionhouse.api.ListingResult.*;
+
 
 @UtilityClass
 public final class AuctionCreator {

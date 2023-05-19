@@ -30,7 +30,7 @@ import java.sql.Statement;
  * Time Created: 11:58 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class  _14_PartialQtyBuyMigration extends DataMigration {
+public class _14_PartialQtyBuyMigration extends DataMigration {
 
 	public _14_PartialQtyBuyMigration() {
 		super(14);

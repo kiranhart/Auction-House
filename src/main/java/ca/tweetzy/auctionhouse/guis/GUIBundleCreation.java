@@ -19,19 +19,19 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.ahv3.api.ListingResult;
-import ca.tweetzy.auctionhouse.ahv3.model.BundleUtil;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.ListingResult;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
+import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -57,14 +57,14 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 		setUnlockedRange(0, 44);
 
 		for (int i = 0; i < 45; i++)
-			setItem(i, CompMaterial.AIR.parseItem());
+			setItem(i, XMaterial.AIR.parseItem());
 
 		Arrays.asList(45, 46, 47, 48, 49, 50, 51, 52, 53).forEach(i -> setAction(i, e -> e.event.setCancelled(true)));
 
 		setOnClose(close -> {
 			for (int i = 0; i < 45; i++) {
 				final ItemStack item = getItem(i);
-				if (item == null || item.getType() == CompMaterial.AIR.parseMaterial()) continue;
+				if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
 				PlayerUtils.giveItem(auctionPlayer.getPlayer(), item);
 			}
 		});
@@ -77,7 +77,7 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 
 			for (int i = 0; i < 44; i++) {
 				final ItemStack item = getItem(i);
-				if (item == null || item.getType() == CompMaterial.AIR.parseMaterial()) continue;
+				if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
 
 				boolean meetsListingRequirements = AuctionAPI.getInstance().meetsListingRequirements(player, item);
 

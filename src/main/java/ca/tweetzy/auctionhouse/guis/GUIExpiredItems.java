@@ -19,9 +19,9 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.ahv3.model.BundleUtil;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XSound;
@@ -80,7 +80,7 @@ public class GUIExpiredItems extends AbstractPlaceholderGui {
 			setPrevPage(5, 3, getPreviousPageItem());
 			setButton(5, 4, getRefreshButtonItem(), e -> draw());
 			setNextPage(5, 5, getNextPageItem());
-			setOnPage(e -> 	draw());
+			setOnPage(e -> draw());
 
 			if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
 				setButton(5, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_LORE.getStringList(), null), e -> {

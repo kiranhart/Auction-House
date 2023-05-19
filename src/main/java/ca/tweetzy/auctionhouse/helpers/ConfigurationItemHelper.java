@@ -18,10 +18,10 @@
 
 package ca.tweetzy.auctionhouse.helpers;
 
+import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.inventory.ItemFlag;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public class ConfigurationItemHelper {
 
 	public static ItemStack createConfigurationItem(ItemStack stack, int model, String title, List<String> lore, HashMap<String, Object> replacements, String... nbtData) {
-		if (stack.getType() == CompMaterial.AIR.parseMaterial())
+		if (stack.getType() == XMaterial.AIR.parseMaterial())
 			return stack;
 
 
@@ -88,7 +88,7 @@ public class ConfigurationItemHelper {
 		String[] split = item.split(":");
 
 		if (split.length == 2 && NumberUtils.isInt(split[1])) {
-			return createConfigurationItem(Objects.requireNonNull(CompMaterial.matchCompMaterial(split[0]).get().parseItem()), Integer.parseInt(split[1]), title, lore, replacements);
+			return createConfigurationItem(Objects.requireNonNull(XMaterial.matchXMaterial(split[0]).get().parseItem()), Integer.parseInt(split[1]), title, lore, replacements);
 		} else {
 			return createConfigurationItem(Objects.requireNonNull(QuickItem.of(item).make()), -1, title, lore, replacements);
 

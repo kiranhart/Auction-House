@@ -1,6 +1,6 @@
 /*
  * Auction House
- * Copyright 2018-2022 Kiran Hart
+ * Copyright 2023 Kiran Hart
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.ahv3.impl;
+package ca.tweetzy.auctionhouse.api;
 
-public final class AuctionAPI {
+public enum ListingResult {
+
+	SUCCESS,
+	CANCELED_CONFIRMATION,
+
+	CANNOT_PAY_LISTING_FEE,
+	LISTING_LIMIT_REACHED,
+	CANNOT_LIST_WITH_MCMMO_ABILITY_ACTIVE,
+	PLAYER_INSTANCE_NOT_FOUND,
+
+	CANNOT_SELL_REPAIRED_ITEM,
+	CANNOT_SELL_DAMAGED_ITEM,
+	CANNOT_SELL_BUNDLE_ITEM,
+
+	UNKNOWN,
+	EVENT_CANCELED
+
 }

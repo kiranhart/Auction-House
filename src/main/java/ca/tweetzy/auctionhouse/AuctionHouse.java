@@ -73,7 +73,6 @@ public class AuctionHouse extends TweetyPlugin {
 	private static TaskChainFactory taskChainFactory;
 	private static AuctionHouse instance;
 	private PluginHook ultraEconomyHook;
-	private PluginHook cityBuildStuff;
 
 	@Getter
 	@Setter

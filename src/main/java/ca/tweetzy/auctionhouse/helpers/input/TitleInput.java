@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.helpers.input;
 
-import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.core.utils.TextUtils;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -44,11 +44,11 @@ public abstract class TitleInput extends Input {
 		this.player = player;
 		this.title = title;
 		this.subTitle = subTitle;
-		this.actionbar = Common.colorize(actionbar);
+		this.actionbar = TextUtils.formatText(actionbar);
 	}
 
 	public TitleInput(@NonNull final Player player, final String title, final String subTitle) {
-		this(player, Common.colorize(title), Common.colorize(subTitle), Common.colorize(""));
+		this(player, TextUtils.formatText(title), TextUtils.formatText(subTitle), TextUtils.formatText(""));
 	}
 
 	public abstract boolean onResult(String string);

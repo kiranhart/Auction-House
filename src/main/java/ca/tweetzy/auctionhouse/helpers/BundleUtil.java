@@ -1,6 +1,6 @@
 /*
  * Auction House
- * Copyright 2022 Kiran Hart
+ * Copyright 2022-2023 Kiran Hart
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.ahv3.model;
+package ca.tweetzy.auctionhouse.helpers;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
-import ca.tweetzy.flight.comp.NBTEditor;
+import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +32,7 @@ import java.util.List;
 public final class BundleUtil {
 
 	public boolean isBundledItem(@NonNull final ItemStack itemStack) {
-		return itemStack.getType() != CompMaterial.AIR.parseMaterial() && NBTEditor.contains(itemStack, "AuctionBundleItem");
+		return itemStack.getType() != XMaterial.AIR.parseMaterial() && NBTEditor.contains(itemStack, "AuctionBundleItem");
 	}
 
 	public List<ItemStack> extractBundleItems(@NonNull final ItemStack itemStack) {

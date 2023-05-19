@@ -24,7 +24,7 @@ import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import ca.tweetzy.auctionhouse.guis.GUIMinItemPrices;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -60,7 +60,7 @@ public class CommandMinPrice extends AbstractCommand {
 
 			ItemStack held = PlayerHelper.getHeldItem(player);
 
-			if (held.getType() == CompMaterial.AIR.parseMaterial()) {
+			if (held.getType() == XMaterial.AIR.parseMaterial()) {
 				instance.getLocale().getMessage("general.min item price air").sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
 			}
