@@ -54,7 +54,7 @@ public class GUIBid extends AbstractPlaceholderGui {
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		setTitle(TextUtils.formatText(Settings.GUI_BIDDING_TITLE.getString()));
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BIDDING_BG_ITEM.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_BIDDING_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);
@@ -66,7 +66,7 @@ public class GUIBid extends AbstractPlaceholderGui {
 
 	private void draw() {
 		setItem(1, 4, this.auctionItem.getItem());
-		setButton(1, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BIDDING_ITEMS_DEFAULT_ITEM.getString(), Settings.GUI_BIDDING_ITEMS_DEFAULT_NAME.getString(), Settings.GUI_BIDDING_ITEMS_DEFAULT_LORE.getStringList(), null), e -> {
+		setButton(1, 2, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_BIDDING_ITEMS_DEFAULT_ITEM.getString(), Settings.GUI_BIDDING_ITEMS_DEFAULT_NAME.getString(), Settings.GUI_BIDDING_ITEMS_DEFAULT_LORE.getStringList(), null), e -> {
 			if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice())) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
 				return;
@@ -80,7 +80,7 @@ public class GUIBid extends AbstractPlaceholderGui {
 		});
 
 		// TODO UPDATE BID
-		setButton(1, 6, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BIDDING_ITEMS_CUSTOM_ITEM.getString(), Settings.GUI_BIDDING_ITEMS_CUSTOM_NAME.getString(), Settings.GUI_BIDDING_ITEMS_CUSTOM_LORE.getStringList(), null), e -> {
+		setButton(1, 6, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_BIDDING_ITEMS_CUSTOM_ITEM.getString(), Settings.GUI_BIDDING_ITEMS_CUSTOM_NAME.getString(), Settings.GUI_BIDDING_ITEMS_CUSTOM_LORE.getStringList(), null), e -> {
 			e.gui.exit();
 
 			new TitleInput(player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.subtitle").getMessage()) {

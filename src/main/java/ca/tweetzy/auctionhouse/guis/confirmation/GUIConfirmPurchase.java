@@ -81,7 +81,7 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 
 		if (this.buyingSpecificQuantity) {
 			setUseLockedCells(Settings.GUI_CONFIRM_FILL_BG_ON_QUANTITY.getBoolean());
-			setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_BG_ITEM.getString()));
+			setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_BG_ITEM.getString()));
 			this.purchaseQuantity = preAmount;
 			this.maxStackSize = preAmount;
 			this.pricePerItem = this.auctionItem.getBasePrice() / this.maxStackSize;
@@ -280,7 +280,7 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 	}
 
 	private ItemStack getPurchaseInfoItem(int qty) {
-		ItemStack stack = ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_QTY_INFO_ITEM.getString(), Settings.GUI_CONFIRM_QTY_INFO_NAME.getString(), Settings.GUI_CONFIRM_QTY_INFO_LORE.getStringList(), new HashMap<String, Object>() {{
+		ItemStack stack = ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_QTY_INFO_ITEM.getString(), Settings.GUI_CONFIRM_QTY_INFO_NAME.getString(), Settings.GUI_CONFIRM_QTY_INFO_LORE.getStringList(), new HashMap<String, Object>() {{
 			put("%original_stack_size%", maxStackSize);
 			put("%original_stack_price%", AuctionAPI.getInstance().formatNumber(auctionItem.getBasePrice()));
 			put("%price_per_item%", AuctionAPI.getInstance().formatNumber(pricePerItem));

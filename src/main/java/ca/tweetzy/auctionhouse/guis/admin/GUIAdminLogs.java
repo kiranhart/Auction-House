@@ -63,7 +63,7 @@ public final class GUIAdminLogs extends AbstractPlaceholderGui {
 		List<AuctionAdminLog> data = this.logs.stream().sorted(Comparator.comparingLong(AuctionAdminLog::getTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
 
 		for (AuctionAdminLog log : data) {
-			setItem(slot++, ConfigurationItemHelper.createConfigurationItem(log.getItem(), AuctionAPI.getInstance().getItemName(log.getItem()), Settings.GUI_LOGS_LORE.getStringList(), new HashMap<String, Object>() {{
+			setItem(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, log.getItem(), AuctionAPI.getInstance().getItemName(log.getItem()), Settings.GUI_LOGS_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%admin%", log.getAdminName());
 				put("%target%", log.getTargetName());
 				put("%admin_uuid%", log.getAdmin());

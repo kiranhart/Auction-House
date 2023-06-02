@@ -49,7 +49,7 @@ public class GUIFilterWhitelistList extends AbstractPlaceholderGui {
 		setTitle(TextUtils.formatText(Settings.GUI_FILTER_WHITELIST_LIST_TITLE.getString().replace("%filter_category%", filerCategory.getTranslatedType())));
 		setRows(6);
 		setAcceptsItems(false);
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILTER_WHITELIST_LIST_BG_ITEM.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_LIST_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		draw();
 

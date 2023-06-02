@@ -53,7 +53,7 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 		this.viewMode = viewMode;
 		this.listingType = listingType;
 		setTitle(viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_TITLE.getString() : Settings.GUI_SELL_PLACE_ITEM_BUNDLE_TITLE.getString());
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_PLACE_ITEM_BG_ITEM.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_SELL_PLACE_ITEM_BG_ITEM.getString()));
 		setRows(viewMode == ViewMode.SINGLE_ITEM ? 4 : 6);
 
 		setAcceptsItems(true);
@@ -98,7 +98,7 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 			}
 		});
 
-		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(
+		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(this.player, 
 				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM.getString(),
 				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_NAME.getString(),
 				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_LORE.getStringList(),
@@ -137,7 +137,7 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 		});
 
 		if (Settings.ALLOW_ITEM_BUNDLES.getBoolean()) {
-			setButton(getRows() - 1, 8, ConfigurationItemHelper.createConfigurationItem(//todo update quick item to automatically apply model data
+			setButton(getRows() - 1, 8, ConfigurationItemHelper.createConfigurationItem(this.player, //todo update quick item to automatically apply model data
 					this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_ITEM.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_ITEM.getString(),
 					this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_NAME.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_NAME.getString(),
 					this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_LORE.getStringList() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_LORE.getStringList(),

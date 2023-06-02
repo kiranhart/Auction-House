@@ -66,7 +66,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 		this.allowBuyNow = allowBuyNow;
 
 		setTitle(Settings.GUI_SELL_AUCTION_TITLE.getString());
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_AUCTION_BG_ITEM.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_SELL_AUCTION_BG_ITEM.getString()));
 		setRows(6);
 
 		setOnClose(close -> {
@@ -94,7 +94,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 
 			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime);
 
-			setButton(3, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM.getString(), Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_NAME.getString(), Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_LORE.getStringList(), new HashMap<String, Object>() {{
+			setButton(3, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM.getString(), Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_NAME.getString(), Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%remaining_days%", times[0]);
 				put("%remaining_hours%", times[1]);
 				put("%remaining_minutes%", times[2]);
@@ -143,7 +143,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 
 		if (this.allowBuyNow)
 			if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean())
-				setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(
+				setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(this.player, 
 						Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_ITEM.getString(),
 						Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_NAME.getString(),
 						Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(),
@@ -192,7 +192,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 				});
 
 
-		setButton(3, 3, ConfigurationItemHelper.createConfigurationItem(
+		setButton(3, 3, ConfigurationItemHelper.createConfigurationItem(this.player, 
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_ITEM.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_NAME.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(),
@@ -249,7 +249,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 			};
 		});
 
-		setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(
+		setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(this.player, 
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(),
@@ -300,7 +300,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 		drawAuctionItem();
 		drawBuyoutToggle();
 
-		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(
+		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(this.player, 
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_ITEM.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_NAME.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_LORE.getStringList(),
@@ -331,7 +331,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 
 	private void drawBuyoutToggle() {
 		if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
-			setButton(3, 7, ConfigurationItemHelper.createConfigurationItem(
+			setButton(3, 7, ConfigurationItemHelper.createConfigurationItem(this.player, 
 					this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_ITEM.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_ITEM.getString(),
 					this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_NAME.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_NAME.getString(),
 					this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_LORE.getStringList() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_LORE.getStringList(),

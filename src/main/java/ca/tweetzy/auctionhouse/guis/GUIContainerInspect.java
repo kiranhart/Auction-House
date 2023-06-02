@@ -63,7 +63,7 @@ public class GUIContainerInspect extends AbstractPlaceholderGui {
 		this.container = container;
 		this.fromPurchaseGUI = false;
 		setTitle(TextUtils.formatText(Settings.GUI_INSPECT_TITLE.getString()));
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_INSPECT_BG_ITEM.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_INSPECT_BG_ITEM.getString()));
 		setUseLockedCells(false);
 		setAcceptsItems(false);
 		setAllowDrops(false);

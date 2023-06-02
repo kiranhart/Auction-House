@@ -18,12 +18,14 @@
 
 package ca.tweetzy.auctionhouse.helpers;
 
+import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.nms.NBTEditor;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.utils.QuickItem;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -42,14 +44,14 @@ import java.util.stream.Collectors;
  */
 public class ConfigurationItemHelper {
 
-	public static ItemStack createConfigurationItem(ItemStack stack, int model, String title, List<String> lore, HashMap<String, Object> replacements, String... nbtData) {
+	public static ItemStack createConfigurationItem(Player player, ItemStack stack, int model, String title, List<String> lore, HashMap<String, Object> replacements, String... nbtData) {
 		if (stack.getType() == XMaterial.AIR.parseMaterial())
 			return stack;
 
 
 		final ItemMeta meta = stack.getItemMeta();
 		assert meta != null;
-		meta.setDisplayName(TextUtils.formatText(title));
+		meta.setDisplayName(TextUtils.formatText(PlaceholderAPIHook.PAPIReplacer.tryReplace(player, title)));
 
 		if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14))
 			meta.setCustomModelData(model);
@@ -68,9 +70,11 @@ public class ConfigurationItemHelper {
 			}
 		}
 
-		meta.setDisplayName(TextUtils.formatText(title));
+		meta.setDisplayName(TextUtils.formatText(PlaceholderAPIHook.PAPIReplacer.tryReplace(player, title)));
 		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_POTION_EFFECTS);
-		meta.setLore(lore.stream().map(TextUtils::formatText).collect(Collectors.toList()));
+
+		meta.setLore(PlaceholderAPIHook.PAPIReplacer.tryReplace(player, lore).stream().map(TextUtils::formatText).collect(Collectors.toList()));
+
 		stack.setItemMeta(meta);
 		if (nbtData != null) {
 			for (String nbt : nbtData) {
@@ -80,22 +84,22 @@ public class ConfigurationItemHelper {
 		return stack;
 	}
 
-	public static ItemStack createConfigurationItem(String item) {
-		return createConfigurationItem(item, " ", new ArrayList<>(), null);
+	public static ItemStack createConfigurationItem(Player player, String item) {
+		return createConfigurationItem(player, item, " ", new ArrayList<>(), null);
 	}
 
-	public static ItemStack createConfigurationItem(String item, String title, List<String> lore, HashMap<String, Object> replacements) {
+	public static ItemStack createConfigurationItem(Player player, String item, String title, List<String> lore, HashMap<String, Object> replacements) {
 		String[] split = item.split(":");
 
 		if (split.length == 2 && NumberUtils.isInt(split[1])) {
-			return createConfigurationItem(Objects.requireNonNull(XMaterial.matchXMaterial(split[0]).get().parseItem()), Integer.parseInt(split[1]), title, lore, replacements);
+			return createConfigurationItem(player, Objects.requireNonNull(XMaterial.matchXMaterial(split[0]).get().parseItem()), Integer.parseInt(split[1]), title, lore, replacements);
 		} else {
-			return createConfigurationItem(Objects.requireNonNull(QuickItem.of(item).make()), -1, title, lore, replacements);
+			return createConfigurationItem(player, Objects.requireNonNull(QuickItem.of(item).make()), -1, title, lore, replacements);
 
 		}
 	}
 
-	public static ItemStack createConfigurationItem(ItemStack item, String title, List<String> lore, HashMap<String, Object> replacements) {
-		return createConfigurationItem(item, 0, title, lore, replacements);
+	public static ItemStack createConfigurationItem(Player player, ItemStack item, String title, List<String> lore, HashMap<String, Object> replacements) {
+		return createConfigurationItem(player, item, 0, title, lore, replacements);
 	}
 }

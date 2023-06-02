@@ -48,7 +48,7 @@ public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
 		this.auctionPlayer = player;
 		this.statisticType = statisticType;
 		setTitle(Settings.GUI_STATS_LEADERBOARD_TITLE.getString());
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_LEADERBOARD_BG_ITEM.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_STATS_LEADERBOARD_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);
@@ -78,7 +78,7 @@ public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
 
 				final ItemStack head = AuctionAPI.getInstance().getPlayerHead(targetUser.getName());
 
-				setItem(slot++, ConfigurationItemHelper.createConfigurationItem(
+				setItem(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, 
 						head,
 						Settings.GUI_STATS_LEADERBOARD_ITEMS_PLAYER_NAME.getString(),
 						Settings.GUI_STATS_LEADERBOARD_ITEMS_PLAYER_LORE.getStringList(),
@@ -105,7 +105,7 @@ public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
 	}
 
 	private void drawStatisticTypeButton() {
-		setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(
+		setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(this.player, 
 				Settings.GUI_STATS_LEADERBOARD_ITEMS_STAT_ITEM.getString(),
 				Settings.GUI_STATS_LEADERBOARD_ITEMS_STAT_NAME.getString(),
 				Settings.GUI_STATS_LEADERBOARD_ITEMS_STAT_LORE.getStringList(), new HashMap<String, Object>() {{

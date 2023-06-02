@@ -46,7 +46,7 @@ public class GUITransactionView extends AbstractPlaceholderGui {
 		setTitle(TextUtils.formatText(Settings.GUI_TRANSACTION_VIEW_TITLE.getString()));
 		setRows(6);
 		setAcceptsItems(false);
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_TRANSACTION_VIEW_BACKGROUND_ITEM.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_TRANSACTION_VIEW_BACKGROUND_ITEM.getString()));
 		setUseLockedCells(Settings.GUI_TRANSACTION_VIEW_BACKGROUND_FILL.getBoolean());
 
 		setButton(5, 0, getBackButtonItem(), e -> e.manager.showGUI(e.player, new GUITransactionList(auctionPlayer.getPlayer(), showAll)));
@@ -58,7 +58,7 @@ public class GUITransactionView extends AbstractPlaceholderGui {
 		setItem(3, 6, GuiUtils.createButtonItem(AuctionAPI.getInstance().getPlayerHead(Bukkit.getOfflinePlayer(transaction.getBuyer()).getName()), TextUtils.formatText(Settings.GUI_TRANSACTION_VIEW_ITEM_BUYER_NAME.getString().replace("%buyer_name%", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName())),
 				Settings.GUI_TRANSACTION_VIEW_ITEM_BUYER_LORE.getStringList().stream().map(line -> line.replace("%buyer_id%", transaction.getBuyer().toString())).map(TextUtils::formatText).collect(Collectors.toList())));
 
-		setItem(3, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_ITEM.getString(), Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_NAME.getString(), Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_LORE.getStringList(), new HashMap<String, Object>() {{
+		setItem(3, 4, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_ITEM.getString(), Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_NAME.getString(), Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_LORE.getStringList(), new HashMap<String, Object>() {{
 			put("%transaction_id%", transaction.getId().toString());
 			put("%sale_type%", transaction.getAuctionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? AuctionHouse.getInstance().getLocale().getMessage("transaction.sale_type.bid_won").getMessage() : AuctionHouse.getInstance().getLocale().getMessage("transaction.sale_type.immediate_buy").getMessage());
 			put("%transaction_date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));

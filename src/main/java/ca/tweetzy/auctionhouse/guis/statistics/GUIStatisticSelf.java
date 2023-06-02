@@ -36,7 +36,7 @@ public final class GUIStatisticSelf extends AbstractPlaceholderGui {
 		super(player);
 		this.auctionPlayer = player;
 		setTitle(Settings.GUI_STATS_SELF_TITLE.getString());
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_SELF_BG_ITEM.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_STATS_SELF_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);
@@ -48,32 +48,32 @@ public final class GUIStatisticSelf extends AbstractPlaceholderGui {
 		final AuctionHouse instance = AuctionHouse.getInstance();
 
 		// created auction
-		setItem(1, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_SELF_ITEMS_CREATED_AUCTION_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_CREATED_AUCTION_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_CREATED_AUCTION_LORE.getStringList(), new HashMap<String, Object>() {{
+		setItem(1, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_STATS_SELF_ITEMS_CREATED_AUCTION_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_CREATED_AUCTION_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_CREATED_AUCTION_LORE.getStringList(), new HashMap<String, Object>() {{
 			put("%created_auctions%", (int) instance.getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.CREATED_AUCTION));
 		}}));
 
 		// sold auction
-		setItem(3, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_SELF_ITEMS_SOLD_AUCTION_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_SOLD_AUCTION_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_SOLD_AUCTION_LORE.getStringList(), new HashMap<String, Object>() {{
+		setItem(3, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_STATS_SELF_ITEMS_SOLD_AUCTION_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_SOLD_AUCTION_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_SOLD_AUCTION_LORE.getStringList(), new HashMap<String, Object>() {{
 			put("%sold_auctions%", (int) instance.getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.SOLD_AUCTION));
 		}}));
 
 		// created bin
-		setItem(1, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_SELF_ITEMS_CREATED_BIN_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_CREATED_BIN_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_CREATED_BIN_LORE.getStringList(), new HashMap<String, Object>() {{
+		setItem(1, 4, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_STATS_SELF_ITEMS_CREATED_BIN_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_CREATED_BIN_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_CREATED_BIN_LORE.getStringList(), new HashMap<String, Object>() {{
 			put("%created_bins%", (int) instance.getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.CREATED_BIN));
 		}}));
 
 		// sold bin
-		setItem(3, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_SELF_ITEMS_SOLD_BIN_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_SOLD_BIN_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_SOLD_BIN_LORE.getStringList(), new HashMap<String, Object>() {{
+		setItem(3, 4, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_STATS_SELF_ITEMS_SOLD_BIN_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_SOLD_BIN_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_SOLD_BIN_LORE.getStringList(), new HashMap<String, Object>() {{
 			put("%sold_bins%", (int) instance.getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.SOLD_BIN));
 		}}));
 
 		// money earned
-		setItem(1, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_SELF_ITEMS_MONEY_EARNED_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_MONEY_EARNED_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_MONEY_EARNED_LORE.getStringList(), new HashMap<String, Object>() {{
+		setItem(1, 7, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_STATS_SELF_ITEMS_MONEY_EARNED_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_MONEY_EARNED_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_MONEY_EARNED_LORE.getStringList(), new HashMap<String, Object>() {{
 			put("%money_earned%", AuctionAPI.getInstance().formatNumber(instance.getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.MONEY_EARNED)));
 		}}));
 
 		// money spent
-		setItem(3, 7, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_SELF_ITEMS_MONEY_SPENT_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_MONEY_SPENT_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_MONEY_SPENT_LORE.getStringList(), new HashMap<String, Object>() {{
+		setItem(3, 7, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_STATS_SELF_ITEMS_MONEY_SPENT_ITEM.getString(), Settings.GUI_STATS_SELF_ITEMS_MONEY_SPENT_NAME.getString(), Settings.GUI_STATS_SELF_ITEMS_MONEY_SPENT_LORE.getStringList(), new HashMap<String, Object>() {{
 			put("%money_spent%", AuctionAPI.getInstance().formatNumber(instance.getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.MONEY_SPENT)));
 		}}));
 

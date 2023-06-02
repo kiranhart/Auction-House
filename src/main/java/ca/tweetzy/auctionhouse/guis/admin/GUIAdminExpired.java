@@ -54,7 +54,7 @@ public final class GUIAdminExpired extends AbstractPlaceholderGui {
 	private void draw() {
 		reset();
 
-		setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.gui.close());
+		setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.gui.close());
 
 		AuctionHouse.newChain().asyncFirst(() -> this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList())).asyncLast(data -> {
 			pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45));

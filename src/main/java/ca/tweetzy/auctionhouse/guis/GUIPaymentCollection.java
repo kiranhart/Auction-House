@@ -77,7 +77,7 @@ public class GUIPaymentCollection extends AbstractPlaceholderGui {
 			setOnPage(e -> draw());
 
 
-			setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(
+			setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(this.player, 
 					Settings.GUI_PAYMENT_COLLECTION_ITEM.getString(),
 					PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_NAME.getString()),
 					PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_LORE.getStringList()), null), e -> {

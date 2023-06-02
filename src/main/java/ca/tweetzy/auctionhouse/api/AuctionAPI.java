@@ -508,7 +508,7 @@ public class AuctionAPI {
 	 */
 	public ItemStack createBundledItem(ItemStack baseItem, ItemStack... items) {
 		Objects.requireNonNull(items, "Cannot create a bundled item with no items");
-		ItemStack item = ConfigurationItemHelper.createConfigurationItem(Settings.ITEM_BUNDLE_ITEM.getString(), Settings.ITEM_BUNDLE_NAME.getString(), Settings.ITEM_BUNDLE_LORE.getStringList(), new HashMap<String, Object>() {{
+		ItemStack item = ConfigurationItemHelper.createConfigurationItem(null, Settings.ITEM_BUNDLE_ITEM.getString(), Settings.ITEM_BUNDLE_NAME.getString(), Settings.ITEM_BUNDLE_LORE.getStringList(), new HashMap<String, Object>() {{
 			put("%item_name%", getItemName(baseItem));
 		}});
 

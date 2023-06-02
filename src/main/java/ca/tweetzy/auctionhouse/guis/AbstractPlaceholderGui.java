@@ -41,14 +41,14 @@ public abstract class AbstractPlaceholderGui extends Gui {
 	public AbstractPlaceholderGui(Player player) {
 		this.player = player;
 		setUseLockedCells(true);
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILLER.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILLER.getString()));
 		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
 	}
 
 	public AbstractPlaceholderGui(AuctionPlayer player) {
 		this.player = player.getPlayer();
 		setUseLockedCells(true);
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILLER.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILLER.getString()));
 		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
 	}
 
@@ -59,63 +59,63 @@ public abstract class AbstractPlaceholderGui extends Gui {
 	}
 
 	protected ItemStack getBackButtonItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BACK_BTN_ITEM.getString(), Settings.GUI_BACK_BTN_NAME.getString(), Settings.GUI_BACK_BTN_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_BACK_BTN_ITEM.getString(), Settings.GUI_BACK_BTN_NAME.getString(), Settings.GUI_BACK_BTN_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getPreviousPageItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_PREV_PAGE_BTN_ITEM.getString(), Settings.GUI_PREV_PAGE_BTN_NAME.getString(), Settings.GUI_PREV_PAGE_BTN_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_PREV_PAGE_BTN_ITEM.getString(), Settings.GUI_PREV_PAGE_BTN_NAME.getString(), Settings.GUI_PREV_PAGE_BTN_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getNextPageItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString(), Settings.GUI_NEXT_PAGE_BTN_NAME.getString(), Settings.GUI_NEXT_PAGE_BTN_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_NEXT_PAGE_BTN_ITEM.getString(), Settings.GUI_NEXT_PAGE_BTN_NAME.getString(), Settings.GUI_NEXT_PAGE_BTN_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getRefreshButtonItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_REFRESH_BTN_ITEM.getString(), Settings.GUI_REFRESH_BTN_NAME.getString(), Settings.GUI_REFRESH_BTN_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_REFRESH_BTN_ITEM.getString(), Settings.GUI_REFRESH_BTN_NAME.getString(), Settings.GUI_REFRESH_BTN_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getCloseButtonItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getIncreaseQtyButtonItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_INCREASE_QTY_ITEM.getString(), Settings.GUI_CONFIRM_INCREASE_QTY_NAME.getString(), Settings.GUI_CONFIRM_INCREASE_QTY_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_INCREASE_QTY_ITEM.getString(), Settings.GUI_CONFIRM_INCREASE_QTY_NAME.getString(), Settings.GUI_CONFIRM_INCREASE_QTY_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getDecreaseQtyButtonItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_DECREASE_QTY_ITEM.getString(), Settings.GUI_CONFIRM_DECREASE_QTY_NAME.getString(), Settings.GUI_CONFIRM_DECREASE_QTY_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_DECREASE_QTY_ITEM.getString(), Settings.GUI_CONFIRM_DECREASE_QTY_NAME.getString(), Settings.GUI_CONFIRM_DECREASE_QTY_LORE.getStringList(), null);
 	}
 
 	// confirms
 	protected ItemStack getConfirmCancelYesItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_CANCEL_YES_ITEM.getString(), Settings.GUI_CONFIRM_CANCEL_YES_NAME.getString(), Settings.GUI_CONFIRM_CANCEL_YES_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_CANCEL_YES_ITEM.getString(), Settings.GUI_CONFIRM_CANCEL_YES_NAME.getString(), Settings.GUI_CONFIRM_CANCEL_YES_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getConfirmCancelNoItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_CANCEL_NO_ITEM.getString(), Settings.GUI_CONFIRM_CANCEL_NO_NAME.getString(), Settings.GUI_CONFIRM_CANCEL_NO_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_CANCEL_NO_ITEM.getString(), Settings.GUI_CONFIRM_CANCEL_NO_NAME.getString(), Settings.GUI_CONFIRM_CANCEL_NO_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getConfirmBuyYesItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_BUY_YES_ITEM.getString(), Settings.GUI_CONFIRM_BUY_YES_NAME.getString(), Settings.GUI_CONFIRM_BUY_YES_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_BUY_YES_ITEM.getString(), Settings.GUI_CONFIRM_BUY_YES_NAME.getString(), Settings.GUI_CONFIRM_BUY_YES_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getConfirmBuyNoItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_BUY_NO_ITEM.getString(), Settings.GUI_CONFIRM_BUY_NO_NAME.getString(), Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_BUY_NO_ITEM.getString(), Settings.GUI_CONFIRM_BUY_NO_NAME.getString(), Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getConfirmListingYesItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_LISTING_YES_ITEM.getString(), Settings.GUI_CONFIRM_LISTING_YES_NAME.getString(), Settings.GUI_CONFIRM_LISTING_YES_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_LISTING_YES_ITEM.getString(), Settings.GUI_CONFIRM_LISTING_YES_NAME.getString(), Settings.GUI_CONFIRM_LISTING_YES_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getConfirmListingNoItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_LISTING_NO_ITEM.getString(), Settings.GUI_CONFIRM_LISTING_NO_NAME.getString(), Settings.GUI_CONFIRM_LISTING_NO_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_LISTING_NO_ITEM.getString(), Settings.GUI_CONFIRM_LISTING_NO_NAME.getString(), Settings.GUI_CONFIRM_LISTING_NO_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getConfirmBidYesItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_BID_YES_ITEM.getString(), Settings.GUI_CONFIRM_BID_YES_NAME.getString(), Settings.GUI_CONFIRM_BID_YES_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_BID_YES_ITEM.getString(), Settings.GUI_CONFIRM_BID_YES_NAME.getString(), Settings.GUI_CONFIRM_BID_YES_LORE.getStringList(), null);
 	}
 
 	protected ItemStack getConfirmBidNoItem() {
-		return ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CONFIRM_BID_NO_ITEM.getString(), Settings.GUI_CONFIRM_BID_NO_NAME.getString(), Settings.GUI_CONFIRM_BID_NO_LORE.getStringList(), null);
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_BID_NO_ITEM.getString(), Settings.GUI_CONFIRM_BID_NO_NAME.getString(), Settings.GUI_CONFIRM_BID_NO_LORE.getStringList(), null);
 	}
 }

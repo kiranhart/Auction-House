@@ -69,7 +69,7 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 			}
 		});
 
-		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CREATE_BUNDLE_CONFIRM_ITEM.getString(), Settings.GUI_CREATE_BUNDLE_CONFIRM_NAME.getString(), Settings.GUI_CREATE_BUNDLE_CONFIRM_LORE.getStringList(), new HashMap<>()), ClickType.LEFT, e -> {
+		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CREATE_BUNDLE_CONFIRM_ITEM.getString(), Settings.GUI_CREATE_BUNDLE_CONFIRM_NAME.getString(), Settings.GUI_CREATE_BUNDLE_CONFIRM_LORE.getStringList(), new HashMap<>()), ClickType.LEFT, e -> {
 			ItemStack firstItem = null;
 			List<ItemStack> validItems = new ArrayList<>();
 

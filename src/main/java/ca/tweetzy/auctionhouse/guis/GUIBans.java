@@ -51,7 +51,7 @@ public class GUIBans extends AbstractPlaceholderGui {
 	public GUIBans(Player player) {
 		super(player);
 		setTitle(TextUtils.formatText(Settings.GUI_BANS_TITLE.getString()));
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_BANS_BG_ITEM.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_BANS_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);
@@ -63,7 +63,7 @@ public class GUIBans extends AbstractPlaceholderGui {
 
 	private void draw() {
 		reset();
-		setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.gui.close());
+		setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.gui.close());
 		drawItems();
 	}
 
@@ -80,7 +80,7 @@ public class GUIBans extends AbstractPlaceholderGui {
 			int slot = 0;
 			for (AuctionBan ban : data) {
 				OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ban.getBannedPlayer());
-				setButton(slot++, ConfigurationItemHelper.createConfigurationItem(AuctionAPI.getInstance().getPlayerHead(offlinePlayer.getName()), Settings.GUI_BANS_BAN_NAME.getString(), Settings.GUI_BANS_BAN_LORE.getStringList(), new HashMap<String, Object>() {{
+				setButton(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, AuctionAPI.getInstance().getPlayerHead(offlinePlayer.getName()), Settings.GUI_BANS_BAN_NAME.getString(), Settings.GUI_BANS_BAN_LORE.getStringList(), new HashMap<String, Object>() {{
 					put("%player_name%", offlinePlayer.getName());
 					put("%player_displayname%", AuctionAPI.getInstance().getDisplayName(offlinePlayer));
 					put("%ban_reason%", ban.getReason());

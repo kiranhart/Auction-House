@@ -93,7 +93,7 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 
 		for (Transaction transaction : data) {
 			final ItemStack item = transaction.getItem().clone();
-			setButton(slot++, ConfigurationItemHelper.createConfigurationItem(item, Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(), new HashMap<String, Object>() {{
+			setButton(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, item, Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%transaction_id%", transaction.getId().toString());
 				put("%seller%", Bukkit.getOfflinePlayer(transaction.getSeller()).getName());
 				put("%buyer%", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName());

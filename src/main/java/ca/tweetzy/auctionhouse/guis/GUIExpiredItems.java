@@ -83,12 +83,12 @@ public class GUIExpiredItems extends AbstractPlaceholderGui {
 			setOnPage(e -> draw());
 
 			if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-				setButton(5, 2, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_LORE.getStringList(), null), e -> {
+				setButton(5, 2, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_LORE.getStringList(), null), e -> {
 					e.manager.showGUI(e.player, new GUIPaymentCollection(this.auctionPlayer));
 				});
 
 
-			setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_EXPIRED_AUCTIONS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList(), null), e -> {
+			setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_EXPIRED_AUCTIONS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList(), null), e -> {
 
 				if (this.lastClicked == null) {
 					this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();

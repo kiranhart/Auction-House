@@ -34,7 +34,7 @@ public final class GUIStatisticViewSelect extends AbstractPlaceholderGui {
 		super(player);
 		this.auctionPlayer = player;
 		setTitle(Settings.GUI_STATS_VIEW_SELECT_TITLE.getString());
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(Settings.GUI_STATS_VIEW_SELECT_BG_ITEM.getString()));
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_STATS_VIEW_SELECT_BG_ITEM.getString()));
 		setUseLockedCells(true);
 		setAcceptsItems(false);
 		setAllowDrops(false);
@@ -45,7 +45,7 @@ public final class GUIStatisticViewSelect extends AbstractPlaceholderGui {
 	private void draw() {
 
 		// self
-		setButton(1, 2, ConfigurationItemHelper.createConfigurationItem(
+		setButton(1, 2, ConfigurationItemHelper.createConfigurationItem(this.player, 
 				Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_USE_HEAD.getBoolean() ?
 						AuctionAPI.getInstance().getPlayerHead(this.player.getName()) : XMaterial.matchXMaterial(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_ITEM.getString()).orElse(XMaterial.STONE).parseItem(),
 				Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_NAME.getString(),
@@ -53,7 +53,7 @@ public final class GUIStatisticViewSelect extends AbstractPlaceholderGui {
 				null
 		), click -> click.manager.showGUI(click.player, new GUIStatisticSelf(this.auctionPlayer)));
 
-		setButton(1, 6, ConfigurationItemHelper.createConfigurationItem(
+		setButton(1, 6, ConfigurationItemHelper.createConfigurationItem(this.player, 
 				XMaterial.matchXMaterial(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_ITEM.getString()).orElse(XMaterial.STONE).parseItem(),
 				Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_NAME.getString(),
 				Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_LORE.getStringList(),

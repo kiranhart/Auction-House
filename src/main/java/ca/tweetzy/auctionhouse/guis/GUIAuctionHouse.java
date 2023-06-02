@@ -498,7 +498,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 	 */
 	private void drawVariableButtons() {
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString(), PlaceholderAPIHook.PAPIReplacer.tryReplace(this.auctionPlayer.getPlayer(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList()), new HashMap<String, Object>() {{
+			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString(), PlaceholderAPIHook.PAPIReplacer.tryReplace(this.auctionPlayer.getPlayer(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList()), new HashMap<String, Object>() {{
 				put("%active_player_auctions%", auctionPlayer.getItems(false).size());
 				put("%player_balance%", Settings.USE_SHORT_NUMBERS_ON_PLAYER_BALANCE.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(EconomyManager.getBalance(auctionPlayer.getPlayer())) : AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(auctionPlayer.getPlayer())));
 			}}), e -> {
@@ -508,7 +508,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), new HashMap<String, Object>() {{
+			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%expired_player_auctions%", auctionPlayer.getItems(true).size());
 			}}), e -> {
 				cleanup();
@@ -517,7 +517,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList(), new HashMap<String, Object>() {{
+			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%total_items_bought%", AuctionHouse.getInstance().getTransactionManager().getTotalItemsBought(auctionPlayer.getPlayer().getUniqueId()));
 				put("%total_items_sold%", AuctionHouse.getInstance().getTransactionManager().getTotalItemsSold(auctionPlayer.getPlayer().getUniqueId()));
 			}}), e -> {
@@ -531,9 +531,9 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 	}
 
 	private void drawPaginationButtons() {
-		setItems(new int[]{Settings.GUI_PREV_PAGE_BTN_SLOT.getInt(), Settings.GUI_NEXT_PAGE_BTN_SLOT.getInt()}, ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILLER.getString()));
+		setItems(new int[]{Settings.GUI_PREV_PAGE_BTN_SLOT.getInt(), Settings.GUI_NEXT_PAGE_BTN_SLOT.getInt()}, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILLER.getString()));
 
-		setPrevPage(Settings.GUI_PREV_PAGE_BTN_SLOT.getInt(), page == 1 ? ConfigurationItemHelper.createConfigurationItem(Settings.GUI_FILLER.getString()) : getPreviousPageItem());
+		setPrevPage(Settings.GUI_PREV_PAGE_BTN_SLOT.getInt(), page == 1 ? ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILLER.getString()) : getPreviousPageItem());
 
 		if (pages > page)
 			setNextPage(Settings.GUI_NEXT_PAGE_BTN_SLOT.getInt(), getNextPageItem());
@@ -550,7 +550,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 
 		if (Settings.REPLACE_HOW_TO_SELL_WITH_LIST_BUTTON.getBoolean()) {
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ENABLED.getBoolean()) {
-				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_LORE.getStringList(), null), e -> {
+				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_LORE.getStringList(), null), e -> {
 					// using this will ignore the "SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM" setting
 					if (FloodGateHook.isFloodGateUser(e.player)) {
 						AuctionHouse.getInstance().getLocale().getMessage("commands.no_permission").sendPrefixedMessage(e.player);
@@ -587,12 +587,12 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 			}
 		} else {
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ENABLED.getBoolean()) {
-				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList(), null), null);
+				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList(), null), null);
 			}
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList(), null), null);
+			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList(), null), null);
 		}
 
 		if (Settings.GUI_REFRESH_BTN_ENABLED.getBoolean()) {
@@ -653,7 +653,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 				put("%filter_sort_order%", auctionPlayer.getAuctionSortType().getTranslatedType());
 			}};
 
-			ItemStack item = materialToBeUsed.equalsIgnoreCase("PLAYER_HEAD") ? ConfigurationItemHelper.createConfigurationItem(AuctionAPI.getInstance().getPlayerHead(this.auctionPlayer.getPlayer().getName()), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), replacements) : ConfigurationItemHelper.createConfigurationItem(materialToBeUsed, Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), replacements);
+			ItemStack item = materialToBeUsed.equalsIgnoreCase("PLAYER_HEAD") ? ConfigurationItemHelper.createConfigurationItem(this.player, AuctionAPI.getInstance().getPlayerHead(this.auctionPlayer.getPlayer().getName()), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), replacements) : ConfigurationItemHelper.createConfigurationItem(this.player, materialToBeUsed, Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), replacements);
 
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED.getBoolean()) {
 				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getInt(), item, e -> {
@@ -689,7 +689,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(), new HashMap<String, Object>() {{
+			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ITEM.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME.getString(), Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%filter_category%", auctionPlayer.getSelectedFilter().getTranslatedType());
 				put("%filter_auction_type%", auctionPlayer.getSelectedSaleType().getTranslatedType());
 				put("%filter_sort_order%", auctionPlayer.getAuctionSortType().getTranslatedType());

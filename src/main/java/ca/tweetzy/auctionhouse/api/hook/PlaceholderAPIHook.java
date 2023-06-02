@@ -203,6 +203,9 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 	@UtilityClass
 	public static final class PAPIReplacer {
 		public String tryReplace(Player player, String msg) {
+			if (player == null)
+				return msg;
+
 			if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI"))
 				msg = PlaceholderAPI.setPlaceholders(player, msg);
 			return msg;
