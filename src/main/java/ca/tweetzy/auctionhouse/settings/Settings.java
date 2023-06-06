@@ -191,6 +191,7 @@ public class Settings {
 	public static final ConfigSetting WEAPONS_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.weapons", true, "Should this filter be enabled?");
 	public static final ConfigSetting SPAWNERS_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.spawners", true, "Should this filter be enabled?");
 	public static final ConfigSetting ENCHANTS_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.enchants", true, "Should this filter be enabled?");
+	public static final ConfigSetting POTIONS_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.potions", true, "Should this filter be enabled?");
 	public static final ConfigSetting MISC_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.misc", true, "Should this filter be enabled?");
 	public static final ConfigSetting SEARCH_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.search", true, "Should this filter be enabled?");
 	public static final ConfigSetting SELF_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.self", true, "Should this filter be enabled?");
@@ -858,6 +859,11 @@ public class Settings {
 	public static final ConfigSetting GUI_FILTER_ITEMS_MISC_NAME = new ConfigSetting(config, "gui.filter.items.misc.name", "&e&lMiscellaneous");
 	public static final ConfigSetting GUI_FILTER_ITEMS_MISC_LORE = new ConfigSetting(config, "gui.filter.items.misc.lore", Collections.singletonList("&7Click to set the filter to&f: &eMiscellaneous"));
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_POTIONS_ITEM = new ConfigSetting(config, "gui.filter.items.potions.item", XMaterial.SPLASH_POTION.name());
+	public static final ConfigSetting GUI_FILTER_ITEMS_POTIONS_NAME = new ConfigSetting(config, "gui.filter.items.potions.name", "&e&LPotions");
+	public static final ConfigSetting GUI_FILTER_ITEMS_POTIONS_LORE = new ConfigSetting(config, "gui.filter.items.potions.lore", Collections.singletonList("&7Click to set the filter to&f: &ePotions"));
+
+
 	public static final ConfigSetting GUI_FILTER_ITEMS_ENCHANTS_ITEM = new ConfigSetting(config, "gui.filter.items.enchants.item", XMaterial.ENCHANTED_BOOK.name());
 	public static final ConfigSetting GUI_FILTER_ITEMS_ENCHANTS_NAME = new ConfigSetting(config, "gui.filter.items.enchants.name", "&e&lEnchantments");
 	public static final ConfigSetting GUI_FILTER_ITEMS_ENCHANTS_LORE = new ConfigSetting(config, "gui.filter.items.enchants.lore", Collections.singletonList("&7Click to set the filter to&f: &eEnchantments"));
@@ -915,6 +921,11 @@ public class Settings {
 	public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_WEAPONS_ITEM = new ConfigSetting(config, "gui.filter whitelist.items.weapons.item", XMaterial.DIAMOND_SWORD.name());
 	public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_WEAPONS_NAME = new ConfigSetting(config, "gui.filter whitelist.items.weapons.name", "&e&lWeapon Filters");
 	public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_WEAPONS_LORE = new ConfigSetting(config, "gui.filter whitelist.items.weapons.lore", Collections.singletonList("&7Click to adjust the item whitelist for this filter"));
+
+	public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_POTIONS_ITEM = new ConfigSetting(config, "gui.filter whitelist.items.potions.item", XMaterial.SPLASH_POTION.name());
+	public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_POTIONS_NAME = new ConfigSetting(config, "gui.filter whitelist.items.potions.name", "&e&LPotions Filters");
+	public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_POTIONS_LORE = new ConfigSetting(config, "gui.filter whitelist.items.potions.lore", Collections.singletonList("&7Click to adjust the item whitelist for this filter"));
+
 
 	public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_MISC_ITEM = new ConfigSetting(config, "gui.filter whitelist.items.misc.item", XMaterial.BONE_MEAL.name());
 	public static final ConfigSetting GUI_FILTER_WHITELIST_ITEMS_MISC_NAME = new ConfigSetting(config, "gui.filter whitelist.items.misc.name", "&e&lMiscellaneous Filters");

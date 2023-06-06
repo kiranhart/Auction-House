@@ -47,7 +47,7 @@ public class GUIFilterSelection extends AbstractPlaceholderGui {
 		super(auctionPlayer);
 		this.auctionPlayer = auctionPlayer;
 		setTitle(TextUtils.formatText(Settings.GUI_FILTER_TITLE.getString()));
-		setRows(4);
+		setRows(5);
 		setAcceptsItems(false);
 		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_BG_ITEM.getString()));
 		setUseLockedCells(true);
@@ -132,6 +132,13 @@ public class GUIFilterSelection extends AbstractPlaceholderGui {
 		if (AuctionItemCategory.BLOCKS.isEnabled())
 			setButton(2, 7, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_ITEMS_BLOCKS_ITEM.getString(), Settings.GUI_FILTER_ITEMS_BLOCKS_NAME.getString(), Settings.GUI_FILTER_ITEMS_BLOCKS_LORE.getStringList(), null), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.BLOCKS);
+				updatePlayerFilter(this.auctionPlayer);
+				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+			});
+
+		if (AuctionItemCategory.POTIONS.isEnabled())
+			setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_ITEMS_POTIONS_ITEM.getString(), Settings.GUI_FILTER_ITEMS_POTIONS_NAME.getString(), Settings.GUI_FILTER_ITEMS_POTIONS_LORE.getStringList(), null), e -> {
+				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.POTIONS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});

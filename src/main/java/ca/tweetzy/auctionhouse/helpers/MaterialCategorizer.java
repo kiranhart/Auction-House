@@ -53,6 +53,29 @@ public class MaterialCategorizer {
 		// Tool Filter
 		if (materialName.endsWith("_AXE") || materialName.endsWith("_PICKAXE") || materialName.endsWith("_HOE") || materialName.endsWith("SHOVEL"))
 			return AuctionItemCategory.TOOLS;
+
+		// Potions
+		if (material == XMaterial.BREWING_STAND.parseMaterial()
+				|| material == XMaterial.CAULDRON.parseMaterial()
+				|| material == XMaterial.BLAZE_POWDER.parseMaterial()
+				|| material == XMaterial.POTION.parseMaterial()
+				|| material == XMaterial.NETHER_WART.parseMaterial()
+				|| material == XMaterial.REDSTONE.parseMaterial()
+				|| material == XMaterial.GLOWSTONE_DUST.parseMaterial()
+				|| material == XMaterial.FERMENTED_SPIDER_EYE.parseMaterial()
+				|| material == XMaterial.GUNPOWDER.parseMaterial()
+				|| material.name().contains("DRAGONS_BREATH") || material.name().contains("DRAGON_BREATH")
+				|| material == XMaterial.GLISTERING_MELON_SLICE.parseMaterial()
+				|| material == XMaterial.MAGMA_CREAM.parseMaterial()
+				|| material == XMaterial.GHAST_TEAR.parseMaterial()
+				|| material == XMaterial.SUGAR.parseMaterial()
+				|| material == XMaterial.GOLDEN_CARROT.parseMaterial()
+				|| material == XMaterial.PUFFERFISH.parseMaterial()
+				|| material == XMaterial.RABBIT_FOOT.parseMaterial()
+				|| material == XMaterial.PHANTOM_MEMBRANE.parseMaterial()
+				|| material == XMaterial.SPIDER_EYE.parseMaterial())
+			return AuctionItemCategory.POTIONS;
+
 		return AuctionItemCategory.MISC;
 	}
 }

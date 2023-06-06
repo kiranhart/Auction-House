@@ -155,6 +155,7 @@ public class LocaleSettings {
 		languageNodes.put("auction_filter.categories.food", "Food");
 		languageNodes.put("auction_filter.categories.armor", "Armor");
 		languageNodes.put("auction_filter.categories.blocks", "Blocks");
+		languageNodes.put("auction_filter.categories.potions", "Potions");
 		languageNodes.put("auction_filter.categories.tools", "Tools");
 		languageNodes.put("auction_filter.categories.misc", "Misc");
 		languageNodes.put("auction_filter.categories.spawners", "Spawners");

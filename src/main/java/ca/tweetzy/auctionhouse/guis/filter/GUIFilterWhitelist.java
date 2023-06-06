@@ -77,5 +77,10 @@ public class GUIFilterWhitelist extends AbstractPlaceholderGui {
 		setButton(3, 7, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_ITEM.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_NAME.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_LORE.getStringList(), null), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.MISC));
 		});
+
+		setButton(4, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_ITEM.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_NAME.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_LORE.getStringList(), null), e -> {
+			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.POTIONS));
+		});
+
 	}
 }

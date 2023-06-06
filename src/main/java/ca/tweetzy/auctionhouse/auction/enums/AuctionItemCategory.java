@@ -35,6 +35,7 @@ public enum AuctionItemCategory {
 	BLOCKS("Blocks", true, Settings.BLOCKS_FILTER_ENABLED.getBoolean()),
 	TOOLS("Tools", true, Settings.TOOLS_FILTER_ENABLED.getBoolean()),
 	WEAPONS("Weapons", true, Settings.WEAPONS_FILTER_ENABLED.getBoolean()),
+	POTIONS("Potions", true, Settings.POTIONS_FILTER_ENABLED.getBoolean()),
 	SPAWNERS("Spawners", true, Settings.SPAWNERS_FILTER_ENABLED.getBoolean()),
 	ENCHANTS("Enchants", true, Settings.ENCHANTS_FILTER_ENABLED.getBoolean()),
 	MISC("Misc", true, Settings.MISC_FILTER_ENABLED.getBoolean()),
@@ -99,6 +100,8 @@ public enum AuctionItemCategory {
 				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.weapons").getMessage();
 			case SELF:
 				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.self").getMessage();
+			case POTIONS:
+				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.potions").getMessage();
 			case SEARCH:
 				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.search").getMessage();
 		}
