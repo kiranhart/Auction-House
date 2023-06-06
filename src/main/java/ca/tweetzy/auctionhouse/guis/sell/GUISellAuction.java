@@ -41,6 +41,7 @@ import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -70,10 +71,14 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 		setRows(6);
 
 		setOnClose(close -> {
-			if (BundleUtil.isBundledItem(this.auctionPlayer.getItemBeingListed()))
-				PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(this.auctionPlayer.getItemBeingListed()));
-			else
-				PlayerUtils.giveItem(close.player, this.auctionPlayer.getItemBeingListed());
+			final ItemStack itemToGive = this.auctionPlayer.getItemBeingListed();
+			if (itemToGive != null)
+
+				if (BundleUtil.isBundledItem(itemToGive)) {
+					PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(itemToGive));
+				} else {
+					PlayerUtils.giveItem(close.player, itemToGive);
+				}
 
 			this.auctionPlayer.setItemBeingListed(null);
 		});
