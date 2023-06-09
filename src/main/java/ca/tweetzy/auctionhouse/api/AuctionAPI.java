@@ -264,7 +264,8 @@ public class AuctionAPI {
 	 */
 	public String getItemName(ItemStack stack) {
 		Objects.requireNonNull(stack, "Item stack cannot be null when getting name");
-		return stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : TextUtils.formatText("&f" + WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " ")));
+		final String name =  stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : TextUtils.formatText("&f" + WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " ")));
+		return name;
 	}
 
 	/**
@@ -313,7 +314,8 @@ public class AuctionAPI {
 	 * @return whether the keyword is found
 	 */
 	public boolean match(String pattern, String sentence) {
-		Pattern patt = Pattern.compile(ChatColor.stripColor(pattern), Pattern.CASE_INSENSITIVE);
+//		Pattern patt = Pattern.compile(ChatColor.stripColor(pattern), Pattern.CASE_INSENSITIVE);
+		Pattern patt = Pattern.compile("\\b" + Pattern.quote(ChatColor.stripColor(pattern)) + "\\b", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = patt.matcher(sentence);
 		return matcher.find();
 	}
