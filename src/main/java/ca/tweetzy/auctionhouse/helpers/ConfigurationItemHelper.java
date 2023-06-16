@@ -22,9 +22,9 @@ import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.nms.NBTEditor;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.utils.QuickItem;
+import de.tr7zw.changeme.nbtapi.NBT;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -78,7 +78,9 @@ public class ConfigurationItemHelper {
 		stack.setItemMeta(meta);
 		if (nbtData != null) {
 			for (String nbt : nbtData) {
-				stack = NBTEditor.set(stack, nbt.split(";")[1], nbt.split(";")[0]);
+				NBT.modify(stack, nbtD -> {
+					nbtD.setString(nbt.split(";")[0], nbt.split(";")[1]);
+				});
 			}
 		}
 		return stack;

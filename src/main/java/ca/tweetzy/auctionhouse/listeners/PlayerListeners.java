@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.listeners;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
@@ -29,8 +30,8 @@ import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.nms.NBTEditor;
 import ca.tweetzy.flight.comp.Titles;
+import de.tr7zw.changeme.nbtapi.NBT;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -44,6 +45,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -131,7 +133,7 @@ public class PlayerListeners implements Listener {
 		final ItemStack[] craftingItems = inventory.getMatrix();
 		for (ItemStack item : craftingItems) {
 			if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
-			if (NBTEditor.contains(item, "AuctionBundleItem")) {
+			if (BundleUtil.isBundledItem(item)) {
 				inventory.setResult(XMaterial.AIR.parseItem());
 			}
 		}
@@ -193,8 +195,10 @@ public class PlayerListeners implements Listener {
 		ItemStack stack = event.getResult();
 		if (stack == null) return;
 
-		stack = NBTEditor.set(stack, "AUCTION_REPAIRED", "AuctionHouseRepaired");
+		NBT.modify(stack, nbt -> {
+			nbt.setBoolean("AuctionHouseRepaired", true);
+		});
+
 		event.setResult(stack);
 	}
-
 }

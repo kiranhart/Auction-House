@@ -37,7 +37,6 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -89,7 +88,7 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 		setButton(getRows() - 1, 0, getBackButtonItem(), click -> {
 
 			click.gui.close();
-			click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, NBTEditor.contains(this.auctionPlayer.getItemBeingListed(), "AuctionBundleItem") ? GUISellPlaceItem.ViewMode.BUNDLE_ITEM : GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.BIN));
+			click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, BundleUtil.isBundledItem(this.auctionPlayer.getItemBeingListed()) ? GUISellPlaceItem.ViewMode.BUNDLE_ITEM : GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.BIN));
 		});
 
 		if (Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {

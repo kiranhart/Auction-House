@@ -18,8 +18,8 @@
 
 package ca.tweetzy.auctionhouse.listeners;
 
-import ca.tweetzy.core.utils.nms.NBTEditor;
 import com.Zrips.CMI.events.CMIAnvilItemRepairEvent;
+import de.tr7zw.changeme.nbtapi.NBT;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -37,7 +37,10 @@ public final class CMIListener implements Listener {
 		ItemStack stack = event.getItemTo();
 		if (stack == null) return;
 
-		stack = NBTEditor.set(stack, "AUCTION_REPAIRED", "AuctionHouseRepaired");
+		NBT.modify(stack, nbt -> {
+			nbt.setBoolean("AuctionHouseRepaired", true);
+		});
+
 		event.setItemTo(stack);
 	}
 }

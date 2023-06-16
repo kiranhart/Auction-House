@@ -31,6 +31,7 @@ import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellListingType;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
+import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -39,7 +40,6 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -264,7 +264,7 @@ public final class CommandSell extends AbstractCommand {
 			return ReturnType.FAILURE;
 		} else {
 			if (isBundle) {
-				if (NBTEditor.contains(itemToSell, "AuctionBundleItem")) {
+				if (BundleUtil.isBundledItem(itemToSell)) {
 					instance.getLocale().getMessage("general.cannotsellbundleditem").sendPrefixedMessage(player);
 					return ReturnType.FAILURE;
 				}

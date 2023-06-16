@@ -18,30 +18,25 @@
 
 package ca.tweetzy.auctionhouse.helpers;
 
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.core.utils.nms.NBTEditor;
+import de.tr7zw.changeme.nbtapi.NBT;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @UtilityClass
 public final class BundleUtil {
 
 	public boolean isBundledItem(@NonNull final ItemStack itemStack) {
-		return itemStack.getType() != XMaterial.AIR.parseMaterial() && NBTEditor.contains(itemStack, "AuctionBundleItem");
+		return itemStack.getType() != XMaterial.AIR.parseMaterial() && NBT.get(itemStack, nbt -> nbt.hasTag("AuctionBundleItem"));
 	}
 
 	public List<ItemStack> extractBundleItems(@NonNull final ItemStack itemStack) {
-		final List<ItemStack> items = new ArrayList<>();
-
-		for (int i = 0; i < NBTEditor.getInt(itemStack, "AuctionBundleItem"); i++) {
-			items.add(AuctionAPI.getInstance().deserializeItem(NBTEditor.getByteArray(itemStack, "AuctionBundleItem-" + i)));
-		}
-
-		return items;
+		final ItemStack[] bundledItems = NBT.get(itemStack, nbt -> nbt.getItemStackArray("AuctionBundleItems"));
+		return new ArrayList<>(Arrays.asList(bundledItems));
 	}
 }

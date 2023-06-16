@@ -32,7 +32,6 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
@@ -79,7 +78,7 @@ public final class AuctionCreator {
 			return;
 		}
 
-		if (!AuctionAPI.getInstance().meetsMinItemPrice(NBTEditor.contains(auctionItem.getItem(), "AuctionBundleItem"), auctionItem.isBidItem(), auctionItem.getItem(), auctionItem.getBasePrice(), auctionItem.getBidStartingPrice())) {
+		if (!AuctionAPI.getInstance().meetsMinItemPrice(BundleUtil.isBundledItem(auctionItem.getItem()), auctionItem.isBidItem(), auctionItem.getItem(), auctionItem.getBasePrice(), auctionItem.getBidStartingPrice())) {
 			instance.getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getMinItemPriceManager().getMinPrice(auctionItem.getItem()).getPrice())).sendPrefixedMessage(seller);
 			return;
 		}
@@ -162,9 +161,9 @@ public final class AuctionCreator {
 
 				instance.getLocale().getMessage("general.something_went_wrong_while_listing").sendPrefixedMessage(seller);
 				ItemStack originalCopy = auctionItem.getItem().clone();
-				int totalOriginal = NBTEditor.contains(originalCopy, "AuctionBundleItem") ? AuctionAPI.getInstance().getItemCountInPlayerInventory(seller, originalCopy) : originalCopy.getAmount();
+				int totalOriginal = BundleUtil.isBundledItem(originalCopy) ? AuctionAPI.getInstance().getItemCountInPlayerInventory(seller, originalCopy) : originalCopy.getAmount();
 
-				if (NBTEditor.contains(originalCopy, "AuctionBundleItem")) {
+				if (BundleUtil.isBundledItem(originalCopy)) {
 					originalCopy.setAmount(1);
 					for (int i = 0; i < totalOriginal; i++) PlayerUtils.giveItem(seller, originalCopy);
 				} else {

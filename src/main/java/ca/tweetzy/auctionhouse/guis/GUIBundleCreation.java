@@ -31,7 +31,6 @@ import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -81,7 +80,7 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 
 				boolean meetsListingRequirements = AuctionAPI.getInstance().meetsListingRequirements(player, item);
 
-				if (NBTEditor.contains(item, "AuctionBundleItem")) {
+				if (BundleUtil.isBundledItem(item)) {
 					meetsListingRequirements = false;
 					containsBundle = true;
 				}

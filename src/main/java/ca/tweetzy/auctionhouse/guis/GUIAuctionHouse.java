@@ -36,6 +36,7 @@ import ca.tweetzy.auctionhouse.guis.sell.GUISellListingType;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
+import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -45,7 +46,6 @@ import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -425,7 +425,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 	private void handleContainerInspect(GuiClickEvent e) {
 		ItemStack clicked = e.clickedItem;
 
-		if (NBTEditor.contains(clicked, "AuctionBundleItem")) {
+		if (BundleUtil.isBundledItem(clicked)) {
 			cleanup();
 			e.manager.showGUI(e.player, new GUIContainerInspect(this.auctionPlayer, e.clickedItem));
 			return;

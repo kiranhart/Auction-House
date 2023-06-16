@@ -19,19 +19,17 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
+import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.nms.NBTEditor;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,14 +67,8 @@ public class GUIContainerInspect extends AbstractPlaceholderGui {
 		setAllowDrops(false);
 		setRows(6);
 
-		if (NBTEditor.contains(this.container, "AuctionBundleItem")) {
-			List<ItemStack> items = new ArrayList<>();
-
-			for (int i = 0; i < NBTEditor.getInt(this.container, "AuctionBundleItem"); i++) {
-				items.add(AuctionAPI.getInstance().deserializeItem(NBTEditor.getByteArray(this.container, "AuctionBundleItem-" + i)));
-			}
-
-			this.items = items;
+		if (BundleUtil.isBundledItem(this.container)) {
+			this.items = BundleUtil.extractBundleItems(this.container);
 		}
 
 		if (this.container.getType().name().contains("SHULKER_BOX")) {

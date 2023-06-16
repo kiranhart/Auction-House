@@ -89,7 +89,7 @@ public final class DiscordMessageCreator {
 		DiscordWebhook.EmbedObject embed = generateBaseEmbed();
 
 		embed.addField(Settings.DISCORD_MSG_FIELD_SELLER_NAME.getString(), Settings.DISCORD_MSG_FIELD_SELLER_VALUE.getString().replace("%seller%", this.seller.getName()), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
-		embed.addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", "x" + this.listing.getItem().getAmount() + " " + ChatColor.stripColor(ItemUtil.getStackName(this.listing.getItem()))), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
+		embed.addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", "x" + this.listing.getItem().getAmount() + " " + ChatColor.stripColor(ItemUtil.getItemName(this.listing.getItem()))), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
 
 		switch (this.messageType) {
 			case NEW_AUCTION_LISTING:

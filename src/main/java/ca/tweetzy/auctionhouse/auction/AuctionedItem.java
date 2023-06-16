@@ -22,10 +22,10 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
+import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.core.utils.nms.NBTEditor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -199,7 +199,7 @@ public class AuctionedItem {
 				}
 			}
 
-			if (NBTEditor.contains(itemStack, "AuctionBundleItem") || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && itemStack.getType().name().contains("SHULKER_BOX"))) {
+			if (BundleUtil.isBundledItem(itemStack) || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && itemStack.getType().name().contains("SHULKER_BOX"))) {
 				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_INSPECTION.getStringList()));
 			}
 		} else {

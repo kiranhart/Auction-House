@@ -29,7 +29,9 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.ItemUtils;
-import ca.tweetzy.core.utils.nms.NBTEditor;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import de.tr7zw.changeme.nbtapi.NBT;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -264,7 +266,7 @@ public class AuctionAPI {
 	 */
 	public String getItemName(ItemStack stack) {
 		Objects.requireNonNull(stack, "Item stack cannot be null when getting name");
-		final String name =  stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : TextUtils.formatText("&f" + WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " ")));
+		final String name = stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : TextUtils.formatText("&f" + WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " ")));
 		return name;
 	}
 
@@ -412,9 +414,9 @@ public class AuctionAPI {
 		if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
 			for (ItemStack item : player.getInventory().getContents()) {
 				if (item == null || item.getType() != XMaterial.PLAYER_HEAD.parseMaterial()) continue;
-				if (NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) {
-					final String invItemTexture = NBTEditor.getTexture(item);
-					final String orgItemTexture = NBTEditor.getTexture(stack);
+				if (getHeadTexture(item).equals(getHeadTexture(stack))) {
+					final String invItemTexture = getHeadTexture(item);
+					final String orgItemTexture = getHeadTexture(stack);
 
 					if (invItemTexture == null) continue;
 					if (orgItemTexture == null) continue;
@@ -430,6 +432,14 @@ public class AuctionAPI {
 		return total;
 	}
 
+	public String getHeadTexture(final ItemStack item) {
+		final String textureBase64 = NBT.get(item, nbt -> nbt.getCompound("SkullOwner").getCompound("Properties").getCompoundList("textures").get(0).getString("Value"));
+		final String textureJson = new String(Base64.getDecoder().decode(textureBase64));
+		final JsonObject object = JsonParser.parseString(textureJson).getAsJsonObject();
+
+		return object.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString();
+	}
+
 	/**
 	 * Used to get any items that are similar to the provided stack in a player's inventory
 	 *
@@ -443,7 +453,9 @@ public class AuctionAPI {
 			ItemStack item = player.getInventory().getItem(i);
 			if (item == null) continue;
 			if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial() && item.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
-				if (!NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) continue;
+//				NBT.get(item, nbt -> nbt.getCompoundList("textures").get(0).getString("Value"));
+
+				if (!getHeadTexture(item).equals(getHeadTexture(stack))) continue;
 			} else {
 				if (!item.isSimilar(stack)) continue;
 			}
@@ -475,13 +487,13 @@ public class AuctionAPI {
 				if (invItemMeta != null && orgItemMeta != null && invItemMeta.hasOwner() && orgItemMeta.hasOwner()) {
 					if (!invItemMeta.getOwner().equalsIgnoreCase(orgItemMeta.getOwner())) continue;
 				} else {
-					final String invItemTexture = NBTEditor.getTexture(item);
-					final String orgItemTexture = NBTEditor.getTexture(stack);
+					final String invItemTexture = getHeadTexture(item);
+					final String orgItemTexture = getHeadTexture(stack);
 
 					if (invItemTexture == null) continue;
 					if (orgItemTexture == null) continue;
 
-					if (!NBTEditor.getTexture(item).equals(NBTEditor.getTexture(stack))) continue;
+					if (!getHeadTexture(item).equals(getHeadTexture(stack))) continue;
 				}
 
 			} else {
@@ -519,12 +531,15 @@ public class AuctionAPI {
 		item.setItemMeta(meta);
 
 		int total = items.length;
-		item = NBTEditor.set(item, total, "AuctionBundleItem");
-		item = NBTEditor.set(item, UUID.randomUUID().toString(), "AuctionBundleItemUUID-" + UUID.randomUUID().toString());
 
-		for (int i = 0; i < total; i++) {
-			item = NBTEditor.set(item, serializeItem(items[i]), "AuctionBundleItem-" + i);
-		}
+		NBT.modify(item, nbt -> {
+			nbt.setInteger("AuctionBundleItem", total);
+			nbt.setString("AuctionBundleItemUUID-" + UUID.randomUUID().toString(), UUID.randomUUID().toString());
+		});
+
+		NBT.modify(item, nbt -> {
+			nbt.setItemStackArray("AuctionBundleItems", items);
+		});
 
 		ItemUtils.addGlow(item);
 		return item;
@@ -572,7 +587,7 @@ public class AuctionAPI {
 	}
 
 	public boolean isRepaired(final ItemStack item) {
-		return NBTEditor.contains(item, "AuctionHouseRepaired");
+		return NBT.get(item, nbt -> nbt.hasTag("AuctionHouseRepaired"));
 	}
 
 	public double calculateListingFee(double basePrice) {
@@ -737,7 +752,7 @@ public class AuctionAPI {
 
 		// Check NBT tags
 		for (String nbtTag : Settings.BLOCKED_NBT_TAGS.getStringList()) {
-			if (NBTEditor.contains(itemStack, nbtTag)) {
+			if (NBT.get(itemStack, nbt -> nbt.hasTag(nbtTag))) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.blockednbttag").processPlaceholder("nbttag", nbtTag).sendPrefixedMessage(player);
 				return false;
 			}
