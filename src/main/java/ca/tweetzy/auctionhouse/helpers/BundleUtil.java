@@ -18,6 +18,7 @@
 
 package ca.tweetzy.auctionhouse.helpers;
 
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.core.compatibility.XMaterial;
 import de.tr7zw.changeme.nbtapi.NBT;
 import lombok.NonNull;
@@ -36,6 +37,20 @@ public final class BundleUtil {
 	}
 
 	public List<ItemStack> extractBundleItems(@NonNull final ItemStack itemStack) {
+		final List<ItemStack> items = new ArrayList<>();
+
+		final int totalBundledItems = NBT.get(itemStack, nbt -> nbt.getInteger("AuctionBundleItem"));
+
+		for (int i = 0; i < totalBundledItems; i++) {
+			int finalI = i;
+			if (NBT.get(itemStack, nbt -> nbt.hasTag("AuctionBundleItem-" + finalI)))
+				items.add(AuctionAPI.getInstance().deserializeItem(NBT.get(itemStack, nbt -> nbt.getByteArray("AuctionBundleItem-" + finalI))));
+		}
+
+
+		if (!items.isEmpty())
+			return items;
+
 		final ItemStack[] bundledItems = NBT.get(itemStack, nbt -> nbt.getItemStackArray("AuctionBundleItems"));
 		return new ArrayList<>(Arrays.asList(bundledItems));
 	}

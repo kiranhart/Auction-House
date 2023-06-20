@@ -48,7 +48,7 @@ public class CommandMinPrice extends AbstractCommand {
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
-		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
+//		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
 		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (args.length == 0) {
