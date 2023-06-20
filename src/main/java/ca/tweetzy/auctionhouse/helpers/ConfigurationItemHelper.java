@@ -24,7 +24,7 @@ import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.utils.QuickItem;
-import de.tr7zw.changeme.nbtapi.NBT;
+import ca.tweetzy.flight.nbtapi.NBT;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;

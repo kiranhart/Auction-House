@@ -20,7 +20,7 @@ package ca.tweetzy.auctionhouse.helpers;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.core.compatibility.XMaterial;
-import de.tr7zw.changeme.nbtapi.NBT;
+import ca.tweetzy.flight.nbtapi.NBT;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.inventory.ItemStack;

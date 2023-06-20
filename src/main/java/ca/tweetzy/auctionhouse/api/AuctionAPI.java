@@ -31,7 +31,7 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.ItemUtils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.tr7zw.changeme.nbtapi.NBT;
+import ca.tweetzy.flight.nbtapi.NBT;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;

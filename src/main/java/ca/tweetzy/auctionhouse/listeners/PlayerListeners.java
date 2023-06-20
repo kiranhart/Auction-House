@@ -30,7 +30,7 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.comp.Titles;
-import de.tr7zw.changeme.nbtapi.NBT;
+import ca.tweetzy.flight.nbtapi.NBT;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
