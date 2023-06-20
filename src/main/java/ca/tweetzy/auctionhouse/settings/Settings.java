@@ -786,6 +786,20 @@ public class Settings {
 			"&7Click to view more details"
 	));
 
+	public static final ConfigSetting GUI_TRANSACTIONS_ITEMS_FILTER_SLOT = new ConfigSetting(config, "gui.transactions.items.filter.slot", 47, "Valid Slots: 45 - 53");
+	public static final ConfigSetting GUI_TRANSACTIONS_ITEMS_FILTER_ITEM = new ConfigSetting(config, "gui.transactions.items.filter.item", "NETHER_STAR");
+	public static final ConfigSetting GUI_TRANSACTIONS_ITEMS_FILTER_NAME = new ConfigSetting(config, "gui.transactions.items.filter.name", "&e&lFilter Options");
+	public static final ConfigSetting GUI_TRANSACTIONS_ITEMS_FILTER_LORE = new ConfigSetting(config, "gui.transactions.items.filter.lore", Arrays.asList(
+			"&eItem Category&f: &7%filter_category%",
+			"&eAuction Type&f: &7%filter_auction_type%",
+			"&eSort Order&f: &7%filter_sort_order%",
+			"",
+			"&7Left-Click to change item category",
+			"&7Right-Click to change change auction type",
+			"&7Shift Right-Click to change sort order",
+			"&7Press Drop to reset filters"
+	));
+
 	/*  ===============================
 	 *      TRANSACTIONS VIEW GUI
 	 *  ===============================*/

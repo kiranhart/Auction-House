@@ -52,6 +52,12 @@ public class AuctionPlayer {
 	private AuctionItemCategory selectedFilter;
 	private AuctionSortType auctionSortType;
 	private String currentSearchPhrase;
+
+	private AuctionSaleType selectedTransactionSaleType;
+	private AuctionItemCategory selectedTransactionFilter;
+	private AuctionSortType transactionSortType;
+
+
 	private boolean showListingInfo;
 	private long lastListedItem;
 
@@ -59,7 +65,7 @@ public class AuctionPlayer {
 	private int assignedTaskId;
 
 	public AuctionPlayer(UUID uuid) {
-		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", true, -1, null, -1);
+		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, true, -1, null, -1);
 	}
 
 	public AuctionPlayer(Player player) {
@@ -125,6 +131,12 @@ public class AuctionPlayer {
 		this.auctionSortType = AuctionSortType.RECENT;
 		this.selectedSaleType = AuctionSaleType.BOTH;
 		this.currentSearchPhrase = "";
+	}
+
+	public void resetTransactionFilter() {
+		this.selectedTransactionFilter = AuctionItemCategory.ALL;
+		this.transactionSortType = AuctionSortType.RECENT;
+		this.selectedTransactionSaleType = AuctionSaleType.BOTH;
 	}
 
 

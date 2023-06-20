@@ -29,28 +29,30 @@ import ca.tweetzy.auctionhouse.settings.Settings;
  */
 public enum AuctionItemCategory {
 
-	ALL("All", false, Settings.ALL_FILTER_ENABLED.getBoolean()),
-	FOOD("Food", true, Settings.FOOD_FILTER_ENABLED.getBoolean()),
-	ARMOR("Armor", true, Settings.ARMOR_FILTER_ENABLED.getBoolean()),
-	BLOCKS("Blocks", true, Settings.BLOCKS_FILTER_ENABLED.getBoolean()),
-	TOOLS("Tools", true, Settings.TOOLS_FILTER_ENABLED.getBoolean()),
-	WEAPONS("Weapons", true, Settings.WEAPONS_FILTER_ENABLED.getBoolean()),
-	POTIONS("Potions", true, Settings.POTIONS_FILTER_ENABLED.getBoolean()),
-	SPAWNERS("Spawners", true, Settings.SPAWNERS_FILTER_ENABLED.getBoolean()),
-	ENCHANTS("Enchants", true, Settings.ENCHANTS_FILTER_ENABLED.getBoolean()),
-	MISC("Misc", true, Settings.MISC_FILTER_ENABLED.getBoolean()),
-	SEARCH("Search", false, Settings.SEARCH_FILTER_ENABLED.getBoolean()),
-	SELF("Self", false, Settings.SELF_FILTER_ENABLED.getBoolean());
+	ALL("All", false, Settings.ALL_FILTER_ENABLED.getBoolean(), true),
+	FOOD("Food", true, Settings.FOOD_FILTER_ENABLED.getBoolean(), true),
+	ARMOR("Armor", true, Settings.ARMOR_FILTER_ENABLED.getBoolean(), true),
+	BLOCKS("Blocks", true, Settings.BLOCKS_FILTER_ENABLED.getBoolean(), true),
+	TOOLS("Tools", true, Settings.TOOLS_FILTER_ENABLED.getBoolean(), true),
+	WEAPONS("Weapons", true, Settings.WEAPONS_FILTER_ENABLED.getBoolean(), true),
+	POTIONS("Potions", true, Settings.POTIONS_FILTER_ENABLED.getBoolean(), true),
+	SPAWNERS("Spawners", true, Settings.SPAWNERS_FILTER_ENABLED.getBoolean(), true),
+	ENCHANTS("Enchants", true, Settings.ENCHANTS_FILTER_ENABLED.getBoolean(), true),
+	MISC("Misc", true, Settings.MISC_FILTER_ENABLED.getBoolean(), true),
+	SEARCH("Search", false, Settings.SEARCH_FILTER_ENABLED.getBoolean(), false),
+	SELF("Self", false, Settings.SELF_FILTER_ENABLED.getBoolean(), false);
 
 
 	private final String type;
 	private final boolean whitelistAllowed;
 	private final boolean enabled;
+	private final boolean transactionFilterable;
 
-	AuctionItemCategory(String type, boolean whitelistAllowed, boolean enabled) {
+	AuctionItemCategory(String type, boolean whitelistAllowed, boolean enabled, boolean transactionFilterable) {
 		this.type = type;
 		this.whitelistAllowed = whitelistAllowed;
 		this.enabled = enabled;
+		this.transactionFilterable = transactionFilterable;
 	}
 
 	public String getType() {
