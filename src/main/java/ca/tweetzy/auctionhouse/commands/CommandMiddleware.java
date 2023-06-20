@@ -45,7 +45,9 @@ public final class CommandMiddleware {
 			return AbstractCommand.ReturnType.FAILURE;
 		}
 
-		if (Settings.USE_AUCTION_CHEST_MODE.getBoolean()) {
+		if (Settings.USE_AUCTION_CHEST_MODE.getBoolean() && !player.hasPermission("auctionhouse.auctionchestbypass")) {
+
+
 			instance.getLocale().getMessage("general.visit auction chest").sendPrefixedMessage(player);
 			return AbstractCommand.ReturnType.FAILURE;
 		}
