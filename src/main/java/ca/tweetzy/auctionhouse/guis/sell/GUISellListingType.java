@@ -55,7 +55,7 @@ public final class GUISellListingType extends AbstractPlaceholderGui {
 			drawBinButton(2);
 		}
 
-		setButton(getRows() - 1, 0, ConfigurationItemHelper.createConfigurationItem(this.player, 
+		setButton(getRows() - 1, 0, ConfigurationItemHelper.createConfigurationItem(this.player,
 				Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_ITEM.getString(),
 				Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_NAME.getString(),
 				Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_LORE.getStringList(),
@@ -65,7 +65,7 @@ public final class GUISellListingType extends AbstractPlaceholderGui {
 	}
 
 	private void drawAuctionButton(int col) {
-		setButton(1, col, ConfigurationItemHelper.createConfigurationItem(this.player, 
+		setButton(1, col, ConfigurationItemHelper.createConfigurationItem(this.player,
 				Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_ITEM.getString(),
 				Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_NAME.getString(),
 				Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_LORE.getStringList(),
@@ -78,7 +78,7 @@ public final class GUISellListingType extends AbstractPlaceholderGui {
 	}
 
 	private void drawBinButton(int col) {
-		setButton(1, col, ConfigurationItemHelper.createConfigurationItem(this.player, 
+		setButton(1, col, ConfigurationItemHelper.createConfigurationItem(this.player,
 				Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_ITEM.getString(),
 				Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_NAME.getString(),
 				Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_LORE.getStringList(),

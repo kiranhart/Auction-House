@@ -147,7 +147,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 
 		if (this.allowBuyNow)
 			if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean())
-				setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(this.player, 
+				setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(this.player,
 						Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_ITEM.getString(),
 						Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_NAME.getString(),
 						Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(),
@@ -196,7 +196,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 				});
 
 
-		setButton(3, 3, ConfigurationItemHelper.createConfigurationItem(this.player, 
+		setButton(3, 3, ConfigurationItemHelper.createConfigurationItem(this.player,
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_ITEM.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_NAME.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(),
@@ -253,7 +253,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 			};
 		});
 
-		setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(this.player, 
+		setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(this.player,
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(),
@@ -304,7 +304,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 		drawAuctionItem();
 		drawBuyoutToggle();
 
-		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(this.player, 
+		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(this.player,
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_ITEM.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_NAME.getString(),
 				Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_LORE.getStringList(),
@@ -335,7 +335,7 @@ public final class GUISellAuction extends AbstractPlaceholderGui {
 
 	private void drawBuyoutToggle() {
 		if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
-			setButton(3, 7, ConfigurationItemHelper.createConfigurationItem(this.player, 
+			setButton(3, 7, ConfigurationItemHelper.createConfigurationItem(this.player,
 					this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_ITEM.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_ITEM.getString(),
 					this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_NAME.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_NAME.getString(),
 					this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_LORE.getStringList() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_LORE.getStringList(),

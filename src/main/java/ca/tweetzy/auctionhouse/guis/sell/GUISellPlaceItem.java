@@ -98,7 +98,7 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 			}
 		});
 
-		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(this.player, 
+		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(this.player,
 				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM.getString(),
 				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_NAME.getString(),
 				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_LORE.getStringList(),

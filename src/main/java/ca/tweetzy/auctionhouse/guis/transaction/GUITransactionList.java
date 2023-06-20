@@ -139,7 +139,7 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 				Settings.GUI_TRANSACTIONS_ITEMS_FILTER_ITEM.getString(),
 				Settings.GUI_TRANSACTIONS_ITEMS_FILTER_NAME.getString(),
 				Settings.GUI_TRANSACTIONS_ITEMS_FILTER_LORE.getStringList(),
-				new HashMap<String, Object>(){{
+				new HashMap<String, Object>() {{
 					put("%filter_category%", auctionPlayer.getSelectedTransactionFilter().getTranslatedType());
 					put("%filter_auction_type%", auctionPlayer.getSelectedTransactionSaleType().getTranslatedType());
 					put("%filter_sort_order%", auctionPlayer.getTransactionSortType().getTranslatedType());
