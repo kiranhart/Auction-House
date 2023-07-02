@@ -27,11 +27,10 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.hooks.EconomyManager;
-import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.core.utils.items.ItemUtils;
+import ca.tweetzy.flight.nbtapi.NBT;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import ca.tweetzy.flight.nbtapi.NBT;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -266,7 +265,7 @@ public class AuctionAPI {
 	 */
 	public String getItemName(ItemStack stack) {
 		Objects.requireNonNull(stack, "Item stack cannot be null when getting name");
-		final String name = stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : TextUtils.formatText("&f" + WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " ")));
+		final String name = stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " "));
 		return name;
 	}
 
