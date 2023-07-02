@@ -64,10 +64,10 @@ public final class GUIMinItemPrices extends AbstractPlaceholderGui {
 
 		for (MinItemPrice minItemPrice : data) {
 
-			final List<String> lore = AuctionAPI.getInstance().getItemLore(minItemPrice.getItemStack());
+			final List<String> lore = AuctionAPI.getInstance().getItemLore(minItemPrice.getItemStack().clone());
 			lore.addAll(Settings.GUI_MIN_ITEM_PRICES_LORE.getStringList());
 
-			setButton(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, minItemPrice.getItemStack(), AuctionAPI.getInstance().getItemName(minItemPrice.getItemStack()), lore, new HashMap<String, Object>() {{
+			setButton(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, minItemPrice.getItemStack().clone(), AuctionAPI.getInstance().getItemName(minItemPrice.getItemStack()), lore, new HashMap<String, Object>() {{
 				put("%price%", AuctionAPI.getInstance().formatNumber(minItemPrice.getPrice()));
 			}}), click -> {
 				AuctionHouse.getInstance().getDataManager().deleteMinItemPrice(Collections.singletonList(minItemPrice.getUuid()));
