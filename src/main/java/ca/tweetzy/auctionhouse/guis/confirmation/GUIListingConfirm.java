@@ -63,14 +63,15 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 		setOnClose(close -> {
 			final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(close.player.getUniqueId());
 
-			if (auctionPlayer.getItemBeingListed() != null) {
-				if (BundleUtil.isBundledItem(auctionedItem.getItem())) PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(auctionedItem.getItem()));
-				else {
-					PlayerUtils.giveItem(close.player, auctionedItem.getItem());
-				}
+			if (!this.resulted.contains(close.player.getUniqueId()))
+				if (auctionPlayer.getItemBeingListed() != null) {
+					if (BundleUtil.isBundledItem(auctionedItem.getItem())) PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(auctionedItem.getItem()));
+					else {
+						PlayerUtils.giveItem(close.player, auctionedItem.getItem());
+					}
 
-				auctionPlayer.setItemBeingListed(null);
-			}
+					auctionPlayer.setItemBeingListed(null);
+				}
 
 			close.player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
 			AuctionHouse.getInstance().getAuctionPlayerManager().processSell(close.player);
