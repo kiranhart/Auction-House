@@ -26,12 +26,11 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.flight.utils.QuickItem;
-import ca.tweetzy.flight.utils.Replacer;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -103,16 +102,17 @@ public class GUIPaymentCollection extends AbstractPlaceholderGui {
 			int slot = 0;
 			for (AuctionPayment auctionPayment : data) {
 
-				setButton(slot++, QuickItem
-						.of(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_ITEM.getString())
-						.name(PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_NAME.getString().replace("%payment_amount%", AuctionAPI.getInstance().formatNumber(auctionPayment.getAmount()))))
-						.lore(Replacer.replaceVariables(
-								PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList()),
-								"item_name", auctionPayment.getItem() == null ? "&cN/A" : AuctionAPI.getInstance().getItemName(auctionPayment.getItem()),
-								"from_name", auctionPayment.getFromName(),
-								"payment_reason", auctionPayment.getReason().getTranslation()
-						))
-						.make(), ClickType.LEFT, e -> {
+				setButton(slot++, ConfigurationItemHelper.createConfigurationItem(this.player,
+						Settings.GUI_PAYMENT_COLLECTION_PAYMENT_ITEM.getString(),
+						PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_NAME.getString()),
+						PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList()),
+						new HashMap<String, Object>() {{
+							put("%payment_amount%", AuctionAPI.getInstance().formatNumber(auctionPayment.getAmount()));
+							put("%item_name%", auctionPayment.getItem() == null ? "&cN/A" : AuctionAPI.getInstance().getItemName(auctionPayment.getItem()));
+							put("%from_name%", auctionPayment.getFromName());
+							put("%payment_reason%", auctionPayment.getReason().getTranslation());
+						}}
+				), ClickType.LEFT, e -> {
 
 					if (this.lastClicked == null) {
 						this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
