@@ -25,9 +25,25 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 
 public final class MeteorClientListeners implements Listener {
+
+	static boolean isCancelled = false;
+
+	@EventHandler
+	public void onCraftDuringSell(final PrepareItemCraftEvent event) {
+		final Player player = (Player) event.getView().getPlayer();
+
+		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player) && !isCancelled) {
+			isCancelled = true;
+			event.getInventory().setMatrix(new ItemStack[0]);
+			event.getInventory().setResult(null);
+			isCancelled = false;
+		}
+	}
 
 	@EventHandler
 	public void onPlayerPlaceItemIntoFrame(final PlayerInteractEntityEvent event) {
@@ -42,16 +58,14 @@ public final class MeteorClientListeners implements Listener {
 	public void onItemDropDuringSell(final PlayerDropItemEvent event) {
 		final Player player = event.getPlayer();
 
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
-			event.setCancelled(true);
+		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) event.setCancelled(true);
 	}
 
 	@EventHandler
 	public void onHotbarSwapDuringSell(final PlayerItemHeldEvent event) {
 		final Player player = event.getPlayer();
 
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
-			event.setCancelled(true);
+		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) event.setCancelled(true);
 	}
 
 	@EventHandler
@@ -78,8 +92,7 @@ public final class MeteorClientListeners implements Listener {
 	public void onCommandDuringSell(final PlayerCommandPreprocessEvent event) {
 		final Player player = event.getPlayer();
 
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player))
-			event.setCancelled(true);
+		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) event.setCancelled(true);
 	}
 
 	@EventHandler
