@@ -232,4 +232,8 @@ public class AuctionedItem {
 		itemStack.setItemMeta(meta);
 		return itemStack;
 	}
+
+	public boolean containsValidBid() {
+		return isBidItem() && !this.highestBidder.equals(this.owner);
+	}
 }

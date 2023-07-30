@@ -152,7 +152,13 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 		setButton(5, 4, getRefreshButtonItem(), e -> e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer)));
 
 		setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString(), Settings.GUI_ACTIVE_AUCTIONS_NAME.getString(), Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList(), null), e -> {
-			this.auctionPlayer.getItems(false).forEach(item -> item.setExpired(true));
+			for (AuctionedItem item : this.auctionPlayer.getItems(false)) {
+				if (Settings.SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID.getBoolean() && item.containsValidBid())
+					continue;
+
+				item.setExpired(true);
+			}
+
 			draw();
 		});
 	}
