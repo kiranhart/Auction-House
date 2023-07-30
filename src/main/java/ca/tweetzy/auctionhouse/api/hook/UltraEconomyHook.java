@@ -28,6 +28,7 @@ import me.TechsCode.UltraEconomy.objects.Currency;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
+
 /**
  * The current file has been created by Kiran Hart
  * Date Created: October 05 2021
@@ -52,7 +53,6 @@ public final class UltraEconomyHook extends Economy {
 		}
 
 		if (!ultraEconomyCurrencyName[0].equalsIgnoreCase("UltraEconomy")) return;
-
 		this.currency = UltraEconomy.getAPI().getCurrencies().name(ultraEconomyCurrencyName[1]).orElse(null);
 
 		if (this.currency == null) {
@@ -63,13 +63,12 @@ public final class UltraEconomyHook extends Economy {
 	@Override
 	public double getBalance(OfflinePlayer player) {
 		final Account account = UltraEconomy.getAPI().getAccounts().uuid(player.getUniqueId()).orElse(null);
-		return account == null ? 0 : account.getBalance(this.currency).getOnBank();
+		return account == null ? 0 : account.getBalance(this.currency).getSum();
 	}
 
 	@Override
 	public boolean hasBalance(OfflinePlayer player, double cost) {
-		final Account account = UltraEconomy.getAPI().getAccounts().uuid(player.getUniqueId()).orElse(null);
-		return account != null && account.getBalance(this.currency).getOnBank() >= cost;
+		return getBalance(player) >= cost;
 	}
 
 	@Override
@@ -77,8 +76,7 @@ public final class UltraEconomyHook extends Economy {
 		final Account account = UltraEconomy.getAPI().getAccounts().uuid(player.getUniqueId()).orElse(null);
 		if (account == null) return false;
 
-		final float oldAmount = account.getBalance(this.currency).getOnBank();
-		account.getBalance(this.currency).setBank(oldAmount - (float) cost);
+		account.removeBalance(this.currency, cost);
 		return true;
 	}
 
@@ -87,8 +85,7 @@ public final class UltraEconomyHook extends Economy {
 		final Account account = UltraEconomy.getAPI().getAccounts().uuid(player.getUniqueId()).orElse(null);
 		if (account == null) return false;
 
-		final float oldAmount = account.getBalance(this.currency).getOnBank();
-		account.getBalance(this.currency).setBank(oldAmount + (float) amount);
+		account.addBalance(this.currency, amount);
 		return true;
 	}
 
