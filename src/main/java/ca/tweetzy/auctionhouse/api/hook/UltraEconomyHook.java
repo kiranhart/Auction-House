@@ -53,7 +53,7 @@ public final class UltraEconomyHook extends Economy {
 		}
 
 		if (!ultraEconomyCurrencyName[0].equalsIgnoreCase("UltraEconomy")) return;
-		this.currency = UltraEconomy.getAPI().getCurrencies().name(ultraEconomyCurrencyName[1]).orElse(null);
+		this.currency = UltraEconomy.getInstance().getCurrencies().name(ultraEconomyCurrencyName[1]).orElse(null);
 
 		if (this.currency == null) {
 			throw new UltraEconomyCurrencyException("AuctionHouse could not find the currency: " + ultraEconomyCurrencyName[0]);
@@ -62,7 +62,7 @@ public final class UltraEconomyHook extends Economy {
 
 	@Override
 	public double getBalance(OfflinePlayer player) {
-		final Account account = UltraEconomy.getAPI().getAccounts().uuid(player.getUniqueId()).orElse(null);
+		final Account account = UltraEconomy.getInstance().getAccounts().uuid(player.getUniqueId()).orElse(null);
 		return account == null ? 0 : account.getBalance(this.currency).getSum();
 	}
 
@@ -73,7 +73,7 @@ public final class UltraEconomyHook extends Economy {
 
 	@Override
 	public boolean withdrawBalance(OfflinePlayer player, double cost) {
-		final Account account = UltraEconomy.getAPI().getAccounts().uuid(player.getUniqueId()).orElse(null);
+		final Account account = UltraEconomy.getInstance().getAccounts().uuid(player.getUniqueId()).orElse(null);
 		if (account == null) return false;
 
 		account.removeBalance(this.currency, cost);
@@ -82,7 +82,7 @@ public final class UltraEconomyHook extends Economy {
 
 	@Override
 	public boolean deposit(OfflinePlayer player, double amount) {
-		final Account account = UltraEconomy.getAPI().getAccounts().uuid(player.getUniqueId()).orElse(null);
+		final Account account = UltraEconomy.getInstance().getAccounts().uuid(player.getUniqueId()).orElse(null);
 		if (account == null) return false;
 
 		account.addBalance(this.currency, amount);

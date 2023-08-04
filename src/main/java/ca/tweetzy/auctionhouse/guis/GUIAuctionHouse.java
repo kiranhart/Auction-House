@@ -196,12 +196,12 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 
 	private boolean checkSearchCriteria(String phrase, AuctionedItem item) {
 		ItemStack stack = item.getItem();
-		return AuctionAPI.getInstance().match(phrase, AuctionAPI.getInstance().getItemName(stack)) ||
-				AuctionAPI.getInstance().match(phrase, item.getCategory().getTranslatedType()) ||
-				AuctionAPI.getInstance().match(phrase, stack.getType().name()) ||
-				AuctionAPI.getInstance().match(phrase, Bukkit.getOfflinePlayer(item.getOwner()).getName()) ||
-				AuctionAPI.getInstance().match(phrase, AuctionAPI.getInstance().getItemLore(stack)) ||
-				AuctionAPI.getInstance().match(phrase, AuctionAPI.getInstance().getItemEnchantments(stack));
+		return AuctionAPI.getInstance().matchSearch(phrase, AuctionAPI.getInstance().getItemName(stack)) ||
+				AuctionAPI.getInstance().matchSearch(phrase, item.getCategory().getTranslatedType()) ||
+				AuctionAPI.getInstance().matchSearch(phrase, stack.getType().name()) ||
+				AuctionAPI.getInstance().matchSearch(phrase, Bukkit.getOfflinePlayer(item.getOwner()).getName()) ||
+				AuctionAPI.getInstance().matchSearch(phrase, AuctionAPI.getInstance().getItemLore(stack)) ||
+				AuctionAPI.getInstance().matchSearch(phrase, AuctionAPI.getInstance().getItemEnchantments(stack));
 	}
 
 	/*

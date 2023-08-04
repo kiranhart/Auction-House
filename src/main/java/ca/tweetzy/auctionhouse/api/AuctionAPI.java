@@ -321,6 +321,21 @@ public class AuctionAPI {
 		return matcher.find();
 	}
 
+	public boolean matchSearch(String pattern, String sentence) {
+		Pattern patt = Pattern.compile(ChatColor.stripColor(pattern), Pattern.CASE_INSENSITIVE);
+		Matcher matcher = patt.matcher(sentence);
+		return matcher.find();
+	}
+
+	public boolean matchSearch(String pattern, List<String> lines) {
+		for (String line : lines) {
+			if (matchSearch(pattern, line)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * @param pattern is the keyword that you're currently searching for
 	 * @param lines   is the lines being checked for the keyword
