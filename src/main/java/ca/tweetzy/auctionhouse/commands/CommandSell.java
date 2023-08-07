@@ -378,9 +378,9 @@ public final class CommandSell extends AbstractCommand {
 				}, Settings.INTERNAL_CREATE_DELAY.getInt());
 			}));
 		} else {
-			Bukkit.getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
+//			Bukkit.getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
 				if (auctionPlayer.getPlayer() == null || !auctionPlayer.getPlayer().isOnline()) {
-					return;
+					return ReturnType.FAILURE;
 				}
 
 				player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
@@ -401,7 +401,7 @@ public final class CommandSell extends AbstractCommand {
 						AuctionHouse.newChain().sync(player::closeInventory).execute();
 				});
 
-			}, Settings.INTERNAL_CREATE_DELAY.getInt());
+//			}, Settings.INTERNAL_CREATE_DELAY.getInt());
 
 		}
 
