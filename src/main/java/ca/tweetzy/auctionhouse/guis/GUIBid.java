@@ -156,7 +156,7 @@ public class GUIBid extends AbstractPlaceholderGui {
 					OfflinePlayer owner = Bukkit.getOfflinePlayer(auctionItem.getOwner());
 
 					AuctionBidEvent auctionBidEvent = new AuctionBidEvent(e.player, auctionItem, newBiddingAmount);
-					Bukkit.getServer().getPluginManager().callEvent(auctionBidEvent);
+					Bukkit.getServer().getScheduler().runTask(AuctionHouse.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(auctionBidEvent));
 					if (auctionBidEvent.isCancelled()) return true;
 
 					if (Settings.BIDDING_TAKES_MONEY.getBoolean()) {
