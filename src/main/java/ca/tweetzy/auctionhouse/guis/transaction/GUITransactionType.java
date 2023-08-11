@@ -126,6 +126,6 @@ public final class GUITransactionType extends AbstractPlaceholderGui {
 			});
 		}
 
-		setButton(3, 0, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_PREV_PAGE_BTN_ITEM.getString(), Settings.GUI_PREV_PAGE_BTN_NAME.getString(), Settings.GUI_PREV_PAGE_BTN_LORE.getStringList(), null), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId()))));
+		setButton(3, 0, getBackButtonItem(), null, e -> e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId()))));
 	}
 }
