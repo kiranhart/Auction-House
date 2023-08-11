@@ -73,7 +73,8 @@ public class MaterialCategorizer {
 				|| material == XMaterial.PUFFERFISH.parseMaterial()
 				|| material == XMaterial.RABBIT_FOOT.parseMaterial()
 				|| material == XMaterial.PHANTOM_MEMBRANE.parseMaterial()
-				|| material == XMaterial.SPIDER_EYE.parseMaterial())
+				|| material == XMaterial.SPIDER_EYE.parseMaterial()
+				|| material == XMaterial.SPLASH_POTION.parseMaterial())
 			return AuctionItemCategory.POTIONS;
 
 		return AuctionItemCategory.MISC;
