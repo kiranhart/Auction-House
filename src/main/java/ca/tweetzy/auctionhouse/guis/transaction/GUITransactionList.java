@@ -148,7 +148,7 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase())) {
 				this.auctionPlayer.setSelectedTransactionFilter(this.auctionPlayer.getSelectedTransactionFilter().next());
-				draw();
+				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
 			}
 
 
@@ -162,14 +162,14 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_SALE_TYPE.getString().toUpperCase())) {
 				if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
 					this.auctionPlayer.setSelectedTransactionSaleType(this.auctionPlayer.getSelectedTransactionSaleType().next());
-					draw();
+					click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
 				}
 				return;
 			}
 
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase())) {
 				this.auctionPlayer.setTransactionSortType(this.auctionPlayer.getTransactionSortType().next());
-				draw();
+				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
 			}
 		});
 	}
