@@ -76,6 +76,11 @@ public class GUIFilterSelection extends AbstractPlaceholderGui {
 			setButton(1, 5, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_ITEMS_SEARCH_ITEM.getString(), Settings.GUI_FILTER_ITEMS_SEARCH_NAME.getString(), Settings.GUI_FILTER_ITEMS_SEARCH_LORE.getStringList(), new HashMap<String, Object>() {{
 				put("%filter_search_phrase%", auctionPlayer.getCurrentSearchPhrase());
 			}}), e -> {
+				if (e.player.hasPermission("auctionhouse.cmd.search")) {
+					AuctionHouse.getInstance().getLocale().getMessage("commands.no_permission").sendPrefixedMessage(e.player);
+					return;
+				}
+
 				e.gui.exit();
 				ChatPrompt.showPrompt(AuctionHouse.getInstance(), this.auctionPlayer.getPlayer(), TextUtils.formatText(AuctionHouse.getInstance().getLocale().getMessage("general.entersearchphrase").getMessage()), chat -> {
 					if (chat.getMessage() != null && chat.getMessage().length() != 0) {
