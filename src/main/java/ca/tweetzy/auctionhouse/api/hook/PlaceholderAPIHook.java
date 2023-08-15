@@ -33,6 +33,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -120,14 +122,33 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 		}
 
 		if (paramSplit[0].equalsIgnoreCase("pstat")) {
-			if (paramSplit.length < 3) return null;
+			if (paramSplit.length < 2) return null;
 
 			final AuctionStatisticType auctionStatisticType = getStatTypeFromParam(paramSplit[1]);
-			final OfflinePlayer targetUser = getPlayerMaybe(paramSplit[2]);
 
-			if (paramSplit.length == 4) {
-				final int duration = Integer.parseInt(splitString(paramSplit[3])[0]);
-				final ChronoUnit unit = getChronoUnitFromParam(splitString(paramSplit[3])[1]);
+			// default values for placeholders without player name or time
+			OfflinePlayer targetUser = player;
+			String[] chronoSplit = null;
+
+			if (paramSplit.length > 2) {
+				String timePattern = "";
+
+				// check if param has time at the end
+				if (paramSplit[paramSplit.length - 1].matches("[1-9]+[smhdw]")) {
+					chronoSplit = splitString(paramSplit[paramSplit.length - 1]);
+					timePattern = "_" + paramSplit[paramSplit.length - 1];
+				}
+
+				// Match player name
+				Matcher playerName = Pattern.compile("pstat_[a-z]+_(.+)" + timePattern).matcher(params);
+				if (playerName.matches()) {
+					targetUser = getPlayerMaybe(playerName.group(1));
+				}
+			}
+
+			if (chronoSplit != null) {
+				final int duration = Integer.parseInt(chronoSplit[0]);
+				final ChronoUnit unit = getChronoUnitFromParam(chronoSplit[1]);
 
 				return String.valueOf(AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetUser.getUniqueId(), auctionStatisticType, unit, duration));
 			}
