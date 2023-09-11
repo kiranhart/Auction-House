@@ -70,6 +70,7 @@ public class AuctionedItem {
 	private String listedWorld = null;
 	private boolean infinite = false;
 	private boolean allowPartialBuy = false;
+	private boolean serverItem = false;
 
 	public AuctionedItem() {
 	}
@@ -104,6 +105,7 @@ public class AuctionedItem {
 		this.isBidItem = isBidItem;
 		this.expired = expired;
 		this.expiresAt = expiresAt;
+		this.serverItem = false;
 	}
 
 	public ItemStack getBidStack() {

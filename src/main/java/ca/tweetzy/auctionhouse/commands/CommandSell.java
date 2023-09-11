@@ -379,27 +379,27 @@ public final class CommandSell extends AbstractCommand {
 			}));
 		} else {
 //			Bukkit.getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
-				if (auctionPlayer.getPlayer() == null || !auctionPlayer.getPlayer().isOnline()) {
-					return ReturnType.FAILURE;
+			if (auctionPlayer.getPlayer() == null || !auctionPlayer.getPlayer().isOnline()) {
+				return ReturnType.FAILURE;
+			}
+
+			player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+
+			AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
+				AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
+
+				if (listingResult != ListingResult.SUCCESS) {
+					PlayerUtils.giveItem(player, auction.getItem());
+					auctionPlayer.setItemBeingListed(null);
+					return;
 				}
 
-				player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
-
-				AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
-					AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
-
-					if (listingResult != ListingResult.SUCCESS) {
-						PlayerUtils.giveItem(player, auction.getItem());
-						auctionPlayer.setItemBeingListed(null);
-						return;
-					}
-
-					if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
-						player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
-						instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
-					} else
-						AuctionHouse.newChain().sync(player::closeInventory).execute();
-				});
+				if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
+					player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
+					instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
+				} else
+					AuctionHouse.newChain().sync(player::closeInventory).execute();
+			});
 
 //			}, Settings.INTERNAL_CREATE_DELAY.getInt());
 
