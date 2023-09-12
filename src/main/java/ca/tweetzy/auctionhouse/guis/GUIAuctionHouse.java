@@ -113,9 +113,19 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 		this.searchPhrase = phrase;
 	}
 
+	private void partialReset() {
+		if (inventory != null)
+			inventory.clear();
+
+		setActionForRange(0, 44, null);
+		cellItems.clear();
+		update();
+	}
+
 	public void draw() {
 		try {
-			reset();
+			partialReset();
+			drawVariableButtons();// remove from here
 			drawFixedButtons();
 			drawItems();
 		} catch (Exception e) {
@@ -175,7 +185,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 			return this.items.stream().skip((page - 1) * 45L).limit(45L).collect(Collectors.toList());
 		}).asyncLast((data) -> {
 			pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));
-			drawVariableButtons();
+			// todo possibly re-add variable btns draw
 			drawPaginationButtons();
 			placeItems(data);
 		}).execute();
