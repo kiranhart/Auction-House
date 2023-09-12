@@ -48,35 +48,42 @@ import static ca.tweetzy.auctionhouse.api.ListingResult.*;
 @UtilityClass
 public final class AuctionCreator {
 
-	public void create(@NonNull final AuctionPlayer auctionPlayer, @NonNull final AuctionedItem auctionItem, @NonNull final BiConsumer<AuctionedItem, ListingResult> result) {
+	public void create(final AuctionPlayer auctionPlayer, @NonNull final AuctionedItem auctionItem, @NonNull final BiConsumer<AuctionedItem, ListingResult> result) {
 		final AtomicReference<ListingResult> status = new AtomicReference<>(SUCCESS);
+		if (!auctionItem.isServerItem() && auctionPlayer == null) {
+			throw new RuntimeException("Cannot create listing if AuctionPlayer is null, did you mean to create a server listing?");
+		}
 
 		final AuctionHouse instance = AuctionHouse.getInstance();
-		final Player seller = auctionPlayer.getPlayer();
+		final Player seller = auctionPlayer == null ? null : auctionPlayer.getPlayer();
 
 		// Check if player is even valid?!?
-		if (seller == null) {
-			result.accept(auctionItem, PLAYER_INSTANCE_NOT_FOUND);
-			return;
-		}
 
-		// Hooks & Special Cases
-		if (McMMOHook.isUsingAbility(seller)) {
-			instance.getLocale().getMessage("general.mcmmo_ability_active").sendPrefixedMessage(seller);
-			result.accept(auctionItem, CANNOT_LIST_WITH_MCMMO_ABILITY_ACTIVE);
-			return;
-		}
+		// only check if not a server item
+		if (!auctionItem.isServerItem()) {
+			if (seller == null) {
+				result.accept(auctionItem, PLAYER_INSTANCE_NOT_FOUND);
+				return;
+			}
 
-		if (!Settings.ALLOW_SALE_OF_DAMAGED_ITEMS.getBoolean() && AuctionAPI.getInstance().isDamaged(auctionItem.getItem())) {
-			instance.getLocale().getMessage("general.cannot list damaged item").sendPrefixedMessage(seller);
-			result.accept(auctionItem, CANNOT_SELL_DAMAGED_ITEM);
-			return;
-		}
+			// Hooks & Special Cases
+			if (McMMOHook.isUsingAbility(seller)) {
+				instance.getLocale().getMessage("general.mcmmo_ability_active").sendPrefixedMessage(seller);
+				result.accept(auctionItem, CANNOT_LIST_WITH_MCMMO_ABILITY_ACTIVE);
+				return;
+			}
 
-		if (Settings.PREVENT_SALE_OF_REPAIRED_ITEMS.getBoolean() && AuctionAPI.getInstance().isRepaired(auctionItem.getItem())) {
-			instance.getLocale().getMessage("general.cannot list repaired item").sendPrefixedMessage(seller);
-			result.accept(auctionItem, CANNOT_SELL_REPAIRED_ITEM);
-			return;
+			if (!Settings.ALLOW_SALE_OF_DAMAGED_ITEMS.getBoolean() && AuctionAPI.getInstance().isDamaged(auctionItem.getItem())) {
+				instance.getLocale().getMessage("general.cannot list damaged item").sendPrefixedMessage(seller);
+				result.accept(auctionItem, CANNOT_SELL_DAMAGED_ITEM);
+				return;
+			}
+
+			if (Settings.PREVENT_SALE_OF_REPAIRED_ITEMS.getBoolean() && AuctionAPI.getInstance().isRepaired(auctionItem.getItem())) {
+				instance.getLocale().getMessage("general.cannot list repaired item").sendPrefixedMessage(seller);
+				result.accept(auctionItem, CANNOT_SELL_REPAIRED_ITEM);
+				return;
+			}
 		}
 
 		if (!AuctionAPI.getInstance().meetsMinItemPrice(BundleUtil.isBundledItem(auctionItem.getItem()), auctionItem.isBidItem(), auctionItem.getItem(), auctionItem.getBasePrice(), auctionItem.getBidStartingPrice())) {
@@ -100,7 +107,7 @@ public final class AuctionCreator {
 		final double listingFee = Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean() ? AuctionAPI.getInstance().calculateListingFee(originalBasePrice) : 0;
 
 		// check tax
-		if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
+		if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean() && !auctionItem.isServerItem()) {
 			if (!EconomyManager.hasBalance(seller, listingFee)) {
 				instance.getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(listingFee)).sendPrefixedMessage(seller);
 				result.accept(auctionItem, CANNOT_PAY_LISTING_FEE);
@@ -162,7 +169,8 @@ public final class AuctionCreator {
 
 		// Actually attempt the insertion now
 		AuctionHouse.getInstance().getDataManager().insertAuctionAsync(auctionItem, (error, inserted) -> {
-			auctionPlayer.setItemBeingListed(null);
+			if (auctionPlayer != null)
+				auctionPlayer.setItemBeingListed(null);
 
 			if (error != null) {
 				if (Settings.SHOW_LISTING_ERROR_IN_CONSOLE.getBoolean())
@@ -181,7 +189,7 @@ public final class AuctionCreator {
 				}
 
 				// If the item could not be added for whatever reason and the tax listing fee is enabled, refund them
-				if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
+				if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean() && !auctionItem.isServerItem()) {
 					if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
 						AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
 								seller.getUniqueId(),
