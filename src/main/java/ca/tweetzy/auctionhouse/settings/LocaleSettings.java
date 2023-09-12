@@ -39,6 +39,7 @@ public class LocaleSettings {
 
 	static {
 		languageNodes.put("general.prefix", "&8[&eAuctionHouse&8]");
+		languageNodes.put("general.server listing", "&eAuctionHouse");
 		languageNodes.put("general.notanumber", "&cThe entry &4%value% &cis not a valid number!");
 		languageNodes.put("general.locked", "&cThe Auction House is currently locked!");
 		languageNodes.put("general.playernotfound", "&cCould not find the player &4%player%");
@@ -179,6 +180,7 @@ public class LocaleSettings {
 		languageNodes.put("auction.broadcast.withbid", "&e%player% listed &fx%amount% &6%item% &e&lBuy Now&f: &a%base_price% &e&lStarting&f: &a%start_price% &e&lIncrement&f: &a%increment_price%");
 		languageNodes.put("auction.broadcast.nobid", "&e%player% listed &fx%amount% &6%item% &efor &a%base_price%");
 		languageNodes.put("auction.broadcast.sold", "&e&fx%amount% &6%item% &esold to %player% for &a%price%");
+		languageNodes.put("auction.broadcast.serverlisting", "&e&fx%amount% &6%item% &ehas appeared on the auction house.");
 
 		languageNodes.put("auction.broadcast.bid", "&e%player% increased the bid to &a$%amount% &eon &6%item%");
 		languageNodes.put("auction.broadcast.ending", "&eAuction for &6%item% &eis ending in &6%seconds%&es");

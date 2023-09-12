@@ -145,6 +145,7 @@ public final class CommandSell extends AbstractCommand {
 		boolean isInfinite = false;
 		boolean isStackPrice = false;
 		boolean partialBuy = false;
+		boolean serverAuction = false;
 
 		List<String> timeSets = Arrays.asList(
 				"second",
@@ -186,6 +187,10 @@ public final class CommandSell extends AbstractCommand {
 
 			if ((args[i].equalsIgnoreCase("-i") || args[i].equalsIgnoreCase("-infinite")) && (player.hasPermission("auctionhouse.admin") || player.isOp()))
 				isInfinite = true;
+
+			// check if the listing should be a server auction
+			if (args[i].equalsIgnoreCase("-server"))
+				serverAuction = true;
 
 			if (args[i].toLowerCase().startsWith("-t") && Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
 				if (i + 2 < args.length) {
@@ -317,6 +322,7 @@ public final class CommandSell extends AbstractCommand {
 		auctionedItem.setCategory(MaterialCategorizer.getMaterialCategory(itemToSell));
 		auctionedItem.setExpiresAt(System.currentTimeMillis() + 1000L * allowedTime);
 		auctionedItem.setBidItem(isBiddingItem);
+		auctionedItem.setServerItem(serverAuction);
 		auctionedItem.setExpired(false);
 
 		double theStartingPrice = buyNowAllow ? buyNowPrice : -1;

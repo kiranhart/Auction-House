@@ -119,7 +119,10 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 				// the owner is the highest bidder, so just expire
 				if (auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
-					auctionItem.setExpired(true);
+					if (auctionItem.isServerItem())
+						instance.getAuctionItemManager().sendToGarbage(auctionItem);
+					else
+						auctionItem.setExpired(true);
 					continue;
 				}
 
@@ -130,7 +133,10 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 				if (!Settings.BIDDING_TAKES_MONEY.getBoolean())
 					if (!EconomyManager.hasBalance(auctionWinner, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice)) {
-						auctionItem.setExpired(true);
+						if (auctionItem.isServerItem())
+							instance.getAuctionItemManager().sendToGarbage(auctionItem);
+						else
+							auctionItem.setExpired(true);
 						continue;
 					}
 

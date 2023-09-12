@@ -38,6 +38,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
@@ -127,6 +128,14 @@ public final class AuctionCreator {
 			return;
 		}
 
+		// overwrite to be random uuid since it's a server auction
+		final String SERVER_LISTING_NAME = AuctionHouse.getInstance().getLocale().getMessage("general.server listing").getMessage();
+
+		if (auctionItem.isServerItem()) {
+			auctionItem.setOwner(UUID.randomUUID());
+			auctionItem.setOwnerName(SERVER_LISTING_NAME);
+		}
+
 		//====================================================================================
 
 		// A VERY UGLY LISTING MESSAGING THING, IDEK, I GOTTA DEAL WITH THIS EVENTUALLY 💀
@@ -195,9 +204,10 @@ public final class AuctionCreator {
 			//====================================================================================
 			// ANOTHER VERY SHIT BROADCAST THAT IS IN FACT BROKEN
 			if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
+
 				final String prefix = AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage();
 
-				String msgToAll = AuctionHouse.getInstance().getLocale().getMessage(auctionItem.isBidItem() ? "auction.broadcast.withbid" : "auction.broadcast.nobid")
+				String msgToAll = AuctionHouse.getInstance().getLocale().getMessage(auctionItem.isServerItem() ? "auction.broadcast.serverlisting" : auctionItem.isBidItem() ? "auction.broadcast.withbid" : "auction.broadcast.nobid")
 						.processPlaceholder("amount", finalItemToSell.getAmount())
 						.processPlaceholder("player", seller.getName())
 						.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(seller))

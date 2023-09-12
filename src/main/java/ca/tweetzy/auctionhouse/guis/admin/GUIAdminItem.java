@@ -74,8 +74,10 @@ public class GUIAdminItem extends AbstractPlaceholderGui {
 				Bukkit.getServer().getPluginManager().callEvent(event);
 				if (event.isCancelled()) return;
 
-				this.auctionItem.setExpiresAt(System.currentTimeMillis());
-				this.auctionItem.setExpired(true);
+				if (!this.auctionItem.isServerItem()) {
+					this.auctionItem.setExpiresAt(System.currentTimeMillis());
+					this.auctionItem.setExpired(true);
+				}
 
 				if (Settings.BIDDING_TAKES_MONEY.getBoolean() && !this.auctionItem.getHighestBidder().equals(this.auctionItem.getOwner())) {
 					final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(this.auctionItem.getHighestBidder());
@@ -96,6 +98,7 @@ public class GUIAdminItem extends AbstractPlaceholderGui {
 
 				}
 
+				AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(this.auctionItem);
 				e.gui.close();
 			});
 
