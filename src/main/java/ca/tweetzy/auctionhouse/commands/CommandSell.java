@@ -189,7 +189,7 @@ public final class CommandSell extends AbstractCommand {
 				isInfinite = true;
 
 			// check if the listing should be a server auction
-			if (args[i].equalsIgnoreCase("-server"))
+			if (args[i].equalsIgnoreCase("-server") && (player.hasPermission("auctionhouse.admin") || player.isOp()))
 				serverAuction = true;
 
 			if (args[i].toLowerCase().startsWith("-t") && Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
