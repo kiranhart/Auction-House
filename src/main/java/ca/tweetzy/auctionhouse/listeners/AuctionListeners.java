@@ -51,7 +51,10 @@ public class AuctionListeners implements Listener {
 		// new stat system
 		final Player seller = e.getSeller();
 		final AuctionedItem auctionedItem = e.getAuctionItem();
-		new AuctionStatistic(seller.getUniqueId(), auctionedItem.isBidItem() ? AuctionStatisticType.CREATED_AUCTION : AuctionStatisticType.CREATED_BIN, 1).store(null);
+
+		// ignore if server item
+		if (!auctionedItem.isServerItem())
+			new AuctionStatistic(seller.getUniqueId(), auctionedItem.isBidItem() ? AuctionStatisticType.CREATED_AUCTION : AuctionStatisticType.CREATED_BIN, 1).store(null);
 
 		if (Settings.DISCORD_ENABLED.getBoolean()) {
 
@@ -85,8 +88,12 @@ public class AuctionListeners implements Listener {
 		final OfflinePlayer originalOwner = e.getOriginalOwner(), buyer = e.getBuyer();
 		final UUID originalOwnerUUID = originalOwner.getUniqueId(), buyerUUID = buyer.getUniqueId();
 		final AuctionedItem auctionedItem = e.getAuctionItem();
-		new AuctionStatistic(originalOwnerUUID, auctionedItem.isBidItem() ? AuctionStatisticType.SOLD_AUCTION : AuctionStatisticType.SOLD_BIN, 1).store(null);
-		new AuctionStatistic(originalOwnerUUID, AuctionStatisticType.MONEY_EARNED, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? auctionedItem.getCurrentPrice() : auctionedItem.getBasePrice()).store(null);
+
+		if (!auctionedItem.isServerItem()) {
+			new AuctionStatistic(originalOwnerUUID, auctionedItem.isBidItem() ? AuctionStatisticType.SOLD_AUCTION : AuctionStatisticType.SOLD_BIN, 1).store(null);
+			new AuctionStatistic(originalOwnerUUID, AuctionStatisticType.MONEY_EARNED, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? auctionedItem.getCurrentPrice() : auctionedItem.getBasePrice()).store(null);
+		}
+
 		new AuctionStatistic(buyerUUID, AuctionStatisticType.MONEY_SPENT, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? auctionedItem.getCurrentPrice() : auctionedItem.getBasePrice()).store(null);
 
 		AuctionHouse.newChain().async(() -> {

@@ -33,6 +33,7 @@ import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -111,12 +112,16 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 			setOnPage(e -> draw());
 
 			int slot = 0;
+			final String SERVER_LISTING_NAME = AuctionHouse.getInstance().getLocale().getMessage("general.server listing").getMessage();
+
 
 			for (Transaction transaction : data) {
 				final ItemStack item = transaction.getItem().clone();
+				final OfflinePlayer seller = Bukkit.getOfflinePlayer(transaction.getSeller());
+
 				setButton(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, item, Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(), new HashMap<String, Object>() {{
 					put("%transaction_id%", transaction.getId().toString());
-					put("%seller%", Bukkit.getOfflinePlayer(transaction.getSeller()).getName());
+					put("%seller%",seller.hasPlayedBefore() ?  seller.getName() : SERVER_LISTING_NAME);
 					put("%buyer%", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName());
 					put("%date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
 					put("%item_name%", AuctionAPI.getInstance().getItemName(item));

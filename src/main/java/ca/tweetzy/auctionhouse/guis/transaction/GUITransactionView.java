@@ -28,6 +28,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.util.HashMap;
 
@@ -50,26 +51,30 @@ public class GUITransactionView extends AbstractPlaceholderGui {
 		setButton(5, 0, getBackButtonItem(), e -> e.manager.showGUI(e.player, new GUITransactionList(auctionPlayer.getPlayer(), showAll)));
 		setItem(1, 4, transaction.getItem());
 
+		final String SERVER_LISTING_NAME = AuctionHouse.getInstance().getLocale().getMessage("general.server listing").getMessage();
+		final OfflinePlayer seller = Bukkit.getOfflinePlayer(transaction.getSeller());
+		final OfflinePlayer buyer = Bukkit.getOfflinePlayer(transaction.getBuyer());
+
 
 		setItem(3, 2, ConfigurationItemHelper.createConfigurationItem(
 				this.player,
-				AuctionAPI.getInstance().getPlayerHead(Bukkit.getOfflinePlayer(transaction.getSeller()).getName()),
+				AuctionAPI.getInstance().getPlayerHead(seller.getName()),
 				Settings.GUI_TRANSACTION_VIEW_ITEM_SELLER_NAME.getString(),
 				Settings.GUI_TRANSACTION_VIEW_ITEM_SELLER_LORE.getStringList(), new HashMap<String, Object>() {{
 					put("%transaction_id%", transaction.getId().toString());
-					put("%seller%", Bukkit.getOfflinePlayer(transaction.getSeller()).getName());
-					put("%buyer%", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName());
+					put("%seller%", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME);
+					put("%buyer%",buyer.getName());
 					put("%date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
 				}}));
 
 		setItem(3, 6, ConfigurationItemHelper.createConfigurationItem(
 				this.player,
-				AuctionAPI.getInstance().getPlayerHead(Bukkit.getOfflinePlayer(transaction.getSeller()).getName()),
+				AuctionAPI.getInstance().getPlayerHead(Bukkit.getOfflinePlayer(transaction.getBuyer()).getName()),
 				Settings.GUI_TRANSACTION_VIEW_ITEM_BUYER_NAME.getString(),
 				Settings.GUI_TRANSACTION_VIEW_ITEM_BUYER_LORE.getStringList(), new HashMap<String, Object>() {{
 					put("%transaction_id%", transaction.getId().toString());
-					put("%seller%", Bukkit.getOfflinePlayer(transaction.getSeller()).getName());
-					put("%buyer%", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName());
+					put("%seller%",seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME);
+					put("%buyer%", buyer.getName());
 					put("%date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
 				}}));
 
