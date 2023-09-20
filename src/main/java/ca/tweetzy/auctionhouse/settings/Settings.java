@@ -184,6 +184,22 @@ public class Settings {
 	public static final ConfigSetting TAX_SALES_TAX_BUY_NOW_PERCENTAGE = new ConfigSetting(config, "auction setting.tax.buy now sales tax", 15.0, "Tax % that should be charged on items that are bought immediately");
 	public static final ConfigSetting TAX_SALES_TAX_AUCTION_WON_PERCENTAGE = new ConfigSetting(config, "auction setting.tax.auction won sales tax", 10.0, "Tax % that should be charged on items that are won through the auction");
 
+
+	public static final ConfigSetting FILTERS_ALL_ICON = new ConfigSetting(config, "auction setting.filter icons.all", "HOPPER");
+	public static final ConfigSetting FILTERS_FOOD_ICON = new ConfigSetting(config, "auction setting.filter icons.food", "APPLE");
+	public static final ConfigSetting FILTERS_ARMOR_ICON = new ConfigSetting(config, "auction setting.filter icons.armor", "DIAMOND_HELMET");
+	public static final ConfigSetting FILTERS_BLOCKS_ICON = new ConfigSetting(config, "auction setting.filter icons.blocks", "GRASS_BLOCK");
+	public static final ConfigSetting FILTERS_TOOLS_ICON = new ConfigSetting(config, "auction setting.filter icons.tools", "STONE_SHOVEL");
+	public static final ConfigSetting FILTERS_WEAPONS_ICON = new ConfigSetting(config, "auction setting.filter icons.weapons", "IRON_SWORD");
+	public static final ConfigSetting FILTERS_SPAWNERS_ICON = new ConfigSetting(config, "auction setting.filter icons.spawners", "SPAWNER");
+	public static final ConfigSetting FILTERS_ENCHANTS_ICON = new ConfigSetting(config, "auction setting.filter icons.enchants", "ENCHANTED_BOOK");
+	public static final ConfigSetting FILTERS_POTIONS_ICON = new ConfigSetting(config, "auction setting.filter icons.potions", "POTION");
+	public static final ConfigSetting FILTERS_MISC_ICON = new ConfigSetting(config, "auction setting.filter icons.misc", "OAK_SIGN");
+	public static final ConfigSetting FILTERS_SELF_ICON = new ConfigSetting(config, "auction setting.filter icons.self", "NAME_TAG");
+	public static final ConfigSetting FILTERS_SEARCH_ICON = new ConfigSetting(config, "auction setting.filter icons.search", "COMPASS");
+
+
+
 	public static final ConfigSetting ALL_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.all", true, "Should this filter be enabled?");
 	public static final ConfigSetting FOOD_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.food", true, "Should this filter be enabled?");
 	public static final ConfigSetting ARMOR_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.armor", true, "Should this filter be enabled?");
@@ -287,6 +303,18 @@ public class Settings {
 	);
 
 	public static final ConfigSetting CLICKS_FILTER_SORT_SALE_TYPE = new ConfigSetting(config, "auction setting.clicks.filter.sort sale type", "RIGHT",
+			"Valid Click Types",
+			"LEFT",
+			"RIGHT",
+			"SHIFT_LEFT",
+			"SHIFT_RIGHT",
+			"MIDDLE",
+			"DROP",
+			"",
+			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+	);
+
+	public static final ConfigSetting CLICKS_FILTER_TRANSACTION_BUY_TYPE = new ConfigSetting(config, "auction setting.clicks.filter.transaction buy type", "SHIFT_LEFT",
 			"Valid Click Types",
 			"LEFT",
 			"RIGHT",
@@ -793,11 +821,13 @@ public class Settings {
 	public static final ConfigSetting GUI_TRANSACTIONS_ITEMS_FILTER_LORE = new ConfigSetting(config, "gui.transactions.items.filter.lore", Arrays.asList(
 			"&eItem Category&f: &7%filter_category%",
 			"&eAuction Type&f: &7%filter_auction_type%",
+			"&eTransaction Type&f: &7%filter_buy_type%",
 			"&eSort Order&f: &7%filter_sort_order%",
 			"",
 			"&7Left-Click to change item category",
 			"&7Right-Click to change change auction type",
 			"&7Shift Right-Click to change sort order",
+			"&7Shift Left-Click to change buy type",
 			"&7Press Drop to reset filters"
 	));
 

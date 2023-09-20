@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.auction.*;
 import ca.tweetzy.auctionhouse.auction.enums.*;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
+import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
 import ca.tweetzy.core.database.DataManagerAbstract;
 import ca.tweetzy.core.database.DatabaseConnector;
 import ca.tweetzy.core.database.MySQLConnector;
@@ -696,6 +697,7 @@ public class DataManager extends DataManagerAbstract {
 				AuctionSaleType.BOTH,
 				AuctionItemCategory.ALL,
 				AuctionSortType.RECENT,
+				TransactionViewFilter.ALL,
 				true,
 				resultSet.getLong("last_listed_item"),
 				null,

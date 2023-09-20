@@ -80,6 +80,36 @@ public enum AuctionItemCategory {
 		return enabled;
 	}
 
+	public String getFilterIcon() {
+		switch (this) {
+			case ALL:
+				return Settings.FILTERS_ALL_ICON.getString();
+			case FOOD:
+				return Settings.FILTERS_FOOD_ICON.getString();
+			case ARMOR:
+				return Settings.FILTERS_ARMOR_ICON.getString();
+			case BLOCKS:
+				return Settings.FILTERS_BLOCKS_ICON.getString();
+			case TOOLS:
+				return Settings.FILTERS_TOOLS_ICON.getString();
+			case MISC:
+				return Settings.FILTERS_MISC_ICON.getString();
+			case ENCHANTS:
+				return Settings.FILTERS_ENCHANTS_ICON.getString();
+			case SPAWNERS:
+				return Settings.FILTERS_SPAWNERS_ICON.getString();
+			case WEAPONS:
+				return Settings.FILTERS_WEAPONS_ICON.getString();
+			case POTIONS:
+				return Settings.FILTERS_POTIONS_ICON.getString();
+			case SELF:
+				return Settings.FILTERS_SELF_ICON.getString();
+			case SEARCH:
+				return Settings.FILTERS_SEARCH_ICON.getString();
+		}
+		return Settings.FILTERS_ALL_ICON.getString();
+	}
+
 	public String getTranslatedType() {
 		switch (this) {
 			case ALL:
