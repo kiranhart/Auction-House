@@ -23,10 +23,14 @@ import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.core.utils.PlayerUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -46,11 +50,37 @@ public class CommandTransactions extends AbstractCommand {
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
-		final AuctionHouse instance = AuctionHouse.getInstance();
-		if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !player.hasPermission("auctionhouse.transactions.viewall")) {
-			instance.getGuiManager().showGUI(player, new GUITransactionList(player, false));
-		} else {
-			instance.getGuiManager().showGUI(player, new GUITransactionType(player));
+		if (args.length == 0) {
+			final AuctionHouse instance = AuctionHouse.getInstance();
+			if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !player.hasPermission("auctionhouse.transactions.viewall")) {
+				instance.getGuiManager().showGUI(player, new GUITransactionList(player, false));
+			} else {
+				instance.getGuiManager().showGUI(player, new GUITransactionType(player));
+			}
+
+			return ReturnType.SUCCESS;
+		}
+
+		if (args.length == 2 && args[0].equalsIgnoreCase("search")) {
+			final Player target = PlayerUtils.findPlayer(args[1]);
+
+			AuctionHouse.newChain().async(() -> {
+				OfflinePlayer offlinePlayer = null;
+
+				if (target == null) {
+					// try and look for an offline player
+					offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
+					if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[1]).sendPrefixedMessage(player);
+						return;
+					}
+				}
+
+				UUID toLookup = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
+				AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionList(player, toLookup));
+
+			}).execute();
+
 		}
 
 		return ReturnType.SUCCESS;

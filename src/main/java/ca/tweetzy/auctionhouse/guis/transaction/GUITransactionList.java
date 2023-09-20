@@ -39,10 +39,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -57,7 +54,13 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 	final AuctionPlayer auctionPlayer;
 	final Player player;
 	final boolean showAll;
+	private UUID searchUUID;
 
+
+	public GUITransactionList(Player player, UUID searchUUID) {
+		this(player, true);
+		this.searchUUID = searchUUID;
+	}
 
 	public GUITransactionList(Player player, boolean showAll) {
 		super(player);
@@ -82,6 +85,9 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 		reset();
 
 		AuctionHouse.newChain().asyncFirst(() -> {
+			if (this.searchUUID != null)
+				this.transactions = this.transactions.stream().filter(transaction -> transaction.getSeller().equals(this.searchUUID) || transaction.getBuyer().equals(this.searchUUID)).collect(Collectors.toList());
+
 			// perform filter
 			if (this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.ALL && this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.SEARCH && this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.SELF) {
 				this.transactions = this.transactions.stream().filter(item -> MaterialCategorizer.getMaterialCategory(item.getItem()) == this.auctionPlayer.getSelectedTransactionFilter()).collect(Collectors.toList());
