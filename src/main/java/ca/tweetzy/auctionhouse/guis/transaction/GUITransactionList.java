@@ -30,6 +30,7 @@ import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
+import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
 import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
@@ -94,6 +95,14 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 				this.transactions = this.transactions.stream().filter(transaction -> transaction.getAuctionSaleType() == AuctionSaleType.WITHOUT_BIDDING_SYSTEM).collect(Collectors.toList());
 			}
 
+			if (this.auctionPlayer.getTransactionViewFilter() != TransactionViewFilter.ALL) {
+				if (this.auctionPlayer.getTransactionViewFilter() == TransactionViewFilter.BOUGHT)
+					this.transactions = this.transactions.stream().filter(transaction -> transaction.getBuyer().equals(this.player.getUniqueId())).collect(Collectors.toList());
+
+				if (this.auctionPlayer.getTransactionViewFilter() == TransactionViewFilter.SOLD)
+					this.transactions = this.transactions.stream().filter(transaction -> transaction.getSeller().equals(this.player.getUniqueId())).collect(Collectors.toList());
+			}
+
 			if (this.auctionPlayer.getTransactionSortType() == AuctionSortType.PRICE) {
 				this.transactions = this.transactions.stream().sorted(Comparator.comparingDouble(Transaction::getFinalPrice).reversed()).collect(Collectors.toList());
 			}
@@ -121,7 +130,7 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 
 				setButton(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, item, Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(), new HashMap<String, Object>() {{
 					put("%transaction_id%", transaction.getId().toString());
-					put("%seller%",seller.hasPlayedBefore() ?  seller.getName() : SERVER_LISTING_NAME);
+					put("%seller%", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME);
 					put("%buyer%", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName());
 					put("%date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
 					put("%item_name%", AuctionAPI.getInstance().getItemName(item));
@@ -148,6 +157,7 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 					put("%filter_category%", auctionPlayer.getSelectedTransactionFilter().getTranslatedType());
 					put("%filter_auction_type%", auctionPlayer.getSelectedTransactionSaleType().getTranslatedType());
 					put("%filter_sort_order%", auctionPlayer.getTransactionSortType().getTranslatedType());
+					put("%filter_buy_type%", auctionPlayer.getTransactionViewFilter().getTranslatedType());
 				}}
 		), click -> {
 
@@ -169,6 +179,12 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 					this.auctionPlayer.setSelectedTransactionSaleType(this.auctionPlayer.getSelectedTransactionSaleType().next());
 					click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
 				}
+				return;
+			}
+
+			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_TRANSACTION_BUY_TYPE.getString().toUpperCase())) {
+				this.auctionPlayer.setTransactionViewFilter(this.auctionPlayer.getTransactionViewFilter().next());
+				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
 				return;
 			}
 

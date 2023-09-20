@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,6 +57,7 @@ public class AuctionPlayer {
 	private AuctionSaleType selectedTransactionSaleType;
 	private AuctionItemCategory selectedTransactionFilter;
 	private AuctionSortType transactionSortType;
+	private TransactionViewFilter transactionViewFilter;
 
 
 	private boolean showListingInfo;
@@ -65,7 +67,7 @@ public class AuctionPlayer {
 	private int assignedTaskId;
 
 	public AuctionPlayer(UUID uuid) {
-		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, true, -1, null, -1);
+		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, TransactionViewFilter.ALL, true, -1, null, -1);
 	}
 
 	public AuctionPlayer(Player player) {
