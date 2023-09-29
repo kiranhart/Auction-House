@@ -458,7 +458,7 @@ public class AuctionAPI {
 	}
 
 	public String getHeadTexture(final ItemStack item) {
-		final String textureBase64 = NBT.get(item, nbt -> nbt.getCompound("SkullOwner").getCompound("Properties").getCompoundList("textures").get(0).getString("Value"));
+		final String textureBase64 = NBT.get(item, nbt -> (String) nbt.getCompound("SkullOwner").getCompound("Properties").getCompoundList("textures").get(0).getString("Value"));
 		final String textureJson = new String(Base64.getDecoder().decode(textureBase64));
 		final JsonObject object = JsonParser.parseString(textureJson).getAsJsonObject();
 
@@ -612,7 +612,7 @@ public class AuctionAPI {
 	}
 
 	public boolean isRepaired(final ItemStack item) {
-		return NBT.get(item, nbt -> nbt.hasTag("AuctionHouseRepaired"));
+		return NBT.get(item, nbt -> (boolean) nbt.hasTag("AuctionHouseRepaired"));
 	}
 
 	public double calculateListingFee(double basePrice) {
@@ -790,7 +790,7 @@ public class AuctionAPI {
 
 		// Check NBT tags
 		for (String nbtTag : Settings.BLOCKED_NBT_TAGS.getStringList()) {
-			if (NBT.get(itemStack, nbt -> nbt.hasTag(nbtTag))) {
+			if (NBT.get(itemStack, nbt -> (boolean) nbt.hasTag(nbtTag))) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.blockednbttag").processPlaceholder("nbttag", nbtTag).sendPrefixedMessage(player);
 				return false;
 			}

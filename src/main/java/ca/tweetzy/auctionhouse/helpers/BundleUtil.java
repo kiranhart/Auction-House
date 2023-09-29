@@ -21,6 +21,7 @@ package ca.tweetzy.auctionhouse.helpers;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.flight.nbtapi.NBT;
+import ca.tweetzy.flight.nbtapi.iface.ReadableItemNBT;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.inventory.ItemStack;
@@ -28,30 +29,33 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 @UtilityClass
 public final class BundleUtil {
 
 	public boolean isBundledItem(@NonNull final ItemStack itemStack) {
-		return itemStack.getType() != XMaterial.AIR.parseMaterial() && NBT.get(itemStack, nbt -> nbt.hasTag("AuctionBundleItem"));
+		final boolean hasBundleTag = NBT.get(itemStack, nbt -> (boolean) nbt.hasTag("AuctionBundleItem"));
+		return itemStack.getType() != XMaterial.AIR.parseMaterial() && hasBundleTag;
 	}
+
 
 	public List<ItemStack> extractBundleItems(@NonNull final ItemStack itemStack) {
 		final List<ItemStack> items = new ArrayList<>();
 
-		final int totalBundledItems = NBT.get(itemStack, nbt -> nbt.getInteger("AuctionBundleItem"));
+		final int totalBundledItems = NBT.get(itemStack, nbt -> (int) nbt.getInteger("AuctionBundleItem"));
 
 		for (int i = 0; i < totalBundledItems; i++) {
 			int finalI = i;
-			if (NBT.get(itemStack, nbt -> nbt.hasTag("AuctionBundleItem-" + finalI)))
-				items.add(AuctionAPI.getInstance().deserializeItem(NBT.get(itemStack, nbt -> nbt.getByteArray("AuctionBundleItem-" + finalI))));
+			if (NBT.get(itemStack, (Function<ReadableItemNBT, Boolean>) nbt -> nbt.hasTag("AuctionBundleItem-" + finalI)))
+				items.add(AuctionAPI.getInstance().deserializeItem(NBT.get(itemStack, nbt -> (byte[]) nbt.getByteArray("AuctionBundleItem-" + finalI))));
 		}
 
 
 		if (!items.isEmpty())
 			return items;
 
-		final ItemStack[] bundledItems = NBT.get(itemStack, nbt -> nbt.getItemStackArray("AuctionBundleItems"));
+		final ItemStack[] bundledItems = NBT.get(itemStack, nbt -> (ItemStack[]) nbt.getItemStackArray("AuctionBundleItems"));
 		return new ArrayList<>(Arrays.asList(bundledItems));
 	}
 }
