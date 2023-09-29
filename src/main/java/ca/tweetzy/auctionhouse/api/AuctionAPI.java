@@ -729,10 +729,23 @@ public class AuctionAPI {
 
 	public void depositBalance(OfflinePlayer player, double amount, ItemStack item, OfflinePlayer paidFrom) {
 		if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean()) {
+			if (Settings.MANUAL_PAYMENTS_ONLY_FOR_OFFLINE_USERS.getBoolean()) {
+				if (!player.isOnline()) {
+					AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, item, paidFrom.getName(), PaymentReason.ITEM_SOLD), null);
+				} else {
+					initiatePayment(player, amount);
+				}
+				return;
+			}
+
 			AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, item, paidFrom.getName(), PaymentReason.ITEM_SOLD), null);
 			return;
 		}
 
+		initiatePayment(player, amount);
+	}
+
+	private void initiatePayment(OfflinePlayer player, double amount) {
 		if (Settings.PAYMENT_HANDLE_USE_CMD.getBoolean()) {
 			AuctionHouse.newChain().sync(() -> {
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.PAYMENT_HANDLE_DEPOSIT_CMD.getString().replace("%player%", player.getName()).replace("%price%", String.valueOf(amount)));
