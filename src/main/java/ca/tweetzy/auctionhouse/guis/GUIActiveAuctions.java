@@ -92,7 +92,7 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 				setButton(slot++, item.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST), e -> {
 					switch (e.clickType) {
 						case LEFT:
-							if (Settings.SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID.getBoolean()) {
+							if (Settings.SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID.getBoolean() && item.containsValidBid()) {
 								AuctionHouse.getInstance().getLocale().getMessage("general.cannot cancel item with bid").sendPrefixedMessage(e.player);
 								return;
 							}
