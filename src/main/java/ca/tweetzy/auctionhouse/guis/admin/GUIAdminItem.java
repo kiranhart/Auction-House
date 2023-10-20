@@ -98,7 +98,7 @@ public class GUIAdminItem extends AbstractPlaceholderGui {
 
 				}
 
-				AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(this.auctionItem);
+//				AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(this.auctionItem);
 				e.gui.close();
 			});
 
