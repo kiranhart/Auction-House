@@ -16,23 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.api;
+package ca.tweetzy.auctionhouse.auction;
 
-public enum ListingResult {
+public enum ListingType {
 
-	SUCCESS,
-	CANCELED_CONFIRMATION,
-
-	CANNOT_PAY_LISTING_FEE,
-	LISTING_LIMIT_REACHED,
-	CANNOT_LIST_WITH_MCMMO_ABILITY_ACTIVE,
-	PLAYER_INSTANCE_NOT_FOUND,
-
-	CANNOT_SELL_REPAIRED_ITEM,
-	CANNOT_SELL_DAMAGED_ITEM,
-	CANNOT_SELL_BUNDLE_ITEM,
-
-	UNKNOWN,
-	EVENT_CANCELED
-
+	BIN,
+	AUCTION
 }
