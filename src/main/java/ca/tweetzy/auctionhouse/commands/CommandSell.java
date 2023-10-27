@@ -20,7 +20,7 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.auction.ListingResult;
+import ca.tweetzy.auctionhouse.api.auction.ListingResult;
 import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;

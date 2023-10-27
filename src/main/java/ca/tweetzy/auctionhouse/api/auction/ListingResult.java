@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.auction;
+package ca.tweetzy.auctionhouse.api.auction;
 
 public enum ListingResult {
 
