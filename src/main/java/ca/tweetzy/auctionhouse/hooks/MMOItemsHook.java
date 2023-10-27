@@ -16,29 +16,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.api.hook;
+package ca.tweetzy.auctionhouse.hooks;
 
-import com.gmail.nossr50.api.AbilityAPI;
+import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import io.lumine.mythic.lib.api.item.NBTItem;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: October 09 2021
- * Time Created: 1:35 p.m.
+ * Date Created: August 07 2021
+ * Time Created: 6:36 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-@UtilityClass
-public final class McMMOHook {
 
-	private boolean isEnabled() {
-		return Bukkit.getPluginManager().getPlugin("mcMMO") != null;
+@UtilityClass
+public class MMOItemsHook {
+
+	public boolean isEnabled() {
+		return Bukkit.getPluginManager().getPlugin("MMOItemsHook") != null;
 	}
 
-	public boolean isUsingAbility(@NonNull final Player player) {
-		if (!isEnabled()) return false;
-		return AbilityAPI.isAnyAbilityEnabled(player);
+	private boolean hasType(@NonNull final NBTItem itemStack) {
+		return itemStack.hasType();
+	}
+
+	public String getItemType(@NonNull final ItemStack itemStack) {
+		NBTItem nbtItem = NBTItem.get(itemStack);
+		if (nbtItem == null) return ChatColor.stripColor(AuctionAPI.getInstance().getItemName(itemStack));
+		if (!hasType(nbtItem)) return ChatColor.stripColor(AuctionAPI.getInstance().getItemName(itemStack));
+		return WordUtils.capitalize(nbtItem.getType().toLowerCase().replace("_", " "));
 	}
 }

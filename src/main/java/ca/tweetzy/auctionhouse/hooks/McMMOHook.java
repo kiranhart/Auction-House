@@ -16,30 +16,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.api.hook;
+package ca.tweetzy.auctionhouse.hooks;
 
-import ca.tweetzy.auctionhouse.settings.Settings;
+import com.gmail.nossr50.api.AbilityAPI;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.geysermc.floodgate.api.FloodgateApi;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: December 14 2021
- * Time Created: 1:57 p.m.
+ * Date Created: October 09 2021
+ * Time Created: 1:35 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 @UtilityClass
-public final class FloodGateHook {
+public final class McMMOHook {
 
-	private boolean isFloodGateActive() {
-		return Bukkit.getServer().getPluginManager().isPluginEnabled("floodgate");
+	private boolean isEnabled() {
+		return Bukkit.getPluginManager().getPlugin("mcMMO") != null;
 	}
 
-	public boolean isFloodGateUser(@NonNull final Player player) {
-		if (!isFloodGateActive()) return false;
-		return !Settings.ALLOW_FLOODGATE_PLAYERS.getBoolean() && FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId());
+	public boolean isUsingAbility(@NonNull final Player player) {
+		if (!isEnabled()) return false;
+		return AbilityAPI.isAnyAbilityEnabled(player);
 	}
 }
