@@ -27,7 +27,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionStatistic;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
-import ca.tweetzy.auctionhouse.helpers.DiscordMessageCreator;
+import ca.tweetzy.auctionhouse.helpers.discord.DiscordMessageCreator;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import org.bukkit.Bukkit;

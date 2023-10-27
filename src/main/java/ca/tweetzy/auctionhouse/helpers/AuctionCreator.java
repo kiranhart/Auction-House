@@ -20,7 +20,7 @@ package ca.tweetzy.auctionhouse.helpers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.api.ListingResult;
+import ca.tweetzy.auctionhouse.auction.ListingResult;
 import ca.tweetzy.auctionhouse.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.hooks.McMMOHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
@@ -42,7 +42,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
-import static ca.tweetzy.auctionhouse.api.ListingResult.*;
+import static ca.tweetzy.auctionhouse.auction.ListingResult.*;
 
 
 @UtilityClass

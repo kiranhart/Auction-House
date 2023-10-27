@@ -20,7 +20,7 @@ package ca.tweetzy.auctionhouse.guis.sell;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.api.ListingType;
+import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;

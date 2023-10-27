@@ -19,7 +19,7 @@
 package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.interfaces.Storeable;
+import ca.tweetzy.auctionhouse.api.sync.Storeable;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
