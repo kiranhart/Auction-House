@@ -1,6 +1,6 @@
 /*
  * Auction House
- * Copyright 2018-2022 Kiran Hart
+ * Copyright 2018-2023 Kiran Hart
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.api.interfaces;
+package ca.tweetzy.auctionhouse.api.sync;
 
 import java.util.function.Consumer;
 
