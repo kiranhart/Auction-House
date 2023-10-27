@@ -16,9 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.api.events;
+package ca.tweetzy.auctionhouse.events;
 
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.OfflinePlayer;
@@ -28,30 +29,36 @@ import org.bukkit.event.HandlerList;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: September 27 2021
- * Time Created: 11:18 a.m.
+ * Date Created: February 18 2021
+ * Time Created: 9:01 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-@Getter
+
 @Setter
-public final class AuctionBidEvent extends Event implements Cancellable {
+@Getter
+public class AuctionEndEvent extends Event implements Cancellable {
 
 	private static final HandlerList handlers = new HandlerList();
 	private boolean cancelled;
 
-	private final OfflinePlayer bidder;
-	private final AuctionedItem auctionedItem;
-	private final double newBidAmount;
+	private OfflinePlayer originalOwner;
+	private OfflinePlayer buyer;
+	private AuctionedItem auctionItem;
+	private AuctionSaleType saleType;
 
-	public AuctionBidEvent(OfflinePlayer bidder, AuctionedItem auctionedItem, double newBidAmount, boolean async) {
+	private double tax;
+
+	public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionedItem auctionItem, AuctionSaleType saleType, double tax, boolean async) {
 		super(async);
-		this.bidder = bidder;
-		this.auctionedItem = auctionedItem;
-		this.newBidAmount = newBidAmount;
+		this.originalOwner = originalOwner;
+		this.buyer = buyer;
+		this.auctionItem = auctionItem;
+		this.saleType = saleType;
+		this.tax = tax;
 	}
 
-	public AuctionBidEvent(OfflinePlayer bidder, AuctionedItem auctionedItem, double newBidAmount) {
-		this(bidder, auctionedItem, newBidAmount, false);
+	public AuctionEndEvent(OfflinePlayer originalOwner, OfflinePlayer buyer, AuctionedItem auctionItem, AuctionSaleType saleType, double tax) {
+		this(originalOwner, buyer, auctionItem, saleType, tax, true);
 	}
 
 	public HandlerList getHandlers() {

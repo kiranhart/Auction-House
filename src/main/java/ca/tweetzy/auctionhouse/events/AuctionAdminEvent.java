@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.api.events;
+package ca.tweetzy.auctionhouse.events;
 
 import ca.tweetzy.auctionhouse.auction.AuctionAdminLog;
 import lombok.Getter;

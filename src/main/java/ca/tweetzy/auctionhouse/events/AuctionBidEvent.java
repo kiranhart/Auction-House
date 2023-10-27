@@ -16,44 +16,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.api.events;
+package ca.tweetzy.auctionhouse.events;
 
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import lombok.Getter;
-import org.bukkit.entity.Player;
+import lombok.Setter;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: February 27 2021
- * Time Created: 4:59 p.m.
+ * Date Created: September 27 2021
+ * Time Created: 11:18 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 @Getter
-public class AuctionStartEvent extends Event implements Cancellable {
+@Setter
+public final class AuctionBidEvent extends Event implements Cancellable {
 
 	private static final HandlerList handlers = new HandlerList();
 	private boolean cancelled;
 
-	private Player seller;
-	private AuctionedItem auctionItem;
+	private final OfflinePlayer bidder;
+	private final AuctionedItem auctionedItem;
+	private final double newBidAmount;
 
-	private double listingTax;
-
-	public AuctionStartEvent(Player seller, AuctionedItem auctionItem, double listingTax) {
-		this.seller = seller;
-		this.auctionItem = auctionItem;
-		this.listingTax = listingTax;
+	public AuctionBidEvent(OfflinePlayer bidder, AuctionedItem auctionedItem, double newBidAmount, boolean async) {
+		super(async);
+		this.bidder = bidder;
+		this.auctionedItem = auctionedItem;
+		this.newBidAmount = newBidAmount;
 	}
 
-	public boolean isCancelled() {
-		return cancelled;
-	}
-
-	public void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
+	public AuctionBidEvent(OfflinePlayer bidder, AuctionedItem auctionedItem, double newBidAmount) {
+		this(bidder, auctionedItem, newBidAmount, false);
 	}
 
 	public HandlerList getHandlers() {
