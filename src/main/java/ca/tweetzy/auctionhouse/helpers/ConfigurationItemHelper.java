@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.helpers;
 
-import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
+import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.TextUtils;

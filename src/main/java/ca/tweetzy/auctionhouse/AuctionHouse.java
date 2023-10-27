@@ -19,8 +19,8 @@
 package ca.tweetzy.auctionhouse;
 
 import ca.tweetzy.auctionhouse.api.UpdateChecker;
-import ca.tweetzy.auctionhouse.api.hook.PlaceholderAPIHook;
-import ca.tweetzy.auctionhouse.api.hook.UltraEconomyHook;
+import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
+import ca.tweetzy.auctionhouse.hooks.UltraEconomyHook;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
