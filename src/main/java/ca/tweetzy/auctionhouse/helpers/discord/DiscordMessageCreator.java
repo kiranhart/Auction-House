@@ -22,6 +22,7 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.flight.utils.ChatUtil;
 import ca.tweetzy.flight.utils.ItemUtil;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -89,7 +90,7 @@ public final class DiscordMessageCreator {
 		DiscordWebhook.EmbedObject embed = generateBaseEmbed();
 
 		embed.addField(Settings.DISCORD_MSG_FIELD_SELLER_NAME.getString(), Settings.DISCORD_MSG_FIELD_SELLER_VALUE.getString().replace("%seller%", this.listing.isServerItem() ? AuctionCreator.SERVER_LISTING_NAME : this.seller.getName()), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
-		embed.addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", "x" + this.listing.getItem().getAmount() + " " + ChatColor.stripColor(ItemUtil.getItemName(this.listing.getItem()))), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
+		embed.addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", "x" + this.listing.getItem().getAmount() + " " + ChatColor.stripColor(Settings.FORCE_MATERIAL_NAMES_FOR_DISCORD.getBoolean() ? ChatUtil.capitalize(this.listing.getItem().getType()) : ItemUtil.getItemName(this.listing.getItem()))), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
 
 		switch (this.messageType) {
 			case NEW_AUCTION_LISTING:
