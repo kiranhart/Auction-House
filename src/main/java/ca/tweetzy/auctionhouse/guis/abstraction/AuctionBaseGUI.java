@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.guis.abstraction;
 
-import ca.tweetzy.flight.gui.Gui;
+import ca.tweetzy.core.gui.Gui;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.entity.Player;

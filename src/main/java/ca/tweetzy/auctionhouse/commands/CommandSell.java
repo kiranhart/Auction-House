@@ -146,6 +146,7 @@ public final class CommandSell extends AbstractCommand {
 		boolean isStackPrice = false;
 		boolean partialBuy = false;
 		boolean serverAuction = false;
+		boolean isRequest = false;
 
 		List<String> timeSets = Arrays.asList(
 				"second",

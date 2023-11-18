@@ -71,6 +71,7 @@ public class AuctionedItem {
 	private boolean infinite = false;
 	private boolean allowPartialBuy = false;
 	private boolean serverItem = false;
+	private boolean isRequest = false;
 
 	public AuctionedItem() {
 	}
@@ -106,6 +107,7 @@ public class AuctionedItem {
 		this.expired = expired;
 		this.expiresAt = expiresAt;
 		this.serverItem = false;
+		this.isRequest = false;
 	}
 
 	public ItemStack getBidStack() {
@@ -140,6 +142,45 @@ public class AuctionedItem {
 					.replace("%remaining_total_hours%", String.valueOf(((this.expiresAt - System.currentTimeMillis()) / 1000) / 3600))
 			).collect(Collectors.toList())));
 		}
+
+		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_FOOTER.getStringList()));
+
+		meta.setLore(lore);
+		itemStack.setItemMeta(meta);
+		return itemStack;
+	}
+
+	public ItemStack getDisplayRequestStack(AuctionStackType type) {
+		ItemStack itemStack = this.item.clone();
+		itemStack.setAmount(Math.max(this.item.getAmount(), 1));
+		ItemMeta meta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
+
+		List<String> lore = new ArrayList<>();
+
+		if (meta != null && meta.getLore() != null)
+			lore.addAll(meta.getLore());
+
+		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HEADER.getStringList()));
+		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_REQUESTER.getStringList().stream().map(s -> s.replace("%requester%", this.ownerName)).collect(Collectors.toList())));
+		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_REQUEST_PRICE.getStringList().stream().map(s -> s.replace("%request_price%", Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : AuctionAPI.getInstance().formatNumber(this.basePrice))).collect(Collectors.toList())));
+
+		long[] times = AuctionAPI.getInstance().getRemainingTimeValues((this.expiresAt - System.currentTimeMillis()) / 1000);
+
+		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_TIME_LEFT.getStringList().stream().map(s -> s
+				.replace("%remaining_days%", String.valueOf(times[0]))
+				.replace("%remaining_hours%", String.valueOf(times[1]))
+				.replace("%remaining_minutes%", String.valueOf(times[2]))
+				.replace("%remaining_seconds%", String.valueOf(times[3]))
+				.replace("%remaining_total_hours%", String.valueOf(((this.expiresAt - System.currentTimeMillis()) / 1000) / 3600))
+		).collect(Collectors.toList())));
+
+		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_HEADER.getStringList()));
+
+		if (type == AuctionStackType.ACTIVE_AUCTIONS_LIST)
+			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_REQUEST.getStringList()));
+
+		if (type == AuctionStackType.MAIN_AUCTION_HOUSE)
+			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_FULFILL_REQUEST.getStringList()));
 
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_FOOTER.getStringList()));
 

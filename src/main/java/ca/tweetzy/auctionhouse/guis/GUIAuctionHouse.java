@@ -459,7 +459,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 
 		int slot = 0;
 		for (AuctionedItem auctionItem : data) {
-			setButton(slot++, auctionItem.getDisplayStack(AuctionStackType.MAIN_AUCTION_HOUSE), e -> {
+			setButton(slot++, auctionItem.isRequest() ? auctionItem.getDisplayRequestStack(AuctionStackType.MAIN_AUCTION_HOUSE) :  auctionItem.getDisplayStack(AuctionStackType.MAIN_AUCTION_HOUSE), e -> {
 				// Non Type specific actions
 				if (e.clickType == ClickType.valueOf(Settings.CLICKS_INSPECT_CONTAINER.getString().toUpperCase())) {
 					handleContainerInspect(e);
@@ -474,6 +474,14 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 				// Non Biddable Items
 				if (!auctionItem.isBidItem()) {
 					if (e.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_PURCHASE.getString().toUpperCase())) {
+						// special case for request
+						if (auctionItem.isRequest()) {
+							cleanup();
+							e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
+							AuctionHouse.getInstance().getTransactionManager().addPrePurchase(e.player, auctionItem.getId());
+							return;
+						}
+
 						handleNonBidItem(auctionItem, e, false);
 						return;
 					}

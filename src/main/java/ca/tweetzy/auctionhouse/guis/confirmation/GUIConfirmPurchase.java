@@ -20,13 +20,13 @@ package ca.tweetzy.auctionhouse.guis.confirmation;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
+import ca.tweetzy.auctionhouse.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.exception.ItemNotFoundException;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
@@ -47,6 +47,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -102,10 +103,11 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 
 	private void draw() {
 		ItemStack deserializeItem = this.auctionItem.getItem().clone();
+		final boolean isRequest = this.auctionItem.isRequest();
 
-		setItems(this.buyingSpecificQuantity ? 9 : 0, this.buyingSpecificQuantity ? 12 : 3, getConfirmBuyYesItem());
-		setItem(this.buyingSpecificQuantity ? 1 : 0, 4, this.auctionItem.getDisplayStack(AuctionStackType.LISTING_PREVIEW));
-		setItems(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, getConfirmBuyNoItem());
+		setItems(this.buyingSpecificQuantity ? 9 : 0, this.buyingSpecificQuantity ? 12 : 3, isRequest ? getConfirmRequestYesItem() : getConfirmBuyYesItem());
+		setItem(this.buyingSpecificQuantity ? 1 : 0, 4, isRequest ? this.auctionItem.getDisplayRequestStack(AuctionStackType.MAIN_AUCTION_HOUSE) : this.auctionItem.getDisplayStack(AuctionStackType.LISTING_PREVIEW));
+		setItems(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, isRequest ? getConfirmRequestNoItem() : getConfirmBuyNoItem());
 
 		setAction(this.buyingSpecificQuantity ? 1 : 0, 4, ClickType.LEFT, e -> {
 			if (deserializeItem.getItemMeta() instanceof BlockStateMeta) {
@@ -136,6 +138,69 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 
 				double buyNowPrice = this.buyingSpecificQuantity ? this.purchaseQuantity * this.pricePerItem : located.getBasePrice();
 				double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * buyNowPrice : 0D;
+
+				/*
+				============================================================================
+										SPECIAL SHIT FOR REQUESTS
+				============================================================================
+				 */
+				if (isRequest) {
+					// check if the fulfiller even has the item
+					final int itemCount = AuctionAPI.getInstance().getItemCountInPlayerInventory(this.player, this.auctionItem.getItem());
+					if (itemCount < this.auctionItem.getItem().getAmount()) {
+						// yell at fulfiller for being dumb
+						AuctionHouse.getInstance().getLocale().getMessage("general.notenoughitems").sendPrefixedMessage(e.player);
+						return;
+					}
+
+					final OfflinePlayer requester = Bukkit.getOfflinePlayer(this.auctionItem.getOwner());
+
+					// check if the requester even has money
+					if (!EconomyManager.hasBalance(requester, buyNowPrice)) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.requesterhasnomoney").sendPrefixedMessage(e.player);
+						return;
+					}
+
+					// transfer funds
+					EconomyManager.withdrawBalance(requester, buyNowPrice);
+					EconomyManager.deposit(e.player, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? buyNowPrice : buyNowPrice - tax);
+
+					// transfer items
+					AuctionAPI.getInstance().removeSpecificItemQuantityFromPlayer(this.player, this.auctionItem.getItem(), this.auctionItem.getItem().getAmount());
+					final AuctionedItem toGive = new AuctionedItem(
+							UUID.randomUUID(),
+							requester.getUniqueId(),
+							requester.getUniqueId(),
+							this.auctionItem.getOwnerName(),
+							this.auctionItem.getOwnerName(),
+							this.auctionItem.getCategory(),
+							this.auctionItem.getItem(),
+							0,
+							0,
+							0,
+							0,
+							false, true, System.currentTimeMillis()
+					);
+
+					AuctionHouse.getInstance().getDataManager().insertAuctionAsync(toGive, (error, inserted) -> AuctionHouse.getInstance().getAuctionItemManager().addAuctionItem(toGive));
+					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(this.auctionItem);
+
+					AuctionHouse.getInstance().getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(player -> {
+						AuctionHouse.getInstance().getTransactionManager().removeAllRelatedPlayers(auctionItem.getId());
+						player.closeInventory();
+					});
+
+					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(e.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getBasePrice())).sendPrefixedMessage(e.player);
+					if (requester.isOnline())
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(requester.getPlayer()))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getBasePrice())).sendPrefixedMessage(requester.getPlayer());
+
+					e.gui.close();
+					return;
+				}
+
+
+				//		languageNodes.put("pricing.moneyremove", "&c&l- $%price% &7(%player_balance%)");
+				//		languageNodes.put("pricing.moneyadd", "&a&l+ $%price% &7(%player_balance%)");
 
 				// Check economy
 				if (!EconomyManager.hasBalance(e.player, buyNowPrice + (Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? tax : 0D))) {

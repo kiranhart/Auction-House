@@ -324,7 +324,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void insertAuction(AuctionedItem item, Callback<AuctionedItem> callback) {
 		this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite, allow_partial_buys, server_auction) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite, allow_partial_buys, server_auction, is_request) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 				final AuctionAPI api = AuctionAPI.getInstance();
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
 
@@ -350,6 +350,7 @@ public class DataManager extends DataManagerAbstract {
 				statement.setBoolean(19, item.isInfinite());
 				statement.setBoolean(20, item.isAllowPartialBuy());
 				statement.setBoolean(21, item.isServerItem());
+				statement.setBoolean(22, item.isRequest());
 
 				statement.executeUpdate();
 
@@ -734,6 +735,7 @@ public class DataManager extends DataManagerAbstract {
 		auctionItem.setInfinite(hasColumn(resultSet, "infinite") && resultSet.getBoolean("infinite"));
 		auctionItem.setAllowPartialBuy(hasColumn(resultSet, "allow_partial_buys") && resultSet.getBoolean("allow_partial_buys"));
 		auctionItem.setServerItem(resultSet.getBoolean("server_auction"));
+		auctionItem.setRequest(resultSet.getBoolean("is_request"));
 
 		return auctionItem;
 	}

@@ -21,12 +21,12 @@ package ca.tweetzy.auctionhouse.helpers;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.ListingResult;
-import ca.tweetzy.auctionhouse.events.AuctionStartEvent;
-import ca.tweetzy.auctionhouse.hooks.McMMOHook;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
+import ca.tweetzy.auctionhouse.events.AuctionStartEvent;
+import ca.tweetzy.auctionhouse.hooks.McMMOHook;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
@@ -64,7 +64,7 @@ public final class AuctionCreator {
 		// Check if player is even valid?!?
 
 		// only check if not a server item
-		if (!auctionItem.isServerItem()) {
+		if (!auctionItem.isServerItem() && !auctionItem.isRequest()) {
 			if (seller == null) {
 				result.accept(auctionItem, PLAYER_INSTANCE_NOT_FOUND);
 				return;
@@ -90,10 +90,11 @@ public final class AuctionCreator {
 			}
 		}
 
-		if (!AuctionAPI.getInstance().meetsMinItemPrice(BundleUtil.isBundledItem(auctionItem.getItem()), auctionItem.isBidItem(), auctionItem.getItem(), auctionItem.getBasePrice(), auctionItem.getBidStartingPrice())) {
-			instance.getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getMinItemPriceManager().getMinPrice(auctionItem.getItem()).getPrice())).sendPrefixedMessage(seller);
-			return;
-		}
+		if (!auctionItem.isRequest())
+			if (!AuctionAPI.getInstance().meetsMinItemPrice(BundleUtil.isBundledItem(auctionItem.getItem()), auctionItem.isBidItem(), auctionItem.getItem(), auctionItem.getBasePrice(), auctionItem.getBidStartingPrice())) {
+				instance.getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(AuctionHouse.getInstance().getMinItemPriceManager().getMinPrice(auctionItem.getItem()).getPrice())).sendPrefixedMessage(seller);
+				return;
+			}
 
 		final ItemStack finalItemToSell = auctionItem.getItem().clone();
 		final double originalBasePrice = auctionItem.getBasePrice();
@@ -111,7 +112,7 @@ public final class AuctionCreator {
 		final double listingFee = Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean() ? AuctionAPI.getInstance().calculateListingFee(originalBasePrice) : 0;
 
 		// check tax
-		if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean() && !auctionItem.isServerItem()) {
+		if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean() && !auctionItem.isServerItem() && !auctionItem.isRequest()) {
 			if (!EconomyManager.hasBalance(seller, listingFee)) {
 				instance.getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(listingFee)).sendPrefixedMessage(seller);
 				result.accept(auctionItem, CANNOT_PAY_LISTING_FEE);
@@ -128,21 +129,24 @@ public final class AuctionCreator {
 			auctionItem.setListedWorld(seller.getWorld().getName());
 
 
-		AuctionStartEvent startEvent = new AuctionStartEvent(seller, auctionItem, listingFee);
+		// check if not request
+		if (!auctionItem.isRequest()) {
+			AuctionStartEvent startEvent = new AuctionStartEvent(seller, auctionItem, listingFee);
 
-		if (Bukkit.isPrimaryThread())
-			Bukkit.getServer().getPluginManager().callEvent(startEvent);
-		else
-			Bukkit.getScheduler().runTask(AuctionHouse.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(startEvent));
+			if (Bukkit.isPrimaryThread())
+				Bukkit.getServer().getPluginManager().callEvent(startEvent);
+			else
+				Bukkit.getScheduler().runTask(AuctionHouse.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(startEvent));
 
-		if (startEvent.isCancelled()) {
-			result.accept(auctionItem, EVENT_CANCELED);
-			return;
+			if (startEvent.isCancelled()) {
+				result.accept(auctionItem, EVENT_CANCELED);
+				return;
+			}
 		}
 
 		// overwrite to be random uuid since it's a server auction
 
-		if (auctionItem.isServerItem()) {
+		if (auctionItem.isServerItem() && !auctionItem.isRequest()) {
 			auctionItem.setOwner(SERVER_AUCTION_UUID);
 			auctionItem.setOwnerName(SERVER_LISTING_NAME);
 
@@ -159,7 +163,7 @@ public final class AuctionCreator {
 
 
 		String NAX = AuctionHouse.getInstance().getLocale().getMessage("auction.biditemwithdisabledbuynow").getMessage();
-		String msg = AuctionHouse.getInstance().getLocale().getMessage(auctionItem.isBidItem() ? "auction.listed.withbid" : "auction.listed.nobid")
+		String msg = AuctionHouse.getInstance().getLocale().getMessage(auctionItem.isRequest() ? "auction.listed.request" : auctionItem.isBidItem() ? "auction.listed.withbid" : "auction.listed.nobid")
 				.processPlaceholder("amount", finalItemToSell.getAmount())
 				.processPlaceholder("item", AuctionAPI.getInstance().getItemName(finalItemToSell))
 				.processPlaceholder("base_price", auctionItem.getBasePrice() <= -1 ? NAX : AuctionAPI.getInstance().formatNumber(auctionItem.getBasePrice()))
@@ -194,17 +198,19 @@ public final class AuctionCreator {
 					ItemStack originalCopy = auctionItem.getItem().clone();
 					int totalOriginal = BundleUtil.isBundledItem(originalCopy) ? AuctionAPI.getInstance().getItemCountInPlayerInventory(seller, originalCopy) : originalCopy.getAmount();
 
-					if (BundleUtil.isBundledItem(originalCopy)) {
-						originalCopy.setAmount(1);
-						for (int i = 0; i < totalOriginal; i++) PlayerUtils.giveItem(seller, originalCopy);
-					} else {
-						originalCopy.setAmount(totalOriginal);
-						PlayerUtils.giveItem(seller, originalCopy);
+					if (!auctionItem.isRequest()) {
+						if (BundleUtil.isBundledItem(originalCopy)) {
+							originalCopy.setAmount(1);
+							for (int i = 0; i < totalOriginal; i++) PlayerUtils.giveItem(seller, originalCopy);
+						} else {
+							originalCopy.setAmount(totalOriginal);
+							PlayerUtils.giveItem(seller, originalCopy);
+						}
 					}
 				}
 
 				// If the item could not be added for whatever reason and the tax listing fee is enabled, refund them
-				if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean() && !auctionItem.isServerItem() && seller != null) {
+				if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean() && !auctionItem.isServerItem() && !auctionItem.isRequest() && seller != null) {
 					if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
 						AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
 								seller.getUniqueId(),
@@ -226,7 +232,7 @@ public final class AuctionCreator {
 
 			//====================================================================================
 			// ANOTHER VERY SHIT BROADCAST THAT IS IN FACT BROKEN
-			if (Settings.BROADCAST_AUCTION_LIST.getBoolean()) {
+			if (Settings.BROADCAST_AUCTION_LIST.getBoolean() && !auctionItem.isRequest()) {
 
 				final String prefix = AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage();
 

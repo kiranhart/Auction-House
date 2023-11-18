@@ -638,6 +638,18 @@ public class Settings {
 			"&7Click to confirm your purchase"
 	));
 
+	public static final ConfigSetting GUI_CONFIRM_REQUEST_NO_ITEM = new ConfigSetting(config, "gui.confirm request.no.item", "RED_STAINED_GLASS_PANE");
+	public static final ConfigSetting GUI_CONFIRM_REQUEST_NO_NAME = new ConfigSetting(config, "gui.confirm request.no.name", "&c&LCancel");
+	public static final ConfigSetting GUI_CONFIRM_REQUEST_NO_LORE = new ConfigSetting(config, "gui.confirm request.no.lore", Collections.singletonList(
+			"&7Click to cancel your purchase"
+	));
+
+	public static final ConfigSetting GUI_CONFIRM_REQUEST_YES_ITEM = new ConfigSetting(config, "gui.confirm request.yes.item", "LIME_STAINED_GLASS_PANE");
+	public static final ConfigSetting GUI_CONFIRM_REQUEST_YES_NAME = new ConfigSetting(config, "gui.confirm request.yes.name", "&a&lConfirm");
+	public static final ConfigSetting GUI_CONFIRM_REQUEST_YES_LORE = new ConfigSetting(config, "gui.confirm request.yes.lore", Collections.singletonList(
+			"&7Click to confirm your purchase"
+	));
+
 	/*  ===============================
 	 *         CONFIRM LISTING GUI
 	 *  ===============================*/
@@ -1315,6 +1327,15 @@ public class Settings {
 			""
 	));
 
+	public static final ConfigSetting AUCTION_STACK_DETAILS_REQUESTER = new ConfigSetting(config, "auction stack.requester lines", Arrays.asList(
+			"&eRequester&f: &b%requester%",
+			""
+	));
+	public static final ConfigSetting AUCTION_STACK_DETAILS_REQUEST_PRICE = new ConfigSetting(config, "auction stack.request price lines", Arrays.asList(
+			"&eOffering: &a$%request_price%",
+			""
+	));
+
 	public static final ConfigSetting AUCTION_STACK_DETAILS_BUY_NOW = new ConfigSetting(config, "auction stack.buy now lines", Arrays.asList(
 			"&eBuy Now: &a$%buynowprice%",
 			""
@@ -1348,6 +1369,7 @@ public class Settings {
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_INSPECTION = new ConfigSetting(config, "auction stack.controls.inspection", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box/bundled item)");
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_ACCEPT_BID = new ConfigSetting(config, "auction stack.controls.accept bid", Collections.singletonList("&eRight-Click to accept the current bid"), "This will only show on items within the active listings menu on biddable items.");
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_ITEM = new ConfigSetting(config, "auction stack.controls.cancel item", Collections.singletonList("&eLeft-Click to cancel this listing"));
+	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_REQUEST = new ConfigSetting(config, "auction stack.controls.cancel request", Collections.singletonList("&eLeft-Click to cancel this request"));
 	public static final ConfigSetting AUCTION_STACK_LISTING_PREVIEW_ITEM = new ConfigSetting(config, "auction stack.controls.preview item", Collections.singletonList("&ePreviewing Listing"));
 	public static final ConfigSetting AUCTION_STACK_HIGHEST_BIDDER_ITEM = new ConfigSetting(config, "auction stack.controls.highest bidder", Collections.singletonList("&eCurrently Winning!"));
 
@@ -1360,6 +1382,9 @@ public class Settings {
 			"&eLeft-Click&f: &bBid"
 	), "This will be appended at the end of the lore", "If the auction item is using a bid, this will show");
 
+	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_FULFILL_REQUEST = new ConfigSetting(config, "auction stack.controls.fulfill request", Collections.singletonList(
+			"&eLeft-Click&f: &bFulfill Request"
+	), "This will be appended at the end of the lore", "If the listing is a request this will be shown to fulfill");
 
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_BID_OFF = new ConfigSetting(config, "auction stack.controls.not using bid", Collections.singletonList(
 			"&eLeft-Click&f: &bBuy Now"

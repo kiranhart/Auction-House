@@ -229,7 +229,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new _16_StatisticVersionTwoMigration(),
 				new _17_PaymentsMigration(),
 				new _18_PaymentsItemMigration(),
-				new _19_ServerAuctionMigration()
+				new _19_ServerAuctionMigration(),
+				new _20_AuctionRequestsMigration()
 		);
 
 		dataMigrationManager.runMigrations();
@@ -290,7 +291,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new CommandMinPrice(),
 				new CommandStats(),
 				new CommandPayments(),
-				new CommandBids()
+				new CommandBids(),
+				new CommandRequest()
 		);
 
 		// Placeholder API

@@ -18,7 +18,6 @@
 
 package ca.tweetzy.auctionhouse.settings.v3;
 
-import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionUsageMode;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.config.ConfigEntry;

@@ -119,7 +119,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 				// the owner is the highest bidder, so just expire
 				if (auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
-					if (auctionItem.isServerItem())
+					if (auctionItem.isServerItem() || auctionItem.isRequest())
 						instance.getAuctionItemManager().sendToGarbage(auctionItem);
 					else
 						auctionItem.setExpired(true);

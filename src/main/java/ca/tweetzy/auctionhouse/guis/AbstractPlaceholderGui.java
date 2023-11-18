@@ -103,6 +103,15 @@ public abstract class AbstractPlaceholderGui extends Gui {
 		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_BUY_NO_ITEM.getString(), Settings.GUI_CONFIRM_BUY_NO_NAME.getString(), Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList(), null);
 	}
 
+	protected ItemStack getConfirmRequestYesItem() {
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_REQUEST_YES_ITEM.getString(), Settings.GUI_CONFIRM_REQUEST_YES_NAME.getString(), Settings.GUI_CONFIRM_REQUEST_YES_LORE.getStringList(), null);
+	}
+
+	protected ItemStack getConfirmRequestNoItem() {
+		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_REQUEST_NO_ITEM.getString(), Settings.GUI_CONFIRM_REQUEST_NO_NAME.getString(), Settings.GUI_CONFIRM_REQUEST_NO_LORE.getStringList(), null);
+	}
+
+
 	protected ItemStack getConfirmListingYesItem() {
 		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_LISTING_YES_ITEM.getString(), Settings.GUI_CONFIRM_LISTING_YES_NAME.getString(), Settings.GUI_CONFIRM_LISTING_YES_LORE.getStringList(), null);
 	}
