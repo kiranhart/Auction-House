@@ -163,9 +163,12 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 				if (Settings.SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID.getBoolean() && item.containsValidBid())
 					continue;
 
-				item.setExpired(true);
+				if (item.isRequest()) {
+					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(item);
+				} else {
+					item.setExpired(true);
+				}
 			}
-
 			draw();
 		});
 	}
