@@ -476,6 +476,11 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 					if (e.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_PURCHASE.getString().toUpperCase())) {
 						// special case for request
 						if (auctionItem.isRequest()) {
+							if (e.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_FULFILL_OWN_REQUEST.getBoolean()) {
+								AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(e.player);
+								return;
+							}
+
 							cleanup();
 							e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
 							AuctionHouse.getInstance().getTransactionManager().addPrePurchase(e.player, auctionItem.getId());
