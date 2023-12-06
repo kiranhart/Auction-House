@@ -170,6 +170,7 @@ public class LocaleSettings {
 		languageNodes.put("auction_filter.categories.search", "Search");
 		languageNodes.put("auction_filter.sort_order.recent", "Recent");
 		languageNodes.put("auction_filter.sort_order.price", "Price");
+		languageNodes.put("auction_filter.sort_order.oldest", "Oldest");
 
 		languageNodes.put("transaction_filter.buy_type.sold", "Sold");
 		languageNodes.put("transaction_filter.buy_type.bought", "Bought");

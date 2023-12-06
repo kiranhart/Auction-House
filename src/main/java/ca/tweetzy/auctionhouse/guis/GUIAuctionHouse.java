@@ -173,10 +173,10 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 
 				if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.PRICE) {
 					this.items = this.items.stream().sorted(Comparator.comparingDouble(AuctionedItem::getCurrentPrice).reversed()).collect(Collectors.toList());
-				}
-
-				if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.RECENT) {
+				}else if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.RECENT) {
 					this.items = this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).collect(Collectors.toList());
+				}else if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.OLDEST) {
+					this.items = this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt)).collect(Collectors.toList());
 				}
 			}
 

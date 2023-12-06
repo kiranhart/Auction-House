@@ -29,6 +29,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 public enum AuctionSortType {
 
 	RECENT("Recent"),
+	OLDEST("Oldest"),
 	PRICE("Price");
 
 	final String type;
@@ -43,6 +44,8 @@ public enum AuctionSortType {
 				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sort_order.price").getMessage();
 			case RECENT:
 				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sort_order.recent").getMessage();
+			case OLDEST:
+				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sort_order.oldest").getMessage();
 			default:
 				return getType();
 		}
