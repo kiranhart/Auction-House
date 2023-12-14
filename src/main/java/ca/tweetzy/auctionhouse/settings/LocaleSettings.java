@@ -83,6 +83,12 @@ public class LocaleSettings {
 		languageNodes.put("general.cannot cancel item with bid", "&cYou cannot cancel a listing that already has a bid!");
 		languageNodes.put("general.mcmmo_ability_active", "&cCannot list item when mcMMO ability is active!");
 		languageNodes.put("general.cannot list damaged item", "&cCannot list a damaged item!");
+
+		languageNodes.put("general.nothing to confirm", "&cYou have nothing to confirm");
+		languageNodes.put("general.confirm time limit reached", "&cYou didn't confirm in time, request it again.");
+		languageNodes.put("general.confirmed cancellation", "&aConfirmed, all your items will be sent to colleciton.");
+
+
 		languageNodes.put("general.cannot list repaired item", "&cCannot list a repaired item!");
 		languageNodes.put("general.marked chest", "&aYou marked that chest as an Auction chest");
 		languageNodes.put("general.unmarked chest", "&cYou unmarked that chest as an Auction chest");
@@ -112,6 +118,9 @@ public class LocaleSettings {
 		languageNodes.put("pricing.bidmusthigherthanprevious", "&cYour bid must be higher than &4%current_bid%");
 		languageNodes.put("pricing.minitemprice", "&cThe minimum price for this item must be &a$%price%");
 
+
+		languageNodes.put("titles.end all confirm.title", "&eConfirm End All");
+		languageNodes.put("titles.end all confirm.subtitle", "&bType &f/&eah confirm &bto cancel all auctions");
 
 		languageNodes.put("titles.buy now price.title", "&eBuy Out Price");
 		languageNodes.put("titles.buy now price.subtitle", "&fEnter new buyout price in chat");
@@ -225,6 +234,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.syntax.active", "active");
 		languageNodes.put("commands.syntax.auctionhouse", "/ah");
 		languageNodes.put("commands.syntax.convert", "convert");
+		languageNodes.put("commands.syntax.confirm", "confirm");
 		languageNodes.put("commands.syntax.expired", "expired");
 		languageNodes.put("commands.syntax.reload", "reload");
 		languageNodes.put("commands.syntax.search", "search <keywords>");
@@ -243,6 +253,7 @@ public class LocaleSettings {
 
 		languageNodes.put("commands.description.active", "View all your auction listings");
 		languageNodes.put("commands.description.auctionhouse", "Main command for the plugin, it opens the auction window.");
+		languageNodes.put("commands.description.confirm", "Used to confirm an action");
 		languageNodes.put("commands.description.convert", "Used to make an attempted conversion from < 2.0.0+");
 		languageNodes.put("commands.description.expired", "View all your expired/cancelled listings");
 		languageNodes.put("commands.description.reload", "Reload plugin files");

@@ -702,6 +702,7 @@ public class DataManager extends DataManagerAbstract {
 				true,
 				resultSet.getLong("last_listed_item"),
 				null,
+				-1,
 				-1
 		);
 	}

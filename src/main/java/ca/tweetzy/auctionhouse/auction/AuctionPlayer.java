@@ -66,8 +66,10 @@ public class AuctionPlayer {
 	private ItemStack itemBeingListed;
 	private int assignedTaskId;
 
+	private long endAllRequestTime;
+
 	public AuctionPlayer(UUID uuid) {
-		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, TransactionViewFilter.ALL, true, -1, null, -1);
+		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, TransactionViewFilter.ALL, true, -1, null, -1, -1);
 	}
 
 	public AuctionPlayer(Player player) {

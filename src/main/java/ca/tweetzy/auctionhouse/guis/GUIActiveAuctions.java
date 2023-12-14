@@ -31,6 +31,8 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.comp.Titles;
+import ca.tweetzy.flight.utils.Common;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitTask;
@@ -105,7 +107,7 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 							}
 
 							if (((item.getBidStartingPrice() > 0 || item.getBidIncrementPrice() > 0) && Settings.ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS.getBoolean()) || Settings.ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS.getBoolean()) {
-								if (item.getHighestBidder().equals(e.player.getUniqueId())) {
+								if (item.getHighestBidder().equals(e.player.getUniqueId()) && item.isBidItem()) {
 									item.setExpired(true);
 									item.setExpiresAt(System.currentTimeMillis());
 									if (Settings.BIDDING_TAKES_MONEY.getBoolean() && !item.getHighestBidder().equals(item.getOwner())) {
@@ -159,6 +161,26 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 		setButton(5, 4, getRefreshButtonItem(), e -> e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer)));
 
 		setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString(), Settings.GUI_ACTIVE_AUCTIONS_NAME.getString(), Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList(), null), e -> {
+
+			if (Settings.ASK_FOR_CANCEL_CONFIRM_ON_ALL_ITEMS.getBoolean()) {
+				cleanup();
+				e.gui.exit();
+
+				Titles.sendTitle(e.player,
+						20,
+						20 * 5,
+						20,
+						Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.end all confirm.title").getMessage()),
+						Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.end all confirm.subtitle").getMessage())
+				);
+
+				// reset the request time for cancel
+				this.auctionPlayer.setEndAllRequestTime(System.currentTimeMillis() + (1000 * 30));
+
+				return;
+			}
+
+
 			for (AuctionedItem item : this.auctionPlayer.getItems(false)) {
 				if (Settings.SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID.getBoolean() && item.containsValidBid())
 					continue;
