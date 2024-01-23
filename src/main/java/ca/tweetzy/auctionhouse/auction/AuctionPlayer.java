@@ -69,7 +69,23 @@ public class AuctionPlayer {
 	private long endAllRequestTime;
 
 	public AuctionPlayer(UUID uuid) {
-		this(uuid, Bukkit.getPlayer(uuid), AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, "", AuctionSaleType.BOTH, AuctionItemCategory.ALL, AuctionSortType.RECENT, TransactionViewFilter.ALL, true, -1, null, -1, -1);
+		this(
+				uuid,
+				Bukkit.getPlayer(uuid),
+				Enum.valueOf(AuctionSaleType.class, Settings.DEFAULT_FILTER_SALE_TYPE.getString()),
+				Enum.valueOf(AuctionItemCategory.class, Settings.DEFAULT_FILTER_CATEGORY.getString()),
+				Enum.valueOf(AuctionSortType.class, Settings.DEFAULT_FILTER_SORT.getString()),
+				"",
+				Enum.valueOf(AuctionSaleType.class, Settings.DEFAULT_FILTER_SALE_TYPE.getString()),
+				Enum.valueOf(AuctionItemCategory.class, Settings.DEFAULT_FILTER_CATEGORY.getString()),
+				Enum.valueOf(AuctionSortType.class, Settings.DEFAULT_FILTER_SORT.getString()),
+				TransactionViewFilter.ALL,
+				true,
+				-1,
+				null,
+				-1,
+				-1
+		);
 	}
 
 	public AuctionPlayer(Player player) {
@@ -131,16 +147,16 @@ public class AuctionPlayer {
 	}
 
 	public void resetFilter() {
-		this.selectedFilter = AuctionItemCategory.ALL;
-		this.auctionSortType = AuctionSortType.RECENT;
-		this.selectedSaleType = AuctionSaleType.BOTH;
+		this.selectedFilter = Enum.valueOf(AuctionItemCategory.class, Settings.DEFAULT_FILTER_CATEGORY.getString());
+		this.auctionSortType = Enum.valueOf(AuctionSortType.class, Settings.DEFAULT_FILTER_SORT.getString());
+		this.selectedSaleType = Enum.valueOf(AuctionSaleType.class, Settings.DEFAULT_FILTER_SALE_TYPE.getString());
 		this.currentSearchPhrase = "";
 	}
 
 	public void resetTransactionFilter() {
-		this.selectedTransactionFilter = AuctionItemCategory.ALL;
-		this.transactionSortType = AuctionSortType.RECENT;
-		this.selectedTransactionSaleType = AuctionSaleType.BOTH;
+		this.selectedTransactionFilter = Enum.valueOf(AuctionItemCategory.class, Settings.DEFAULT_FILTER_CATEGORY.getString());
+		this.transactionSortType = Enum.valueOf(AuctionSortType.class, Settings.DEFAULT_FILTER_SORT.getString());
+		this.selectedTransactionSaleType = Enum.valueOf(AuctionSaleType.class, Settings.DEFAULT_FILTER_SALE_TYPE.getString());
 	}
 
 
