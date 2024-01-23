@@ -484,6 +484,11 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+
+	public void updateItemsAsync(Collection<AuctionedItem> items, UpdateCallback callback) {
+		this.async(() -> updateItems(items, callback));
+	}
+
 	public void updateItems(Collection<AuctionedItem> items, UpdateCallback callback) {
 		this.databaseConnector.connect(connection -> {
 			connection.setAutoCommit(false);
