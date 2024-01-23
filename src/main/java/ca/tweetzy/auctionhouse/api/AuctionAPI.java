@@ -333,7 +333,8 @@ public class AuctionAPI {
 	}
 
 	public boolean matchSearch(String pattern, String sentence) {
-		Pattern patt = Pattern.compile(ChatColor.stripColor(pattern), Pattern.CASE_INSENSITIVE);
+		String escapedPattern = Pattern.quote(ChatColor.stripColor(pattern));
+		Pattern patt = Pattern.compile(escapedPattern, Pattern.CASE_INSENSITIVE);
 		Matcher matcher = patt.matcher(sentence);
 		return matcher.find();
 	}
