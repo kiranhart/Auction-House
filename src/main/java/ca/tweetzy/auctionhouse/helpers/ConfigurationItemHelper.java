@@ -25,6 +25,7 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.QuickItem;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -45,8 +46,12 @@ import java.util.stream.Collectors;
 public class ConfigurationItemHelper {
 
 	public static ItemStack createConfigurationItem(Player player, ItemStack stack, int model, String title, List<String> lore, HashMap<String, Object> replacements, String... nbtData) {
+		if (stack == null) {
+			return XMaterial.STONE.parseItem();
+		}
+
 		if (stack.getType() == XMaterial.AIR.parseMaterial())
-			return stack;
+			return new ItemStack(Material.AIR, 1);
 
 
 		final ItemMeta meta = stack.getItemMeta();
