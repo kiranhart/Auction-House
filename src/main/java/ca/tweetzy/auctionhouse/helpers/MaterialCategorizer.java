@@ -37,7 +37,7 @@ public class MaterialCategorizer {
 
 	public static AuctionItemCategory getMaterialCategory(Material material) {
 		if (material == XMaterial.SPAWNER.parseMaterial()) return AuctionItemCategory.SPAWNERS;
-		if (material.isEdible()) return AuctionItemCategory.FOOD;
+		if (material.isEdible() || material == Material.CAKE) return AuctionItemCategory.FOOD;
 		if (material.isBlock()) return AuctionItemCategory.BLOCKS;
 		if (material == XMaterial.ENCHANTED_BOOK.parseMaterial()) return AuctionItemCategory.ENCHANTS;
 
