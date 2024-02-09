@@ -21,9 +21,9 @@ package ca.tweetzy.auctionhouse.guis.sell;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.ListingResult;
-import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
@@ -153,6 +153,10 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 					}
 
 					double listingAmount = Double.parseDouble(string);
+					if (Double.isNaN(listingAmount)) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+						return false;
+					}
 
 					if (listingAmount < Settings.MIN_AUCTION_PRICE.getDouble()) listingAmount = Settings.MIN_AUCTION_PRICE.getDouble();
 
