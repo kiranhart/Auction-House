@@ -70,12 +70,6 @@ public final class AuctionCreator {
 			}
 
 			// Hooks & Special Cases
-//			if (McMMOHook.isUsingAbility(seller)) {
-//				instance.getLocale().getMessage("general.mcmmo_ability_active").sendPrefixedMessage(seller);
-//				result.accept(auctionItem, CANNOT_LIST_WITH_MCMMO_ABILITY_ACTIVE);
-//				return;
-//			}
-
 			if (!Settings.ALLOW_SALE_OF_DAMAGED_ITEMS.getBoolean() && AuctionAPI.getInstance().isDamaged(auctionItem.getItem())) {
 				instance.getLocale().getMessage("general.cannot list damaged item").sendPrefixedMessage(seller);
 				result.accept(auctionItem, CANNOT_SELL_DAMAGED_ITEM);
