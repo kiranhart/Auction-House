@@ -147,7 +147,10 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 				if (isRequest) {
 					// check if the fulfiller even has the item
 					final int itemCount = AuctionAPI.getInstance().getItemCountInPlayerInventory(this.player, this.auctionItem.getItem());
-					if (itemCount < this.auctionItem.getItem().getAmount()) {
+					final int amountNeeded = this.auctionItem.getRequestAmount() == 0 ? this.auctionItem.getItem().getAmount() : this.auctionItem.getRequestAmount();
+
+
+					if (itemCount < amountNeeded) {
 						// yell at fulfiller for being dumb
 						AuctionHouse.getInstance().getLocale().getMessage("general.notenoughitems").sendPrefixedMessage(e.player);
 						return;
@@ -166,7 +169,7 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 					EconomyManager.deposit(e.player, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? buyNowPrice : buyNowPrice - tax);
 
 					// transfer items
-					AuctionAPI.getInstance().removeSpecificItemQuantityFromPlayer(this.player, this.auctionItem.getItem(), this.auctionItem.getItem().getAmount());
+					AuctionAPI.getInstance().removeSpecificItemQuantityFromPlayer(this.player, this.auctionItem.getItem(), amountNeeded);
 					final AuctionedItem toGive = new AuctionedItem(
 							UUID.randomUUID(),
 							requester.getUniqueId(),
@@ -181,6 +184,8 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 							0,
 							false, true, System.currentTimeMillis()
 					);
+
+					toGive.setRequestAmount(amountNeeded);
 
 					AuctionHouse.getInstance().getDataManager().insertAuctionAsync(toGive, (error, inserted) -> AuctionHouse.getInstance().getAuctionItemManager().addAuctionItem(toGive));
 					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(this.auctionItem);
