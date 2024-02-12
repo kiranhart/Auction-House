@@ -23,6 +23,7 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
+import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.utils.TextUtils;
@@ -30,6 +31,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -72,6 +74,7 @@ public class AuctionedItem {
 	private boolean allowPartialBuy = false;
 	private boolean serverItem = false;
 	private boolean isRequest = false;
+	private int requestAmount = 0;
 
 	public AuctionedItem() {
 	}
@@ -109,6 +112,31 @@ public class AuctionedItem {
 		this.serverItem = false;
 		this.isRequest = false;
 	}
+
+	public static AuctionedItem createRequest(Player player, ItemStack item, int requestAmount, double price, int allowedTime) {
+		final AuctionedItem requested = new AuctionedItem();
+
+		requested.setId(UUID.randomUUID());
+		requested.setOwner(player.getUniqueId());
+		requested.setHighestBidder(player.getUniqueId());
+		requested.setOwnerName(player.getName());
+		requested.setHighestBidderName(player.getName());
+		requested.setBasePrice(price);
+		requested.setItem(item.clone());
+		requested.setCategory(MaterialCategorizer.getMaterialCategory(item));
+		requested.setExpiresAt(System.currentTimeMillis() + 1000L * allowedTime);
+		requested.setBidItem(false);
+		requested.setServerItem(false);
+		requested.setExpired(false);
+		requested.setListedWorld(player.getWorld().getName());
+		requested.setInfinite(false);
+		requested.setAllowPartialBuy(false);
+		requested.setRequest(true);
+		requested.setRequestAmount(requestAmount);
+
+		return requested;
+	}
+
 
 	public ItemStack getBidStack() {
 		ItemStack itemStack = this.item.clone();
@@ -163,6 +191,7 @@ public class AuctionedItem {
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HEADER.getStringList()));
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_REQUESTER.getStringList().stream().map(s -> s.replace("%requester%", this.ownerName)).collect(Collectors.toList())));
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_REQUEST_PRICE.getStringList().stream().map(s -> s.replace("%request_price%", Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : AuctionAPI.getInstance().formatNumber(this.basePrice))).collect(Collectors.toList())));
+		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_REQUEST_COUNT.getStringList().stream().map(s -> s.replace("%request_amount%", String.valueOf(requestAmount))).collect(Collectors.toList())));
 
 		long[] times = AuctionAPI.getInstance().getRemainingTimeValues((this.expiresAt - System.currentTimeMillis()) / 1000);
 
