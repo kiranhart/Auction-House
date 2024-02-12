@@ -18,32 +18,44 @@
 
 package ca.tweetzy.auctionhouse.guis.abstraction;
 
-import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.flight.comp.enums.CompSound;
+import ca.tweetzy.flight.gui.Gui;
+import ca.tweetzy.flight.gui.template.BaseGUI;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 
-public abstract class AuctionBaseGUI extends Gui {
+public abstract class AuctionBaseGUI extends BaseGUI {
 
 	@Getter
 	protected final Player player;
 
 	public AuctionBaseGUI(Gui parent, @NonNull final Player player, @NonNull String title, int rows) {
-		super(rows, parent);
+		super(parent, title, rows);
 		this.player = player;
 		setTitle(title);
+		applyDefaults();
 	}
 
 	public AuctionBaseGUI(Gui parent, @NonNull final Player player, @NonNull String title) {
-		super(6, parent);
+		super(parent, title);
 		this.player = player;
 		setTitle(title);
+		applyDefaults();
 	}
 
 	public AuctionBaseGUI(@NonNull final Player player, @NonNull String title) {
-		super(6, null);
+		super(title);
 		this.player = player;
 		setTitle(title);
+		applyDefaults();
+	}
+
+	private void applyDefaults() {
+		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILLER.getString()));
+		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF));
 	}
 
 //	@Override
@@ -65,20 +77,30 @@ public abstract class AuctionBaseGUI extends Gui {
 //	}
 //
 //	@Override
-//	protected ItemStack getPreviousPageButton() {
+//	protected ItemStack getPreviousButton() {
 //		return QuickItem
-//				.of(Settings.GUI_SHARED_ITEMS_PREVIOUS_BUTTON.getItemStack())
+//				.of(Settings.GUI_BACK_BTN_ITEM.getString())
 //				.name(TranslationManager.string(this.player, Translations.GUI_SHARED_ITEMS_PREVIOUS_BUTTON_NAME))
 //				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_PREVIOUS_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 //				.make();
 //	}
 //
 //	@Override
-//	protected ItemStack getNextPageButton() {
+//	protected ItemStack getNextButton() {
 //		return QuickItem
 //				.of(Settings.GUI_SHARED_ITEMS_NEXT_BUTTON.getItemStack())
 //				.name(TranslationManager.string(this.player, Translations.GUI_SHARED_ITEMS_NEXT_BUTTON_NAME))
 //				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_NEXT_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
 //				.make();
 //	}
+
+	@Override
+	protected int getPreviousButtonSlot() {
+		return 48;
+	}
+
+	@Override
+	protected int getNextButtonSlot() {
+		return 50;
+	}
 }
