@@ -80,6 +80,7 @@ public class Settings {
 	public static final ConfigSetting OWNER_CAN_PURCHASE_OWN_ITEM = new ConfigSetting(config, "auction setting.purchase.owner can purchase own item", false, "Should the owner of an auction be able to purchase it?", "This probably should be set to false...");
 	public static final ConfigSetting OWNER_CAN_BID_OWN_ITEM = new ConfigSetting(config, "auction setting.purchase.owner can bid on own item", false, "Should the owner of an auction be able to bid on it?", "This probably should be set to false...");
 	public static final ConfigSetting OWNER_CAN_FULFILL_OWN_REQUEST = new ConfigSetting(config, "auction setting.purchase.owner can fulfill own request", false, "Should the owner of a request be able to fulfill it", "This probably should be set to false...");
+	public static final ConfigSetting MAX_REQUEST_AMOUNT = new ConfigSetting(config, "auction setting.max request amount", 64, "How much of an item should a player be able to ask for in a single request?");
 	public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGES = new ConfigSetting(config, "auction setting.auto refresh auction pages", true, "Should auction pages auto refresh?");
 	public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGE_SYNC = new ConfigSetting(config, "auction setting.auto refresh auction pages synchronously", false, "Should auction pages auto refresh use a synchronous?");
 	public static final ConfigSetting AUTO_REFRESH_DOES_SLOT_CLEAR = new ConfigSetting(config, "auction setting.auto refresh does slot clear", true, "If true, on every refresh, the slots will be cleared (replaced by default item) then the actual listings will be placed.");
@@ -1120,6 +1121,40 @@ public class Settings {
 
 
 	/*  ===============================
+	 *    REQUEST ITEM GUI
+	 *  ===============================*/
+
+	public static final ConfigSetting GUI_REQUEST_TITLE = new ConfigSetting(config, "gui.request.title", "&7Auction House - &eRequest Item");
+	public static final ConfigSetting GUI_REQUEST_ITEMS_AMT_ITEM = new ConfigSetting(config, "gui.request.items.amt.item", XMaterial.REPEATER.name());
+	public static final ConfigSetting GUI_REQUEST_ITEMS_AMT_NAME = new ConfigSetting(config, "gui.request.items.amt.name", "&e&LRequest Amount");
+	public static final ConfigSetting GUI_REQUEST_ITEMS_AMT_LORE = new ConfigSetting(config, "gui.request.items.amt.lore", Arrays.asList(
+			"&7How much of this item do you want?",
+			"",
+			"&eCurrent Amt: &e%request_amount%",
+			"",
+			"&7Click to edit request amount"
+	));
+
+	public static final ConfigSetting GUI_REQUEST_ITEMS_PRICE_ITEM = new ConfigSetting(config, "gui.request.items.price.item", XMaterial.SUNFLOWER.name());
+	public static final ConfigSetting GUI_REQUEST_ITEMS_PRICE_NAME = new ConfigSetting(config, "gui.request.items.price.name", "&e&LPrice");
+	public static final ConfigSetting GUI_REQUEST_ITEMS_PRICE_LORE = new ConfigSetting(config, "gui.request.items.price.lore", Arrays.asList(
+			"&7How much are you going to pay for this?",
+			"",
+			"&eCurrent: &e%request_price%",
+			"",
+			"&7Click to edit request price"
+	));
+
+	public static final ConfigSetting GUI_REQUEST_ITEMS_REQUEST_ITEM = new ConfigSetting(config, "gui.request.items.request.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_REQUEST_ITEMS_REQUEST_NAME = new ConfigSetting(config, "gui.request.items.request.name", "&e&lRequest Item(s)");
+	public static final ConfigSetting GUI_REQUEST_ITEMS_REQUEST_LORE = new ConfigSetting(config, "gui.request.items.request.lore", Arrays.asList(
+			"",
+			"&7Click to make this request"
+	));
+
+
+
+	/*  ===============================
 	 *    ITEM SELL AUCTION GUI
 	 *  ===============================*/
 
@@ -1343,7 +1378,11 @@ public class Settings {
 			""
 	));
 	public static final ConfigSetting AUCTION_STACK_DETAILS_REQUEST_PRICE = new ConfigSetting(config, "auction stack.request price lines", Arrays.asList(
-			"&eOffering: &a$%request_price%",
+			"&eOffering: &a$%request_price%"
+	));
+
+	public static final ConfigSetting AUCTION_STACK_DETAILS_REQUEST_COUNT = new ConfigSetting(config, "auction stack.request count lines", Arrays.asList(
+			"&eRequest Amt: &a%request_amount%",
 			""
 	));
 
