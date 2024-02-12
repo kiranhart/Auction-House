@@ -47,6 +47,7 @@ public class LocaleSettings {
 		languageNodes.put("general.requesterhasnomoney", "&cRequester does not have enough money!");
 		languageNodes.put("general.notenoughitems", "&cYou do not have enough of that item!");
 		languageNodes.put("general.cannotbezero", "&cPlease provide a number greater than zero");
+		languageNodes.put("general.highrequestcount", "&cYou cannot request that many items!");
 		languageNodes.put("general.cantbidonown", "&cYou cannot bid on your own item!");
 		languageNodes.put("general.alreadyhighestbidder", "&cYou are already the highest bidder!");
 		languageNodes.put("general.cantbuyown", "&cYou cannot buy your own item!");
@@ -81,7 +82,6 @@ public class LocaleSettings {
 		languageNodes.put("general.wait_to_list", "&cPlease wait &4%time%&cs before listing another item");
 		languageNodes.put("general.please_enter_at_least_one_number", "&cPlease enter at least 1 valid number!");
 		languageNodes.put("general.cannot cancel item with bid", "&cYou cannot cancel a listing that already has a bid!");
-		languageNodes.put("general.mcmmo_ability_active", "&cCannot list item when mcMMO ability is active!");
 		languageNodes.put("general.cannot list damaged item", "&cCannot list a damaged item!");
 
 		languageNodes.put("general.nothing to confirm", "&cYou have nothing to confirm");
@@ -140,6 +140,12 @@ public class LocaleSettings {
 
 		languageNodes.put("titles.enter deletion range.title", "&eDeletion Range");
 		languageNodes.put("titles.enter deletion range.subtitle", "&fEnter deletion range in chat");
+
+		languageNodes.put("titles.enter request amount.title", "&eRequest Amount");
+		languageNodes.put("titles.enter request amount.subtitle", "&fEnter requested amount in chat");
+
+		languageNodes.put("titles.enter request price.title", "&eRequest Price");
+		languageNodes.put("titles.enter request price.subtitle", "&fEnter how much you'll pay in chat");
 
 		languageNodes.put("transaction.sale_type.bid_won", "Won Auction");
 		languageNodes.put("transaction.sale_type.immediate_buy", "Bought Immediately");
