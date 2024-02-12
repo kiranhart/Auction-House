@@ -24,8 +24,8 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.sell.GUIRequestItem;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
-import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
@@ -38,7 +38,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -58,14 +57,6 @@ public class CommandRequest extends AbstractCommand {
 		final AuctionHouse instance = AuctionHouse.getInstance();
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
-		if (args.length < 1) return ReturnType.FAILURE;
-
-		// check if price is even a number
-		if (!NumberUtils.isDouble(args[0])) {
-			instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
-		}
-
 
 		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
 			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
@@ -79,6 +70,17 @@ public class CommandRequest extends AbstractCommand {
 
 		if (originalItem.getType() == XMaterial.AIR.parseMaterial()) {
 			instance.getLocale().getMessage("general.air").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
+
+		if (args.length < 1) {
+			instance.getGuiManager().showGUI(player, new GUIRequestItem(auctionPlayer, originalItem, originalItem.getAmount(), 1));
+			return ReturnType.SUCCESS;
+		}
+
+		// check if price is even a number
+		if (!NumberUtils.isDouble(args[0])) {
+			instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
 			return ReturnType.FAILURE;
 		}
 
@@ -112,23 +114,26 @@ public class CommandRequest extends AbstractCommand {
 			return ReturnType.FAILURE;
 		}
 
-		AuctionedItem auctionedItem = new AuctionedItem();
-		auctionedItem.setId(UUID.randomUUID());
-		auctionedItem.setOwner(player.getUniqueId());
-		auctionedItem.setHighestBidder(player.getUniqueId());
-		auctionedItem.setOwnerName(player.getName());
-		auctionedItem.setHighestBidderName(player.getName());
-		auctionedItem.setBasePrice(price);
-		auctionedItem.setItem(originalItem.clone());
-		auctionedItem.setCategory(MaterialCategorizer.getMaterialCategory(originalItem));
-		auctionedItem.setExpiresAt(System.currentTimeMillis() + 1000L * allowedTime);
-		auctionedItem.setBidItem(false);
-		auctionedItem.setServerItem(false);
-		auctionedItem.setExpired(false);
-		auctionedItem.setListedWorld(player.getWorld().getName());
-		auctionedItem.setInfinite(false);
-		auctionedItem.setAllowPartialBuy(false);
-		auctionedItem.setRequest(true);
+		AuctionedItem auctionedItem = AuctionedItem.createRequest(player, originalItem, originalItem.getAmount(), price, allowedTime);
+
+		// TODO REMOVE THIS
+//		auctionedItem.setId(UUID.randomUUID());
+//		auctionedItem.setOwner(player.getUniqueId());
+//		auctionedItem.setHighestBidder(player.getUniqueId());
+//		auctionedItem.setOwnerName(player.getName());
+//		auctionedItem.setHighestBidderName(player.getName());
+//		auctionedItem.setBasePrice(price);
+//		auctionedItem.setItem(originalItem.clone());
+//		auctionedItem.setCategory(MaterialCategorizer.getMaterialCategory(originalItem));
+//		auctionedItem.setExpiresAt(System.currentTimeMillis() + 1000L * allowedTime);
+//		auctionedItem.setBidItem(false);
+//		auctionedItem.setServerItem(false);
+//		auctionedItem.setExpired(false);
+//		auctionedItem.setListedWorld(player.getWorld().getName());
+//		auctionedItem.setInfinite(false);
+//		auctionedItem.setAllowPartialBuy(false);
+//		auctionedItem.setRequest(true);
+//		auctionedItem.setRequestAmount(originalItem.getAmount());
 
 		AuctionHouse.getInstance().getAuctionPlayerManager().addToSellProcess(player);
 		if (auctionPlayer.getPlayer() == null || !auctionPlayer.getPlayer().isOnline()) {
