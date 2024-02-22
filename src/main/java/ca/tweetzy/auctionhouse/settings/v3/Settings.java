@@ -18,6 +18,7 @@
 
 package ca.tweetzy.auctionhouse.settings.v3;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionUsageMode;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.config.ConfigEntry;
@@ -114,6 +115,9 @@ public final class Settings extends FlightSettings {
 	 */
 
 	// ==================== Main Auction Menu ==================== //
+	public static ConfigEntry GUI_SHARED_FILLER = create("gui.shared options.filler item", CompMaterial.BLACK_STAINED_GLASS_PANE.name(), "The filler item for menus");
+
+
 	public static ConfigEntry GUI_MAIN_ROWS = create("gui.main.rows", 6, "How many rows should the gui have");
 	public static ConfigEntry GUI_MAIN_FILL_SLOTS = create("gui.main.fill slots", IntStream.rangeClosed(0, 44).boxed().collect(Collectors.toList()), "Slot numbers where auction items will be placed");
 	public static ConfigEntry GUI_MAIN_DECORATION = create("gui.main.decoration", Collections.singletonList(""), "Additional Decoration Items, format is MATERIAL_NAME:slot so ex. DIAMOND:1");
@@ -173,4 +177,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry CONFIRM_ACCEPT_BID = create("settings.confirmation.accept bid", false, "Ask for confirmation before accepting current bid?");
 	public static ConfigEntry CONFIRM_CANCEL_LISTING = create("settings.confirmation.cancel listing", false, "Ask for confirmation before canceling a listing?");
 
+	public static void init() {
+		AuctionHouse.getCoreConfig().init();
+	}
 }

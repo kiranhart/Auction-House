@@ -21,9 +21,9 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.database.DatabaseConnector;
-import ca.tweetzy.core.database.SQLiteConnector;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.database.DatabaseConnector;
+import ca.tweetzy.flight.database.SQLiteConnector;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;

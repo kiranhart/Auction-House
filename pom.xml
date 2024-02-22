@@ -117,11 +117,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>ca.tweetzy</groupId>
-            <artifactId>tweetycore</artifactId>
-            <version>3.7.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.mineacademy.plugin</groupId>
             <artifactId>CMI-API</artifactId>
             <version>8.7.8.2</version>
@@ -270,7 +265,6 @@
                     <artifactSet>
                         <includes>
                             <include>${flight.path}:flight*</include>
-                            <include>ca.tweetzy:tweetycore</include>
                             <include>com.zaxxer:HikariCP</include>
                             <include>org.slf4j:slf4j-api</include>
                             <include>org.slf4j:slf4j-nop</include>
@@ -290,10 +284,6 @@
                         </filter>
                     </filters>
                     <relocations>
-                        <relocation>
-                            <pattern>ca.tweetzy.core</pattern>
-                            <shadedPattern>${project.groupId}.${project.artifactId}.core</shadedPattern>
-                        </relocation>
                         <relocation>
                             <pattern>ca.tweetzy.flight</pattern>
                             <shadedPattern>${project.groupId}.${project.artifactId}.flight</shadedPattern>
