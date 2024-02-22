@@ -621,7 +621,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 		}
 
 		if (Settings.GUI_REFRESH_BTN_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_REFRESH_BTN_SLOT.getInt(), getRefreshButtonItem(), e -> {
+			setButton(Settings.GUI_REFRESH_BTN_SLOT.getInt(), getRefreshButtonItem(), ClickType.LEFT, e -> {
 				if (Settings.USE_REFRESH_COOL_DOWN.getBoolean()) {
 					if (AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().containsKey(this.auctionPlayer.getPlayer().getUniqueId())) {
 						if (AuctionHouse.getInstance().getAuctionPlayerManager().getCooldowns().get(this.auctionPlayer.getPlayer().getUniqueId()) > System.currentTimeMillis()) {
