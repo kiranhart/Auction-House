@@ -24,7 +24,6 @@ import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations.*;
 import ca.tweetzy.auctionhouse.helpers.UpdateChecker;
 import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
-import ca.tweetzy.auctionhouse.hooks.UltraEconomyHook;
 import ca.tweetzy.auctionhouse.listeners.*;
 import ca.tweetzy.auctionhouse.managers.*;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
@@ -68,60 +67,36 @@ import java.util.stream.Collectors;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 
+@Getter
 public class AuctionHouse extends TweetyPlugin {
 
 	//==========================================================================
-
-
-	private static TaskChainFactory taskChainFactory;
-	private static AuctionHouse instance;
-	private PluginHook ultraEconomyHook;
-
 	@Getter
-	@Setter
-	private boolean migrating = false;
+	private static AuctionHouse instance;
+	private static TaskChainFactory taskChainFactory;
 
 	@Getter
 	private final GuiManager guiManager = new GuiManager(this);
+	private final Config auctionConfig = new Config(this, "auction.yml");
+
+	@Setter
+	private boolean migrating = false;
+
 
 	protected Metrics metrics;
 
-	@Getter
 	private CommandManager commandManager;
-
-
-	@Getter
-	private AuctionPlayerManager auctionPlayerManager;
-
-	@Getter
-	private AuctionItemManager auctionItemManager;
-
-	@Getter
-	private TransactionManager transactionManager;
-
-	@Getter
-	private FilterManager filterManager;
-
-	@Getter
-	private AuctionBanManager auctionBanManager;
-
-	@Getter
-	private AuctionStatisticManager auctionStatisticManager;
-
-	@Getter
-	private MinItemPriceManager minItemPriceManager;
-
-	@Getter
-	private PaymentsManager paymentsManager;
-
-	@Getter
-	private DatabaseConnector databaseConnector;
-
-	@Getter
 	private DataManager dataManager;
-
-	@Getter
+	private FilterManager filterManager;
+	private PaymentsManager paymentsManager;
 	private UpdateChecker.UpdateStatus status;
+	private AuctionBanManager auctionBanManager;
+	private DatabaseConnector databaseConnector;
+	private AuctionItemManager auctionItemManager;
+	private TransactionManager transactionManager;
+	private MinItemPriceManager minItemPriceManager;
+	private AuctionPlayerManager auctionPlayerManager;
+	private AuctionStatisticManager auctionStatisticManager;
 
 	@Override
 	public void onPluginLoad() {
@@ -376,11 +351,7 @@ public class AuctionHouse extends TweetyPlugin {
 
 	@Override
 	public List<Config> getExtraConfig() {
-		return null;
-	}
-
-	public static AuctionHouse getInstance() {
-		return instance;
+		return List.of(guiConfig, auctionConfig);
 	}
 
 	public static <T> TaskChain<T> newChain() {

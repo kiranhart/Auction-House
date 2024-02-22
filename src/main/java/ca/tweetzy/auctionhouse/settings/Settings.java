@@ -22,11 +22,14 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.configuration.Config;
+import ca.tweetzy.core.configuration.ConfigFormattingRules;
 import ca.tweetzy.core.configuration.ConfigSetting;
 import ca.tweetzy.core.hooks.EconomyManager;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -38,330 +41,266 @@ import java.util.stream.Collectors;
 public class Settings {
 
 	private static final Config CONFIG = AuctionHouse.getInstance().getCoreConfig();
+	private static final Config GUI_CONF = AuctionHouse.getInstance().getGuiConfig();
+	private static final Config AUCTION_CONF = AuctionHouse.getInstance().getAuctionConfig();
+
 
 	public static final ConfigSetting LANG = new ConfigSetting(CONFIG, "lang", "en_US", "Default language file");
-	public static final ConfigSetting ECONOMY_PLUGIN = new ConfigSetting(CONFIG, "economy provider", EconomyManager.getEconomy() == null ? "Vault" : EconomyManager.getEconomy().getName(),
+	public static final ConfigSetting ECONOMY_PLUGIN = new ConfigSetting(CONFIG, "economyProvider", EconomyManager.getEconomy() == null ? "Vault" : EconomyManager.getEconomy().getName(),
 			"Which economy should auction house use?",
 			"You have the following supported economy plugins installed: \"" + EconomyManager.getManager().getPossiblePlugins().stream().collect(Collectors.joining("\", \"")) + "\"."
 	);
 
-	public static final ConfigSetting ALLOW_USAGE_OF_IN_GAME_EDITOR = new ConfigSetting(CONFIG, "Allow Usage Of This Menu In Game", true, "Once you set this to true, you will no longer be able to access it unless you enable it within the actual config.yml");
-	public static final ConfigSetting UPDATE_CHECKER = new ConfigSetting(CONFIG, "update checker", true, "If true, auction house will check for updates periodically");
+	public static final ConfigSetting ALLOW_USAGE_OF_IN_GAME_EDITOR = new ConfigSetting(CONFIG, "allowUsageOfThisMenuInGame", true, "Once you set this to true, you will no longer be able to access it unless you enable it within the actual config.yml");
+	public static final ConfigSetting UPDATE_CHECKER = new ConfigSetting(CONFIG, "updateChecker", true, "If true, auction house will check for updates periodically");
 
 
 	/*  ===============================
 	 *          BASIC SETTINGS
 	 *  ===============================*/
-	public static final ConfigSetting SHOW_LISTING_ERROR_IN_CONSOLE = new ConfigSetting(CONFIG, "auction setting.show listing error in console", false, "If true, an exception will be thrown and shown in the console if something goes wrong during item listing");
-	public static final ConfigSetting STORE_PAYMENTS_FOR_MANUAL_COLLECTION = new ConfigSetting(CONFIG, "auction setting.store payments for manual collection", false, "If true, auction house will store the payments to be manually collected rather than automatically given to the player");
-	public static final ConfigSetting MANUAL_PAYMENTS_ONLY_FOR_OFFLINE_USERS = new ConfigSetting(CONFIG, "auction setting.use stored payments for offline only", false, "If true, the usage of the manual payment collection will only be done if the user is offline");
-	public static final ConfigSetting ALLOW_REPEAT_BIDS = new ConfigSetting(CONFIG, "auction setting.allow repeated bids", true, "If true, the highest bidder on an item can keep placing bids to raise their initial bid.");
-	public static final ConfigSetting COLLECTION_BIN_ITEM_LIMIT = new ConfigSetting(CONFIG, "auction setting.collection bin item limit", 45, "How many items can be stored in the collection bin. If this is reached the player cannot list anymore items, regardless of active listings");
-	public static final ConfigSetting SELL_MENU_SKIPS_TYPE_SELECTION = new ConfigSetting(CONFIG, "auction setting.skip type selection for sell menu", false, "If true the sell menu process will skip asking for the listing type depending on your auction settings (ie. bin only or auction only)");
+	public static final ConfigSetting SHOW_LISTING_ERROR_IN_CONSOLE = new ConfigSetting(AUCTION_CONF, "showListingErrorInConsole", false, "If true, an exception will be thrown and shown in the console if something goes wrong during item listing");
+	public static final ConfigSetting STORE_PAYMENTS_FOR_MANUAL_COLLECTION = new ConfigSetting(AUCTION_CONF, "storePaymentsForManualCollection", false, "If true, auction house will store the payments to be manually collected rather than automatically given to the player");
+	public static final ConfigSetting MANUAL_PAYMENTS_ONLY_FOR_OFFLINE_USERS = new ConfigSetting(AUCTION_CONF, "useStoredPaymentsForOfflineOnly", false, "If true, the usage of the manual payment collection will only be done if the user is offline");
+	public static final ConfigSetting ALLOW_REPEAT_BIDS = new ConfigSetting(AUCTION_CONF, "allowRepeatedBids", true, "If true, the highest bidder on an item can keep placing bids to raise their initial bid.");
+	public static final ConfigSetting COLLECTION_BIN_ITEM_LIMIT = new ConfigSetting(AUCTION_CONF, "collectionBinItemLimit", 45, "How many items can be stored in the collection bin. If this is reached the player cannot list anymore items, regardless of active listings");
+	public static final ConfigSetting SELL_MENU_SKIPS_TYPE_SELECTION = new ConfigSetting(AUCTION_CONF, "skipTypeSelectionForSellMenu", false, "If true the sell menu process will skip asking for the listing type depending on your auction settings (ie. bin only or auction only)");
 
-	public static final ConfigSetting BUNDLE_LIST_LIMIT = new ConfigSetting(CONFIG, "auction setting.bundle listing limit.listing limit", 45, "How many bundled listings can a player sell at any given time");
-	public static final ConfigSetting BUNDLE_LIST_LIMIT_INCLUDE_COLLECTION_BIN = new ConfigSetting(CONFIG, "auction setting.bundle listing limit.include collection bin", false, "If true, collection bin bundles will also count towards this limit");
+	private static final String BUNDLE_LISTING_LIMIT_BLOCK = "bundleListingLimit";
+	public static final ConfigSetting BUNDLE_LIST_LIMIT = new ConfigSetting(AUCTION_CONF, BUNDLE_LISTING_LIMIT_BLOCK + ".listingLimit", 45, "How many bundled listings can a player sell at any given time");
+	public static final ConfigSetting BUNDLE_LIST_LIMIT_INCLUDE_COLLECTION_BIN = new ConfigSetting(AUCTION_CONF, BUNDLE_LISTING_LIMIT_BLOCK + ".includeCollectionBin", false, "If true, collection bin bundles will also count towards this limit");
 
-	public static final ConfigSetting DEFAULT_BIN_LISTING_TIME = new ConfigSetting(CONFIG, "auction setting.listings times.bin item", 86400, "The default listing time for bin items (buy only items) before they expire");
-	public static final ConfigSetting DEFAULT_AUCTION_LISTING_TIME = new ConfigSetting(CONFIG, "auction setting.listings times.auction item", 604800, "The default listing time for auction items before they expire");
+	private static final String LISTINGS_TIMES_BLOCK = "listingTimes";
+	public static final ConfigSetting DEFAULT_BIN_LISTING_TIME = new ConfigSetting(AUCTION_CONF, LISTINGS_TIMES_BLOCK + ".binItem", 86400, "The default listing time for bin items (buy only items) before they expire");
+	public static final ConfigSetting DEFAULT_AUCTION_LISTING_TIME = new ConfigSetting(AUCTION_CONF, LISTINGS_TIMES_BLOCK + ".auctionItem", 604800, "The default listing time for auction items before they expire");
 
-	public static final ConfigSetting DEFAULT_FILTER_CATEGORY = new ConfigSetting(CONFIG, "auction setting.default filters.auction category", "ALL", "Valid Options: ALL, FOOD, ARMOR, BLOCKS, TOOLS, WEAPONS, POTIONS, SPAWNERS, ENCHANTS, MISC, SEARCH, SELF");
-	public static final ConfigSetting DEFAULT_FILTER_SORT = new ConfigSetting(CONFIG, "auction setting.default filters.auction sort", "RECENT", "Valid Options: RECENT, OLDEST, PRICE");
-	public static final ConfigSetting DEFAULT_FILTER_SALE_TYPE = new ConfigSetting(CONFIG, "auction setting.default filters.sale type", "BOTH", "Valid Options: USED_BIDDING_SYSTEM, WITHOUT_BIDDING_SYSTEM, BOTH");
-
-
-	public static final ConfigSetting INTERNAL_CREATE_DELAY = new ConfigSetting(CONFIG, "auction setting.internal create delay", 2, "How many ticks should auction house wait before actually creating the item.");
-	public static final ConfigSetting MAX_AUCTION_PRICE = new ConfigSetting(CONFIG, "auction setting.pricing.max auction price", 1000000000, "The max price for buy only / buy now items");
-	public static final ConfigSetting MAX_AUCTION_START_PRICE = new ConfigSetting(CONFIG, "auction setting.pricing.max auction start price", 1000000000, "The max price starting a bidding auction");
-	public static final ConfigSetting MAX_AUCTION_INCREMENT_PRICE = new ConfigSetting(CONFIG, "auction setting.pricing.max auction increment price", 1000000000, "The max amount for incrementing a bid.");
-	public static final ConfigSetting MIN_AUCTION_PRICE = new ConfigSetting(CONFIG, "auction setting.pricing.min auction price", 1, "The min price for buy only / buy now items");
-	public static final ConfigSetting MIN_AUCTION_START_PRICE = new ConfigSetting(CONFIG, "auction setting.pricing.min auction start price", 1, "The min price starting a bidding auction");
-	public static final ConfigSetting MIN_AUCTION_INCREMENT_PRICE = new ConfigSetting(CONFIG, "auction setting.pricing.min auction increment price", 1, "The min amount for incrementing a bid.");
-	public static final ConfigSetting OWNER_CAN_PURCHASE_OWN_ITEM = new ConfigSetting(CONFIG, "auction setting.purchase.owner can purchase own item", false, "Should the owner of an auction be able to purchase it?", "This probably should be set to false...");
-	public static final ConfigSetting OWNER_CAN_BID_OWN_ITEM = new ConfigSetting(CONFIG, "auction setting.purchase.owner can bid on own item", false, "Should the owner of an auction be able to bid on it?", "This probably should be set to false...");
-	public static final ConfigSetting OWNER_CAN_FULFILL_OWN_REQUEST = new ConfigSetting(CONFIG, "auction setting.purchase.owner can fulfill own request", false, "Should the owner of a request be able to fulfill it", "This probably should be set to false...");
-	public static final ConfigSetting MAX_REQUEST_AMOUNT = new ConfigSetting(CONFIG, "auction setting.max request amount", 64, "How much of an item should a player be able to ask for in a single request?");
-	public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGES = new ConfigSetting(CONFIG, "auction setting.auto refresh auction pages", true, "Should auction pages auto refresh?");
-	public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGE_SYNC = new ConfigSetting(CONFIG, "auction setting.auto refresh auction pages synchronously", false, "Should auction pages auto refresh use a synchronous?");
-	public static final ConfigSetting AUTO_REFRESH_DOES_SLOT_CLEAR = new ConfigSetting(CONFIG, "auction setting.auto refresh does slot clear", true, "If true, on every refresh, the slots will be cleared (replaced by default item) then the actual listings will be placed.");
-	public static final ConfigSetting USE_SHORT_NUMBERS_ON_ITEMS = new ConfigSetting(CONFIG, "auction setting.use short numbers", false, "Should numbers be shortened into a prefixed form?");
-	public static final ConfigSetting USE_SHORT_NUMBERS_ON_PLAYER_BALANCE = new ConfigSetting(CONFIG, "auction setting.use short numbers on balance", false, "Should numbers be shortened into a prefixed form for the player balance?");
-	public static final ConfigSetting INCREASE_TIME_ON_BID = new ConfigSetting(CONFIG, "auction setting.increase time on bid", true, "Should the remaining time be increased when a bid is placed?");
-	public static final ConfigSetting TIME_TO_INCREASE_BY_ON_BID = new ConfigSetting(CONFIG, "auction setting.time to increase by on the bid", 20, "How many seconds should be added to the remaining time?");
-	public static final ConfigSetting ALLOW_SALE_OF_DAMAGED_ITEMS = new ConfigSetting(CONFIG, "auction setting.allow sale of damaged items", true, "If true, player's can sell items that are damaged (not max durability)");
-	public static final ConfigSetting ALLOW_FLOODGATE_PLAYERS = new ConfigSetting(CONFIG, "auction setting.allow flood gate players", false, "If true, player's who connected using floodgate (bedrock players) won't be able to use the auction house");
-	public static final ConfigSetting RESTRICT_ALL_TRANSACTIONS_TO_PERM = new ConfigSetting(CONFIG, "auction setting.restrict viewing all transactions", false, "If true, player's will need the perm: auctionhouse.transactions.viewall to view all transactions");
-	public static final ConfigSetting BLOCKED_WORLDS = new ConfigSetting(CONFIG, "auction setting.blocked worlds", Collections.singletonList("creative"), "A list of worlds that Auction House will be disabled in");
-	public static final ConfigSetting PREVENT_SALE_OF_REPAIRED_ITEMS = new ConfigSetting(CONFIG, "auction setting.prevent sale of repaired items", false, "Items repaired before this setting is turned on will still be able to be listed.");
-	public static final ConfigSetting SYNCHRONIZE_ITEM_ADD = new ConfigSetting(CONFIG, "auction setting.synchronize item add", false, "If an item is being added to a player's inventory, the process will be ran synchronously");
-	public static final ConfigSetting ITEM_COPY_REQUIRES_GMC = new ConfigSetting(CONFIG, "auction setting.admin copy requires creative", false, "If true when using the admin copy option the player must be in creative");
-	public static final ConfigSetting LOG_ADMIN_ACTIONS = new ConfigSetting(CONFIG, "auction setting.log admin actions", true, "If true, any admin actions made will be logged");
-	public static final ConfigSetting ROUND_ALL_PRICES = new ConfigSetting(CONFIG, "auction setting.round all prices", false, "If true, any decimal numbers will be rounded to the nearest whole number");
-	public static final ConfigSetting DISABLE_AUTO_SAVE_MSG = new ConfigSetting(CONFIG, "auction setting.disable auto save message", false, "If true, auction house will not log the auto save task to the console");
-	public static final ConfigSetting DISABLE_CLEANUP_MSG = new ConfigSetting(CONFIG, "auction setting.disable clean up message", false, "If true, auction house will not log the clean up process to the console");
-
-	public static final ConfigSetting DISABLE_PROFILE_UPDATE_MSG = new ConfigSetting(CONFIG, "auction setting.disable profile update message", false, "If true, auction house will not log the player profile updates to the console");
-
-	public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(CONFIG, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
-
-	public static final ConfigSetting GARBAGE_DELETION_TIMED_MODE = new ConfigSetting(CONFIG, "auction setting.garbage deletion.timed mode", true, "If true, auction house will only run the garbage deletion task, after set amount of seconds", "otherwise if false, it will wait until the total garbage bin count", "reaches/exceeds the specified value");
-	public static final ConfigSetting GARBAGE_DELETION_TIMED_DELAY = new ConfigSetting(CONFIG, "auction setting.garbage deletion.timed delay", 60, "If timed mode is true, this value will be ran after x specified seconds, the lower this number the more frequent a new async task will be ran!");
-	public static final ConfigSetting GARBAGE_DELETION_MAX_ITEMS = new ConfigSetting(CONFIG, "auction setting.garbage deletion.max items", 30, "If timed mode is false, whenever the garbage bin reaches this number, auction house will run the deletion task.", "You should adjust this number based on your server since some servers may have more or less items being claimed / marked for garbage clean up");
-
-	public static final ConfigSetting CLAIM_MS_DELAY = new ConfigSetting(CONFIG, "auction setting.item claim delay", 100, "How many ms should a player wait before being allowed to claim an item?, Ideally you don't wanna change this. It's meant to prevent auto clicker dupe claims");
-
-	public static final ConfigSetting TICK_UPDATE_GUI_TIME = new ConfigSetting(CONFIG, "auction setting.refresh gui every", 10, "How many seconds should pass before the auction gui auto refreshes?");
-	public static final ConfigSetting RECORD_TRANSACTIONS = new ConfigSetting(CONFIG, "auction setting.record transactions", true, "Should every transaction be recorded (everything an auction is won or an item is bought)");
-	public static final ConfigSetting BUNDLE_IS_OPENED_ON_RECLAIM = new ConfigSetting(CONFIG, "auction setting.open bundle on reclaim", true, "When the player claims an expired item, if its a bundle, should it be automatically opened. (items that cannot fit will drop to the ground)");
-
-	public static final ConfigSetting BROADCAST_AUCTION_LIST = new ConfigSetting(CONFIG, "auction setting.broadcast auction list", false, "Should the entire server be alerted when a player lists an item?");
-	public static final ConfigSetting BROADCAST_AUCTION_BID = new ConfigSetting(CONFIG, "auction setting.broadcast auction bid", false, "Should the entire server be alerted when a player bids on an item?");
-	public static final ConfigSetting BROADCAST_AUCTION_SALE = new ConfigSetting(CONFIG, "auction setting.broadcast auction sale", false, "Should the entire server be alerted when an auction is sold");
-	public static final ConfigSetting BROADCAST_AUCTION_ENDING = new ConfigSetting(CONFIG, "auction setting.broadcast auction ending", false, "Should the entire server be alerted when an auction is about to end?");
-	public static final ConfigSetting BROADCAST_AUCTION_ENDING_AT_TIME = new ConfigSetting(CONFIG, "auction setting.broadcast auction ending at time", 20, "When the time on the auction item reaches this amount of seconds left, the broadcast ending will take affect ");
-
-	public static final ConfigSetting USE_REALISTIC_BIDDING = new ConfigSetting(CONFIG, "auction setting.use realistic bidding", false, "If true auction house will use a more realistic bidding approach. Ex. the previous bid is 400, and if a player bids 500, rather than making the new bid 900, it will be set to 500.");
-	public static final ConfigSetting BID_MUST_BE_HIGHER_THAN_PREVIOUS = new ConfigSetting(CONFIG, "auction setting.bid must be higher than previous", true, "Only applies if use realistic bidding is true, this will make it so that they must bid higher than the current bid.");
-	public static final ConfigSetting USE_LIVE_BID_NUMBER_IN_CONFIRM_GUI = new ConfigSetting(CONFIG, "auction setting.live bid number in confirm gui.use", true, "If true, the bid confirmation menu will auto update every 1 second by default");
-	public static final ConfigSetting LIVE_BID_NUMBER_IN_CONFIRM_GUI_RATE = new ConfigSetting(CONFIG, "auction setting.live bid number in confirm gui.rate", 1, "How often the confirm gui for bids will update");
-
-	public static final ConfigSetting PLAYER_NEEDS_TOTAL_PRICE_TO_BID = new ConfigSetting(CONFIG, "auction setting.bidder must have funds in account", false, "Should the player who is placing a bid on an item have the money in their account to cover the cost?");
-	public static final ConfigSetting ALLOW_USAGE_OF_BID_SYSTEM = new ConfigSetting(CONFIG, "auction setting.allow bid system usage", true, "Should players be allowed to use the bid option cmd params?");
-	public static final ConfigSetting ALLOW_USAGE_OF_BUY_NOW_SYSTEM = new ConfigSetting(CONFIG, "auction setting.allow buy now system usage", true, "Should players be allowed to use the right-click buy now feature on biddable items?");
-	public static final ConfigSetting BUY_NOW_DISABLED_BY_DEFAULT_IN_SELL_MENU = new ConfigSetting(CONFIG, "auction setting.buy now disabled in sell menu by default", false, "If true, players will just need to toggle buy now on their items to allow buy now");
-	public static final ConfigSetting AUTO_SAVE_ENABLED = new ConfigSetting(CONFIG, "auction setting.auto save.enabled", true, "Should the auto save task be enabled?");
-	public static final ConfigSetting AUTO_SAVE_EVERY = new ConfigSetting(CONFIG, "auction setting.auto save.time", 900, "How often should the auto save active? (in seconds. Ex. 900 = 15min)");
-	public static final ConfigSetting ALLOW_PURCHASE_OF_SPECIFIC_QUANTITIES = new ConfigSetting(CONFIG, "auction setting.allow purchase of specific quantities", false, "When a buy now item is right-clicked should it open a", "special gui to specify the quantity of items to buy from the stack?");
-	public static final ConfigSetting USE_REFRESH_COOL_DOWN = new ConfigSetting(CONFIG, "auction setting.use refresh cool down", true, "Should the refresh cooldown be enabled?");
-	public static final ConfigSetting REFRESH_COOL_DOWN = new ConfigSetting(CONFIG, "auction setting.refresh cool down", 2, "How many seconds should pass before the player can refresh the auction house again?");
-	public static final ConfigSetting ALLOW_PURCHASE_IF_INVENTORY_FULL = new ConfigSetting(CONFIG, "auction setting.allow purchase with full inventory", true, "Should auction house allow players to buy items even if their", "inventory is full, if true, items will be dropped on the floor if there is no room.");
-	public static final ConfigSetting ASK_FOR_BID_CONFIRMATION = new ConfigSetting(CONFIG, "auction setting.ask for bid confirmation", true, "Should Auction House open the confirmation menu for the user to confirm", "whether they actually meant to place a bid or not?");
-	public static final ConfigSetting ASK_FOR_LISTING_CONFIRMATION = new ConfigSetting(CONFIG, "auction setting.ask for listing confirmation", false, "Should Auction House ask the user to confirm the listing?");
-	public static final ConfigSetting REPLACE_HOW_TO_SELL_WITH_LIST_BUTTON = new ConfigSetting(CONFIG, "auction setting.replace how to sell with list button", false, "This will replace the \"How to Sell\" button with a List Item button");
-	public static final ConfigSetting ALLOW_USAGE_OF_SELL_GUI = new ConfigSetting(CONFIG, "auction setting.allow usage of sell gui", true, "Should the sell menu be enabled?");
-	public static final ConfigSetting FORCE_AUCTION_USAGE = new ConfigSetting(CONFIG, "auction setting.force auction usage", false, "If enabled, all items sold on the auction house must be an auction (biddable) items");
-	public static final ConfigSetting ALLOW_INDIVIDUAL_ITEM_CLAIM = new ConfigSetting(CONFIG, "auction setting.allow individual item claim", true, "If enabled, you will be able to click individual items from the expiration menu to claim them back. Otherwise you will have to use the claim all button");
-	public static final ConfigSetting FORCE_CUSTOM_BID_AMOUNT = new ConfigSetting(CONFIG, "auction setting.force custom bid amount", false, "If enabled, the bid increment line on auction items will be hidden, bid increment values will be ignored, and when you go to bid on an item, it will ask you to enter a custom amount.");
-	public static final ConfigSetting SOUND_PITCH = new ConfigSetting(CONFIG, "auction setting.sound.pitch", 1.0, "The pitch value for sounds played by auction house");
-	public static final ConfigSetting SOUND_VOLUME = new ConfigSetting(CONFIG, "auction setting.sound.volume", 1.0, "The volume value for sounds played by auction house");
-
-	public static final ConfigSetting BIDDING_TAKES_MONEY = new ConfigSetting(CONFIG, "auction setting.bidding takes money", false, "If enabled, players will be outright charged the current bid for the item", "If they are outbid or the item is cancelled, they will get their money back. Disables ability for owners to bid on their own items!");
-	public static final ConfigSetting LIST_ITEM_DELAY = new ConfigSetting(CONFIG, "auction setting.list item delay", -1, "If not set to -1 (disabled) how many seconds must a player wait to list another item after listing 1?");
-	public static final ConfigSetting FORCE_SYNC_MONEY_ACTIONS = new ConfigSetting(CONFIG, "auction setting.force sync money actions", false, "If true, auction house will forcefully run a sync task to withdraw/deposit cash, this does not apply when using the commands");
-	public static final ConfigSetting EXPIRATION_TIME_LIMIT_ENABLED = new ConfigSetting(CONFIG, "auction setting.expiration time limit.enabled", false, "If true, auction house will automatically delete un claimed expired items after 7 days (default)");
-	public static final ConfigSetting EXPIRATION_TIME_LIMIT = new ConfigSetting(CONFIG, "auction setting.expiration time limit.time", 24 * 7, "In hours, what should the minimum age of an unclaimed item be inorder for it to be deleted?");
-
-	public static final ConfigSetting ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS = new ConfigSetting(CONFIG, "auction setting.ask for cancel confirm on bid items", true, "Should Auction House ask the user if they want to cancel the item?");
-	public static final ConfigSetting ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS = new ConfigSetting(CONFIG, "auction setting.ask for cancel confirm on non bid items", false, "Should Auction House ask the user if they want to cancel the item?");
-	public static final ConfigSetting ASK_FOR_CANCEL_CONFIRM_ON_ALL_ITEMS = new ConfigSetting(CONFIG, "auction setting.ask for cancel confirm on end all", true, "Should Auction House ask the user to confirm in chat when using end all in active listings?");
-
-	public static final ConfigSetting BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START = new ConfigSetting(CONFIG, "auction setting.base price must be higher than bid start", true, "Should the base price (buy now price) be higher than the initial bid starting price?");
-	public static final ConfigSetting SYNC_BASE_PRICE_TO_HIGHEST_PRICE = new ConfigSetting(CONFIG, "auction setting.sync the base price to the current price", true, "Ex. If the buy now price was 100, and the current price exceeds 100 to say 200, the buy now price will become 200.");
-
-	public static final ConfigSetting CURRENCY_FORMAT = new ConfigSetting(CONFIG, "auction setting.currency format", "%,.2f");
-	public static final ConfigSetting STRIP_ZEROS_ON_WHOLE_NUMBERS = new ConfigSetting(CONFIG, "auction setting.strip zeros on whole numbers", false, "If the price / amount is a whole number (ex. 40.00) it will drop the .00");
-
-	public static final ConfigSetting ADMIN_OPTION_SHOW_RETURN_ITEM = new ConfigSetting(CONFIG, "auction setting.admin option.show return to player", true);
-	public static final ConfigSetting ADMIN_OPTION_SHOW_CLAIM_ITEM = new ConfigSetting(CONFIG, "auction setting.admin option.show claim item", true);
-	public static final ConfigSetting ADMIN_OPTION_SHOW_DELETE_ITEM = new ConfigSetting(CONFIG, "auction setting.admin option.show delete item", true);
-	public static final ConfigSetting ADMIN_OPTION_SHOW_COPY_ITEM = new ConfigSetting(CONFIG, "auction setting.admin option.show copy item", true);
-
-	public static final ConfigSetting USE_ALTERNATE_CURRENCY_FORMAT = new ConfigSetting(CONFIG, "auction setting.use alternate currency format", false, "If true, $123,456.78 will become $123.456,78");
-	public static final ConfigSetting USE_FLAT_NUMBER_FORMAT = new ConfigSetting(CONFIG, "auction setting.use flat number format", false, "If true, $123,456.78 will become $12345678");
-	public static final ConfigSetting USE_SPACE_SEPARATOR_FOR_NUMBER = new ConfigSetting(CONFIG, "auction setting.use space separator for number", false, "If true, $123,456.78 will become $123 456.78");
-	public static final ConfigSetting DATE_FORMAT = new ConfigSetting(CONFIG, "auction setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
-	public static final ConfigSetting ALLOW_PLAYERS_TO_ACCEPT_BID = new ConfigSetting(CONFIG, "auction setting.allow players to accept bid", true, "If true, players can right click a biddable item inside their active listings menu to accept the current bid");
-	public static final ConfigSetting SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID = new ConfigSetting(CONFIG, "auction setting.prevent cancellation of bid on items", false, "If true, players must wait out the duration of the auction listing if there is already a bid on it (makes them commit to selling it)");
-	public static final ConfigSetting PER_WORLD_ITEMS = new ConfigSetting(CONFIG, "auction setting.per world items", false, "If true, items can only be seen in the world they were listed in, same goes for bidding/buying/collecting");
-	public static final ConfigSetting ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME = new ConfigSetting(CONFIG, "auction setting.allow players to set auction time", false, "If true players can use -t 1 day for example to set the listing time for their item");
-	public static final ConfigSetting MAX_CUSTOM_DEFINED_TIME = new ConfigSetting(CONFIG, "auction setting.max custom defined time", 604800, "What should the limit on custom defined listing times be in seconds?");
-	public static final ConfigSetting SMART_MIN_BUY_PRICE = new ConfigSetting(CONFIG, "auction setting.smart min and buy price", false, "Will calculate buy now/min prices on a per item basis. For example, if the user states $100 and the item is in a stack of", "32, the min / buy now price will be $3200. If they provide -s or -stack in the command", "this will be ignored and the entire stack will sell for $100");
-	public static final ConfigSetting TITLE_INPUT_CANCEL_WORD = new ConfigSetting(CONFIG, "auction setting.title input cancel word", "cancel", "The word to be used to cancel chat inputs (users can also just click any block)");
-
-	public static final ConfigSetting USE_SEPARATE_FILTER_MENU = new ConfigSetting(CONFIG, "auction setting.use separate filter menu", false, "If true, rather than using a single filter item inside the auction menu", "it will open an entirely new menu to select the filter");
-	public static final ConfigSetting FILTER_ONLY_USES_WHITELIST = new ConfigSetting(CONFIG, "auction setting.filter only uses whitelist", false, "If true, auction house will ignore default filters, and only filter by the items added to the category whitelists");
-	public static final ConfigSetting FILTER_WHITELIST_USES_DURABILITY = new ConfigSetting(CONFIG, "auction setting.filter whitelist uses durability", false, "If true, the filter will look at material names and durability values for comparisons only");
-	public static final ConfigSetting SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM = new ConfigSetting(CONFIG, "auction setting.require user to hold item when using sell menu", false, "If enabled, when running just /ah sell, the user will need to hold the item in their hand, otherwise they just add it in the gui.");
-	public static final ConfigSetting OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST = new ConfigSetting(CONFIG, "auction setting.open main auction house after listing using menu", true, "Should the main auction house be opened after the user lists an item using the sell menu?");
-	public static final ConfigSetting SELL_MENU_CLOSE_SENDS_TO_LISTING = new ConfigSetting(CONFIG, "auction setting.sell menu close sends to listings", true, "If true, when the player clicks the close button within the sell menu, it will send them to the main auction house");
-	public static final ConfigSetting PAYMENT_HANDLE_USE_CMD = new ConfigSetting(CONFIG, "auction setting.payment handle.use command", false, "In special cases, you will want to use this");
-	public static final ConfigSetting PAYMENT_HANDLE_WITHDRAW_CMD = new ConfigSetting(CONFIG, "auction setting.payment handle.withdraw command", "eco take %player% %price%", "Command that will be executed to withdraw a player's balance");
-	public static final ConfigSetting PAYMENT_HANDLE_DEPOSIT_CMD = new ConfigSetting(CONFIG, "auction setting.payment handle.deposit command", "eco give %player% %price%", "Command that will be executed to deposit a player's balance");
-
-	public static final ConfigSetting TAX_ENABLED = new ConfigSetting(CONFIG, "auction setting.tax.enabled", false, "Should auction house use it's tax system?");
-	public static final ConfigSetting TAX_CHARGE_LISTING_FEE = new ConfigSetting(CONFIG, "auction setting.tax.charge listing fee", true, "Should auction house charge players to list an item?");
-	public static final ConfigSetting TAX_LISTING_FEE = new ConfigSetting(CONFIG, "auction setting.tax.listing fee", 5.0, "How much should it cost to list a new item?");
-	public static final ConfigSetting TAX_LISTING_FEE_PERCENTAGE = new ConfigSetting(CONFIG, "auction setting.tax.listing fee is percentage", true, "Should the listing fee be based on a percentage instead?");
-	public static final ConfigSetting TAX_CHARGE_SALES_TAX_TO_BUYER = new ConfigSetting(CONFIG, "auction setting.tax.charge sale tax to buyer", false, "Should auction house tax the buyer instead of the seller?");
-	public static final ConfigSetting TAX_SALES_TAX_BUY_NOW_PERCENTAGE = new ConfigSetting(CONFIG, "auction setting.tax.buy now sales tax", 15.0, "Tax % that should be charged on items that are bought immediately");
-	public static final ConfigSetting TAX_SALES_TAX_AUCTION_WON_PERCENTAGE = new ConfigSetting(CONFIG, "auction setting.tax.auction won sales tax", 10.0, "Tax % that should be charged on items that are won through the auction");
+	public static final String DEFAULT_FILTERS_BLOCK = "defaultFilters";
+	public static final ConfigSetting DEFAULT_FILTER_CATEGORY = new ConfigSetting(AUCTION_CONF, DEFAULT_FILTERS_BLOCK + ".auctionCategory", "ALL", "Valid Options: ALL, FOOD, ARMOR, BLOCKS, TOOLS, WEAPONS, POTIONS, SPAWNERS, ENCHANTS, MISC, SEARCH, SELF");
+	public static final ConfigSetting DEFAULT_FILTER_SORT = new ConfigSetting(AUCTION_CONF, DEFAULT_FILTERS_BLOCK + ".auctionSort", "RECENT", "Valid Options: RECENT, OLDEST, PRICE");
+	public static final ConfigSetting DEFAULT_FILTER_SALE_TYPE = new ConfigSetting(AUCTION_CONF, DEFAULT_FILTERS_BLOCK + ".saleType", "BOTH", "Valid Options: USED_BIDDING_SYSTEM, WITHOUT_BIDDING_SYSTEM, BOTH");
 
 
-	public static final ConfigSetting FILTERS_ALL_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.all", "HOPPER");
-	public static final ConfigSetting FILTERS_FOOD_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.food", "APPLE");
-	public static final ConfigSetting FILTERS_ARMOR_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.armor", "DIAMOND_HELMET");
-	public static final ConfigSetting FILTERS_BLOCKS_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.blocks", "GRASS_BLOCK");
-	public static final ConfigSetting FILTERS_TOOLS_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.tools", "STONE_SHOVEL");
-	public static final ConfigSetting FILTERS_WEAPONS_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.weapons", "IRON_SWORD");
-	public static final ConfigSetting FILTERS_SPAWNERS_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.spawners", "SPAWNER");
-	public static final ConfigSetting FILTERS_ENCHANTS_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.enchants", "ENCHANTED_BOOK");
-	public static final ConfigSetting FILTERS_POTIONS_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.potions", "POTION");
-	public static final ConfigSetting FILTERS_MISC_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.misc", "OAK_SIGN");
-	public static final ConfigSetting FILTERS_SELF_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.self", "NAME_TAG");
-	public static final ConfigSetting FILTERS_SEARCH_ICON = new ConfigSetting(CONFIG, "auction setting.filter icons.search", "COMPASS");
+	public static final ConfigSetting INTERNAL_CREATE_DELAY = new ConfigSetting(AUCTION_CONF, "internalCreateDelay", 2, "How many ticks should auction house wait before actually creating the item.");
+
+	private static final String PRICING_BLOCK = "pricing";
+	public static final ConfigSetting MAX_AUCTION_PRICE = new ConfigSetting(AUCTION_CONF, PRICING_BLOCK + ".maxAuctionPrice", 1000000000, "The max price for buy only / buy now items");
+	public static final ConfigSetting MAX_AUCTION_START_PRICE = new ConfigSetting(AUCTION_CONF, PRICING_BLOCK + ".maxAuctionStartPrice", 1000000000, "The max price starting a bidding auction");
+	public static final ConfigSetting MAX_AUCTION_INCREMENT_PRICE = new ConfigSetting(AUCTION_CONF, PRICING_BLOCK + ".maxAuctionIncrementPrice", 1000000000, "The max amount for incrementing a bid.");
+	public static final ConfigSetting MIN_AUCTION_PRICE = new ConfigSetting(AUCTION_CONF, PRICING_BLOCK + ".minAuctionPrice", 1, "The min price for buy only / buy now items");
+	public static final ConfigSetting MIN_AUCTION_START_PRICE = new ConfigSetting(AUCTION_CONF, PRICING_BLOCK + ".minAuctionStartPrice", 1, "The min price starting a bidding auction");
+	public static final ConfigSetting MIN_AUCTION_INCREMENT_PRICE = new ConfigSetting(AUCTION_CONF, PRICING_BLOCK + ".minAuctionIncrementPrice", 1, "The min amount for incrementing a bid.");
+
+	private static final String PURCHASE_BLOCK = "purchase";
+	public static final ConfigSetting OWNER_CAN_PURCHASE_OWN_ITEM = new ConfigSetting(AUCTION_CONF, PURCHASE_BLOCK + ".ownerCanPurchaseOwnItem", false, "Should the owner of an auction be able to purchase it?", "This probably should be set to false...");
+	public static final ConfigSetting OWNER_CAN_BID_OWN_ITEM = new ConfigSetting(AUCTION_CONF, PURCHASE_BLOCK + ".ownerCanBidOnOwnItem", false, "Should the owner of an auction be able to bid on it?", "This probably should be set to false...");
+	public static final ConfigSetting OWNER_CAN_FULFILL_OWN_REQUEST = new ConfigSetting(AUCTION_CONF, PURCHASE_BLOCK + ".ownerCanFulfillOwnRequest", false, "Should the owner of a request be able to fulfill it", "This probably should be set to false...");
+
+	public static final ConfigSetting MAX_REQUEST_AMOUNT = new ConfigSetting(AUCTION_CONF, "maxRequestAmount", 64, "How much of an item should a player be able to ask for in a single request?");
+	public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGES = new ConfigSetting(AUCTION_CONF, "autoRefreshAuctionPages", true, "Should auction pages auto refresh?");
+	public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGE_SYNC = new ConfigSetting(AUCTION_CONF, "autoRefreshAuctionPagesSynchronously", false, "Should auction pages auto refresh use a synchronous?");
+	public static final ConfigSetting AUTO_REFRESH_DOES_SLOT_CLEAR = new ConfigSetting(AUCTION_CONF, "autoRefreshDoesSlotClear", true, "If true, on every refresh, the slots will be cleared (replaced by default item) then the actual listings will be placed.");
+	public static final ConfigSetting USE_SHORT_NUMBERS_ON_ITEMS = new ConfigSetting(AUCTION_CONF, "useShortNumbers", false, "Should numbers be shortened into a prefixed form?");
+	public static final ConfigSetting USE_SHORT_NUMBERS_ON_PLAYER_BALANCE = new ConfigSetting(AUCTION_CONF, "useShortNumbersOnBalance", false, "Should numbers be shortened into a prefixed form for the player balance?");
+	public static final ConfigSetting INCREASE_TIME_ON_BID = new ConfigSetting(AUCTION_CONF, "increaseTimeOnBid", true, "Should the remaining time be increased when a bid is placed?");
+	public static final ConfigSetting TIME_TO_INCREASE_BY_ON_BID = new ConfigSetting(AUCTION_CONF, "timeToIncreaseByOnTheBid", 20, "How many seconds should be added to the remaining time?");
+	public static final ConfigSetting ALLOW_SALE_OF_DAMAGED_ITEMS = new ConfigSetting(AUCTION_CONF, "allowSaleOfDamagedItems", true, "If true, player's can sell items that are damaged (not max durability)");
+	public static final ConfigSetting ALLOW_FLOODGATE_PLAYERS = new ConfigSetting(AUCTION_CONF, "allowFloodGatePlayers", false, "If true, player's who connected using floodgate (bedrock players) won't be able to use the auction house");
+	public static final ConfigSetting RESTRICT_ALL_TRANSACTIONS_TO_PERM = new ConfigSetting(AUCTION_CONF, "restrictViewingAllTransactions", false, "If true, player's will need the perm: auctionhouse.transactions.viewall to view all transactions");
+	public static final ConfigSetting BLOCKED_WORLDS = new ConfigSetting(AUCTION_CONF, "blockedWorlds", Collections.singletonList("creative"), "A list of worlds that Auction House will be disabled in");
+	public static final ConfigSetting PREVENT_SALE_OF_REPAIRED_ITEMS = new ConfigSetting(AUCTION_CONF, "preventSaleOfRepairedItems", false, "Items repaired before this setting is turned on will still be able to be listed.");
+	public static final ConfigSetting SYNCHRONIZE_ITEM_ADD = new ConfigSetting(AUCTION_CONF, "synchronizeItemAdd", false, "If an item is being added to a player's inventory, the process will be ran synchronously");
+	public static final ConfigSetting ITEM_COPY_REQUIRES_GMC = new ConfigSetting(AUCTION_CONF, "adminCopyRequiresCreative", false, "If true when using the admin copy option the player must be in creative");
+	public static final ConfigSetting LOG_ADMIN_ACTIONS = new ConfigSetting(AUCTION_CONF, "logAdminActions", true, "If true, any admin actions made will be logged");
+	public static final ConfigSetting ROUND_ALL_PRICES = new ConfigSetting(AUCTION_CONF, "roundAllPrices", false, "If true, any decimal numbers will be rounded to the nearest whole number");
+	public static final ConfigSetting DISABLE_AUTO_SAVE_MSG = new ConfigSetting(AUCTION_CONF, "disableAutoSaveMessage", false, "If true, auction house will not log the auto save task to the console");
+	public static final ConfigSetting DISABLE_CLEANUP_MSG = new ConfigSetting(AUCTION_CONF, "disableCleanUpMessage", false, "If true, auction house will not log the clean up process to the console");
+
+	public static final ConfigSetting DISABLE_PROFILE_UPDATE_MSG = new ConfigSetting(AUCTION_CONF, "disableProfileUpdateMessage", false, "If true, auction house will not log the player profile updates to the console");
+
+	public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(AUCTION_CONF, "tickAuctionsEvery", 1, "How many seconds should pass before the plugin updates all the times on items?");
+
+	private static final String GARBAGE_BLOCK = "garbageDeletion";
+	public static final ConfigSetting GARBAGE_DELETION_TIMED_MODE = new ConfigSetting(AUCTION_CONF, GARBAGE_BLOCK + ".timedMode", true, "If true, auction house will only run the garbage deletion task, after set amount of seconds", "otherwise if false, it will wait until the total garbage bin count", "reaches/exceeds the specified value");
+	public static final ConfigSetting GARBAGE_DELETION_TIMED_DELAY = new ConfigSetting(AUCTION_CONF, GARBAGE_BLOCK + ".timedDelay", 60, "If timed mode is true, this value will be ran after x specified seconds, the lower this number the more frequent a new async task will be ran!");
+	public static final ConfigSetting GARBAGE_DELETION_MAX_ITEMS = new ConfigSetting(AUCTION_CONF, GARBAGE_BLOCK + ".maxItems", 30, "If timed mode is false, whenever the garbage bin reaches this number, auction house will run the deletion task.", "You should adjust this number based on your server since some servers may have more or less items being claimed / marked for garbage clean up");
+
+	public static final ConfigSetting CLAIM_MS_DELAY = new ConfigSetting(AUCTION_CONF, "itemClaimDelay", 100, "How many ms should a player wait before being allowed to claim an item?, Ideally you don't wanna change this. It's meant to prevent auto clicker dupe claims");
+
+	public static final ConfigSetting TICK_UPDATE_GUI_TIME = new ConfigSetting(AUCTION_CONF, "refreshGuiEvery", 10, "How many seconds should pass before the auction gui auto refreshes?");
+	public static final ConfigSetting RECORD_TRANSACTIONS = new ConfigSetting(AUCTION_CONF, "recordTransactions", true, "Should every transaction be recorded (everything an auction is won or an item is bought)");
+	public static final ConfigSetting BUNDLE_IS_OPENED_ON_RECLAIM = new ConfigSetting(AUCTION_CONF, "openBundleOnReclaim", true, "When the player claims an expired item, if its a bundle, should it be automatically opened. (items that cannot fit will drop to the ground)");
+
+
+	// change to block
+	private static final String BROADCAST_BLOCK = "broadcast";
+	public static final ConfigSetting BROADCAST_AUCTION_LIST = new ConfigSetting(AUCTION_CONF, BROADCAST_BLOCK + ".auctionList", false, "Should the entire server be alerted when a player lists an item?");
+	public static final ConfigSetting BROADCAST_AUCTION_BID = new ConfigSetting(AUCTION_CONF, BROADCAST_BLOCK + ".auctionBid", false, "Should the entire server be alerted when a player bids on an item?");
+	public static final ConfigSetting BROADCAST_AUCTION_SALE = new ConfigSetting(AUCTION_CONF, BROADCAST_BLOCK + ".auctionSale", false, "Should the entire server be alerted when an auction is sold");
+	public static final ConfigSetting BROADCAST_AUCTION_ENDING = new ConfigSetting(AUCTION_CONF, BROADCAST_BLOCK + ".auctionEnding", false, "Should the entire server be alerted when an auction is about to end?");
+	public static final ConfigSetting BROADCAST_AUCTION_ENDING_AT_TIME = new ConfigSetting(AUCTION_CONF, BROADCAST_BLOCK + ".auctionEndingAtTime", 20, "When the time on the auction item reaches this amount of seconds left, the broadcast ending will take affect ");
+
+	public static final ConfigSetting USE_REALISTIC_BIDDING = new ConfigSetting(AUCTION_CONF, "useRealisticBidding", false, "If true auction house will use a more realistic bidding approach. Ex. the previous bid is 400, and if a player bids 500, rather than making the new bid 900, it will be set to 500.");
+	public static final ConfigSetting BID_MUST_BE_HIGHER_THAN_PREVIOUS = new ConfigSetting(AUCTION_CONF, "bidMustBeHigherThanPrevious", true, "Only applies if use realistic bidding is true, this will make it so that they must bid higher than the current bid.");
+
+	private static final String LIVE_BID_NUMBER_IN_CONFIRM_GUI_BLOCK = "liveBidNumberInConfirmGui";
+	public static final ConfigSetting USE_LIVE_BID_NUMBER_IN_CONFIRM_GUI = new ConfigSetting(AUCTION_CONF, LIVE_BID_NUMBER_IN_CONFIRM_GUI_BLOCK + ".use", true, "If true, the bid confirmation menu will auto update every 1 second by default");
+	public static final ConfigSetting LIVE_BID_NUMBER_IN_CONFIRM_GUI_RATE = new ConfigSetting(AUCTION_CONF, LIVE_BID_NUMBER_IN_CONFIRM_GUI_BLOCK + ".rate", 1, "How often the confirm gui for bids will update");
+
+	public static final ConfigSetting PLAYER_NEEDS_TOTAL_PRICE_TO_BID = new ConfigSetting(AUCTION_CONF, "bidderMustHaveFundsInAccount", false, "Should the player who is placing a bid on an item have the money in their account to cover the cost?");
+	public static final ConfigSetting ALLOW_USAGE_OF_BID_SYSTEM = new ConfigSetting(AUCTION_CONF, "allowBidSystemUsage", true, "Should players be allowed to use the bid option cmd params?");
+	public static final ConfigSetting ALLOW_USAGE_OF_BUY_NOW_SYSTEM = new ConfigSetting(AUCTION_CONF, "allowBuyNowSystemUsage", true, "Should players be allowed to use the right-click buy now feature on biddable items?");
+	public static final ConfigSetting BUY_NOW_DISABLED_BY_DEFAULT_IN_SELL_MENU = new ConfigSetting(AUCTION_CONF, "buyNowDisabledInSellMenuByDefault", false, "If true, players will just need to toggle buy now on their items to allow buy now");
+
+	private static final String AUTO_SAVE_BLOCK = "autoSave";
+	public static final ConfigSetting AUTO_SAVE_ENABLED = new ConfigSetting(AUCTION_CONF, AUTO_SAVE_BLOCK + ".enabled", true, "Should the auto save task be enabled?");
+	public static final ConfigSetting AUTO_SAVE_EVERY = new ConfigSetting(AUCTION_CONF, AUTO_SAVE_BLOCK + ".time", 900, "How often should the auto save active? (in seconds. Ex. 900 = 15min)");
+	public static final ConfigSetting ALLOW_PURCHASE_OF_SPECIFIC_QUANTITIES = new ConfigSetting(AUCTION_CONF, "allowPurchaseOfSpecificQuantities", false, "When a buy now item is right-clicked should it open a", "special gui to specify the quantity of items to buy from the stack?");
+	public static final ConfigSetting USE_REFRESH_COOL_DOWN = new ConfigSetting(AUCTION_CONF, "useRefreshCoolDown", true, "Should the refresh cooldown be enabled?");
+	public static final ConfigSetting REFRESH_COOL_DOWN = new ConfigSetting(AUCTION_CONF, "refreshCoolDown", 2, "How many seconds should pass before the player can refresh the auction house again?");
+	public static final ConfigSetting ALLOW_PURCHASE_IF_INVENTORY_FULL = new ConfigSetting(AUCTION_CONF, "allowPurchaseWithFullInventory", true, "Should auction house allow players to buy items even if their", "inventory is full, if true, items will be dropped on the floor if there is no room.");
+	public static final ConfigSetting ASK_FOR_BID_CONFIRMATION = new ConfigSetting(AUCTION_CONF, "askForBidConfirmation", true, "Should Auction House open the confirmation menu for the user to confirm", "whether they actually meant to place a bid or not?");
+	public static final ConfigSetting ASK_FOR_LISTING_CONFIRMATION = new ConfigSetting(AUCTION_CONF, "askForListingConfirmation", false, "Should Auction House ask the user to confirm the listing?");
+	public static final ConfigSetting REPLACE_HOW_TO_SELL_WITH_LIST_BUTTON = new ConfigSetting(AUCTION_CONF, "replaceHowToSellWithListButton", false, "This will replace the \"How to Sell\" button with a List Item button");
+	public static final ConfigSetting ALLOW_USAGE_OF_SELL_GUI = new ConfigSetting(AUCTION_CONF, "allowUsageOfSellGui", true, "Should the sell menu be enabled?");
+	public static final ConfigSetting FORCE_AUCTION_USAGE = new ConfigSetting(AUCTION_CONF, "forceAuctionUsage", false, "If enabled, all items sold on the auction house must be an auction (biddable) items");
+	public static final ConfigSetting ALLOW_INDIVIDUAL_ITEM_CLAIM = new ConfigSetting(AUCTION_CONF, "allowIndividualItemClaim", true, "If enabled, you will be able to click individual items from the expiration menu to claim them back. Otherwise you will have to use the claim all button");
+	public static final ConfigSetting FORCE_CUSTOM_BID_AMOUNT = new ConfigSetting(AUCTION_CONF, "forceCustomBidAmount", false, "If enabled, the bid increment line on auction items will be hidden, bid increment values will be ignored, and when you go to bid on an item, it will ask you to enter a custom amount.");
+
+	private static final String SOUND_BLOCK = "sound";
+	public static final ConfigSetting SOUND_PITCH = new ConfigSetting(AUCTION_CONF, SOUND_BLOCK + ".pitch", 1.0, "The pitch value for sounds played by auction house");
+	public static final ConfigSetting SOUND_VOLUME = new ConfigSetting(AUCTION_CONF, SOUND_BLOCK + ".volume", 1.0, "The volume value for sounds played by auction house");
+
+	public static final ConfigSetting BIDDING_TAKES_MONEY = new ConfigSetting(AUCTION_CONF, "biddingTakesMoney", false, "If enabled, players will be outright charged the current bid for the item", "If they are outbid or the item is cancelled, they will get their money back. Disables ability for owners to bid on their own items!");
+	public static final ConfigSetting LIST_ITEM_DELAY = new ConfigSetting(AUCTION_CONF, "listItemDelay", -1, "If not set to -1 (disabled) how many seconds must a player wait to list another item after listing 1?");
+	public static final ConfigSetting FORCE_SYNC_MONEY_ACTIONS = new ConfigSetting(AUCTION_CONF, "forceSyncMoneyActions", false, "If true, auction house will forcefully run a sync task to withdraw/deposit cash, this does not apply when using the commands");
+
+	private static final String EXPIRATION_TIME_LIMIT_BLOCK = "expirationTimeLimit";
+	public static final ConfigSetting EXPIRATION_TIME_LIMIT_ENABLED = new ConfigSetting(AUCTION_CONF, EXPIRATION_TIME_LIMIT_BLOCK + ".enabled", false, "If true, auction house will automatically delete un claimed expired items after 7 days (default)");
+	public static final ConfigSetting EXPIRATION_TIME_LIMIT = new ConfigSetting(AUCTION_CONF, EXPIRATION_TIME_LIMIT_BLOCK + ".time", 24 * 7, "In hours, what should the minimum age of an unclaimed item be inorder for it to be deleted?");
+
+	public static final ConfigSetting ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS = new ConfigSetting(AUCTION_CONF, "askForCancelConfirmOnBidItems", true, "Should Auction House ask the user if they want to cancel the item?");
+	public static final ConfigSetting ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS = new ConfigSetting(AUCTION_CONF, "askForCancelConfirmOnNonBidItems", false, "Should Auction House ask the user if they want to cancel the item?");
+	public static final ConfigSetting ASK_FOR_CANCEL_CONFIRM_ON_ALL_ITEMS = new ConfigSetting(AUCTION_CONF, "askForCancelConfirmOnEndAll", true, "Should Auction House ask the user to confirm in chat when using end all in active listings?");
+
+	public static final ConfigSetting BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START = new ConfigSetting(AUCTION_CONF, "basePriceMustBeHigherThanBidStart", true, "Should the base price (buy now price) be higher than the initial bid starting price?");
+	public static final ConfigSetting SYNC_BASE_PRICE_TO_HIGHEST_PRICE = new ConfigSetting(AUCTION_CONF, "syncTheBasePriceToTheCurrentPrice", true, "Ex. If the buy now price was 100, and the current price exceeds 100 to say 200, the buy now price will become 200.");
+
+	public static final ConfigSetting CURRENCY_FORMAT = new ConfigSetting(AUCTION_CONF, "currencyFormat", "%,.2f");
+	public static final ConfigSetting STRIP_ZEROS_ON_WHOLE_NUMBERS = new ConfigSetting(AUCTION_CONF, "stripZerosOnWholeNumbers", false, "If the price / amount is a whole number (ex. 40.00) it will drop the .00");
+
+	private static final String ADMIN_OPTION_BLOCK = "adminOption";
+	public static final ConfigSetting ADMIN_OPTION_SHOW_RETURN_ITEM = new ConfigSetting(AUCTION_CONF, ADMIN_OPTION_BLOCK + ".showReturnToPlayer", true);
+	public static final ConfigSetting ADMIN_OPTION_SHOW_CLAIM_ITEM = new ConfigSetting(AUCTION_CONF, ADMIN_OPTION_BLOCK + ".showClaimItem", true);
+	public static final ConfigSetting ADMIN_OPTION_SHOW_DELETE_ITEM = new ConfigSetting(AUCTION_CONF, ADMIN_OPTION_BLOCK + ".showDeleteItem", true);
+	public static final ConfigSetting ADMIN_OPTION_SHOW_COPY_ITEM = new ConfigSetting(AUCTION_CONF, ADMIN_OPTION_BLOCK + ".showCopyItem", true);
+
+	public static final ConfigSetting USE_ALTERNATE_CURRENCY_FORMAT = new ConfigSetting(AUCTION_CONF, "useAlternateCurrencyFormat", false, "If true, $123,456.78 will become $123.456,78");
+	public static final ConfigSetting USE_FLAT_NUMBER_FORMAT = new ConfigSetting(AUCTION_CONF, "useFlatNumberFormat", false, "If true, $123,456.78 will become $12345678");
+	public static final ConfigSetting USE_SPACE_SEPARATOR_FOR_NUMBER = new ConfigSetting(AUCTION_CONF, "useSpaceSeparatorForNumber", false, "If true, $123,456.78 will become $123 456.78");
+	public static final ConfigSetting DATE_FORMAT = new ConfigSetting(AUCTION_CONF, "dateFormat", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
+	public static final ConfigSetting ALLOW_PLAYERS_TO_ACCEPT_BID = new ConfigSetting(AUCTION_CONF, "allowPlayersToAcceptBid", true, "If true, players can right click a biddable item inside their active listings menu to accept the current bid");
+	public static final ConfigSetting SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID = new ConfigSetting(AUCTION_CONF, "preventCancellationOfBidOnItems", false, "If true, players must wait out the duration of the auction listing if there is already a bid on it (makes them commit to selling it)");
+	public static final ConfigSetting PER_WORLD_ITEMS = new ConfigSetting(AUCTION_CONF, "perWorldItems", false, "If true, items can only be seen in the world they were listed in, same goes for bidding/buying/collecting");
+	public static final ConfigSetting ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME = new ConfigSetting(AUCTION_CONF, "allowPlayersToSetAuctionTime", false, "If true players can use -t 1 day for example to set the listing time for their item");
+	public static final ConfigSetting MAX_CUSTOM_DEFINED_TIME = new ConfigSetting(AUCTION_CONF, "maxCustomDefinedTime", 604800, "What should the limit on custom defined listing times be in seconds?");
+	public static final ConfigSetting SMART_MIN_BUY_PRICE = new ConfigSetting(AUCTION_CONF, "smartMinAndBuyPrice", false, "Will calculate buy now/min prices on a per item basis. For example, if the user states $100 and the item is in a stack of", "32, the min / buy now price will be $3200. If they provide -s or -stack in the command", "this will be ignored and the entire stack will sell for $100");
+	public static final ConfigSetting TITLE_INPUT_CANCEL_WORD = new ConfigSetting(AUCTION_CONF, "titleInputCancelWord", "cancel", "The word to be used to cancel chat inputs (users can also just click any block)");
+
+	public static final ConfigSetting USE_SEPARATE_FILTER_MENU = new ConfigSetting(AUCTION_CONF, "useSeparateFilterMenu", false, "If true, rather than using a single filter item inside the auction menu", "it will open an entirely new menu to select the filter");
+	public static final ConfigSetting FILTER_ONLY_USES_WHITELIST = new ConfigSetting(AUCTION_CONF, "filterOnlyUsesWhitelist", false, "If true, auction house will ignore default filters, and only filter by the items added to the category whitelists");
+	public static final ConfigSetting FILTER_WHITELIST_USES_DURABILITY = new ConfigSetting(AUCTION_CONF, "filterWhitelistUsesDurability", false, "If true, the filter will look at material names and durability values for comparisons only");
+	public static final ConfigSetting SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM = new ConfigSetting(AUCTION_CONF, "requireUserToHoldItemWhenUsingSellMenu", false, "If enabled, when running just /ah sell, the user will need to hold the item in their hand, otherwise they just add it in the gui.");
+	public static final ConfigSetting OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST = new ConfigSetting(AUCTION_CONF, "openMainAuctionHouseAfterListingUsingMenu", true, "Should the main auction house be opened after the user lists an item using the sell menu?");
+	public static final ConfigSetting SELL_MENU_CLOSE_SENDS_TO_LISTING = new ConfigSetting(AUCTION_CONF, "sellMenuCloseSendsToListings", true, "If true, when the player clicks the close button within the sell menu, it will send them to the main auction house");
+
+	private static final String PAYMENT_HANDLE_BLOCK = "paymentHandle";
+	public static final ConfigSetting PAYMENT_HANDLE_USE_CMD = new ConfigSetting(AUCTION_CONF, PAYMENT_HANDLE_BLOCK + ".useCommand", false, "In special cases, you will want to use this");
+	public static final ConfigSetting PAYMENT_HANDLE_WITHDRAW_CMD = new ConfigSetting(AUCTION_CONF, PAYMENT_HANDLE_BLOCK + ".withdrawCommand", "eco take %player% %price%", "Command that will be executed to withdraw a player's balance");
+	public static final ConfigSetting PAYMENT_HANDLE_DEPOSIT_CMD = new ConfigSetting(AUCTION_CONF, PAYMENT_HANDLE_BLOCK + ".depositCommand", "eco give %player% %price%", "Command that will be executed to deposit a player's balance");
+
+	private static final String TAX_BLOCK = "tax";
+	public static final ConfigSetting TAX_ENABLED = new ConfigSetting(AUCTION_CONF, TAX_BLOCK + ".enabled", false, "Should auction house use it's tax system?");
+	public static final ConfigSetting TAX_CHARGE_LISTING_FEE = new ConfigSetting(AUCTION_CONF, TAX_BLOCK + ".chargeListingFee", true, "Should auction house charge players to list an item?");
+	public static final ConfigSetting TAX_LISTING_FEE = new ConfigSetting(AUCTION_CONF, TAX_BLOCK + ".listingFee", 5.0, "How much should it cost to list a new item?");
+	public static final ConfigSetting TAX_LISTING_FEE_PERCENTAGE = new ConfigSetting(AUCTION_CONF, TAX_BLOCK + ".listingFeeIsPercentage", true, "Should the listing fee be based on a percentage instead?");
+	public static final ConfigSetting TAX_CHARGE_SALES_TAX_TO_BUYER = new ConfigSetting(AUCTION_CONF, TAX_BLOCK + ".chargeSaleTaxToBuyer", false, "Should auction house tax the buyer instead of the seller?");
+	public static final ConfigSetting TAX_SALES_TAX_BUY_NOW_PERCENTAGE = new ConfigSetting(AUCTION_CONF, TAX_BLOCK + ".buyNowSalesTax", 15.0, "Tax % that should be charged on items that are bought immediately");
+	public static final ConfigSetting TAX_SALES_TAX_AUCTION_WON_PERCENTAGE = new ConfigSetting(AUCTION_CONF, TAX_BLOCK + ".auctionWonSalesTax", 10.0, "Tax % that should be charged on items that are won through the auction");
 
 
 
-	public static final ConfigSetting ALL_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.all", true, "Should this filter be enabled?");
-	public static final ConfigSetting FOOD_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.food", true, "Should this filter be enabled?");
-	public static final ConfigSetting ARMOR_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.armor", true, "Should this filter be enabled?");
-	public static final ConfigSetting BLOCKS_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.blocks", true, "Should this filter be enabled?");
-	public static final ConfigSetting TOOLS_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.tools", true, "Should this filter be enabled?");
-	public static final ConfigSetting WEAPONS_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.weapons", true, "Should this filter be enabled?");
-	public static final ConfigSetting SPAWNERS_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.spawners", true, "Should this filter be enabled?");
-	public static final ConfigSetting ENCHANTS_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.enchants", true, "Should this filter be enabled?");
-	public static final ConfigSetting POTIONS_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.potions", true, "Should this filter be enabled?");
-	public static final ConfigSetting MISC_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.misc", true, "Should this filter be enabled?");
-	public static final ConfigSetting SEARCH_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.search", true, "Should this filter be enabled?");
-	public static final ConfigSetting SELF_FILTER_ENABLED = new ConfigSetting(CONFIG, "auction setting.enabled filters.self", true, "Should this filter be enabled?");
-	public static final ConfigSetting USE_AUCTION_CHEST_MODE = new ConfigSetting(CONFIG, "auction setting.use auction chest mode", false, "Enabling this will make it so players can only access the auction through the auction chest");
-	public static final ConfigSetting AUTO_BSTATS = new ConfigSetting(CONFIG, "auction setting.auto bstats", true, "Auto enable bStats");
-	public static final ConfigSetting FORCE_MATERIAL_NAMES_FOR_DISCORD = new ConfigSetting(CONFIG, "auction setting.force material names for discord", false, "If true, auction house will use the actual material name rather than custom name");
+	private static final String FILTER_ICONS_BLOCK = "filterIcons";
+	public static final ConfigSetting FILTERS_ALL_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".all", "HOPPER");
+	public static final ConfigSetting FILTERS_FOOD_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".food", "APPLE");
+	public static final ConfigSetting FILTERS_ARMOR_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".armor", "DIAMOND_HELMET");
+	public static final ConfigSetting FILTERS_BLOCKS_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".blocks", "GRASS_BLOCK");
+	public static final ConfigSetting FILTERS_TOOLS_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".tools", "STONE_SHOVEL");
+	public static final ConfigSetting FILTERS_WEAPONS_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".weapons", "IRON_SWORD");
+	public static final ConfigSetting FILTERS_SPAWNERS_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".spawners", "SPAWNER");
+	public static final ConfigSetting FILTERS_ENCHANTS_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".enchants", "ENCHANTED_BOOK");
+	public static final ConfigSetting FILTERS_POTIONS_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".potions", "POTION");
+	public static final ConfigSetting FILTERS_MISC_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".misc", "OAK_SIGN");
+	public static final ConfigSetting FILTERS_SELF_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".self", "NAME_TAG");
+	public static final ConfigSetting FILTERS_SEARCH_ICON = new ConfigSetting(AUCTION_CONF, FILTER_ICONS_BLOCK + ".search", "COMPASS");
 
-	public static final ConfigSetting ALLOW_ITEM_BUNDLES = new ConfigSetting(CONFIG, "auction setting.bundles.enabled", true, "If true, players can use -b in the sell command to bundle all similar items into a single item.");
-	public static final ConfigSetting ITEM_BUNDLE_ITEM = new ConfigSetting(CONFIG, "auction setting.bundles.item", XMaterial.GOLD_BLOCK.name());
-	public static final ConfigSetting MIN_ITEM_PRICE_USES_SIMPE_COMPARE = new ConfigSetting(CONFIG, "auction setting.use simple compare for min item price", true, "If true, AH will just compare material and model data types");
-	public static final ConfigSetting ITEM_BUNDLE_NAME = new ConfigSetting(CONFIG, "auction setting.bundles.name", "%item_name% &7Bundle");
-	public static final ConfigSetting ITEM_BUNDLE_LORE = new ConfigSetting(CONFIG, "auction setting.bundles.lore", Arrays.asList(
+
+
+	private static final String ENABLED_FILTERS_BLOCK = "enabledFilters";
+	private static final String SHOULD_THIS_FILTER_BE_ENABLED = "Should this filter be enabled?";
+	public static final ConfigSetting FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK, "", ConfigFormattingRules.CommentStyle.SIMPLE, SHOULD_THIS_FILTER_BE_ENABLED);
+	public static final ConfigSetting ALL_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".all", true);
+	public static final ConfigSetting FOOD_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".food", true);
+	public static final ConfigSetting ARMOR_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".armor", true);
+	public static final ConfigSetting BLOCKS_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".blocks", true);
+	public static final ConfigSetting TOOLS_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".tools", true);
+	public static final ConfigSetting WEAPONS_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".weapons", true);
+	public static final ConfigSetting SPAWNERS_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".spawners", true);
+	public static final ConfigSetting ENCHANTS_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".enchants", true);
+	public static final ConfigSetting POTIONS_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".potions", true);
+	public static final ConfigSetting MISC_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".misc", true);
+	public static final ConfigSetting SEARCH_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".search", true);
+	public static final ConfigSetting SELF_FILTER_ENABLED = new ConfigSetting(AUCTION_CONF, ENABLED_FILTERS_BLOCK + ".self", true);
+	public static final ConfigSetting USE_AUCTION_CHEST_MODE = new ConfigSetting(AUCTION_CONF, "useAuctionChestMode", false, "Enabling this will make it so players can only access the auction through the auction chest");
+	public static final ConfigSetting AUTO_BSTATS = new ConfigSetting(AUCTION_CONF, "autoBstats", true, "Auto enable bStats");
+	public static final ConfigSetting FORCE_MATERIAL_NAMES_FOR_DISCORD = new ConfigSetting(AUCTION_CONF, "forceMaterialNamesForDiscord", false, "If true, auction house will use the actual material name rather than custom name");
+
+
+	private static final String BUNDLES_BLOCK = "bundles";
+	public static final ConfigSetting ALLOW_ITEM_BUNDLES = new ConfigSetting(AUCTION_CONF, BUNDLES_BLOCK + ".enabled", true, "If true, players can use -b in the sell command to bundle all similar items into a single item.");
+	public static final ConfigSetting ITEM_BUNDLE_ITEM = new ConfigSetting(AUCTION_CONF, BUNDLES_BLOCK + ".item", XMaterial.GOLD_BLOCK.name());
+	public static final ConfigSetting MIN_ITEM_PRICE_USES_SIMPE_COMPARE = new ConfigSetting(AUCTION_CONF, "useSimpleCompareForMinItemPrice", true, "If true, AH will just compare material and model data types");
+	public static final ConfigSetting ITEM_BUNDLE_NAME = new ConfigSetting(AUCTION_CONF, BUNDLES_BLOCK + ".name", "%item_name% &7Bundle");
+	public static final ConfigSetting ITEM_BUNDLE_LORE = new ConfigSetting(AUCTION_CONF, BUNDLES_BLOCK + ".lore", Arrays.asList(
 			"&7This is a bundle item, it contains",
 			"&7multiple items that can be unboxed."
 	));
 
-	public static final ConfigSetting CLICKS_NON_BID_ITEM_PURCHASE = new ConfigSetting(CONFIG, "auction setting.clicks.non bid item purchase", "LEFT",
-			"Valid Click Types",
-			"LEFT",
-			"RIGHT",
-			"SHIFT_LEFT",
-			"SHIFT_RIGHT",
-			"MIDDLE",
-			"",
-			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
-	);
 
-	public static final ConfigSetting CLICKS_NON_BID_ITEM_QTY_PURCHASE = new ConfigSetting(CONFIG, "auction setting.clicks.non bid item qty purchase", "SHIFT_LEFT",
+	private static final String CLICKS_BLOCK = "clicks";
+	private static final String[] CLICKS_BLOCK_DESC = new String[] {
 			"Valid Click Types",
-			"LEFT",
-			"RIGHT",
-			"SHIFT_LEFT",
-			"SHIFT_RIGHT",
-			"MIDDLE",
+			ClickType.LEFT.toString(),
+			ClickType.RIGHT.toString(),
+			ClickType.SHIFT_LEFT.toString(),
+			ClickType.SHIFT_RIGHT.toString(),
+			ClickType.MIDDLE.toString(),
+			ClickType.DROP.toString(),
 			"",
 			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
-	);
+	};
 
-	public static final ConfigSetting CLICKS_BID_ITEM_PLACE_BID = new ConfigSetting(CONFIG, "auction setting.clicks.bid item place bid", "LEFT",
-			"Valid Click Types",
-			"LEFT",
-			"RIGHT",
-			"SHIFT_LEFT",
-			"SHIFT_RIGHT",
-			"MIDDLE",
-			"",
-			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
-	);
+	public static final ConfigSetting CLICKS = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK, "", ConfigFormattingRules.CommentStyle.SIMPLE, CLICKS_BLOCK_DESC);
+	public static final ConfigSetting CLICKS_NON_BID_ITEM_PURCHASE = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK + ".nonBidItemPurchase", ClickType.LEFT.toString());
+	public static final ConfigSetting CLICKS_NON_BID_ITEM_QTY_PURCHASE = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK + ".nonBidItemQtyPurchase", ClickType.SHIFT_LEFT.toString());
+	public static final ConfigSetting CLICKS_BID_ITEM_PLACE_BID = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK + ".bidItemPlaceBid", ClickType.LEFT.toString());
+	public static final ConfigSetting CLICKS_BID_ITEM_BUY_NOW = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK + ".bidItemBuyNow", ClickType.RIGHT.toString());
+	public static final ConfigSetting CLICKS_INSPECT_CONTAINER = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK + ".inspectContainer", ClickType.SHIFT_RIGHT.toString());
+	public static final ConfigSetting CLICKS_REMOVE_ITEM = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK + ".removeItem", ClickType.DROP.toString());
+	public static final ConfigSetting CLICKS_FILTER_SORT_PRICE_OR_RECENT = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK + ".filterSortByPriceOrRecent", ClickType.SHIFT_RIGHT.toString());
+	public static final ConfigSetting CLICKS_FILTER_SORT_SALE_TYPE = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK + ".filterSortSaleType", ClickType.RIGHT.toString());
+	public static final ConfigSetting CLICKS_FILTER_TRANSACTION_BUY_TYPE = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK + ".filterTransactionBuyType", ClickType.SHIFT_LEFT.toString());
 
-	public static final ConfigSetting CLICKS_BID_ITEM_BUY_NOW = new ConfigSetting(CONFIG, "auction setting.clicks.bid item buy now", "RIGHT",
-			"Valid Click Types",
-			"LEFT",
-			"RIGHT",
-			"SHIFT_LEFT",
-			"SHIFT_RIGHT",
-			"MIDDLE",
-			"",
-			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
-	);
-
-	public static final ConfigSetting CLICKS_INSPECT_CONTAINER = new ConfigSetting(CONFIG, "auction setting.clicks.inspect container", "SHIFT_RIGHT",
-			"Valid Click Types",
-			"LEFT",
-			"RIGHT",
-			"SHIFT_LEFT",
-			"SHIFT_RIGHT",
-			"MIDDLE",
-			"",
-			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
-	);
-
-	public static final ConfigSetting CLICKS_REMOVE_ITEM = new ConfigSetting(CONFIG, "auction setting.clicks.remove item", "DROP",
-			"Valid Click Types",
-			"LEFT",
-			"RIGHT",
-			"SHIFT_LEFT",
-			"SHIFT_RIGHT",
-			"MIDDLE",
-			"",
-			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
-	);
-
-	public static final ConfigSetting CLICKS_FILTER_SORT_PRICE_OR_RECENT = new ConfigSetting(CONFIG, "auction setting.clicks.filter.sort by price or recent", "SHIFT_RIGHT",
-			"Valid Click Types",
-			"LEFT",
-			"RIGHT",
-			"SHIFT_LEFT",
-			"SHIFT_RIGHT",
-			"MIDDLE",
-			"DROP",
-			"",
-			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
-	);
-
-	public static final ConfigSetting CLICKS_FILTER_SORT_SALE_TYPE = new ConfigSetting(CONFIG, "auction setting.clicks.filter.sort sale type", "RIGHT",
-			"Valid Click Types",
-			"LEFT",
-			"RIGHT",
-			"SHIFT_LEFT",
-			"SHIFT_RIGHT",
-			"MIDDLE",
-			"DROP",
-			"",
-			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
-	);
-
-	public static final ConfigSetting CLICKS_FILTER_TRANSACTION_BUY_TYPE = new ConfigSetting(CONFIG, "auction setting.clicks.filter.transaction buy type", "SHIFT_LEFT",
-			"Valid Click Types",
-			"LEFT",
-			"RIGHT",
-			"SHIFT_LEFT",
-			"SHIFT_RIGHT",
-			"MIDDLE",
-			"DROP",
-			"",
-			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
-	);
-
-	public static final ConfigSetting CLICKS_FILTER_RESET = new ConfigSetting(CONFIG, "auction setting.clicks.filter.reset", "DROP",
-			"Valid Click Types",
-			"LEFT",
-			"RIGHT",
-			"SHIFT_LEFT",
-			"SHIFT_RIGHT",
-			"MIDDLE",
-			"DROP",
-			"",
-			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
-	);
-
-	public static final ConfigSetting CLICKS_FILTER_CATEGORY = new ConfigSetting(CONFIG, "auction setting.clicks.filter.change category", "LEFT",
-			"Valid Click Types",
-			"LEFT",
-			"RIGHT",
-			"SHIFT_LEFT",
-			"SHIFT_RIGHT",
-			"MIDDLE",
-			"DROP",
-			"",
-			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
-	);
+	public static final ConfigSetting CLICKS_FILTER_RESET = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK + ".filter.reset", ClickType.DROP.toString());
+	public static final ConfigSetting CLICKS_FILTER_CATEGORY = new ConfigSetting(AUCTION_CONF, CLICKS_BLOCK + ".filter.changeCategory", ClickType.LEFT.toString());
 
 
 	/*  ===============================
@@ -1452,8 +1391,11 @@ public class Settings {
 	public static final ConfigSetting SOUNDS_NOT_ENOUGH_MONEY = new ConfigSetting(CONFIG, "sounds.not enough money", XSound.ENTITY_ITEM_BREAK.parseSound().name());
 
 	public static void setup() {
-		CONFIG.load();
-		CONFIG.setAutoremove(true).setAutosave(true);
-		CONFIG.saveChanges();
+		List<Config> configList = List.of(CONFIG, AUCTION_CONF, GUI_CONF);
+		configList.forEach(config -> {
+			config.load();
+			config.setAutoremove(true).setAutosave(true);
+			config.saveChanges();
+		});
 	}
 }
