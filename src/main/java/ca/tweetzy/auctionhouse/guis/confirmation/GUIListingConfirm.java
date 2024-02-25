@@ -93,9 +93,8 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 
 			setAllowClose(true);
 			final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId());
-			auctionPlayer.setItemBeingListed(XMaterial.AIR.parseItem());
-
 			this.result.accept(false);
+			auctionPlayer.setItemBeingListed(XMaterial.AIR.parseItem());
 		});
 
 
