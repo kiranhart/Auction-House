@@ -35,6 +35,7 @@ import java.util.function.Function;
 public final class BundleUtil {
 
 	public boolean isBundledItem(@NonNull final ItemStack itemStack) {
+		if (itemStack == null || itemStack.getType() == XMaterial.AIR.parseMaterial() || itemStack.getAmount() == 0) return false;
 		final boolean hasBundleTag = NBT.get(itemStack, nbt -> (boolean) nbt.hasTag("AuctionBundleItem"));
 		return itemStack.getType() != XMaterial.AIR.parseMaterial() && hasBundleTag;
 	}
