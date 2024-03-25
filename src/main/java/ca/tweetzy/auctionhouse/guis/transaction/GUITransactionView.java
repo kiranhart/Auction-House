@@ -63,7 +63,7 @@ public class GUITransactionView extends AbstractPlaceholderGui {
 				Settings.GUI_TRANSACTION_VIEW_ITEM_SELLER_LORE.getStringList(), new HashMap<String, Object>() {{
 					put("%transaction_id%", transaction.getId().toString());
 					put("%seller%", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME);
-					put("%buyer%",buyer.getName());
+					put("%buyer%", buyer.getName());
 					put("%date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
 				}}));
 
@@ -73,7 +73,7 @@ public class GUITransactionView extends AbstractPlaceholderGui {
 				Settings.GUI_TRANSACTION_VIEW_ITEM_BUYER_NAME.getString(),
 				Settings.GUI_TRANSACTION_VIEW_ITEM_BUYER_LORE.getStringList(), new HashMap<String, Object>() {{
 					put("%transaction_id%", transaction.getId().toString());
-					put("%seller%",seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME);
+					put("%seller%", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME);
 					put("%buyer%", buyer.getName());
 					put("%date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
 				}}));

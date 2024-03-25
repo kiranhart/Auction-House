@@ -19,10 +19,10 @@
 package ca.tweetzy.auctionhouse.guis.abstraction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.core.gui.BaseGUI;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
-import ca.tweetzy.core.gui.BaseGUI;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;

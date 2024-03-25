@@ -211,7 +211,6 @@ public class Settings {
 	public static final ConfigSetting FILTERS_SEARCH_ICON = new ConfigSetting(config, "auction setting.filter icons.search", "COMPASS");
 
 
-
 	public static final ConfigSetting ALL_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.all", true, "Should this filter be enabled?");
 	public static final ConfigSetting FOOD_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.food", true, "Should this filter be enabled?");
 	public static final ConfigSetting ARMOR_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.armor", true, "Should this filter be enabled?");

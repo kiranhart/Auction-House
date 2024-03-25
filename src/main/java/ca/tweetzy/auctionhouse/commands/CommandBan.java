@@ -20,8 +20,8 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.events.AuctionBanPlayerEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionBan;
+import ca.tweetzy.auctionhouse.events.AuctionBanPlayerEvent;
 import ca.tweetzy.auctionhouse.guis.GUIBans;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.PlayerUtils;

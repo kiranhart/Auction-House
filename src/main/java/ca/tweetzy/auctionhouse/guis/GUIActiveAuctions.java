@@ -91,7 +91,7 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 
 			int slot = 0;
 			for (AuctionedItem item : data) {
-				setButton(slot++, item.isRequest() ? item.getDisplayRequestStack(AuctionStackType.ACTIVE_AUCTIONS_LIST) :  item.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST), e -> {
+				setButton(slot++, item.isRequest() ? item.getDisplayRequestStack(AuctionStackType.ACTIVE_AUCTIONS_LIST) : item.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST), e -> {
 					switch (e.clickType) {
 						case LEFT:
 							if (item.isRequest()) {
