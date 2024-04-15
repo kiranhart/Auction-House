@@ -27,6 +27,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.nbtapi.NBT;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
@@ -174,8 +175,14 @@ public class TickAuctionsTask extends BukkitRunnable {
 					if (!Settings.BIDDING_TAKES_MONEY.getBoolean())
 						instance.getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(auctionWinner.getPlayer()))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice)).sendPrefixedMessage(auctionWinner.getPlayer());
 
+					// remove the dupe tracking
+					NBT.modify(itemStack, nbt -> {
+						nbt.removeKey("AuctionDupeTracking");
+					});
+
 					// handle full inventory
 					if (auctionWinner.getPlayer().getInventory().firstEmpty() == -1) {
+
 						if (Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean()) {
 							if (Settings.SYNCHRONIZE_ITEM_ADD.getBoolean())
 								AuctionHouse.newChain().sync(() -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack)).execute();

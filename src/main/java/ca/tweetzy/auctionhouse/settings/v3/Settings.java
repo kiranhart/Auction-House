@@ -29,8 +29,8 @@ import java.util.stream.IntStream;
 
 public final class Settings extends FlightSettings {
 
-	public static ConfigEntry PREFIX = create("prefix", "&8[&eAuctionHouse&8]").withComment("The prefix for the plugin");
-	public static ConfigEntry LANGUAGE = create("language", "en_us").withComment("The primary language of the plugin");
+	public static ConfigEntry PREFIX = create("prefix", "&8[&eAuctionHouse&8]","The prefix for the plugin");
+	public static ConfigEntry LANGUAGE = create("language", "en_us","The primary language of the plugin");
 
 	/*
 	==============================================================

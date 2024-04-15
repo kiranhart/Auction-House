@@ -27,6 +27,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.nbtapi.NBT;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -114,7 +115,13 @@ public class GUIExpiredItems extends AbstractPlaceholderGui {
 							PlayerUtils.giveItem(e.player, auctionItem.getItem());
 						}
 					} else {
-						PlayerUtils.giveItem(e.player, auctionItem.getItem()); // I despise these else statements
+						final ItemStack item = auctionItem.getItem();
+						// remove the dupe tracking
+						NBT.modify(item, nbt -> {
+							nbt.removeKey("AuctionDupeTracking");
+						});
+
+						PlayerUtils.giveItem(e.player, item);
 					}
 
 					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
@@ -151,12 +158,16 @@ public class GUIExpiredItems extends AbstractPlaceholderGui {
 							PlayerUtils.giveItem(e.player, auctionItem.getItem());
 						}
 					} else {
-						PlayerUtils.giveItem(e.player, auctionItem.getItem()); // I despise these else statements
-					}// todo this is repeated code, put into own method
+						final ItemStack item = auctionItem.getItem();
+
+						NBT.modify(item, nbt -> {
+							nbt.removeKey("AuctionDupeTracking");
+						});
+
+						PlayerUtils.giveItem(e.player, item); // I despise these else statements
+					}
 
 					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
-
-
 					e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer, this.lastClicked));
 				});
 			}

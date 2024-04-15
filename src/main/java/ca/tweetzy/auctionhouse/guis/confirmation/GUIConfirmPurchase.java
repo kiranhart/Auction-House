@@ -38,6 +38,7 @@ import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.nbtapi.NBT;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
@@ -243,6 +244,10 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 							AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
 					}
 
+					NBT.modify(toGive, nbt -> {
+						nbt.removeKey("AuctionDupeTracking");
+					});
+
 					PlayerUtils.giveItem(e.player, toGive);
 					sendMessages(e, located, true, buyNowPrice, this.purchaseQuantity);
 
@@ -271,7 +276,14 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 					}
 
 //					PlayerUtils.giveItem(e.player, located.getItem());
-					PlayerUtils.giveItem(e.player, located.getItem().clone());
+					ItemStack foundItem = located.getItem().clone();
+
+					NBT.modify(foundItem, nbt -> {
+						nbt.removeKey("AuctionDupeTracking");
+					});
+
+					PlayerUtils.giveItem(e.player, foundItem);
+
 					sendMessages(e, located, false, 0, deserializeItem.getAmount());
 				}
 

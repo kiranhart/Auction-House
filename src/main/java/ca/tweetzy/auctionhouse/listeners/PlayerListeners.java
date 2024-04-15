@@ -31,6 +31,7 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.comp.Titles;
 import ca.tweetzy.flight.nbtapi.NBT;
+import ca.tweetzy.flight.utils.Common;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -90,6 +91,20 @@ public class PlayerListeners implements Listener {
 		Titles.sendTitle(player, 1, 1, 1, " ", " ");
 
 		instance.getAuctionPlayerManager().addPlayer(player);
+
+
+		// DUPE TRACKING
+		for (ItemStack item : player.getInventory().getStorageContents()) {
+			if (item == null || item.getType() == XMaterial.AIR.parseMaterial() || item.getAmount() == 0) continue;
+
+			final boolean inventoryContainsListedItem = NBT.get(item, nbt -> (boolean) nbt.getBoolean("AuctionDupeTracking"));
+
+			if (inventoryContainsListedItem) {
+				player.getInventory().remove(item);
+				Bukkit.getServer().getConsoleSender().sendMessage(Common.colorize("&8[&eAuctionHouse&8] &CRemoving duped item from " + player.getName() + "'s inventory!"));
+			}
+		}
+
 
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
 
