@@ -107,6 +107,6 @@ public class ConfigurationItemHelper {
 	}
 
 	public static ItemStack createConfigurationItem(Player player, ItemStack item, String title, List<String> lore, HashMap<String, Object> replacements) {
-		return createConfigurationItem(player, item, 0, title, lore, replacements);
+		return createConfigurationItem(player, item, (item.hasItemMeta() && item.getItemMeta().hasCustomModelData()) ? item.getItemMeta().getCustomModelData() : 0, title, lore, replacements);
 	}
 }
