@@ -24,10 +24,12 @@ import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.configuration.ConfigSetting;
 import ca.tweetzy.core.hooks.EconomyManager;
+import ca.tweetzy.flight.gui.helper.InventoryBorder;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * The current file has been created by Kiran Hart
@@ -480,7 +482,7 @@ public class Settings {
 
 	public static final ConfigSetting GUI_FILLER = new ConfigSetting(config, "gui.filler item", XMaterial.BLACK_STAINED_GLASS_PANE.name(), "An item to be used to fill empty gui slots, this will be", "removed in later versions to be done on a per gui basis");
 
-	public static final ConfigSetting GUI_BACK_BTN_ITEM = new ConfigSetting(config, "gui.global items.back button.item", "ARROW", "Settings for the previous page button");
+	public static final ConfigSetting GUI_BACK_BTN_ITEM = new ConfigSetting(config, "gui.global items.back button.item", "OAK_DOOR", "Settings for the previous page button");
 	public static final ConfigSetting GUI_BACK_BTN_NAME = new ConfigSetting(config, "gui.global items.back button.name", "&e<< Previous Page");
 	public static final ConfigSetting GUI_BACK_BTN_LORE = new ConfigSetting(config, "gui.global items.back button.lore", Arrays.asList("&7Click the button to go", "&7back to the previous page."));
 
@@ -510,6 +512,8 @@ public class Settings {
 	 *         MAIN AUCTION GUI
 	 *  ===============================*/
 	public static final ConfigSetting GUI_AUCTION_HOUSE_TITLE = new ConfigSetting(config, "gui.auction house.title", "&7Auction House");
+	public static final ConfigSetting GUI_AUCTION_HOUSE_ROWS = new ConfigSetting(config, "gui.auction house.rows", 6);
+	public static final ConfigSetting GUI_AUCTION_HOUSE_FILL_SLOTS = new ConfigSetting(config, "gui.auction house.fill slots", IntStream.rangeClosed(0, 44).boxed().collect(Collectors.toList()));
 
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_GUIDE_ENABLED = new ConfigSetting(config, "gui.auction house.items.guide.enabled", true);
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT = new ConfigSetting(config, "gui.auction house.items.guide.slot", 53, "Valid Slots: 45 - 53");

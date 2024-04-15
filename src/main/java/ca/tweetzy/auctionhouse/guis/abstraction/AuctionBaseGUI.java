@@ -20,12 +20,14 @@ package ca.tweetzy.auctionhouse.guis.abstraction;
 
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.gui.BaseGUI;
+import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.flight.comp.enums.CompSound;
-import ca.tweetzy.flight.gui.Gui;
-import ca.tweetzy.flight.gui.template.BaseGUI;
+import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public abstract class AuctionBaseGUI extends BaseGUI {
 
@@ -55,44 +57,44 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 
 	private void applyDefaults() {
 		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILLER.getString()));
-		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF));
+		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF).parseSound());
 	}
 
-//	@Override
-//	protected ItemStack getBackButton() {
-//		return QuickItem
-//				.of(Settings.GUI_SHARED_ITEMS_BACK_BUTTON.getItemStack())
-//				.name(TranslationManager.string(this.player, Translations.GUI_SHARED_ITEMS_BACK_BUTTON_NAME))
-//				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_BACK_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-//				.make();
-//	}
-//
-//	@Override
-//	protected ItemStack getExitButton() {
-//		return QuickItem
-//				.of(Settings.GUI_SHARED_ITEMS_EXIT_BUTTON.getItemStack())
-//				.name(TranslationManager.string(this.player, Translations.GUI_SHARED_ITEMS_EXIT_BUTTON_NAME))
-//				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_EXIT_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-//				.make();
-//	}
-//
-//	@Override
-//	protected ItemStack getPreviousButton() {
-//		return QuickItem
-//				.of(Settings.GUI_BACK_BTN_ITEM.getString())
-//				.name(TranslationManager.string(this.player, Translations.GUI_SHARED_ITEMS_PREVIOUS_BUTTON_NAME))
-//				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_PREVIOUS_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-//				.make();
-//	}
-//
-//	@Override
-//	protected ItemStack getNextButton() {
-//		return QuickItem
-//				.of(Settings.GUI_SHARED_ITEMS_NEXT_BUTTON.getItemStack())
-//				.name(TranslationManager.string(this.player, Translations.GUI_SHARED_ITEMS_NEXT_BUTTON_NAME))
-//				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_NEXT_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-//				.make();
-//	}
+	@Override
+	protected ItemStack getBackButton() {
+		return QuickItem
+				.of(Settings.GUI_BACK_BTN_ITEM.getString())
+				.name(Settings.GUI_BACK_BTN_NAME.getString())
+				.lore(Settings.GUI_BACK_BTN_LORE.getStringList())
+				.make();
+	}
+
+	@Override
+	protected ItemStack getExitButton() {
+		return QuickItem
+				.of(Settings.GUI_CLOSE_BTN_ITEM.getString())
+				.name(Settings.GUI_CLOSE_BTN_NAME.getString())
+				.lore(Settings.GUI_CLOSE_BTN_LORE.getStringList())
+				.make();
+	}
+
+	@Override
+	protected ItemStack getPreviousButton() {
+		return QuickItem
+				.of(Settings.GUI_PREV_PAGE_BTN_ITEM.getString())
+				.name(Settings.GUI_PREV_PAGE_BTN_NAME.getString())
+				.lore(Settings.GUI_PREV_PAGE_BTN_LORE.getStringList())
+				.make();
+	}
+
+	@Override
+	protected ItemStack getNextButton() {
+		return QuickItem
+				.of(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString())
+				.name(Settings.GUI_NEXT_PAGE_BTN_NAME.getString())
+				.lore(Settings.GUI_NEXT_PAGE_BTN_LORE.getStringList())
+				.make();
+	}
 
 	@Override
 	protected int getPreviousButtonSlot() {

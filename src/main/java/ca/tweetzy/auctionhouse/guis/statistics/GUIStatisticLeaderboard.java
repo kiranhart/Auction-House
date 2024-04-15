@@ -53,7 +53,7 @@ public final class GUIStatisticLeaderboard extends AbstractPlaceholderGui {
 		setAcceptsItems(false);
 		setAllowDrops(false);
 		setRows(6);
-		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
+		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF).parseSound());
 		draw();
 	}
 

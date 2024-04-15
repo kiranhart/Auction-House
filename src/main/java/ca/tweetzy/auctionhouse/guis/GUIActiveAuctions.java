@@ -60,7 +60,7 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 		setTitle(TextUtils.formatText(Settings.GUI_ACTIVE_AUCTIONS_TITLE.getString()));
 		setRows(6);
 		setAcceptsItems(false);
-		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF));
+		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF).parseSound());
 		draw();
 
 		if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
