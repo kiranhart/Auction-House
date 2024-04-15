@@ -20,16 +20,19 @@ package ca.tweetzy.auctionhouse.guis.admin;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionAdminLog;
-import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -37,41 +40,42 @@ import java.util.stream.Collectors;
  * Time Created: 2:11 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class GUIAdminLogs extends AbstractPlaceholderGui {
-
-	final List<AuctionAdminLog> logs;
+public final class GUIAdminLogs extends AuctionPagedGUI<AuctionAdminLog> {
 
 	public GUIAdminLogs(Player player, List<AuctionAdminLog> logs) {
-		super(player);
-		this.logs = logs;
-
-		setTitle(TextUtils.formatText(Settings.GUI_LOGS_TITLE.getString()));
-		setRows(6);
+		super(null, player, Settings.GUI_LOGS_TITLE.getString(), 6, logs);
 		setAcceptsItems(false);
 		draw();
 	}
 
-	private void draw() {
-		reset();
+	@Override
+	protected void drawFixed() {
+		applyBackExit();
+	}
 
-		pages = (int) Math.max(1, Math.ceil(this.logs.size() / (double) 45));
-		setPrevPage(5, 3, getPreviousPageItem());
-		setNextPage(5, 5, getNextPageItem());
-		setOnPage(e -> draw());
+	@Override
+	protected void prePopulate() {
+		this.items.sort(Comparator.comparingLong(AuctionAdminLog::getTime).reversed());
+	}
 
-		int slot = 0;
-		List<AuctionAdminLog> data = this.logs.stream().sorted(Comparator.comparingLong(AuctionAdminLog::getTime).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
+	@Override
+	protected ItemStack makeDisplayItem(AuctionAdminLog log) {
+		return QuickItem
+				.of(log.getItem())
+				.name(AuctionAPI.getInstance().getItemName(log.getItem()))
+				.lore(Replacer.replaceVariables(Settings.GUI_LOGS_LORE.getStringList(),
+						"admin", log.getAdminName(),
+						"target", log.getTargetName(),
+						"admin_uuid", log.getAdmin(),
+						"target_uuid", log.getTarget(),
+						"item_id", log.getItemId(),
+						"admin_action", log.getAdminAction().getTranslation(),
+						"admin_log_date", AuctionAPI.getInstance().convertMillisToDate(log.getTime())
+				)).make();
+	}
 
-		for (AuctionAdminLog log : data) {
-			setItem(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, log.getItem(), AuctionAPI.getInstance().getItemName(log.getItem()), Settings.GUI_LOGS_LORE.getStringList(), new HashMap<String, Object>() {{
-				put("%admin%", log.getAdminName());
-				put("%target%", log.getTargetName());
-				put("%admin_uuid%", log.getAdmin());
-				put("%target_uuid%", log.getTarget());
-				put("%item_id%", log.getItemId());
-				put("%admin_action%", log.getAdminAction().getTranslation());
-				put("%admin_log_date%", AuctionAPI.getInstance().convertMillisToDate(log.getTime()));
-			}}));
-		}
+	@Override
+	protected void onClick(AuctionAdminLog object, GuiClickEvent clickEvent) {
+
 	}
 }
