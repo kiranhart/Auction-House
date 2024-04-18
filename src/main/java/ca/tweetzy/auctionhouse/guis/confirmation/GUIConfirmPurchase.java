@@ -31,6 +31,7 @@ import ca.tweetzy.auctionhouse.exception.ItemNotFoundException;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.GUIContainerInspect;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -39,6 +40,7 @@ import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.nbtapi.NBT;
+import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
@@ -56,7 +58,7 @@ import java.util.UUID;
  * Time Created: 11:18 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIConfirmPurchase extends AbstractPlaceholderGui {
+public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 	final AuctionPlayer auctionPlayer;
 	final AuctionedItem auctionItem;
@@ -67,11 +69,10 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 	double pricePerItem = 0D;
 
 	public GUIConfirmPurchase(AuctionPlayer auctionPlayer, AuctionedItem auctionItem, boolean buyingSpecificQuantity) {
-		super(auctionPlayer);
+		super(null, auctionPlayer.getPlayer(), Settings.GUI_CONFIRM_BUY_TITLE.getString(), !buyingSpecificQuantity ? 1 : 5);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		this.buyingSpecificQuantity = buyingSpecificQuantity;
-		setTitle(TextUtils.formatText(Settings.GUI_CONFIRM_BUY_TITLE.getString()));
 		setAcceptsItems(false);
 
 		int preAmount = auctionItem.getItem().getAmount();
@@ -79,19 +80,15 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 			this.buyingSpecificQuantity = false;
 		}
 
-		setRows(!this.buyingSpecificQuantity ? 1 : 5);
-
 		if (this.buyingSpecificQuantity) {
 			setUseLockedCells(Settings.GUI_CONFIRM_FILL_BG_ON_QUANTITY.getBoolean());
-			setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_BG_ITEM.getString()));
+			setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_CONFIRM_BG_ITEM.getString()).make()));
 			this.purchaseQuantity = preAmount;
 			this.maxStackSize = preAmount;
 			this.pricePerItem = this.auctionItem.getBasePrice() / this.maxStackSize;
 		}
 
-		setOnOpen(open -> {
-			AuctionHouse.getInstance().getLogger().info("Added " + open.player.getName() + " to confirmation pre purchase");
-		});
+		setOnOpen(open -> AuctionHouse.getInstance().getLogger().info("Added " + open.player.getName() + " to confirmation pre purchase"));
 
 		setOnClose(close -> {
 			AuctionHouse.getInstance().getTransactionManager().getPrePurchaseHolding().remove(close.player);
@@ -102,7 +99,8 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 		draw();
 	}
 
-	private void draw() {
+	@Override
+	protected void draw() {
 		ItemStack deserializeItem = this.auctionItem.getItem().clone();
 		final boolean isRequest = this.auctionItem.isRequest();
 
@@ -371,5 +369,29 @@ public class GUIConfirmPurchase extends AbstractPlaceholderGui {
 		}});
 		stack.setAmount(qty);
 		return stack;
+	}
+
+	private ItemStack getIncreaseQtyButtonItem() {
+		return QuickItem.of(Settings.GUI_CONFIRM_INCREASE_QTY_ITEM.getString()).name(Settings.GUI_CONFIRM_INCREASE_QTY_NAME.getString()).lore(Settings.GUI_CONFIRM_INCREASE_QTY_LORE.getStringList()).make();
+	}
+
+	private ItemStack getDecreaseQtyButtonItem() {
+		return QuickItem.of(Settings.GUI_CONFIRM_DECREASE_QTY_ITEM.getString()).name(Settings.GUI_CONFIRM_DECREASE_QTY_NAME.getString()).lore(Settings.GUI_CONFIRM_DECREASE_QTY_LORE.getStringList()).make();
+	}
+
+	protected ItemStack getConfirmBuyYesItem() {
+		return  QuickItem.of(Settings.GUI_CONFIRM_BUY_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_YES_NAME.getString()).lore(Settings.GUI_CONFIRM_BUY_YES_LORE.getStringList()).make();
+	}
+
+	protected ItemStack getConfirmBuyNoItem() {
+		return  QuickItem.of(Settings.GUI_CONFIRM_BUY_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_NO_NAME.getString()).lore(Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList()).make();
+	}
+
+	protected ItemStack getConfirmRequestYesItem() {
+		return  QuickItem.of(Settings.GUI_CONFIRM_REQUEST_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_YES_NAME.getString()).lore(Settings.GUI_CONFIRM_REQUEST_YES_LORE.getStringList()).make();
+	}
+
+	protected ItemStack getConfirmRequestNoItem() {
+		return  QuickItem.of(Settings.GUI_CONFIRM_REQUEST_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_NO_NAME.getString()).lore(Settings.GUI_CONFIRM_REQUEST_NO_LORE.getStringList()).make();
 	}
 }

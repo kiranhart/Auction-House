@@ -23,13 +23,18 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
+import ca.tweetzy.auctionhouse.guis.GUIActiveAuctions;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
+import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashSet;
@@ -37,7 +42,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public final class GUIListingConfirm extends AbstractPlaceholderGui {
+public final class GUIListingConfirm extends AuctionBaseGUI {
 
 	private final AuctionedItem auctionedItem;
 	private final Consumer<Boolean> result;
@@ -45,10 +50,9 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 	private final Set<UUID> resulted = new HashSet<>();
 
 	public GUIListingConfirm(Player player, AuctionedItem auctionedItem, Consumer<Boolean> result) {
-		super(player);
+		super(null, player, Settings.GUI_CONFIRM_LISTING_TITLE.getString(), 1);
 		this.auctionedItem = auctionedItem;
 		this.result = result;
-		super.setTitle(TextUtils.formatText(Settings.GUI_CONFIRM_LISTING_TITLE.getString()));
 		setAcceptsItems(false);
 		setAllowClose(false);
 		setOnOpen(open -> {
@@ -76,35 +80,50 @@ public final class GUIListingConfirm extends AbstractPlaceholderGui {
 			close.player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
 			AuctionHouse.getInstance().getAuctionPlayerManager().processSell(close.player);
 		});
-
-		setRows(1);
 		draw();
 	}
 
+	@Override
+	protected void draw() {
+		for (int i = 0; i < 4; i++)
+			drawYes(i);
 
-	private void draw() {
-		setItems(0, 3, getConfirmListingYesItem());
 		setItem(0, 4, this.auctionedItem.getDisplayStack(AuctionStackType.LISTING_PREVIEW));
-		setItems(5, 8, getConfirmListingNoItem());
 
-		setActionForRange(5, 8, ClickType.LEFT, e -> {
-			if (resulted.contains(e.player.getUniqueId())) return;
-			resulted.add(e.player.getUniqueId());
+		for (int i = 5; i < 8; i++)
+			drawNo(i);
+	}
+
+
+	private void drawNo(int slot) {
+		setButton(slot, QuickItem
+				.of(Settings.GUI_CONFIRM_LISTING_NO_ITEM.getString())
+				.name(Settings.GUI_CONFIRM_LISTING_NO_NAME.getString())
+				.lore(Settings.GUI_CONFIRM_LISTING_NO_LORE.getStringList())
+				.make(), click -> {
+
+			if (resulted.contains(click.player.getUniqueId())) return;
+			resulted.add(click.player.getUniqueId());
 
 			setAllowClose(true);
-			final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId());
+			final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(click.player.getUniqueId());
 			this.result.accept(false);
 			auctionPlayer.setItemBeingListed(XMaterial.AIR.parseItem());
 		});
+	}
 
+	private void drawYes(int slot) {
+		setButton(slot, QuickItem
+				.of(Settings.GUI_CONFIRM_LISTING_YES_ITEM.getString())
+				.name(Settings.GUI_CONFIRM_LISTING_YES_NAME.getString())
+				.lore(Settings.GUI_CONFIRM_LISTING_YES_LORE.getStringList())
+				.make(), click -> {
 
-		setActionForRange(0, 3, ClickType.LEFT, e -> {
-			if (resulted.contains(e.player.getUniqueId())) return;
-			resulted.add(e.player.getUniqueId());
+			if (resulted.contains(click.player.getUniqueId())) return;
+			resulted.add(click.player.getUniqueId());
 
 			setAllowClose(true);
 			this.result.accept(true);
 		});
 	}
-
 }

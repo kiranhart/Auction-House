@@ -25,14 +25,13 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
-import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIActiveAuctions;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.event.inventory.ClickType;
 
 /**
  * The current file has been created by Kiran Hart
@@ -40,32 +39,50 @@ import org.bukkit.event.inventory.ClickType;
  * Time Created: 11:28 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIConfirmCancel extends AbstractPlaceholderGui {
+public class GUIConfirmCancel extends AuctionBaseGUI {
 
 	final AuctionPlayer auctionPlayer;
 	final AuctionedItem auctionItem;
 
 	public GUIConfirmCancel(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
-		super(auctionPlayer);
+		super(null, auctionPlayer.getPlayer(), Settings.GUI_CONFIRM_CANCEL_TITLE.getString(), 1);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
-		setTitle(TextUtils.formatText(Settings.GUI_CONFIRM_CANCEL_TITLE.getString()));
 		setAcceptsItems(false);
-		setRows(1);
 		draw();
 	}
 
-	private void draw() {
-		setItems(0, 3, getConfirmCancelYesItem());
-		setItem(0, 4, this.auctionItem.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST));
-		setItems(5, 8, getConfirmCancelNoItem());
 
-		setActionForRange(5, 8, ClickType.LEFT, e -> e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer)));
-		setActionForRange(0, 3, ClickType.LEFT, e -> {
+	@Override
+	protected void draw() {
+		for (int i = 0; i < 4; i++)
+			drawYes(i);
+
+		setItem(0, 4, this.auctionItem.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST));
+
+		for (int i = 5; i < 8; i++)
+			drawNo(i);
+	}
+
+	private void drawNo(int slot) {
+		setButton(slot, QuickItem
+				.of(Settings.GUI_CONFIRM_CANCEL_NO_ITEM.getString())
+				.name(Settings.GUI_CONFIRM_CANCEL_NO_NAME.getString())
+				.lore(Settings.GUI_CONFIRM_CANCEL_NO_LORE.getStringList())
+				.make(), click -> click.manager.showGUI(click.player, new GUIActiveAuctions(this.auctionPlayer)));
+	}
+
+	private void drawYes(int slot) {
+		setButton(slot, QuickItem
+				.of(Settings.GUI_CONFIRM_CANCEL_YES_ITEM.getString())
+				.name(Settings.GUI_CONFIRM_CANCEL_YES_NAME.getString())
+				.lore(Settings.GUI_CONFIRM_CANCEL_YES_LORE.getStringList())
+				.make(), click -> {
+
 			// Re-select the item to ensure that it's available
 			AuctionedItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getId());
 			if (located == null) {
-				e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
+				click.manager.showGUI(click.player, new GUIActiveAuctions(this.auctionPlayer));
 				return;
 			}
 
@@ -91,8 +108,7 @@ public class GUIConfirmCancel extends AbstractPlaceholderGui {
 
 			}
 
-
-			e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
+			click.manager.showGUI(click.player, new GUIActiveAuctions(this.auctionPlayer));
 		});
 	}
 }
