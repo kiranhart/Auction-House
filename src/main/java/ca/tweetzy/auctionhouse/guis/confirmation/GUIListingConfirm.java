@@ -90,7 +90,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 
 		setItem(0, 4, this.auctionedItem.getDisplayStack(AuctionStackType.LISTING_PREVIEW));
 
-		for (int i = 5; i < 8; i++)
+		for (int i = 5; i < 9; i++)
 			drawNo(i);
 	}
 

@@ -73,7 +73,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 		for (int i = 0; i < 4; i++)
 			drawYes(i);
 
-		for (int i = 5; i < 8; i++)
+		for (int i = 5; i < 9; i++)
 			drawNo(i);
 	}
 

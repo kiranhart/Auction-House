@@ -78,53 +78,5 @@ public abstract class AbstractPlaceholderGui extends Gui {
 		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null);
 	}
 
-	protected ItemStack getIncreaseQtyButtonItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_INCREASE_QTY_ITEM.getString(), Settings.GUI_CONFIRM_INCREASE_QTY_NAME.getString(), Settings.GUI_CONFIRM_INCREASE_QTY_LORE.getStringList(), null);
-	}
-
-	protected ItemStack getDecreaseQtyButtonItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_DECREASE_QTY_ITEM.getString(), Settings.GUI_CONFIRM_DECREASE_QTY_NAME.getString(), Settings.GUI_CONFIRM_DECREASE_QTY_LORE.getStringList(), null);
-	}
-
 	// confirms
-	protected ItemStack getConfirmCancelYesItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_CANCEL_YES_ITEM.getString(), Settings.GUI_CONFIRM_CANCEL_YES_NAME.getString(), Settings.GUI_CONFIRM_CANCEL_YES_LORE.getStringList(), null);
-	}
-
-	protected ItemStack getConfirmCancelNoItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_CANCEL_NO_ITEM.getString(), Settings.GUI_CONFIRM_CANCEL_NO_NAME.getString(), Settings.GUI_CONFIRM_CANCEL_NO_LORE.getStringList(), null);
-	}
-
-	protected ItemStack getConfirmBuyYesItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_BUY_YES_ITEM.getString(), Settings.GUI_CONFIRM_BUY_YES_NAME.getString(), Settings.GUI_CONFIRM_BUY_YES_LORE.getStringList(), null);
-	}
-
-	protected ItemStack getConfirmBuyNoItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_BUY_NO_ITEM.getString(), Settings.GUI_CONFIRM_BUY_NO_NAME.getString(), Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList(), null);
-	}
-
-	protected ItemStack getConfirmRequestYesItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_REQUEST_YES_ITEM.getString(), Settings.GUI_CONFIRM_REQUEST_YES_NAME.getString(), Settings.GUI_CONFIRM_REQUEST_YES_LORE.getStringList(), null);
-	}
-
-	protected ItemStack getConfirmRequestNoItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_REQUEST_NO_ITEM.getString(), Settings.GUI_CONFIRM_REQUEST_NO_NAME.getString(), Settings.GUI_CONFIRM_REQUEST_NO_LORE.getStringList(), null);
-	}
-
-
-	protected ItemStack getConfirmListingYesItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_LISTING_YES_ITEM.getString(), Settings.GUI_CONFIRM_LISTING_YES_NAME.getString(), Settings.GUI_CONFIRM_LISTING_YES_LORE.getStringList(), null);
-	}
-
-	protected ItemStack getConfirmListingNoItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_LISTING_NO_ITEM.getString(), Settings.GUI_CONFIRM_LISTING_NO_NAME.getString(), Settings.GUI_CONFIRM_LISTING_NO_LORE.getStringList(), null);
-	}
-
-	protected ItemStack getConfirmBidYesItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_BID_YES_ITEM.getString(), Settings.GUI_CONFIRM_BID_YES_NAME.getString(), Settings.GUI_CONFIRM_BID_YES_LORE.getStringList(), null);
-	}
-
-	protected ItemStack getConfirmBidNoItem() {
-		return ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_BID_NO_ITEM.getString(), Settings.GUI_CONFIRM_BID_NO_NAME.getString(), Settings.GUI_CONFIRM_BID_NO_LORE.getStringList(), null);
-	}
 }

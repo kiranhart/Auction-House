@@ -84,7 +84,7 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	protected void cancelTask() {
 		if (this.task != null) {
 			this.task.cancel();
-			Common.log("Cancelled updating task in menu");
+			Bukkit.getServer().getConsoleSender().sendMessage("Cancelled updating task in menu");
 		}
 	}
 

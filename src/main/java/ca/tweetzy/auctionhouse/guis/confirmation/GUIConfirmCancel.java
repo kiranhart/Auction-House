@@ -60,7 +60,7 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 
 		setItem(0, 4, this.auctionItem.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST));
 
-		for (int i = 5; i < 8; i++)
+		for (int i = 5; i < 9; i++)
 			drawNo(i);
 	}
 
