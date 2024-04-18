@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.guis.abstraction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.BaseGUI;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
@@ -59,8 +60,8 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	@Override
 	protected void draw() {
 		reset();
-		drawFixed();
 		populateItems();
+		drawFixed();
 	}
 
 	protected void startTask() {
@@ -116,55 +117,49 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 
 	protected abstract void onClick(final T object, final GuiClickEvent clickEvent);
 
+	@Override
+	protected ItemStack getBackButton() {
+		return QuickItem
+				.of(Settings.GUI_BACK_BTN_ITEM.getString())
+				.name(Settings.GUI_BACK_BTN_NAME.getString())
+				.lore(Settings.GUI_BACK_BTN_LORE.getStringList())
+				.make();
+	}
+
+	@Override
+	protected ItemStack getExitButton() {
+		return QuickItem
+				.of(Settings.GUI_CLOSE_BTN_ITEM.getString())
+				.name(Settings.GUI_CLOSE_BTN_NAME.getString())
+				.lore(Settings.GUI_CLOSE_BTN_LORE.getStringList())
+				.make();
+	}
+
+	@Override
 	protected ItemStack getPreviousButton() {
-		return QuickItem.of(CompMaterial.ARROW, "&ePrevious").make();
+		return QuickItem
+				.of(Settings.GUI_PREV_PAGE_BTN_ITEM.getString())
+				.name(Settings.GUI_PREV_PAGE_BTN_NAME.getString())
+				.lore(Settings.GUI_PREV_PAGE_BTN_LORE.getStringList())
+				.make();
 	}
 
+	@Override
 	protected ItemStack getNextButton() {
-		return QuickItem.of(CompMaterial.ARROW, "&eNext").make();
+		return QuickItem
+				.of(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString())
+				.name(Settings.GUI_NEXT_PAGE_BTN_NAME.getString())
+				.lore(Settings.GUI_NEXT_PAGE_BTN_LORE.getStringList())
+				.make();
 	}
 
+	@Override
 	protected int getPreviousButtonSlot() {
 		return 48;
 	}
 
+	@Override
 	protected int getNextButtonSlot() {
 		return 50;
 	}
-
-	//	@Override
-//	protected ItemStack getBackButton() {
-//		return QuickItem
-//				.of(Settings.GUI_SHARED_ITEMS_BACK_BUTTON.getItemStack())
-//				.name(TranslationManager.string(this.player, Translations.GUI_SHARED_ITEMS_BACK_BUTTON_NAME))
-//				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_BACK_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-//				.make();
-//	}
-//
-//	@Override
-//	protected ItemStack getExitButton() {
-//		return QuickItem
-//				.of(Settings.GUI_SHARED_ITEMS_EXIT_BUTTON.getItemStack())
-//				.name(TranslationManager.string(this.player, Translations.GUI_SHARED_ITEMS_EXIT_BUTTON_NAME))
-//				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_EXIT_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-//				.make();
-//	}
-//
-//	@Override
-//	protected ItemStack getPreviousPageButton() {
-//		return QuickItem
-//				.of(Settings.GUI_SHARED_ITEMS_PREVIOUS_BUTTON.getItemStack())
-//				.name(TranslationManager.string(this.player, Translations.GUI_SHARED_ITEMS_PREVIOUS_BUTTON_NAME))
-//				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_PREVIOUS_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-//				.make();
-//	}
-//
-//	@Override
-//	protected ItemStack getNextPageButton() {
-//		return QuickItem
-//				.of(Settings.GUI_SHARED_ITEMS_NEXT_BUTTON.getItemStack())
-//				.name(TranslationManager.string(this.player, Translations.GUI_SHARED_ITEMS_NEXT_BUTTON_NAME))
-//				.lore(TranslationManager.list(this.player, Translations.GUI_SHARED_ITEMS_NEXT_BUTTON_LORE, "left_click", TranslationManager.string(this.player, Translations.MOUSE_LEFT_CLICK)))
-//				.make();
-//	}
 }
