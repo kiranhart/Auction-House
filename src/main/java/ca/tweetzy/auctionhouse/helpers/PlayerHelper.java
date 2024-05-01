@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.helpers;
 
-import ca.tweetzy.core.compatibility.ServerVersion;
+import ca.tweetzy.flight.comp.enums.ServerVersion;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

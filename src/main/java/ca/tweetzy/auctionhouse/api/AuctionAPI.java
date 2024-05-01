@@ -24,10 +24,9 @@ import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.hooks.EconomyManager;
-import ca.tweetzy.core.utils.items.ItemUtils;
+import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -598,7 +597,6 @@ public class AuctionAPI {
 			nbt.setItemStackArray("AuctionBundleItems", items);
 		});
 
-		ItemUtils.addGlow(item);
 		return item;
 	}
 

@@ -35,7 +35,6 @@ import ca.tweetzy.core.TweetyCore;
 import ca.tweetzy.core.TweetyPlugin;
 import ca.tweetzy.core.commands.CommandManager;
 import ca.tweetzy.core.compatibility.ServerProject;
-import ca.tweetzy.core.compatibility.ServerVersion;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.database.DataMigrationManager;
 import ca.tweetzy.core.database.DatabaseConnector;
@@ -47,6 +46,7 @@ import ca.tweetzy.core.hooks.PluginHook;
 import ca.tweetzy.core.hooks.economies.Economy;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.comp.enums.ServerVersion;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
@@ -54,6 +54,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -132,7 +133,6 @@ public class AuctionHouse extends TweetyPlugin {
 	public void onPluginEnable() {
 		TweetyCore.registerPlugin(this, 1, "CHEST");
 
-		// Check server version
 		if (ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_7)) {
 			getServer().getPluginManager().disablePlugin(this);
 			return;
@@ -298,9 +298,10 @@ public class AuctionHouse extends TweetyPlugin {
 		);
 
 		// Placeholder API
-		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+		final Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
+		if (papi != null && papi.isEnabled())
 			new PlaceholderAPIHook(this).register();
-		}
+
 
 		// start the auction tick task
 		TickAuctionsTask.startTask();
@@ -324,9 +325,9 @@ public class AuctionHouse extends TweetyPlugin {
 				getLogger().severe("You will not receive any support while using a non-supported jar, support jars: Spigot or Paper");
 			}
 
-			if (ServerVersion.isServerVersionBelow(ServerVersion.V1_16)) {
-				getLogger().severe("You are receiving this message because you're running Auction House on a Minecraft version older than 1.16. As a heads up, Auction House 3.0 is going to be for 1.16+ only");
-			}
+//			if (ServerVersion.isServerVersionBelow(ServerVersion.V1_16)) {
+//				getLogger().severe("You are receiving this message because you're running Auction House on a Minecraft version older than 1.16. As a heads up, Auction House 3.0 is going to be for 1.16+ only");
+//			}
 
 			if (!ServerProject.isServer(ServerProject.PAPER, ServerProject.SPIGOT)) {
 				getLogger().warning("You're running Auction House on a non supported server jar, although small, there's a chance somethings will not work or just entirely break.");
