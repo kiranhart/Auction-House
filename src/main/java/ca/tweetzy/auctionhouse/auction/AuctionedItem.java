@@ -27,10 +27,12 @@ import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
+import ca.tweetzy.flight.nbtapi.NBT;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -307,6 +309,15 @@ public class AuctionedItem {
 		meta.setLore(lore);
 		itemStack.setItemMeta(meta);
 		return itemStack;
+	}
+
+	public ItemStack getCleanItem() {
+		ItemStack cleaned = this.item.clone();
+		NBT.modify(cleaned, nbt -> {
+			nbt.removeKey("AuctionDupeTracking");
+		});
+
+		return cleaned;
 	}
 
 	public boolean containsValidBid() {

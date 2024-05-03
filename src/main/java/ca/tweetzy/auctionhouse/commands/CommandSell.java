@@ -30,10 +30,7 @@ import ca.tweetzy.auctionhouse.guis.GUIBundleCreation;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellListingType;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
-import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
-import ca.tweetzy.auctionhouse.helpers.BundleUtil;
-import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
-import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
+import ca.tweetzy.auctionhouse.helpers.*;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
@@ -125,6 +122,12 @@ public final class CommandSell extends AbstractCommand {
 
 		if (itemToSell.getType() == XMaterial.AIR.parseMaterial()) {
 			instance.getLocale().getMessage("general.air").sendPrefixedMessage(player);
+			return ReturnType.FAILURE;
+		}
+
+		// check if item has dt key
+		if(Validate.hasDTKey(originalItem)) {
+			Bukkit.broadcastMessage("has dupe item");
 			return ReturnType.FAILURE;
 		}
 
@@ -324,7 +327,7 @@ public final class CommandSell extends AbstractCommand {
 		// SCUFFED SHIT
 		if (!auctionedItem.isRequest())
 			NBT.modify(itemToSell, nbt -> {
-				nbt.setBoolean("AuctionDupeTracking", true);
+				nbt.setUUID("AuctionDupeTracking", auctionedItem.getId());
 			});
 
 		auctionedItem.setItem(itemToSell);
@@ -364,7 +367,7 @@ public final class CommandSell extends AbstractCommand {
 					AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
 
 					player.closeInventory();
-					PlayerUtils.giveItem(player, auctionedItem.getItem());
+					PlayerUtils.giveItem(player, auctionedItem.getCleanItem());
 					auctionPlayer.setItemBeingListed(null);
 					return;
 				}
@@ -382,7 +385,7 @@ public final class CommandSell extends AbstractCommand {
 						AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
 
 						if (listingResult != ListingResult.SUCCESS) {
-							PlayerUtils.giveItem(player, auction.getItem());
+							PlayerUtils.giveItem(player, auction.getCleanItem());
 							auctionPlayer.setItemBeingListed(null);
 							return;
 						}
@@ -402,7 +405,6 @@ public final class CommandSell extends AbstractCommand {
 				 */
 			}));
 		} else {
-//			Bukkit.getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
 			if (auctionPlayer.getPlayer() == null || !auctionPlayer.getPlayer().isOnline()) {
 				return ReturnType.FAILURE;
 			}
@@ -424,8 +426,6 @@ public final class CommandSell extends AbstractCommand {
 				} else
 					AuctionHouse.newChain().sync(player::closeInventory).execute();
 			});
-
-//			}, Settings.INTERNAL_CREATE_DELAY.getInt());
 
 		}
 

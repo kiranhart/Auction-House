@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.helpers.UpdateChecker;
+import ca.tweetzy.auctionhouse.helpers.Validate;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -32,27 +33,30 @@ import ca.tweetzy.flight.comp.Titles;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -97,9 +101,9 @@ public class PlayerListeners implements Listener {
 		for (ItemStack item : player.getInventory().getStorageContents()) {
 			if (item == null || item.getType() == XMaterial.AIR.parseMaterial() || item.getAmount() == 0) continue;
 
-			final boolean inventoryContainsListedItem = NBT.get(item, nbt -> (boolean) nbt.getBoolean("AuctionDupeTracking"));
+			final UUID auctionItemId = NBT.get(item, nbt -> (UUID) nbt.getUUID("AuctionDupeTracking"));
 
-			if (inventoryContainsListedItem) {
+			if (AuctionHouse.getInstance().getAuctionItemManager().getItem(auctionItemId) != null) {
 				player.getInventory().remove(item);
 				Bukkit.getServer().getConsoleSender().sendMessage(Common.colorize("&8[&eAuctionHouse&8] &CRemoving duped item from " + player.getName() + "'s inventory!"));
 			}
@@ -213,5 +217,57 @@ public class PlayerListeners implements Listener {
 		});
 
 		event.setResult(stack);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onInteract(PlayerInteractEvent event) {
+		final Player player = event.getPlayer();
+		final ItemStack item = PlayerUtil.getHand(player);
+
+		if (Validate.hasDTKey(item)) {
+			event.setCancelled(true);
+			clearHand(player);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onAuctionItemDrop(PlayerDropItemEvent event) {
+		final Item item = event.getItemDrop();
+		final ItemStack itemStack = item.getItemStack();
+
+		if (Validate.hasDTKey(itemStack))
+			item.remove();
+
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onAuctionItemPlace(BlockPlaceEvent event) {
+		final Player player = event.getPlayer();
+		final ItemStack item = event.getItemInHand();
+
+		if (Validate.hasDTKey(item)) {
+			event.setCancelled(true);
+			clearHand(player);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onAuctionItemPickup(PlayerPickupItemEvent event) {
+		final Player player = event.getPlayer();
+		final Item item = event.getItem();
+		final ItemStack itemStack = item.getItemStack();
+
+		if (Validate.hasDTKey(itemStack)) {
+			event.setCancelled(true);
+			clearHand(player);
+		}
+	}
+
+	private void clearHand(Player player) {
+		if (ServerVersion.isServerVersionAbove(ServerVersion.V1_8)) {
+			player.getInventory().setItemInMainHand(XMaterial.AIR.parseItem());
+		} else {
+			player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+		}
 	}
 }

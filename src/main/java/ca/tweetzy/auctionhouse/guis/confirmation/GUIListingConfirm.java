@@ -32,6 +32,7 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.utils.QuickItem;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -67,15 +68,16 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 		setOnClose(close -> {
 			final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(close.player.getUniqueId());
 
-			if (!this.resulted.contains(close.player.getUniqueId()))
+			if (!this.resulted.contains(close.player.getUniqueId())) {
 				if (auctionPlayer.getItemBeingListed() != null) {
-					if (BundleUtil.isBundledItem(auctionedItem.getItem())) PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(auctionedItem.getItem()));
+					if (BundleUtil.isBundledItem(auctionedItem.getItem())) PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(auctionedItem.getCleanItem()));
 					else {
-						PlayerUtils.giveItem(close.player, auctionedItem.getItem());
+						PlayerUtils.giveItem(close.player, auctionedItem.getCleanItem());
 					}
 
 					auctionPlayer.setItemBeingListed(null);
 				}
+			}
 
 			close.player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
 			AuctionHouse.getInstance().getAuctionPlayerManager().processSell(close.player);
