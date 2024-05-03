@@ -21,43 +21,32 @@ package ca.tweetzy.auctionhouse.guis.statistics;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
-import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.utils.QuickItem;
 
-public final class GUIStatisticViewSelect extends AbstractPlaceholderGui {
+public final class GUIStatisticViewSelect extends AuctionBaseGUI {
 
 	private final AuctionPlayer auctionPlayer;
 
 	public GUIStatisticViewSelect(AuctionPlayer player) {
-		super(player);
+		super(null, player.getPlayer(), Settings.GUI_STATS_VIEW_SELECT_TITLE.getString(), 3);
 		this.auctionPlayer = player;
-		setTitle(Settings.GUI_STATS_VIEW_SELECT_TITLE.getString());
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_STATS_VIEW_SELECT_BG_ITEM.getString()));
-		setUseLockedCells(true);
-		setAcceptsItems(false);
-		setAllowDrops(false);
-		setRows(3);
+		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_STATS_VIEW_SELECT_BG_ITEM.getString()).make()));
 		draw();
 	}
 
-	private void draw() {
-
+	@Override
+	protected void draw() {
 		// self
-		setButton(1, 2, ConfigurationItemHelper.createConfigurationItem(this.player,
-				Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_USE_HEAD.getBoolean() ?
-						AuctionAPI.getInstance().getPlayerHead(this.player.getName()) : XMaterial.matchXMaterial(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_ITEM.getString()).orElse(XMaterial.STONE).parseItem(),
-				Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_NAME.getString(),
-				Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_LORE.getStringList(),
-				null
-		), click -> click.manager.showGUI(click.player, new GUIStatisticSelf(this.auctionPlayer)));
+		setButton(1, 2, QuickItem.of(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_USE_HEAD.getBoolean() ? AuctionAPI.getInstance().getPlayerHead(this.player.getName()) : QuickItem.of(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_ITEM.getString()).make())
+				.name(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_NAME.getString())
+				.lore(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_LORE.getStringList())
+				.make(), click -> click.manager.showGUI(click.player, new GUIStatisticView(this.auctionPlayer, this.auctionPlayer)));
 
-		setButton(1, 6, ConfigurationItemHelper.createConfigurationItem(this.player,
-				XMaterial.matchXMaterial(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_ITEM.getString()).orElse(XMaterial.STONE).parseItem(),
-				Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_NAME.getString(),
-				Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_LORE.getStringList(),
-				null
-		), click -> click.manager.showGUI(click.player, new GUIStatisticLeaderboard(this.auctionPlayer, AuctionStatisticType.MONEY_EARNED)));
+		setButton(1, 6, QuickItem.of(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_ITEM.getString())
+				.name(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_NAME.getString())
+				.lore(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_LORE.getStringList())
+				.make(), click -> click.manager.showGUI(click.player, new GUIStatisticLeaderboard(this.auctionPlayer, AuctionStatisticType.MONEY_EARNED)));
 	}
 }
