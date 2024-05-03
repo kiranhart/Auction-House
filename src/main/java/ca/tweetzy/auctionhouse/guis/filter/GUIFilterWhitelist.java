@@ -19,10 +19,9 @@
 package ca.tweetzy.auctionhouse.guis.filter;
 
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
-import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.entity.Player;
 
 /**
@@ -31,54 +30,53 @@ import org.bukkit.entity.Player;
  * Time Created: 3:14 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIFilterWhitelist extends AbstractPlaceholderGui {
+public class GUIFilterWhitelist extends AuctionBaseGUI {
 
 	public GUIFilterWhitelist(Player player) {
-		super(player);
-		setTitle(TextUtils.formatText(Settings.GUI_FILTER_WHITELIST_TITLE.getString()));
-		setRows(6);
-		setAcceptsItems(false);
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_BG_ITEM.getString()));
-		setUseLockedCells(true);
+		super(null, player, Settings.GUI_FILTER_WHITELIST_TITLE.getString(), 6);
+		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILTER_WHITELIST_BG_ITEM.getString()).make()));
 		draw();
 	}
 
-	private void draw() {
-		setButton(2, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_BLOCKS_ITEM.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_BLOCKS_NAME.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_BLOCKS_LORE.getStringList(), null), e -> {
+	@Override
+	protected void draw() {
+		applyBackExit();
+
+		setButton(1, 1, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_BLOCKS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_BLOCKS_NAME.getString()).lore(Settings.GUI_FILTER_WHITELIST_ITEMS_BLOCKS_LORE.getStringList()).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.BLOCKS));
 		});
 
-		setButton(2, 3, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_FOOD_ITEM.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_FOOD_NAME.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_FOOD_LORE.getStringList(), null), e -> {
+		setButton(1, 3, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_FOOD_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_FOOD_NAME.getString()).lore(Settings.GUI_FILTER_WHITELIST_ITEMS_FOOD_LORE.getStringList()).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.FOOD));
 		});
 
-		setButton(2, 5, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_ARMOR_ITEM.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_ARMOR_NAME.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_ARMOR_LORE.getStringList(), null), e -> {
+		setButton(1, 5, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_ARMOR_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_ARMOR_NAME.getString()).lore(Settings.GUI_FILTER_WHITELIST_ITEMS_ARMOR_LORE.getStringList()).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.ARMOR));
 		});
 
-		setButton(2, 7, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_TOOLS_ITEM.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_TOOLS_NAME.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_TOOLS_LORE.getStringList(), null), e -> {
+		setButton(1, 7, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_TOOLS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_TOOLS_NAME.getString()).lore(Settings.GUI_FILTER_WHITELIST_ITEMS_TOOLS_LORE.getStringList()).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.TOOLS));
 		});
 
 		// 2ND ROW STARTS
 
-		setButton(3, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_ITEM.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_NAME.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_LORE.getStringList(), null), e -> {
+		setButton(2, 1, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_NAME.getString()).lore(Settings.GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_LORE.getStringList()).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.SPAWNERS));
 		});
 
-		setButton(3, 3, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_ITEM.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_NAME.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_LORE.getStringList(), null), e -> {
+		setButton(2, 3, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_NAME.getString()).lore(Settings.GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_LORE.getStringList()).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.ENCHANTS));
 		});
 
-		setButton(3, 5, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_WEAPONS_ITEM.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_WEAPONS_NAME.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_WEAPONS_LORE.getStringList(), null), e -> {
+		setButton(2, 5, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_WEAPONS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_WEAPONS_NAME.getString()).lore(Settings.GUI_FILTER_WHITELIST_ITEMS_WEAPONS_LORE.getStringList()).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.WEAPONS));
 		});
 
-		setButton(3, 7, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_ITEM.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_NAME.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_LORE.getStringList(), null), e -> {
+		setButton(2, 7, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_NAME.getString()).lore(Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_LORE.getStringList()).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.MISC));
 		});
 
-		setButton(4, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_ITEM.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_NAME.getString(), Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_LORE.getStringList(), null), e -> {
+		setButton(3, 1, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_NAME.getString()).lore(Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_LORE.getStringList()).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.POTIONS));
 		});
 

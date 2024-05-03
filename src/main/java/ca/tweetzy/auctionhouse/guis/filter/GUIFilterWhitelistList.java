@@ -21,14 +21,17 @@ package ca.tweetzy.auctionhouse.guis.filter;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
-import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.gui.helper.InventoryBorder;
+import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,46 +41,41 @@ import java.util.stream.Collectors;
  * Time Created: 4:06 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIFilterWhitelistList extends AbstractPlaceholderGui {
+public class GUIFilterWhitelistList extends AuctionPagedGUI<AuctionFilterItem> {
 
 	final AuctionItemCategory filerCategory;
-	List<AuctionFilterItem> items;
 
 	public GUIFilterWhitelistList(Player player, AuctionItemCategory filerCategory) {
-		super(player);
+		super(new GUIFilterWhitelist(player), player, TextUtils.formatText(Settings.GUI_FILTER_WHITELIST_LIST_TITLE.getString().replace("%filter_category%", filerCategory.getTranslatedType())), 6, new ArrayList<>(AuctionHouse.getInstance().getFilterManager().getFilterWhitelist()));
 		this.filerCategory = filerCategory;
-		setTitle(TextUtils.formatText(Settings.GUI_FILTER_WHITELIST_LIST_TITLE.getString().replace("%filter_category%", filerCategory.getTranslatedType())));
-		setRows(6);
-		setAcceptsItems(false);
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILTER_WHITELIST_LIST_BG_ITEM.getString()));
+		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILTER_WHITELIST_LIST_BG_ITEM.getString()).make()));
 		setUseLockedCells(true);
 		draw();
-
-		setOnClose(close -> close.manager.showGUI(close.player, new GUIFilterWhitelist(close.player)));
 	}
 
-	private void draw() {
-		reset();
-		setPrevPage(5, 3, getPreviousPageItem());
-		setButton(5, 4, getCloseButtonItem(), e -> e.manager.showGUI(e.player, new GUIFilterWhitelist(e.player)));
-		setNextPage(5, 5, getNextPageItem());
-		setOnPage(e -> draw());
+	@Override
+	protected void prePopulate() {
+		this.items = this.items.stream().filter(item -> item.getCategory() == this.filerCategory).collect(Collectors.toList());
+	}
 
-		AuctionHouse.newChain().asyncFirst(() -> {
-			this.items = AuctionHouse.getInstance().getFilterManager().getFilterWhitelist().stream().filter(item -> item.getCategory() == filerCategory).collect(Collectors.toList());
-			return this.items.stream().skip((page - 1) * 28L).limit(28L).collect(Collectors.toList());
-		}).asyncLast((data) -> {
-			pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 28L));
-			int slot = 10;
-			for (AuctionFilterItem item : data) {
-				setButton(slot, item.getItemStack(), ClickType.RIGHT, e -> {
-					AuctionHouse.getInstance().getFilterManager().removeFilterItem(item);
-					draw();
-				});
+	@Override
+	protected void drawFixed() {
+		applyBackExit();
+	}
 
-				slot = Arrays.asList(16, 25, 34).contains(slot) ? slot + 3 : slot + 1;
-			}
-		}).execute();
+	@Override
+	protected ItemStack makeDisplayItem(AuctionFilterItem filterItem) {
+		return filterItem.getItemStack();
+	}
 
+	@Override
+	protected void onClick(AuctionFilterItem filterItem, GuiClickEvent click) {
+		AuctionHouse.getInstance().getFilterManager().removeFilterItem(filterItem);
+		click.manager.showGUI(click.player, new GUIFilterWhitelistList(click.player, this.filerCategory));
+	}
+
+	@Override
+	protected List<Integer> fillSlots() {
+		return InventoryBorder.getInsideBorders(6);
 	}
 }
