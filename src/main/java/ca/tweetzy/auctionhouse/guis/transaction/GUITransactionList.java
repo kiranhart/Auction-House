@@ -140,7 +140,17 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 					put("%buyer%", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName());
 					put("%date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
 					put("%item_name%", AuctionAPI.getInstance().getItemName(item));
-				}}), e -> e.manager.showGUI(e.player, new GUITransactionView(this.auctionPlayer, transaction, this.showAll)));
+				}}), e -> {
+
+					if (e.clickType == ClickType.DROP && (player.isOp() || player.hasPermission("auctionhouse.admin"))) {
+						AuctionHouse.getInstance().getDataManager().deleteTransactions(Collections.singleton(transaction.getId()));
+						AuctionHouse.getInstance().getTransactionManager().removeTransaction(transaction.getId());
+						e.manager.showGUI(e.player, new GUITransactionList(this.player, this.showAll));
+					}
+
+					if (e.clickType == ClickType.LEFT)
+						e.manager.showGUI(e.player, new GUITransactionView(this.auctionPlayer, transaction, this.showAll));
+				});
 			}
 
 		}).execute();
