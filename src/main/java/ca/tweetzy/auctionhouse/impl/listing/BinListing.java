@@ -204,34 +204,4 @@ public class BinListing extends AuctionItem {
 		displayLore.add("&7&m-------------------------");
 		return displayLore;
 	}
-
-
-	public ArrayList<String> wrapInBox(String[] strings) {
-		ArrayList<String> result = new ArrayList<>();
-		int maxLength = 0;
-
-		for (String s : strings) {
-			if (s.length() > maxLength) {
-				maxLength = s.length();
-			}
-		}
-
-		String topAndBottom = "&7&m";
-		for (int i = 0; i < maxLength + 2; i++) {
-			topAndBottom += "-";
-		}
-
-		result.add(topAndBottom);
-
-		for (String s : strings) {
-			String paddedString = "&7| " + s;
-			while (paddedString.length() < maxLength + 2) {
-				paddedString += " ";
-			}
-			paddedString += " &7|";
-			result.add(paddedString);
-		}
-		result.add(topAndBottom);
-		return result;
-	}
 }

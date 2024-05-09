@@ -102,6 +102,7 @@ public class PlayerListeners implements Listener {
 			if (item == null || item.getType() == XMaterial.AIR.parseMaterial() || item.getAmount() == 0) continue;
 
 			final UUID auctionItemId = NBT.get(item, nbt -> (UUID) nbt.getUUID("AuctionDupeTracking"));
+			if (auctionItemId == null) return;
 
 			if (AuctionHouse.getInstance().getAuctionItemManager().getItem(auctionItemId) != null) {
 				player.getInventory().remove(item);
