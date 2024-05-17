@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.api.auction;
 
+import org.omg.CORBA.UNKNOWN;
+
 public enum ListingResult {
 
 	SUCCESS,
@@ -30,6 +32,8 @@ public enum ListingResult {
 	CANNOT_SELL_REPAIRED_ITEM,
 	CANNOT_SELL_DAMAGED_ITEM,
 	CANNOT_SELL_BUNDLE_ITEM,
+
+	MINIMUM_PRICE_NOT_MET,
 
 	UNKNOWN,
 	EVENT_CANCELED
