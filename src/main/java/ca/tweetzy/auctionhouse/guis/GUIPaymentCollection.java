@@ -22,16 +22,17 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
-import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.TextUtils;
-import org.bukkit.event.inventory.ClickType;
+import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
+import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -40,96 +41,81 @@ import java.util.stream.Collectors;
  * Time Created: 3:19 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIPaymentCollection extends AbstractPlaceholderGui {
+public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 
 	final AuctionPlayer auctionPlayer;
-
-	private List<AuctionPayment> payments;
 	private Long lastClicked = null;
 
-	public GUIPaymentCollection(AuctionPlayer auctionPlayer) {
-		super(auctionPlayer);
+	public GUIPaymentCollection(Gui parent, AuctionPlayer auctionPlayer) {
+		super(parent, auctionPlayer.getPlayer(), Settings.GUI_PAYMENT_COLLECTION_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getInstance().getPaymentsManager().getPaymentsByPlayer(auctionPlayer.getPlayer())));
 		this.auctionPlayer = auctionPlayer;
-		setTitle(TextUtils.formatText(Settings.GUI_PAYMENT_COLLECTION_TITLE.getString()));
-		setRows(6);
-		setAcceptsItems(false);
 		draw();
 	}
 
 	public GUIPaymentCollection(AuctionPlayer auctionPlayer, Long lastClicked) {
-		this(auctionPlayer);
+		this(null, auctionPlayer);
 		this.lastClicked = lastClicked;
 	}
 
-	private void draw() {
-		reset();
-		setButton(5, 0, getBackButtonItem(), e -> e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer)));
+	@Override
+	protected void prePopulate() {
+		this.items.sort(Comparator.comparingLong(AuctionPayment::getTime));
+	}
 
-		AuctionHouse.newChain().asyncFirst(() -> {
-			this.payments = AuctionHouse.getInstance().getPaymentsManager().getPaymentsByPlayer(this.player);
-			return this.payments.stream().sorted(Comparator.comparingLong(AuctionPayment::getTime)).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
-		}).asyncLast((data) -> {
-			pages = (int) Math.max(1, Math.ceil(AuctionHouse.getInstance().getPaymentsManager().getPaymentsByPlayer(this.player).size() / (double) 45));
-			setPrevPage(5, 3, getPreviousPageItem());
-//			setButton(5, 4, getRefreshButtonItem(), e -> draw());
-			setNextPage(5, 5, getNextPageItem());
-			setOnPage(e -> draw());
+	@Override
+	protected ItemStack makeDisplayItem(AuctionPayment payment) {
+		return QuickItem
+				.of(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_ITEM.getString())
+				.name(Replacer.replaceVariables(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_NAME.getString(), "payment_amount", AuctionAPI.getInstance().formatNumber(payment.getAmount())))
+				.lore(Replacer.replaceVariables(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList(),
+						"item_name", AuctionAPI.getInstance().getItemName(payment.getItem()),
+						"from_name", payment.getFromName(),
+						"payment_reason", payment.getReason().getTranslation()
+				)).make();
+	}
 
+	@Override
+	protected void onClick(AuctionPayment auctionPayment, GuiClickEvent click) {
 
-			setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(this.player,
-					Settings.GUI_PAYMENT_COLLECTION_ITEM.getString(),
-					PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_NAME.getString()),
-					PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_LORE.getStringList()), null), e -> {
+		if (this.lastClicked == null) {
+			this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
+		} else if (this.lastClicked > System.currentTimeMillis()) {
+			return;
+		} else {
+			this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
+		}
 
-				if (this.lastClicked == null) {
-					this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
-				} else if (this.lastClicked > System.currentTimeMillis()) {
-					return;
-				} else {
-					this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
-				}
+		auctionPayment.pay(click.player);
+		AuctionHouse.getInstance().getDataManager().deletePayments(Collections.singleton(auctionPayment.getId()));
+		AuctionHouse.getInstance().getPaymentsManager().removePayment(auctionPayment.getId());
 
-				for (AuctionPayment auctionPayment : data) {
-					auctionPayment.pay(e.player);
-				}
+		click.manager.showGUI(click.player, new GUIPaymentCollection(this.auctionPlayer, this.lastClicked));
+	}
 
-				AuctionHouse.getInstance().getDataManager().deletePayments(data.stream().map(AuctionPayment::getId).collect(Collectors.toList()));
-				data.forEach(payment -> AuctionHouse.getInstance().getPaymentsManager().removePayment(payment.getId()));
+	@Override
+	protected void drawFixed() {
+		applyBackExit();
 
-				e.manager.showGUI(e.player, new GUIPaymentCollection(this.auctionPlayer, this.lastClicked));
-			});
+		setButton(5, 1, QuickItem.of(Settings.GUI_PAYMENT_COLLECTION_ITEM.getString())
+				.name(Settings.GUI_PAYMENT_COLLECTION_NAME.getString())
+				.lore(Settings.GUI_PAYMENT_COLLECTION_LORE.getStringList())
+				.make(), e -> {
 
-			int slot = 0;
-			for (AuctionPayment auctionPayment : data) {
-
-				setButton(slot++, ConfigurationItemHelper.createConfigurationItem(this.player,
-						Settings.GUI_PAYMENT_COLLECTION_PAYMENT_ITEM.getString(),
-						PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_NAME.getString()),
-						PlaceholderAPIHook.PAPIReplacer.tryReplace(this.player, Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList()),
-						new HashMap<String, Object>() {{
-							put("%payment_amount%", AuctionAPI.getInstance().formatNumber(auctionPayment.getAmount()));
-							put("%item_name%", auctionPayment.getItem() == null ? "&cN/A" : AuctionAPI.getInstance().getItemName(auctionPayment.getItem()));
-							put("%from_name%", auctionPayment.getFromName());
-							put("%payment_reason%", auctionPayment.getReason().getTranslation());
-						}}
-				), ClickType.LEFT, e -> {
-
-					if (this.lastClicked == null) {
-						this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
-					} else if (this.lastClicked > System.currentTimeMillis()) {
-						return;
-					} else {
-						this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
-					}
-
-					auctionPayment.pay(e.player);
-					AuctionHouse.getInstance().getDataManager().deletePayments(Collections.singleton(auctionPayment.getId()));
-					AuctionHouse.getInstance().getPaymentsManager().removePayment(auctionPayment.getId());
-
-					e.manager.showGUI(e.player, new GUIPaymentCollection(this.auctionPlayer, this.lastClicked));
-				});
+			if (this.lastClicked == null) {
+				this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
+			} else if (this.lastClicked > System.currentTimeMillis()) {
+				return;
+			} else {
+				this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
 			}
 
-		}).execute();
+			for (AuctionPayment auctionPayment : this.items) {
+				auctionPayment.pay(e.player);
+			}
+
+			AuctionHouse.getInstance().getDataManager().deletePayments(this.items.stream().map(AuctionPayment::getId).collect(Collectors.toList()));
+			this.items.forEach(payment -> AuctionHouse.getInstance().getPaymentsManager().removePayment(payment.getId()));
+			e.manager.showGUI(e.player, new GUIPaymentCollection(this.auctionPlayer, this.lastClicked));
+		});
 	}
 }
