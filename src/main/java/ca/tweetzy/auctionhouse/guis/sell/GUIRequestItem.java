@@ -23,51 +23,45 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
-import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-
-public final class GUIRequestItem extends AbstractPlaceholderGui {
+public final class GUIRequestItem extends AuctionBaseGUI {
 
 	private final AuctionPlayer auctionPlayer;
 	private final ItemStack itemRequested;
-	private int amount;
-	private double price;
+	private final int amount;
+	private final double price;
 
 	public GUIRequestItem(@NonNull final AuctionPlayer auctionPlayer, ItemStack itemRequested, final int amount, final double price) {
-		super(auctionPlayer);
+		super(null, auctionPlayer.getPlayer(), Settings.GUI_REQUEST_TITLE.getString(), 6);
 		this.auctionPlayer = auctionPlayer;
 		this.itemRequested = itemRequested;
 		this.amount = amount;
 		this.price = price;
-		setTitle(Settings.GUI_REQUEST_TITLE.getString());
-		setRows(6);
 		draw();
 	}
 
-	private void draw() {
-		reset();
-
+	@Override
+	protected void draw() {
+		applyBackExit();
 		setItem(1, 4, this.itemRequested);
 
-		setButton(3, 2, ConfigurationItemHelper.createConfigurationItem(this.player,
-				Settings.GUI_REQUEST_ITEMS_AMT_ITEM.getString(),
-				Settings.GUI_REQUEST_ITEMS_AMT_NAME.getString(),
-				Settings.GUI_REQUEST_ITEMS_AMT_LORE.getStringList(),
-				new HashMap<String, Object>() {{
-					put("%request_amount%", amount);
-				}}
-		), click -> {
+		setButton(3, 2, QuickItem
+				.of(Settings.GUI_REQUEST_ITEMS_AMT_ITEM.getString())
+				.name(Settings.GUI_REQUEST_ITEMS_AMT_NAME.getString())
+				.lore(Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_AMT_LORE.getStringList(), "request_amount", amount))
+				.make(), click -> {
 
 			click.gui.exit();
 			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter request amount.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter request amount.subtitle").getMessage()) {
@@ -109,14 +103,11 @@ public final class GUIRequestItem extends AbstractPlaceholderGui {
 			};
 		});
 
-		setButton(3, 6, ConfigurationItemHelper.createConfigurationItem(this.player,
-				Settings.GUI_REQUEST_ITEMS_PRICE_ITEM.getString(),
-				Settings.GUI_REQUEST_ITEMS_PRICE_NAME.getString(),
-				Settings.GUI_REQUEST_ITEMS_PRICE_LORE.getStringList(),
-				new HashMap<String, Object>() {{
-					put("%request_price%", AuctionAPI.getInstance().formatNumber(price));
-				}}
-		), click -> {
+		setButton(3, 6, QuickItem
+				.of(Settings.GUI_REQUEST_ITEMS_PRICE_ITEM.getString())
+				.name(Settings.GUI_REQUEST_ITEMS_PRICE_NAME.getString())
+				.lore(Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_PRICE_LORE.getStringList(), "request_price", AuctionAPI.getInstance().formatNumber(price)))
+				.make(), click -> {
 
 			click.gui.exit();
 			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter request price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter request price.subtitle").getMessage()) {
@@ -160,12 +151,11 @@ public final class GUIRequestItem extends AbstractPlaceholderGui {
 		});
 
 
-		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(this.player,
-				Settings.GUI_REQUEST_ITEMS_REQUEST_ITEM.getString(),
-				Settings.GUI_REQUEST_ITEMS_REQUEST_NAME.getString(),
-				Settings.GUI_REQUEST_ITEMS_REQUEST_LORE.getStringList(),
-				null
-		), click -> {
+		setButton(getRows() - 1, 4, QuickItem
+				.of(Settings.GUI_REQUEST_ITEMS_REQUEST_ITEM.getString())
+				.name(Settings.GUI_REQUEST_ITEMS_REQUEST_NAME.getString())
+				.lore(Settings.GUI_REQUEST_ITEMS_REQUEST_LORE.getStringList())
+				.make(), click -> {
 
 			// Check for block items
 			if (!AuctionAPI.getInstance().meetsListingRequirements(player, this.itemRequested)) return;
