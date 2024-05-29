@@ -23,18 +23,23 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.ListingResult;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -42,21 +47,34 @@ import java.util.*;
  * Time Created: 1:11 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class GUIBundleCreation extends AbstractPlaceholderGui {
+public final class GUIBundleCreation extends AuctionBaseGUI {
 
 	final AuctionHouse instance = AuctionHouse.getInstance();
+	private final AuctionPlayer auctionPlayer;
+	private final int allowedTime;
+	private final boolean buyNowAllow;
+	private final boolean isBiddingItem;
+	private final Double buyNowPrice;
+	private final Double startingBid;
+	private final Double bidIncrement;
 
 	public GUIBundleCreation(AuctionPlayer auctionPlayer, int allowedTime, boolean buyNowAllow, boolean isBiddingItem, Double buyNowPrice, Double startingBid, Double bidIncrement) {
-		super(auctionPlayer);
-		setTitle(Settings.GUI_CREATE_BUNDLE_TITLE.getString());
-		setRows(6);
+		super(null, auctionPlayer.getPlayer(), Settings.GUI_CREATE_BUNDLE_TITLE.getString(), 6);
+		this.auctionPlayer = auctionPlayer;
+		this.allowedTime = allowedTime;
+		this.buyNowAllow = buyNowAllow;
+		this.isBiddingItem = isBiddingItem;
+		this.buyNowPrice = buyNowPrice;
+		this.startingBid = startingBid;
+		this.bidIncrement = bidIncrement;
+
 		setAllowDrops(false);
 		setAcceptsItems(true);
 		setAllowShiftClick(true);
 		setUnlockedRange(0, 44);
 
 		for (int i = 0; i < 45; i++)
-			setItem(i, XMaterial.AIR.parseItem());
+			setItem(i, CompMaterial.AIR.parseItem());
 
 		Arrays.asList(45, 46, 47, 48, 49, 50, 51, 52, 53).forEach(i -> setAction(i, e -> e.event.setCancelled(true)));
 
@@ -68,7 +86,19 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 			}
 		});
 
-		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CREATE_BUNDLE_CONFIRM_ITEM.getString(), Settings.GUI_CREATE_BUNDLE_CONFIRM_NAME.getString(), Settings.GUI_CREATE_BUNDLE_CONFIRM_LORE.getStringList(), new HashMap<>()), ClickType.LEFT, e -> {
+		draw();
+	}
+
+	@Override
+	protected void draw() {
+
+		setButton(getRows() - 1, 4, QuickItem
+				.of(Settings.GUI_CREATE_BUNDLE_CONFIRM_ITEM.getString())
+				.name(Settings.GUI_CREATE_BUNDLE_CONFIRM_NAME.getString())
+				.lore(Settings.GUI_CREATE_BUNDLE_CONFIRM_LORE.getStringList())
+				.make(), ClickType.LEFT, e -> {
+
+
 			ItemStack firstItem = null;
 			List<ItemStack> validItems = new ArrayList<>();
 
@@ -95,7 +125,6 @@ public final class GUIBundleCreation extends AbstractPlaceholderGui {
 
 			// are they even allowed to sell more items
 			if (auctionPlayer.isAtItemLimit(e.player)) {
-//				AuctionHouse.getInstance().getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(e.player);
 				return;
 			}
 
