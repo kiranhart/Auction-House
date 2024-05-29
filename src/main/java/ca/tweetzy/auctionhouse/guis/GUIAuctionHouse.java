@@ -542,7 +542,7 @@ public class GUIAuctionHouse extends AbstractPlaceholderGui {
 				put("%expired_player_auctions%", auctionPlayer.getItems(true).size());
 			}}), e -> {
 				cleanup();
-				e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer));
+				e.manager.showGUI(e.player, new GUIExpiredItems(this, this.auctionPlayer));
 			});
 		}
 
