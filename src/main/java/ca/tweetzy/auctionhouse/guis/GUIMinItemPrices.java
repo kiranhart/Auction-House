@@ -21,15 +21,16 @@ package ca.tweetzy.auctionhouse.guis;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.MinItemPrice;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
+import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Date Created: April 04 2022
@@ -37,43 +38,34 @@ import java.util.stream.Collectors;
  *
  * @author Kiran Hart
  */
-public final class GUIMinItemPrices extends AbstractPlaceholderGui {
-
-	final List<MinItemPrice> minPrices;
+public final class GUIMinItemPrices extends AuctionPagedGUI<MinItemPrice> {
 
 	public GUIMinItemPrices(Player player) {
-		super(player);
-		this.minPrices = AuctionHouse.getInstance().getMinItemPriceManager().getMinPrices();
-		setTitle(TextUtils.formatText(Settings.GUI_MIN_ITEM_PRICES_TITLE.getString()));
-		setRows(6);
-		setAcceptsItems(false);
+		super(null, player, Settings.GUI_MIN_ITEM_PRICES_TITLE.getString(), 6, AuctionHouse.getInstance().getMinItemPriceManager().getMinPrices());
 		draw();
 	}
 
-	private void draw() {
-		reset();
+	@Override
+	protected void drawFixed() {
+		applyBackExit();
+	}
 
-		pages = (int) Math.max(1, Math.ceil(this.minPrices.size() / (double) 45));
+	@Override
+	protected ItemStack makeDisplayItem(MinItemPrice minItemPrice) {
+		final List<String> lore = AuctionAPI.getInstance().getItemLore(minItemPrice.getItemStack().clone());
+		lore.addAll(Settings.GUI_MIN_ITEM_PRICES_LORE.getStringList());
 
-		setPrevPage(5, 3, getPreviousPageItem());
-		setNextPage(5, 5, getNextPageItem());
-		setOnPage(e -> draw());
+		return QuickItem
+				.of(minItemPrice.getItemStack().clone())
+				.name(AuctionAPI.getInstance().getItemName(minItemPrice.getItemStack()))
+				.lore(Replacer.replaceVariables(lore, "price", AuctionAPI.getInstance().formatNumber(minItemPrice.getPrice())))
+				.make();
+	}
 
-		int slot = 0;
-		final List<MinItemPrice> data = this.minPrices.stream().skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
-
-		for (MinItemPrice minItemPrice : data) {
-
-			final List<String> lore = AuctionAPI.getInstance().getItemLore(minItemPrice.getItemStack().clone());
-			lore.addAll(Settings.GUI_MIN_ITEM_PRICES_LORE.getStringList());
-
-			setButton(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, minItemPrice.getItemStack().clone(), AuctionAPI.getInstance().getItemName(minItemPrice.getItemStack()), lore, new HashMap<String, Object>() {{
-				put("%price%", AuctionAPI.getInstance().formatNumber(minItemPrice.getPrice()));
-			}}), click -> {
-				AuctionHouse.getInstance().getDataManager().deleteMinItemPrice(Collections.singletonList(minItemPrice.getUuid()));
-				AuctionHouse.getInstance().getMinItemPriceManager().removeItem(minItemPrice);
-				click.manager.showGUI(click.player, new GUIMinItemPrices(click.player));
-			});
-		}
+	@Override
+	protected void onClick(MinItemPrice minItemPrice, GuiClickEvent event) {
+		AuctionHouse.getInstance().getDataManager().deleteMinItemPrice(Collections.singletonList(minItemPrice.getUuid()));
+		AuctionHouse.getInstance().getMinItemPriceManager().removeItem(minItemPrice);
+		event.manager.showGUI(event.player, new GUIMinItemPrices(event.player));
 	}
 }
