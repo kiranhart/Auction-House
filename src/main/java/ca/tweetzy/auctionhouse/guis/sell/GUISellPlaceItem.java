@@ -23,12 +23,13 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
-import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.flight.utils.QuickItem;
 import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -36,7 +37,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 
-public final class GUISellPlaceItem extends AbstractPlaceholderGui {
+public final class GUISellPlaceItem extends AuctionBaseGUI {
 
 	public enum ViewMode {
 		SINGLE_ITEM,
@@ -48,21 +49,16 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 	private final ListingType listingType;
 
 	public GUISellPlaceItem(@NonNull final AuctionPlayer auctionPlayer, @NonNull final ViewMode viewMode, @NonNull final ListingType listingType) {
-		super(auctionPlayer);
+		super(null, auctionPlayer.getPlayer(), viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_TITLE.getString() : Settings.GUI_SELL_PLACE_ITEM_BUNDLE_TITLE.getString(), viewMode == ViewMode.SINGLE_ITEM ? 4 : 6);
 		this.auctionPlayer = auctionPlayer;
 		this.viewMode = viewMode;
 		this.listingType = listingType;
-		setTitle(viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_TITLE.getString() : Settings.GUI_SELL_PLACE_ITEM_BUNDLE_TITLE.getString());
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_SELL_PLACE_ITEM_BG_ITEM.getString()));
-		setRows(viewMode == ViewMode.SINGLE_ITEM ? 4 : 6);
-
+		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_SELL_PLACE_ITEM_BG_ITEM.getString()).make()));
 		setAcceptsItems(true);
 
 		if (viewMode == ViewMode.SINGLE_ITEM) {
 			setUnlocked(1, 4);
 			setItem(1, 4, AIR);
-
-
 		} else {
 			setUnlockedRange(0, 35);
 			setItems(0, 35, AIR);
@@ -88,22 +84,20 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 		}
 	}
 
-	private void draw() {
-
-		setButton(getRows() - 1, 0, getBackButtonItem(), click -> {
-
+	@Override
+	protected void draw() {
+		setButton(getRows() - 1, 0, getBackButton(), click -> {
 			if (click.cursor.getType() == Material.AIR) {
 				click.gui.close();
 				click.manager.showGUI(click.player, new GUISellListingType(this.auctionPlayer, selectedListing -> click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, this.viewMode, selectedListing))));
 			}
 		});
 
-		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(this.player,
-				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM.getString(),
-				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_NAME.getString(),
-				Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_LORE.getStringList(),
-				null
-		), click -> {
+		setButton(getRows() - 1, 4, QuickItem
+				.of(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM.getString())
+				.name(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_NAME.getString())
+				.lore(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_LORE.getStringList())
+				.make(), click -> {
 
 			final ArrayList<ItemStack> items = gatherSellableItems();
 
@@ -137,18 +131,16 @@ public final class GUISellPlaceItem extends AbstractPlaceholderGui {
 		});
 
 		if (Settings.ALLOW_ITEM_BUNDLES.getBoolean()) {
-			setButton(getRows() - 1, 8, ConfigurationItemHelper.createConfigurationItem(this.player, //todo update quick item to automatically apply model data
-					this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_ITEM.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_ITEM.getString(),
-					this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_NAME.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_NAME.getString(),
-					this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_LORE.getStringList() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_LORE.getStringList(),
-					null
-			), click -> {
+			setButton(getRows() - 1, 8, QuickItem
+					.of(this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_ITEM.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_ITEM.getString())
+					.name(this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_NAME.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_NAME.getString())
+					.lore(this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_LORE.getStringList() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_LORE.getStringList())
+					.make(), click -> {
 
 				if (auctionPlayer.isAtBundleLimit()) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.bundlelistlimit").sendPrefixedMessage(player);
 					return;
 				}
-
 
 				click.gui.close();
 				click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, this.viewMode == ViewMode.SINGLE_ITEM ? ViewMode.BUNDLE_ITEM : ViewMode.SINGLE_ITEM, this.listingType));

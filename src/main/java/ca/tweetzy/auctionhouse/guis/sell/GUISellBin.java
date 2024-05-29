@@ -25,28 +25,28 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
-import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.UUID;
 
-public final class GUISellBin extends AbstractPlaceholderGui {
+public final class GUISellBin extends AuctionBaseGUI {
 
 	private final AuctionPlayer auctionPlayer;
 
@@ -55,15 +55,12 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 	private boolean allowPartialBuy;
 
 	public GUISellBin(@NonNull final AuctionPlayer auctionPlayer, final double listingPrice, final long listingTime, boolean allowPartialBuy) {
-		super(auctionPlayer);
+		super(null, auctionPlayer.getPlayer(), Settings.GUI_SELL_BIN_TITLE.getString(), 6);
 		this.auctionPlayer = auctionPlayer;
 		this.listingPrice = listingPrice;
 		this.listingTime = listingTime;
 		this.allowPartialBuy = allowPartialBuy;
-
-		setTitle(Settings.GUI_SELL_BIN_TITLE.getString());
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_SELL_BIN_BG_ITEM.getString()));
-		setRows(6);
+		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_SELL_BIN_BG_ITEM.getString()).make()));
 
 		setOnClose(close -> {
 			final ItemStack itemToGive = this.auctionPlayer.getItemBeingListed();
@@ -82,11 +79,11 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 		draw();
 	}
 
-	private void draw() {
+	@Override
+	protected void draw() {
 		reset();
 
-		setButton(getRows() - 1, 0, getBackButtonItem(), click -> {
-
+		setButton(getRows() - 1, 0, getBackButton(), click -> {
 			click.gui.close();
 			click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, BundleUtil.isBundledItem(this.auctionPlayer.getItemBeingListed()) ? GUISellPlaceItem.ViewMode.BUNDLE_ITEM : GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.BIN));
 		});
@@ -95,12 +92,15 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 
 			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime);
 
-			setButton(3, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_ITEM.getString(), Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_NAME.getString(), Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_LORE.getStringList(), new HashMap<String, Object>() {{
-				put("%remaining_days%", times[0]);
-				put("%remaining_hours%", times[1]);
-				put("%remaining_minutes%", times[2]);
-				put("%remaining_seconds%", times[3]);
-			}}), click -> {
+			setButton(3, 1, QuickItem
+					.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_ITEM.getString())
+					.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_NAME.getString())
+					.lore(Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_LORE.getStringList(),
+							"remaining_days", times[0],
+							"remaining_hours", times[1],
+							"remaining_minutes", times[2],
+							"remaining_seconds", times[3]
+					)).make(), click -> {
 
 				click.gui.exit();
 				new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage()) {
@@ -131,9 +131,11 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 			});
 
 		}
-		setButton(3, 4, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_ITEM.getString(), Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_NAME.getString(), Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE.getStringList(), new HashMap<String, Object>() {{
-			put("%listing_bin_price%", AuctionAPI.getInstance().formatNumber(listingPrice));
-		}}), click -> {
+		setButton(3, 4, QuickItem
+				.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_ITEM.getString())
+				.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_NAME.getString())
+				.lore(Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(listingPrice)))
+				.make(), click -> {
 
 			click.gui.exit();
 			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.subtitle").getMessage()) {
@@ -159,7 +161,6 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 					}
 
 					if (listingAmount < Settings.MIN_AUCTION_PRICE.getDouble()) listingAmount = Settings.MIN_AUCTION_PRICE.getDouble();
-
 					if (listingAmount > Settings.MAX_AUCTION_PRICE.getDouble()) listingAmount = Settings.MAX_AUCTION_PRICE.getDouble();
 
 					click.manager.showGUI(click.player, new GUISellBin(GUISellBin.this.auctionPlayer, listingAmount, GUISellBin.this.listingTime, GUISellBin.this.allowPartialBuy));
@@ -173,13 +174,11 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 
 		setItem(1, 4, createListingItem().getDisplayStack(AuctionStackType.LISTING_PREVIEW));
 
-
-		setButton(getRows() - 1, 4, ConfigurationItemHelper.createConfigurationItem(this.player,
-				Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_ITEM.getString(),
-				Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_NAME.getString(),
-				Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_LORE.getStringList(),
-				null
-		), click -> {
+		setButton(getRows() - 1, 4, QuickItem
+				.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_ITEM.getString())
+				.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_NAME.getString())
+				.lore(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_LORE.getStringList())
+				.make(), click -> {
 
 			if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, this.auctionPlayer.getItemBeingListed())) return;
 			if (!auctionPlayer.canListItem()) return;
@@ -221,12 +220,11 @@ public final class GUISellBin extends AbstractPlaceholderGui {
 
 	private void drawQtyPurchase() {
 		if (Settings.ALLOW_PURCHASE_OF_SPECIFIC_QUANTITIES.getBoolean()) {
-			setButton(3, 7, ConfigurationItemHelper.createConfigurationItem(this.player,
-					this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_ITEM.getString() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_ITEM.getString(),
-					this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_NAME.getString() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_NAME.getString(),
-					this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_LORE.getStringList() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_LORE.getStringList(),
-					null
-			), e -> {
+			setButton(3, 7, QuickItem
+					.of(this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_ITEM.getString() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_ITEM.getString())
+					.name(this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_NAME.getString() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_NAME.getString())
+					.lore(this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_LORE.getStringList() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_LORE.getStringList())
+					.make(), e -> {
 
 				this.allowPartialBuy = !allowPartialBuy;
 				drawQtyPurchase();
