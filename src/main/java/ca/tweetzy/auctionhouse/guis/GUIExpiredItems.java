@@ -21,16 +21,17 @@ package ca.tweetzy.auctionhouse.guis;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XSound;
+import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.nbtapi.NBT;
-import org.bukkit.event.inventory.ClickType;
+import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,137 +42,131 @@ import java.util.stream.Collectors;
  * Time Created: 3:19 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIExpiredItems extends AbstractPlaceholderGui {
+public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 
-	final AuctionPlayer auctionPlayer;
+	private final AuctionPlayer auctionPlayer;
 
-	private List<AuctionedItem> items;
 	private Long lastClicked = null;
 
-	public GUIExpiredItems(AuctionPlayer auctionPlayer) {
-		super(auctionPlayer);
+	public GUIExpiredItems(Gui parent, AuctionPlayer auctionPlayer) {
+		super(parent, auctionPlayer.getPlayer(), Settings.GUI_EXPIRED_AUCTIONS_TITLE.getString(), 6, new ArrayList<>(auctionPlayer.getItems(true)));
 		this.auctionPlayer = auctionPlayer;
-		setTitle(TextUtils.formatText(Settings.GUI_EXPIRED_AUCTIONS_TITLE.getString()));
-		setRows(6);
-		setAcceptsItems(false);
-		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF).parseSound());
 		draw();
 	}
 
 	public GUIExpiredItems(AuctionPlayer auctionPlayer, Long lastClicked) {
-		this(auctionPlayer);
+		this(null, auctionPlayer);
 		this.lastClicked = lastClicked;
 	}
 
-	private void draw() {
-		reset();
+	@Override
+	protected void prePopulate() {
+		if (Settings.PER_WORLD_ITEMS.getBoolean()) {
+			this.items = this.items.stream().filter(item -> item.getListedWorld() == null || this.auctionPlayer.getPlayer().getWorld().getName().equals(item.getListedWorld())).collect(Collectors.toList());
+		}
 
-		setButton(5, 0, getBackButtonItem(), e -> e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer)));
+		this.items.sort(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed());
+	}
 
-		AuctionHouse.newChain().asyncFirst(() -> {
-			this.items = this.auctionPlayer.getItems(true);
+	@Override
+	protected ItemStack makeDisplayItem(AuctionedItem auctionedItem) {
+		return auctionedItem.getItem();
+	}
 
-			if (Settings.PER_WORLD_ITEMS.getBoolean()) {
-				this.items = this.items.stream().filter(item -> item.getListedWorld() == null || this.auctionPlayer.getPlayer().getWorld().getName().equals(item.getListedWorld())).collect(Collectors.toList());
+	@Override
+	protected void onClick(AuctionedItem auctionedItem, GuiClickEvent click) {
+		if (!Settings.ALLOW_INDIVIDUAL_ITEM_CLAIM.getBoolean()) return;
+
+		final boolean isBundle = BundleUtil.isBundledItem(auctionedItem.getItem());
+
+		if (click.player.getInventory().firstEmpty() == -1) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.noroomclaim").sendPrefixedMessage(click.player);
+			return;
+		}
+
+		if (this.lastClicked == null) {
+			this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
+		} else if (this.lastClicked > System.currentTimeMillis()) {
+			return;
+		} else {
+			this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
+		}
+
+		if (isBundle) {
+			if (Settings.BUNDLE_IS_OPENED_ON_RECLAIM.getBoolean()) {
+				final List<ItemStack> bundleItems = BundleUtil.extractBundleItems(auctionedItem.getItem());
+				PlayerUtils.giveItem(click.player, bundleItems);
+			} else {
+				PlayerUtils.giveItem(click.player, auctionedItem.getItem());
 			}
+		} else {
+			final ItemStack item = auctionedItem.getItem();
 
-			return this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
-		}).asyncLast((data) -> {
-			pages = (int) Math.max(1, Math.ceil(this.auctionPlayer.getItems(true).size() / (double) 45));
-			setPrevPage(5, 3, getPreviousPageItem());
-			setButton(5, 4, getRefreshButtonItem(), e -> draw());
-			setNextPage(5, 5, getNextPageItem());
-			setOnPage(e -> draw());
-
-			if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-				setButton(5, 2, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_LORE.getStringList(), null), e -> {
-					e.manager.showGUI(e.player, new GUIPaymentCollection(this.auctionPlayer));
-				});
-
-
-			setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_EXPIRED_AUCTIONS_ITEM.getString(), Settings.GUI_EXPIRED_AUCTIONS_NAME.getString(), Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList(), null), e -> {
-
-				if (this.lastClicked == null) {
-					this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
-				} else if (this.lastClicked > System.currentTimeMillis()) {
-					return;
-				} else {
-					this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
-				}
-
-				for (AuctionedItem auctionItem : data) {
-					final boolean isBundle = BundleUtil.isBundledItem(auctionItem.getItem());
-
-					if (e.player.getInventory().firstEmpty() == -1) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.noroomclaim").sendPrefixedMessage(e.player);
-						break;
-					}
-
-					if (isBundle) {
-						if (Settings.BUNDLE_IS_OPENED_ON_RECLAIM.getBoolean()) {
-							final List<ItemStack> bundleItems = BundleUtil.extractBundleItems(auctionItem.getItem());
-							PlayerUtils.giveItem(e.player, bundleItems);
-						} else {
-							PlayerUtils.giveItem(e.player, auctionItem.getItem());
-						}
-					} else {
-						final ItemStack item = auctionItem.getItem();
-						// remove the dupe tracking
-						NBT.modify(item, nbt -> {
-							nbt.removeKey("AuctionDupeTracking");
-						});
-
-						PlayerUtils.giveItem(e.player, item);
-					}
-
-					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
-				}
-
-				e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer, this.lastClicked));
+			NBT.modify(item, nbt -> {
+				nbt.removeKey("AuctionDupeTracking");
 			});
 
-			int slot = 0;
-			for (AuctionedItem auctionItem : data) {
-				setButton(slot++, auctionItem.getItem(), ClickType.LEFT, e -> {
-					if (!Settings.ALLOW_INDIVIDUAL_ITEM_CLAIM.getBoolean()) return;
+			PlayerUtils.giveItem(click.player, item);
+		}
 
-					final boolean isBundle = BundleUtil.isBundledItem(auctionItem.getItem());
+		AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionedItem);
+		click.manager.showGUI(click.player, new GUIExpiredItems(this.auctionPlayer, this.lastClicked));
+	}
 
-					if (e.player.getInventory().firstEmpty() == -1) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.noroomclaim").sendPrefixedMessage(e.player);
-						return;
-					}
+	@Override
+	protected void drawFixed() {
+		applyBackExit();
 
-					if (this.lastClicked == null) {
-						this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
-					} else if (this.lastClicked > System.currentTimeMillis()) {
-						return;
-					} else {
-						this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
-					}
+		if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean()) {
+			setButton(5, 2, QuickItem
+					.of(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_ITEM.getString())
+					.name(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_NAME.getString()).lore(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_LORE.getStringList())
+					.make(), e -> e.manager.showGUI(e.player, new GUIPaymentCollection(this, this.auctionPlayer)));
+		}
 
-					if (isBundle) {
-						if (Settings.BUNDLE_IS_OPENED_ON_RECLAIM.getBoolean()) {
-							final List<ItemStack> bundleItems = BundleUtil.extractBundleItems(auctionItem.getItem());
-							PlayerUtils.giveItem(e.player, bundleItems);
-						} else {
-							PlayerUtils.giveItem(e.player, auctionItem.getItem());
-						}
-					} else {
-						final ItemStack item = auctionItem.getItem();
+		setButton(5, 1, QuickItem
+				.of(Settings.GUI_EXPIRED_AUCTIONS_ITEM.getString())
+				.name(Settings.GUI_EXPIRED_AUCTIONS_NAME.getString())
+				.lore(Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList())
+				.make(), e -> {
 
-						NBT.modify(item, nbt -> {
-							nbt.removeKey("AuctionDupeTracking");
-						});
-
-						PlayerUtils.giveItem(e.player, item); // I despise these else statements
-					}
-
-					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
-					e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer, this.lastClicked));
-				});
+			if (this.lastClicked == null) {
+				this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
+			} else if (this.lastClicked > System.currentTimeMillis()) {
+				return;
+			} else {
+				this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
 			}
 
-		}).execute();
+			for (AuctionedItem auctionItem : this.items) {
+				final boolean isBundle = BundleUtil.isBundledItem(auctionItem.getItem());
+
+				if (e.player.getInventory().firstEmpty() == -1) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.noroomclaim").sendPrefixedMessage(e.player);
+					break;
+				}
+
+				if (isBundle) {
+					if (Settings.BUNDLE_IS_OPENED_ON_RECLAIM.getBoolean()) {
+						final List<ItemStack> bundleItems = BundleUtil.extractBundleItems(auctionItem.getItem());
+						PlayerUtils.giveItem(e.player, bundleItems);
+					} else {
+						PlayerUtils.giveItem(e.player, auctionItem.getItem());
+					}
+				} else {
+					final ItemStack item = auctionItem.getItem();
+					// remove the dupe tracking
+					NBT.modify(item, nbt -> {
+						nbt.removeKey("AuctionDupeTracking");
+					});
+
+					PlayerUtils.giveItem(e.player, item);
+				}
+
+				AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
+			}
+
+			e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer, this.lastClicked));
+		});
 	}
 }
