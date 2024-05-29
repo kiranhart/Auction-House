@@ -55,7 +55,7 @@ public class CommandExpired extends AbstractCommand {
 			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
-		instance.getGuiManager().showGUI(player, new GUIExpiredItems(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+		instance.getGuiManager().showGUI(player, new GUIExpiredItems(null, instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 		return ReturnType.SUCCESS;
 	}
 

@@ -52,7 +52,7 @@ public class CommandPayments extends AbstractCommand {
 			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
-		instance.getGuiManager().showGUI(player, new GUIPaymentCollection(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+		instance.getGuiManager().showGUI(player, new GUIPaymentCollection(null, instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 		return ReturnType.SUCCESS;
 	}
 
