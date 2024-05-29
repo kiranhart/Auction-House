@@ -20,8 +20,8 @@ package ca.tweetzy.auctionhouse.helpers.input;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.flight.comp.ActionBar;
-import ca.tweetzy.flight.comp.Titles;
+import ca.tweetzy.flight.utils.messages.ActionBar;
+import ca.tweetzy.flight.utils.messages.Titles;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

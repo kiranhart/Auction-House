@@ -24,7 +24,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.flight.comp.Titles;
+import ca.tweetzy.flight.utils.messages.Titles;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
