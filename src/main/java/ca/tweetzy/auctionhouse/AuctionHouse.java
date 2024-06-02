@@ -27,6 +27,7 @@ import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.hooks.UltraEconomyHook;
 import ca.tweetzy.auctionhouse.listeners.*;
 import ca.tweetzy.auctionhouse.managers.*;
+import ca.tweetzy.auctionhouse.model.manager.PaymentsManager;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.tasks.AutoSaveTask;
@@ -264,7 +265,7 @@ public class AuctionHouse extends TweetyPlugin {
 
 		// payments
 		this.paymentsManager = new PaymentsManager();
-		this.paymentsManager.loadPayments();
+		this.paymentsManager.load();
 
 		// gui manager
 		this.guiManager.init();

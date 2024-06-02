@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class KeyValueManager<K, V> extends Manager {
 
-	protected final Map<K, V> managerContent = new ConcurrentHashMap<>();
+	protected final ConcurrentHashMap<K, V> managerContent = new ConcurrentHashMap<>();
 
 	public KeyValueManager(@NonNull String name) {
 		super(name);

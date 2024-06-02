@@ -87,7 +87,7 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 
 		auctionPayment.pay(click.player);
 		AuctionHouse.getInstance().getDataManager().deletePayments(Collections.singleton(auctionPayment.getId()));
-		AuctionHouse.getInstance().getPaymentsManager().removePayment(auctionPayment.getId());
+		AuctionHouse.getInstance().getPaymentsManager().remove(auctionPayment.getId());
 
 		click.manager.showGUI(click.player, new GUIPaymentCollection(this.auctionPlayer, this.lastClicked));
 	}
@@ -114,7 +114,7 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 			}
 
 			AuctionHouse.getInstance().getDataManager().deletePayments(this.items.stream().map(AuctionPayment::getId).collect(Collectors.toList()));
-			this.items.forEach(payment -> AuctionHouse.getInstance().getPaymentsManager().removePayment(payment.getId()));
+			this.items.forEach(payment -> AuctionHouse.getInstance().getPaymentsManager().remove(payment.getId()));
 			e.manager.showGUI(e.player, new GUIPaymentCollection(this.auctionPlayer, this.lastClicked));
 		});
 	}

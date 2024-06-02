@@ -643,7 +643,7 @@ public class DataManager extends DataManagerAbstract {
 				statement.executeUpdate();
 
 				// insert into storage
-				AuctionHouse.getInstance().getPaymentsManager().addPayment(auctionPayment);
+				AuctionHouse.getInstance().getPaymentsManager().add(auctionPayment);
 
 				if (callback != null) {
 					ResultSet res = fetch.executeQuery();
