@@ -21,20 +21,18 @@ package ca.tweetzy.auctionhouse.guis;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionBan;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionUpdatingPagedGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.TimeUtils;
+import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart
@@ -42,58 +40,51 @@ import java.util.stream.Collectors;
  * Time Created: 12:16 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIBans extends AbstractPlaceholderGui {
-
-	private List<AuctionBan> bans;
-	private BukkitTask task;
-
+public class GUIBans extends AuctionUpdatingPagedGUI<AuctionBan> {
 
 	public GUIBans(Player player) {
-		super(player);
-		setTitle(TextUtils.formatText(Settings.GUI_BANS_TITLE.getString()));
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_BANS_BG_ITEM.getString()));
-		setUseLockedCells(true);
-		setAcceptsItems(false);
-		setAllowDrops(false);
-		setRows(6);
+		super(null, player,Settings.GUI_BANS_TITLE.getString(),6, 20, new ArrayList<>());
+		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_BANS_BG_ITEM.getString()).make()));
+
+		startTask();
+		applyClose();
 		draw();
-		setOnOpen(open -> this.task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::drawItems, 0L, 20L));
-		setOnClose(close -> this.task.cancel());
 	}
 
-	private void draw() {
-		reset();
-		setButton(5, 4, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CLOSE_BTN_ITEM.getString(), Settings.GUI_CLOSE_BTN_NAME.getString(), Settings.GUI_CLOSE_BTN_LORE.getStringList(), null), e -> e.gui.close());
-		drawItems();
+	@Override
+	protected void prePopulate() {
+		this.items = new ArrayList<>(AuctionHouse.getInstance().getAuctionBanManager().getBans().values());
 	}
 
-	private void drawItems() {
-		AuctionHouse.newChain().asyncFirst(() -> {
-			this.bans = new ArrayList<>(AuctionHouse.getInstance().getAuctionBanManager().getBans().values());
-			return this.bans.stream().skip((page - 1) * 45L).limit(45L).collect(Collectors.toList());
-		}).asyncLast((data) -> {
-			pages = (int) Math.max(1, Math.ceil(this.bans.size() / (double) 45L));
-			setPrevPage(5, 3, getPreviousPageItem());
-			setNextPage(5, 5, getNextPageItem());
-			setOnPage(e -> draw());
+	protected void drawFixed() {
+		applyBackExit();
+	}
 
-			int slot = 0;
-			for (AuctionBan ban : data) {
-				OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ban.getBannedPlayer());
-				setButton(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, AuctionAPI.getInstance().getPlayerHead(offlinePlayer.getName()), Settings.GUI_BANS_BAN_NAME.getString(), Settings.GUI_BANS_BAN_LORE.getStringList(), new HashMap<String, Object>() {{
-					put("%player_name%", offlinePlayer.getName());
-					put("%player_displayname%", AuctionAPI.getInstance().getDisplayName(offlinePlayer));
-					put("%ban_reason%", ban.getReason());
-					put("%ban_amount%", (ban.getTime() - System.currentTimeMillis()) <= 0 ? AuctionHouse.getInstance().getLocale().getMessage("bans.ban expired").getMessage() : TimeUtils.makeReadable(ban.getTime() - System.currentTimeMillis()));
-				}}), ClickType.RIGHT, e -> {
-					AuctionHouse.getInstance().getAuctionBanManager().removeBan(ban.getBannedPlayer());
-					AuctionHouse.getInstance().getLocale().getMessage("bans.playerunbanned").processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(offlinePlayer)).processPlaceholder("player", offlinePlayer.getName()).sendPrefixedMessage(e.player);
-					if (offlinePlayer.isOnline()) {
-						AuctionHouse.getInstance().getLocale().getMessage("bans.unbanned").processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(offlinePlayer)).processPlaceholder("player", offlinePlayer.getName()).sendPrefixedMessage(offlinePlayer.getPlayer());
-					}
-					draw();
-				});
-			}
-		}).execute();
+	@Override
+	protected ItemStack makeDisplayItem(AuctionBan ban) {
+		final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ban.getBannedPlayer());
+
+		return QuickItem
+			.of(AuctionAPI.getInstance().getPlayerHead(offlinePlayer.getName()))
+				.name(Replacer.replaceVariables(Settings.GUI_BANS_BAN_NAME.getString(), "player_name", offlinePlayer.getName()))
+				.lore(Replacer.replaceVariables(Settings.GUI_BANS_BAN_LORE.getStringList(),
+						"player_name",offlinePlayer.getName(),
+						"player_displayname", AuctionAPI.getInstance().getDisplayName(offlinePlayer),
+						"ban_reason",ban.getReason(),
+						"ban_amount",(ban.getTime() - System.currentTimeMillis()) <= 0 ? AuctionHouse.getInstance().getLocale().getMessage("bans.ban expired").getMessage() : TimeUtils.makeReadable(ban.getTime() - System.currentTimeMillis())
+				)).make();
+	}
+
+	@Override
+	protected void onClick(AuctionBan ban, GuiClickEvent click) {
+		final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ban.getBannedPlayer());
+
+		AuctionHouse.getInstance().getAuctionBanManager().removeBan(ban.getBannedPlayer());
+		AuctionHouse.getInstance().getLocale().getMessage("bans.playerunbanned").processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(offlinePlayer)).processPlaceholder("player", offlinePlayer.getName()).sendPrefixedMessage(click.player);
+		if (offlinePlayer.isOnline()) {
+			AuctionHouse.getInstance().getLocale().getMessage("bans.unbanned").processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(offlinePlayer)).processPlaceholder("player", offlinePlayer.getName()).sendPrefixedMessage(offlinePlayer.getPlayer());
+		}
+
+		draw();
 	}
 }
