@@ -57,7 +57,6 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 	final boolean showAll;
 	private UUID searchUUID;
 
-
 	public GUITransactionList(Player player, UUID searchUUID) {
 		this(player, true);
 		this.searchUUID = searchUUID;
@@ -111,7 +110,6 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 
 	@Override
 	protected void drawFixed() {
-		reset();
 
 		// Other Buttons
 		setButton(5, 0, getBackButton(), e -> {
