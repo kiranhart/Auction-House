@@ -20,11 +20,14 @@ package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -79,5 +82,24 @@ public class AuctionItemManager {
 
 	public AuctionedItem getItem(@NonNull UUID id) {
 		return this.items.getOrDefault(id, null);
+	}
+
+	public List<AuctionedItem> getValidItems(Player player) {
+		final List<AuctionedItem> itemList = new ArrayList<>();
+
+		for (Map.Entry<UUID, AuctionedItem> entry : AuctionHouse.getInstance().getAuctionItemManager().getItems().entrySet()) {
+			AuctionedItem auctionItem = entry.getValue();
+			if (!auctionItem.isExpired() && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
+				if (Settings.PER_WORLD_ITEMS.getBoolean()) {
+					if (auctionItem.getListedWorld() == null || player.getWorld().getName().equals(auctionItem.getListedWorld())) {
+						itemList.add(auctionItem);
+					}
+				} else {
+					itemList.add(auctionItem);
+				}
+			}
+		}
+
+		return itemList;
 	}
 }

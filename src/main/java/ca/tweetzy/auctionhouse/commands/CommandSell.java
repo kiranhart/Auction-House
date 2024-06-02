@@ -131,7 +131,6 @@ public final class CommandSell extends AbstractCommand {
 
 		// check if item has dt key
 		if (Validate.hasDTKey(originalItem)) {
-			Bukkit.broadcastMessage("has dupe item");
 			return ReturnType.FAILURE;
 		}
 
