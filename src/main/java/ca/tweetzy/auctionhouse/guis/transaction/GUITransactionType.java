@@ -20,14 +20,13 @@ package ca.tweetzy.auctionhouse.guis.transaction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.core.utils.NumberUtils;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -41,25 +40,27 @@ import java.util.*;
  * Time Created: 5:32 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class GUITransactionType extends AbstractPlaceholderGui {
+public final class GUITransactionType extends AuctionBaseGUI {
 
-	private final Player player;
 
 	public GUITransactionType(Player player) {
-		super(player);
-		this.player = player;
-		setTitle(TextUtils.formatText(Settings.GUI_TRANSACTIONS_TYPE_TITLE.getString()));
-		setRows(4);
-		setAcceptsItems(false);
-		setUseLockedCells(true);
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_TRANSACTIONS_TYPE_BG_ITEM.getString()));
+		super(new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())), player, Settings.GUI_TRANSACTIONS_TYPE_TITLE.getString(), 4);
+		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_TRANSACTIONS_TYPE_BG_ITEM.getString()).make()));
 		draw();
 	}
 
-	private void draw() {
+	@Override
+	protected void draw() {
+		applyBackExit();
+
 		final AuctionHouse instance = AuctionHouse.getInstance();
-//		(player.hasPermission("auctionhouse.admin") || player.isOp())
-		setButton(11, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_ITEM.getString(), Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_NAME.getString(), Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_LORE.getStringList(), null), e -> {
+
+		setButton(11, QuickItem
+				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_ITEM.getString())
+				.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_NAME.getString())
+				.lore(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_LORE.getStringList())
+				.make(), e -> {
+
 			if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !e.player.hasPermission("auctionhouse.transactions.viewall")) {
 				instance.getLocale().getMessage("commands.no_permission").sendPrefixedMessage(e.player);
 				return;
@@ -68,12 +69,20 @@ public final class GUITransactionType extends AbstractPlaceholderGui {
 			e.manager.showGUI(e.player, new GUITransactionList(e.player, true));
 		});
 
-		setButton(15, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_ITEM.getString(), Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_NAME.getString(), Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_LORE.getStringList(), null), e -> {
-			e.manager.showGUI(e.player, new GUITransactionList(e.player, false));
-		});
+		setButton(15, QuickItem
+				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_ITEM.getString())
+				.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_NAME.getString())
+				.lore(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_LORE.getStringList())
+				.make(), e -> e.manager.showGUI(e.player, new GUITransactionList(e.player, false)));
 
 		if (player.isOp() || player.hasPermission("auctionhouse.admin")) {
-			setButton(3, 8, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_ITEM.getString(), Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_NAME.getString(), Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_LORE.getStringList(), null), e -> {
+
+			setButton(3, 8, QuickItem
+					.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_ITEM.getString())
+					.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_NAME.getString())
+					.lore(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_LORE.getStringList())
+					.make(), e -> {
+
 				e.gui.close();
 
 				new TitleInput(player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter deletion range.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter deletion range.subtitle").getMessage()) {
@@ -125,7 +134,5 @@ public final class GUITransactionType extends AbstractPlaceholderGui {
 				};
 			});
 		}
-
-		setButton(3, 0, getBackButtonItem(), null, e -> e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId()))));
 	}
 }

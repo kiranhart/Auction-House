@@ -24,15 +24,18 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
-import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
-import ca.tweetzy.auctionhouse.helpers.MaterialCategorizer;
+import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
 import ca.tweetzy.core.compatibility.XSound;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -48,11 +51,9 @@ import java.util.stream.Collectors;
  * Time Created: 7:03 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUITransactionList extends AbstractPlaceholderGui {
+public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 
-	List<Transaction> transactions;
 	final AuctionPlayer auctionPlayer;
-	final Player player;
 	final boolean showAll;
 	private UUID searchUUID;
 
@@ -63,100 +64,57 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 	}
 
 	public GUITransactionList(Player player, boolean showAll) {
-		super(player);
-		this.player = player;
-		final AuctionHouse instance = AuctionHouse.getInstance();
-		this.auctionPlayer = instance.getAuctionPlayerManager().getPlayer(this.player.getUniqueId());
+		super(null, player, showAll ? Settings.GUI_TRANSACTIONS_TITLE_ALL.getString() : Settings.GUI_TRANSACTIONS_TITLE.getString(), 6, new ArrayList<>());
+		this.auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
 		this.showAll = showAll;
-		if (showAll)
-			this.transactions = new ArrayList<>(instance.getTransactionManager().getTransactions().values());
-		else
-			this.transactions = instance.getTransactionManager().getTransactions().values().stream().filter(transaction -> transaction.getSeller().equals(player.getUniqueId()) || transaction.getBuyer().equals(player.getUniqueId())).collect(Collectors.toList());
-
-
-		setTitle(TextUtils.formatText(showAll ? Settings.GUI_TRANSACTIONS_TITLE_ALL.getString() : Settings.GUI_TRANSACTIONS_TITLE.getString()));
-		setRows(6);
 		setAcceptsItems(false);
-		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF).parseSound());
 		draw();
 	}
 
-	private void draw() {
+	@Override
+	protected void prePopulate() {
+		this.items = this.showAll ? new ArrayList<>(AuctionHouse.getInstance().getTransactionManager().getTransactions().values()) : AuctionHouse.getInstance().getTransactionManager().getTransactions().values().stream().filter(transaction -> transaction.getSeller().equals(player.getUniqueId()) || transaction.getBuyer().equals(player.getUniqueId())).collect(Collectors.toList());
+
+
+		if (this.searchUUID != null)
+			this.items = this.items.stream().filter(transaction -> transaction.getSeller().equals(this.searchUUID) || transaction.getBuyer().equals(this.searchUUID)).collect(Collectors.toList());
+
+		// perform filter
+		if (this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.ALL && this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.SEARCH && this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.SELF) {
+			this.items = this.items.stream().filter(item -> MaterialCategorizer.getMaterialCategory(item.getItem()) == this.auctionPlayer.getSelectedTransactionFilter()).collect(Collectors.toList());
+		}
+
+		if (this.auctionPlayer.getSelectedTransactionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM) {
+			this.items = this.items.stream().filter(transaction -> transaction.getAuctionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM).collect(Collectors.toList());
+		}
+
+		if (this.auctionPlayer.getSelectedTransactionSaleType() == AuctionSaleType.WITHOUT_BIDDING_SYSTEM) {
+			this.items = this.items.stream().filter(transaction -> transaction.getAuctionSaleType() == AuctionSaleType.WITHOUT_BIDDING_SYSTEM).collect(Collectors.toList());
+		}
+
+		if (this.auctionPlayer.getTransactionViewFilter() != TransactionViewFilter.ALL) {
+			if (this.auctionPlayer.getTransactionViewFilter() == TransactionViewFilter.BOUGHT)
+				this.items = this.items.stream().filter(transaction -> transaction.getBuyer().equals(this.player.getUniqueId())).collect(Collectors.toList());
+
+			if (this.auctionPlayer.getTransactionViewFilter() == TransactionViewFilter.SOLD)
+				this.items = this.items.stream().filter(transaction -> transaction.getSeller().equals(this.player.getUniqueId())).collect(Collectors.toList());
+		}
+
+		if (this.auctionPlayer.getTransactionSortType() == AuctionSortType.PRICE) {
+			this.items = this.items.stream().sorted(Comparator.comparingDouble(Transaction::getFinalPrice).reversed()).collect(Collectors.toList());
+		}
+
+		if (this.auctionPlayer.getTransactionSortType() == AuctionSortType.RECENT) {
+			this.items = this.items.stream().sorted(Comparator.comparingLong(Transaction::getTransactionTime).reversed()).collect(Collectors.toList());
+		}
+	}
+
+	@Override
+	protected void drawFixed() {
 		reset();
 
-		AuctionHouse.newChain().asyncFirst(() -> {
-			if (this.searchUUID != null)
-				this.transactions = this.transactions.stream().filter(transaction -> transaction.getSeller().equals(this.searchUUID) || transaction.getBuyer().equals(this.searchUUID)).collect(Collectors.toList());
-
-			// perform filter
-			if (this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.ALL && this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.SEARCH && this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.SELF) {
-				this.transactions = this.transactions.stream().filter(item -> MaterialCategorizer.getMaterialCategory(item.getItem()) == this.auctionPlayer.getSelectedTransactionFilter()).collect(Collectors.toList());
-			}
-
-			if (this.auctionPlayer.getSelectedTransactionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM) {
-				this.transactions = this.transactions.stream().filter(transaction -> transaction.getAuctionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM).collect(Collectors.toList());
-			}
-
-			if (this.auctionPlayer.getSelectedTransactionSaleType() == AuctionSaleType.WITHOUT_BIDDING_SYSTEM) {
-				this.transactions = this.transactions.stream().filter(transaction -> transaction.getAuctionSaleType() == AuctionSaleType.WITHOUT_BIDDING_SYSTEM).collect(Collectors.toList());
-			}
-
-			if (this.auctionPlayer.getTransactionViewFilter() != TransactionViewFilter.ALL) {
-				if (this.auctionPlayer.getTransactionViewFilter() == TransactionViewFilter.BOUGHT)
-					this.transactions = this.transactions.stream().filter(transaction -> transaction.getBuyer().equals(this.player.getUniqueId())).collect(Collectors.toList());
-
-				if (this.auctionPlayer.getTransactionViewFilter() == TransactionViewFilter.SOLD)
-					this.transactions = this.transactions.stream().filter(transaction -> transaction.getSeller().equals(this.player.getUniqueId())).collect(Collectors.toList());
-			}
-
-			if (this.auctionPlayer.getTransactionSortType() == AuctionSortType.PRICE) {
-				this.transactions = this.transactions.stream().sorted(Comparator.comparingDouble(Transaction::getFinalPrice).reversed()).collect(Collectors.toList());
-			}
-
-			if (this.auctionPlayer.getTransactionSortType() == AuctionSortType.RECENT) {
-				this.transactions = this.transactions.stream().sorted(Comparator.comparingLong(Transaction::getTransactionTime).reversed()).collect(Collectors.toList());
-			}
-
-			return this.transactions.stream().skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
-
-		}).asyncLast((data) -> {
-			pages = (int) Math.max(1, Math.ceil(this.transactions.size() / (double) 45L));
-			setPrevPage(5, 3, getPreviousPageItem());
-			setButton(5, 4, getRefreshButtonItem(), e -> e.manager.showGUI(e.player, new GUITransactionList(this.player, this.showAll)));
-			setNextPage(5, 5, getNextPageItem());
-			setOnPage(e -> draw());
-
-			int slot = 0;
-			final String SERVER_LISTING_NAME = AuctionHouse.getInstance().getLocale().getMessage("general.server listing").getMessage();
-
-
-			for (Transaction transaction : data) {
-				final ItemStack item = transaction.getItem().clone();
-				final OfflinePlayer seller = Bukkit.getOfflinePlayer(transaction.getSeller());
-
-				setButton(slot++, ConfigurationItemHelper.createConfigurationItem(this.player, item, Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(), new HashMap<String, Object>() {{
-					put("%transaction_id%", transaction.getId().toString());
-					put("%seller%", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME);
-					put("%buyer%", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName());
-					put("%date%", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()));
-					put("%item_name%", AuctionAPI.getInstance().getItemName(item));
-				}}), e -> {
-
-					if (e.clickType == ClickType.DROP && (player.isOp() || player.hasPermission("auctionhouse.admin"))) {
-						AuctionHouse.getInstance().getDataManager().deleteTransactions(Collections.singleton(transaction.getId()));
-						AuctionHouse.getInstance().getTransactionManager().removeTransaction(transaction.getId());
-						e.manager.showGUI(e.player, new GUITransactionList(this.player, this.showAll));
-					}
-
-					if (e.clickType == ClickType.LEFT)
-						e.manager.showGUI(e.player, new GUITransactionView(this.auctionPlayer, transaction, this.showAll));
-				});
-			}
-
-		}).execute();
-
 		// Other Buttons
-		setButton(5, 0, getBackButtonItem(), e -> {
+		setButton(5, 0, getBackButton(), e -> {
 			if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !e.player.hasPermission("auctionhouse.transactions.viewall")) {
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			} else {
@@ -209,5 +167,35 @@ public class GUITransactionList extends AbstractPlaceholderGui {
 				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
 			}
 		});
+	}
+
+	@Override
+	protected ItemStack makeDisplayItem(Transaction transaction) {
+		final ItemStack item = transaction.getItem().clone();
+		final OfflinePlayer seller = Bukkit.getOfflinePlayer(transaction.getSeller());
+		final String SERVER_LISTING_NAME = AuctionHouse.getInstance().getLocale().getMessage("general.server listing").getMessage();
+
+		return QuickItem
+				.of(item)
+				.name(Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(),"transaction_id", transaction.getId().toString()))
+				.lore(Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(),
+						"transaction_id",transaction.getId().toString(),
+						"seller", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME,
+						"buyer", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName(),
+						"date", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()),
+						"item_name", AuctionAPI.getInstance().getItemName(item)
+				)).make();
+	}
+
+	@Override
+	protected void onClick(Transaction transaction, GuiClickEvent click) {
+		if (click.clickType == ClickType.DROP && (player.isOp() || player.hasPermission("auctionhouse.admin"))) {
+			AuctionHouse.getInstance().getDataManager().deleteTransactions(Collections.singleton(transaction.getId()));
+			AuctionHouse.getInstance().getTransactionManager().removeTransaction(transaction.getId());
+			click.manager.showGUI(click.player, new GUITransactionList(this.player, this.showAll));
+		}
+
+		if (click.clickType == ClickType.LEFT)
+			click.manager.showGUI(click.player, new GUITransactionView(this.auctionPlayer, transaction, this.showAll));
 	}
 }
