@@ -16,9 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.managers;
+package ca.tweetzy.auctionhouse.model.manager;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.manager.KeyValueManager;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import org.bukkit.entity.Player;
 
@@ -33,33 +34,26 @@ import java.util.stream.Collectors;
  * Time Created: 3:34 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class PaymentsManager {
+public class PaymentsManager extends KeyValueManager<UUID, AuctionPayment> {
 
-	private final ConcurrentHashMap<UUID, AuctionPayment> payments = new ConcurrentHashMap<>();
+	public PaymentsManager() {
+		super("Payments");
+	}
 
-	public void addPayment(AuctionPayment payment) {
+	public void add(AuctionPayment payment) {
 		if (payment == null) return;
-		this.payments.put(payment.getId(), payment);
-	}
-
-	public void removePayment(UUID uuid) {
-		this.payments.remove(uuid);
-	}
-
-	public ConcurrentHashMap<UUID, AuctionPayment> getPayments() {
-		return this.payments;
+		add(payment.getId(), payment);
 	}
 
 	public List<AuctionPayment> getPaymentsByPlayer(Player player) {
-		return this.payments.values().stream().filter(payment -> payment.getTo().equals(player.getUniqueId())).collect(Collectors.toList());
+		return this.managerContent.values().stream().filter(payment -> payment.getTo().equals(player.getUniqueId())).collect(Collectors.toList());
 	}
 
-	public void loadPayments() {
+	@Override
+	public void load() {
 		AuctionHouse.getInstance().getDataManager().getAuctionPayments((error, results) -> {
 			if (error == null) {
-				for (AuctionPayment payment : results) {
-					addPayment(payment);
-				}
+				results.forEach(this::add);
 			}
 		});
 	}

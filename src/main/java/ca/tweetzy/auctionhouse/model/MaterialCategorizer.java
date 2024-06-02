@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.helpers;
+package ca.tweetzy.auctionhouse.model;
 
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.core.compatibility.XMaterial;
