@@ -22,12 +22,13 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XSound;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -36,58 +37,35 @@ import java.util.stream.Collectors;
  * Time Created: 11:55 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIActiveBids extends AbstractPlaceholderGui {
+public class GUIActiveBids extends AuctionPagedGUI<AuctionedItem> {
 
 	private final AuctionPlayer auctionPlayer;
-	private List<AuctionedItem> items;
 
 	public GUIActiveBids(AuctionPlayer auctionPlayer) {
-		super(auctionPlayer);
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ACTIVE_BIDS_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getInstance().getAuctionItemManager().getHighestBidItems(auctionPlayer.getPlayer())));
 		this.auctionPlayer = auctionPlayer;
-		setTitle(TextUtils.formatText(Settings.GUI_ACTIVE_BIDS_TITLE.getString()));
-		setRows(6);
-		setAcceptsItems(false);
-		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF).parseSound());
 		draw();
 	}
 
-	private void draw() {
-		reset();
-		drawFixedButtons();
-		drawItems();
+	@Override
+	protected void drawFixed() {
+		applyBackExit();
 	}
 
-	private void drawItems() {
-		AuctionHouse.newChain().asyncFirst(() -> {
-			this.items = AuctionHouse.getInstance().getAuctionItemManager().getHighestBidItems(this.player);
+	@Override
+	protected void prePopulate() {
+		if (Settings.PER_WORLD_ITEMS.getBoolean())
+			this.items = this.items.stream().filter(item -> item.getListedWorld() == null || this.auctionPlayer.getPlayer().getWorld().getName().equals(item.getListedWorld())).collect(Collectors.toList());
 
-			// per world check
-			if (Settings.PER_WORLD_ITEMS.getBoolean()) {
-				this.items = this.items.stream().filter(item -> item.getListedWorld() == null || this.auctionPlayer.getPlayer().getWorld().getName().equals(item.getListedWorld())).collect(Collectors.toList());
-			}
-
-			return this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
-		}).asyncLast((data) -> {
-			pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));
-			drawPaginationButtons();
-
-			int slot = 0;
-			for (AuctionedItem item : data) {
-				setItem(slot++, item.getDisplayStack(AuctionStackType.HIGHEST_BID_PREVIEW));
-			}
-		}).execute();
+		this.items.sort(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed());
 	}
 
-	private void drawFixedButtons() {
-		setButton(5, 0, getBackButtonItem(), e -> {
-			e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
-		});
-
+	@Override
+	protected ItemStack makeDisplayItem(AuctionedItem auctionedItem) {
+		return auctionedItem.getDisplayStack(AuctionStackType.HIGHEST_BID_PREVIEW);
 	}
 
-	private void drawPaginationButtons() {
-		setPrevPage(5, 3, getPreviousPageItem());
-		setNextPage(5, 5, getNextPageItem());
-		setOnPage(e -> draw());
+	@Override
+	protected void onClick(AuctionedItem object, GuiClickEvent clickEvent) {
 	}
 }
