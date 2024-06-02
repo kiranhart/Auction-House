@@ -39,6 +39,10 @@ public interface Auction extends Identifiable<UUID>, Trackable, Synchronize {
 
 	ListingType getType();
 
+	String getCurrency();
+
+	ItemStack getCurrencyItem();
+
 	double getBinPrice();
 
 	String getListedWorld();
@@ -50,6 +54,8 @@ public interface Auction extends Identifiable<UUID>, Trackable, Synchronize {
 	long getExpirationTime();
 
 	void setExpirationTime(long expirationTime);
+
+	void setCurrency(String currency);
 
 	void setBinPrice(double binPrice);
 

@@ -42,6 +42,8 @@ public final class AuctionListing extends BinListing implements Biddable {
 			@NonNull UUID ownerUUID,
 			@NonNull String ownerName,
 			@NonNull ItemStack item,
+			@NonNull String currency,
+			@NonNull ItemStack currencyItem,
 			double startingBid,
 			double binPrice,
 			@NonNull String listedWorld,
@@ -52,7 +54,7 @@ public final class AuctionListing extends BinListing implements Biddable {
 			long listedAt,
 			long expiresAt
 	) {
-		super(ListingType.AUCTION, uuid, ownerUUID, ownerName, item, binPrice, listedWorld, listedServer, listedAt, expiresAt);
+		super(ListingType.AUCTION, uuid, ownerUUID, ownerName, item, currency, currencyItem, binPrice, listedWorld, listedServer, listedAt, expiresAt);
 		this.startingBid = startingBid;
 		this.highestBidderName = highestBidderName;
 		this.highestBidderUUID = highestBidderUUID;

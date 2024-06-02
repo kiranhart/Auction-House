@@ -20,6 +20,7 @@ package ca.tweetzy.auctionhouse.impl.listing;
 
 import ca.tweetzy.auctionhouse.api.auction.ListingDisplayMode;
 import ca.tweetzy.auctionhouse.api.auction.ListingType;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.ItemUtil;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
@@ -36,6 +37,8 @@ public class BinListing extends AuctionItem {
 	private final UUID ownerUUID;
 	private final String ownerName;
 
+	private String currency;
+	private ItemStack currencyItem;
 	private double binPrice;
 
 	private final String listedWorld;
@@ -52,6 +55,8 @@ public class BinListing extends AuctionItem {
 			@NonNull final UUID ownerUUID,
 			@NonNull final String ownerName,
 			@NonNull final ItemStack item,
+			@NonNull final String currency,
+			@NonNull final ItemStack currencyItem,
 			final double price,
 			@NonNull final String listedWorld,
 			@NonNull final String listedServer,
@@ -62,6 +67,7 @@ public class BinListing extends AuctionItem {
 		this.uuid = uuid;
 		this.ownerUUID = ownerUUID;
 		this.ownerName = ownerName;
+		this.currency = currency;
 		this.binPrice = price;
 		this.listedWorld = listedWorld;
 		this.listedServer = listedServer;
@@ -75,7 +81,7 @@ public class BinListing extends AuctionItem {
 			@NonNull final ItemStack item,
 			final double price
 	) {
-		this(listingType, UUID.randomUUID(), player.getUniqueId(), player.getName(), item, price, player.getWorld().getName(), player.getServer().getName(), System.currentTimeMillis(), System.currentTimeMillis() + 1000 * 60 * 60);
+		this(listingType, UUID.randomUUID(), player.getUniqueId(), player.getName(), item, "Vault/Vault", CompMaterial.AIR.parseItem(), price, player.getWorld().getName(), player.getServer().getName(), System.currentTimeMillis(), System.currentTimeMillis() + 1000 * 60 * 60);
 	}
 
 	public BinListing(
@@ -83,7 +89,7 @@ public class BinListing extends AuctionItem {
 			@NonNull final ItemStack item,
 			final double price
 	) {
-		this(ListingType.BIN, UUID.randomUUID(), player.getUniqueId(), player.getName(), item, price, player.getWorld().getName(), player.getServer().getName(), System.currentTimeMillis(), System.currentTimeMillis() + 1000 * 60 * 60);
+		this(ListingType.BIN, UUID.randomUUID(), player.getUniqueId(), player.getName(), item, "Vault/Vault", CompMaterial.AIR.parseItem(), price, player.getWorld().getName(), player.getServer().getName(), System.currentTimeMillis(), System.currentTimeMillis() + 1000 * 60 * 60);
 	}
 
 	@NonNull
@@ -110,6 +116,16 @@ public class BinListing extends AuctionItem {
 	@Override
 	public ListingType getType() {
 		return this.listingType;
+	}
+
+	@Override
+	public String getCurrency() {
+		return this.currency;
+	}
+
+	@Override
+	public ItemStack getCurrencyItem() {
+		return this.currencyItem;
 	}
 
 	@Override
@@ -140,6 +156,15 @@ public class BinListing extends AuctionItem {
 	@Override
 	public void setExpirationTime(long expirationTime) {
 		this.expiresAt = expirationTime;
+	}
+
+	@Override
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public void setCurrencyItem(ItemStack currencyItem) {
+		this.currencyItem = currencyItem;
 	}
 
 	@Override
