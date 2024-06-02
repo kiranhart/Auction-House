@@ -63,7 +63,7 @@ public class GUIBid extends AuctionBaseGUI {
 		setItem(1, 4, this.auctionItem.getItem());
 
 		setButton(1, 2, QuickItem
-				.of( Settings.GUI_BIDDING_ITEMS_DEFAULT_ITEM.getString())
+				.of(Settings.GUI_BIDDING_ITEMS_DEFAULT_ITEM.getString())
 				.name(Settings.GUI_BIDDING_ITEMS_DEFAULT_NAME.getString())
 				.lore(Settings.GUI_BIDDING_ITEMS_DEFAULT_LORE.getStringList()).make(), e -> {
 

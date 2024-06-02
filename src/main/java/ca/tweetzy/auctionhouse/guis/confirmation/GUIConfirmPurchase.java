@@ -28,7 +28,6 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.exception.ItemNotFoundException;
-import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.GUIContainerInspect;
 import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
@@ -38,7 +37,6 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.Bukkit;
@@ -380,18 +378,18 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 	}
 
 	protected ItemStack getConfirmBuyYesItem() {
-		return  QuickItem.of(Settings.GUI_CONFIRM_BUY_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_YES_NAME.getString()).lore(Settings.GUI_CONFIRM_BUY_YES_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_BUY_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_YES_NAME.getString()).lore(Settings.GUI_CONFIRM_BUY_YES_LORE.getStringList()).make();
 	}
 
 	protected ItemStack getConfirmBuyNoItem() {
-		return  QuickItem.of(Settings.GUI_CONFIRM_BUY_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_NO_NAME.getString()).lore(Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_BUY_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_NO_NAME.getString()).lore(Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList()).make();
 	}
 
 	protected ItemStack getConfirmRequestYesItem() {
-		return  QuickItem.of(Settings.GUI_CONFIRM_REQUEST_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_YES_NAME.getString()).lore(Settings.GUI_CONFIRM_REQUEST_YES_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_REQUEST_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_YES_NAME.getString()).lore(Settings.GUI_CONFIRM_REQUEST_YES_LORE.getStringList()).make();
 	}
 
 	protected ItemStack getConfirmRequestNoItem() {
-		return  QuickItem.of(Settings.GUI_CONFIRM_REQUEST_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_NO_NAME.getString()).lore(Settings.GUI_CONFIRM_REQUEST_NO_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_REQUEST_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_NO_NAME.getString()).lore(Settings.GUI_CONFIRM_REQUEST_NO_LORE.getStringList()).make();
 	}
 }

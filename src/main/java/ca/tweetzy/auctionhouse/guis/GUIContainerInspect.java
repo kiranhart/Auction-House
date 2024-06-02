@@ -24,10 +24,8 @@ import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
-import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +34,6 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The current file has been created by Kiran Hart

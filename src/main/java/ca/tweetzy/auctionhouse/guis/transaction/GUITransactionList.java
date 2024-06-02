@@ -31,9 +31,7 @@ import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
-import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
-import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import org.bukkit.Bukkit;
@@ -175,9 +173,9 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 
 		return QuickItem
 				.of(item)
-				.name(Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(),"transaction_id", transaction.getId().toString()))
+				.name(Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), "transaction_id", transaction.getId().toString()))
 				.lore(Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(),
-						"transaction_id",transaction.getId().toString(),
+						"transaction_id", transaction.getId().toString(),
 						"seller", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME,
 						"buyer", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName(),
 						"date", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()),

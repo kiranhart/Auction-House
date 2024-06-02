@@ -30,7 +30,10 @@ import ca.tweetzy.auctionhouse.guis.GUIBundleCreation;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellListingType;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
-import ca.tweetzy.auctionhouse.helpers.*;
+import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
+import ca.tweetzy.auctionhouse.helpers.BundleUtil;
+import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
+import ca.tweetzy.auctionhouse.helpers.Validate;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
@@ -127,7 +130,7 @@ public final class CommandSell extends AbstractCommand {
 		}
 
 		// check if item has dt key
-		if(Validate.hasDTKey(originalItem)) {
+		if (Validate.hasDTKey(originalItem)) {
 			Bukkit.broadcastMessage("has dupe item");
 			return ReturnType.FAILURE;
 		}

@@ -18,8 +18,6 @@
 
 package ca.tweetzy.auctionhouse.api.auction;
 
-import org.omg.CORBA.UNKNOWN;
-
 public enum ListingResult {
 
 	SUCCESS,

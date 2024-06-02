@@ -43,7 +43,7 @@ import java.util.ArrayList;
 public class GUIBans extends AuctionUpdatingPagedGUI<AuctionBan> {
 
 	public GUIBans(Player player) {
-		super(null, player,Settings.GUI_BANS_TITLE.getString(),6, 20, new ArrayList<>());
+		super(null, player, Settings.GUI_BANS_TITLE.getString(), 6, 20, new ArrayList<>());
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_BANS_BG_ITEM.getString()).make()));
 
 		startTask();
@@ -65,13 +65,13 @@ public class GUIBans extends AuctionUpdatingPagedGUI<AuctionBan> {
 		final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ban.getBannedPlayer());
 
 		return QuickItem
-			.of(AuctionAPI.getInstance().getPlayerHead(offlinePlayer.getName()))
+				.of(AuctionAPI.getInstance().getPlayerHead(offlinePlayer.getName()))
 				.name(Replacer.replaceVariables(Settings.GUI_BANS_BAN_NAME.getString(), "player_name", offlinePlayer.getName()))
 				.lore(Replacer.replaceVariables(Settings.GUI_BANS_BAN_LORE.getStringList(),
-						"player_name",offlinePlayer.getName(),
+						"player_name", offlinePlayer.getName(),
 						"player_displayname", AuctionAPI.getInstance().getDisplayName(offlinePlayer),
-						"ban_reason",ban.getReason(),
-						"ban_amount",(ban.getTime() - System.currentTimeMillis()) <= 0 ? AuctionHouse.getInstance().getLocale().getMessage("bans.ban expired").getMessage() : TimeUtils.makeReadable(ban.getTime() - System.currentTimeMillis())
+						"ban_reason", ban.getReason(),
+						"ban_amount", (ban.getTime() - System.currentTimeMillis()) <= 0 ? AuctionHouse.getInstance().getLocale().getMessage("bans.ban expired").getMessage() : TimeUtils.makeReadable(ban.getTime() - System.currentTimeMillis())
 				)).make();
 	}
 

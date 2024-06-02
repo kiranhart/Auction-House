@@ -21,17 +21,14 @@ package ca.tweetzy.auctionhouse.guis.admin;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionAdminLog;
 import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
-import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 /**

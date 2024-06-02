@@ -24,7 +24,6 @@ import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.configuration.ConfigSetting;
 import ca.tweetzy.core.hooks.EconomyManager;
-import ca.tweetzy.flight.gui.helper.InventoryBorder;
 
 import java.util.Arrays;
 import java.util.Collections;
