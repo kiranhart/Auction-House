@@ -25,13 +25,13 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.events.AuctionBidEvent;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.NumberUtils;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -44,43 +44,47 @@ import org.bukkit.inventory.ItemStack;
  * Time Created: 5:16 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIBid extends AbstractPlaceholderGui {
+public class GUIBid extends AuctionBaseGUI {
 
 	private final AuctionPlayer auctionPlayer;
 	private final AuctionedItem auctionItem;
 
 	public GUIBid(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
-		super(auctionPlayer);
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_BIDDING_TITLE.getString(), 3);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
-		setTitle(TextUtils.formatText(Settings.GUI_BIDDING_TITLE.getString()));
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_BIDDING_BG_ITEM.getString()));
-		setUseLockedCells(true);
-		setAcceptsItems(false);
-		setAllowDrops(false);
-		setRows(3);
-		draw();
-
+		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_BIDDING_BG_ITEM.getString()).make()));
 		setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouse(this.auctionPlayer)));
+		draw();
 	}
 
-	private void draw() {
+	@Override
+	protected void draw() {
 		setItem(1, 4, this.auctionItem.getItem());
-		setButton(1, 2, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_BIDDING_ITEMS_DEFAULT_ITEM.getString(), Settings.GUI_BIDDING_ITEMS_DEFAULT_NAME.getString(), Settings.GUI_BIDDING_ITEMS_DEFAULT_LORE.getStringList(), null), e -> {
+
+		setButton(1, 2, QuickItem
+				.of( Settings.GUI_BIDDING_ITEMS_DEFAULT_ITEM.getString())
+				.name(Settings.GUI_BIDDING_ITEMS_DEFAULT_NAME.getString())
+				.lore(Settings.GUI_BIDDING_ITEMS_DEFAULT_LORE.getStringList()).make(), e -> {
+
 			if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice())) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
 				return;
 			}
 
 			e.gui.exit();
-			// THE MINIMUM
 			final double minBid = Settings.USE_REALISTIC_BIDDING.getBoolean() ? this.auctionItem.getCurrentPrice() + this.auctionItem.getBidIncrementPrice() : this.auctionItem.getBidIncrementPrice();
 
 			e.manager.showGUI(e.player, new GUIConfirmBid(this.auctionPlayer, auctionItem, minBid));
 		});
 
 		// TODO UPDATE BID
-		setButton(1, 6, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_BIDDING_ITEMS_CUSTOM_ITEM.getString(), Settings.GUI_BIDDING_ITEMS_CUSTOM_NAME.getString(), Settings.GUI_BIDDING_ITEMS_CUSTOM_LORE.getStringList(), null), e -> {
+		setButton(1, 6, QuickItem
+				.of(Settings.GUI_BIDDING_ITEMS_CUSTOM_ITEM.getString())
+				.name(Settings.GUI_BIDDING_ITEMS_CUSTOM_NAME.getString())
+				.lore(Settings.GUI_BIDDING_ITEMS_CUSTOM_LORE.getStringList())
+				.make(), e -> {
+
 			e.gui.exit();
 
 			new TitleInput(player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.subtitle").getMessage()) {
