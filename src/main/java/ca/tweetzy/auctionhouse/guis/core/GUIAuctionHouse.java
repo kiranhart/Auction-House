@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.guis;
+package ca.tweetzy.auctionhouse.guis.core;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
@@ -26,6 +26,8 @@ import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.*;
 import ca.tweetzy.auctionhouse.events.AuctionBidEvent;
+import ca.tweetzy.auctionhouse.guis.AbstractPlaceholderGui;
+import ca.tweetzy.auctionhouse.guis.core.bid.GUIBid;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminItem;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;

@@ -21,7 +21,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.MinItemPrice;
-import ca.tweetzy.auctionhouse.guis.GUIMinItemPrices;
+import ca.tweetzy.auctionhouse.guis.admin.GUIMinItemPrices;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
