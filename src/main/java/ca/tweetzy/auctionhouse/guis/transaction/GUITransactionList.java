@@ -26,7 +26,6 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
@@ -40,7 +39,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -118,18 +120,15 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 			}
 		});
 
-		setButton(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_SLOT.getInt(), ConfigurationItemHelper.createConfigurationItem(
-				this.player,
-				Settings.GUI_TRANSACTIONS_ITEMS_FILTER_ITEM.getString(),
-				Settings.GUI_TRANSACTIONS_ITEMS_FILTER_NAME.getString(),
-				Settings.GUI_TRANSACTIONS_ITEMS_FILTER_LORE.getStringList(),
-				new HashMap<String, Object>() {{
-					put("%filter_category%", auctionPlayer.getSelectedTransactionFilter().getTranslatedType());
-					put("%filter_auction_type%", auctionPlayer.getSelectedTransactionSaleType().getTranslatedType());
-					put("%filter_sort_order%", auctionPlayer.getTransactionSortType().getTranslatedType());
-					put("%filter_buy_type%", auctionPlayer.getTransactionViewFilter().getTranslatedType());
-				}}
-		), click -> {
+		setButton(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_SLOT.getInt(), QuickItem
+				.of(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_ITEM.getString())
+				.name(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_NAME.getString())
+				.lore(Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_LORE.getStringList(),
+						"filter_category", auctionPlayer.getSelectedTransactionFilter().getTranslatedType(),
+						"filter_auction_type", auctionPlayer.getSelectedTransactionSaleType().getTranslatedType(),
+						"filter_sort_order", auctionPlayer.getTransactionSortType().getTranslatedType(),
+						"filter_buy_type", auctionPlayer.getTransactionViewFilter().getTranslatedType()
+				)).make(), click -> {
 
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase())) {
 				this.auctionPlayer.setSelectedTransactionFilter(this.auctionPlayer.getSelectedTransactionFilter().next());

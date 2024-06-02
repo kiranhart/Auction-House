@@ -151,6 +151,14 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 				.make();
 	}
 
+	protected ItemStack getRefreshButton() {
+		return QuickItem
+				.of(Settings.GUI_REFRESH_BTN_ITEM.getString())
+				.name(Settings.GUI_REFRESH_BTN_NAME.getString())
+				.lore(Settings.GUI_REFRESH_BTN_LORE.getStringList())
+				.make();
+	}
+
 	@Override
 	protected int getPreviousButtonSlot() {
 		return 48;

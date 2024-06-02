@@ -18,7 +18,6 @@
 
 package ca.tweetzy.auctionhouse.guis.abstraction;
 
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.BaseGUI;
 import ca.tweetzy.core.gui.Gui;
@@ -56,7 +55,7 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 	}
 
 	private void applyDefaults() {
-		setDefaultItem(ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_FILLER.getString()));
+		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILLER.getString()).make()));
 		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF).parseSound());
 	}
 

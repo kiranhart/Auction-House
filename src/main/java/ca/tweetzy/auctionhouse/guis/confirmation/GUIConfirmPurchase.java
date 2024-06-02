@@ -31,7 +31,6 @@ import ca.tweetzy.auctionhouse.exception.ItemNotFoundException;
 import ca.tweetzy.auctionhouse.guis.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.GUIContainerInspect;
 import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
@@ -39,6 +38,7 @@ import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
@@ -47,7 +47,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -358,15 +357,18 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 	}
 
 	private ItemStack getPurchaseInfoItem(int qty) {
-		ItemStack stack = ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_CONFIRM_QTY_INFO_ITEM.getString(), Settings.GUI_CONFIRM_QTY_INFO_NAME.getString(), Settings.GUI_CONFIRM_QTY_INFO_LORE.getStringList(), new HashMap<String, Object>() {{
-			put("%original_stack_size%", maxStackSize);
-			put("%original_stack_price%", AuctionAPI.getInstance().formatNumber(auctionItem.getBasePrice()));
-			put("%price_per_item%", AuctionAPI.getInstance().formatNumber(pricePerItem));
-			put("%purchase_quantity%", purchaseQuantity);
-			put("%purchase_price%", AuctionAPI.getInstance().formatNumber(pricePerItem * purchaseQuantity));
-		}});
-		stack.setAmount(qty);
-		return stack;
+		return QuickItem
+				.of(Settings.GUI_CONFIRM_QTY_INFO_ITEM.getString())
+				.amount(qty)
+				.name(Settings.GUI_CONFIRM_QTY_INFO_NAME.getString())
+				.lore(Replacer.replaceVariables(Settings.GUI_CONFIRM_QTY_INFO_LORE.getStringList(),
+						"original_stack_size", maxStackSize,
+						"original_stack_price", AuctionAPI.getInstance().formatNumber(auctionItem.getBasePrice()),
+						"price_per_item", AuctionAPI.getInstance().formatNumber(pricePerItem),
+						"purchase_quantity", purchaseQuantity,
+						"purchase_price", AuctionAPI.getInstance().formatNumber(pricePerItem * purchaseQuantity)
+				))
+				.make();
 	}
 
 	private ItemStack getIncreaseQtyButtonItem() {

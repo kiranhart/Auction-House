@@ -25,20 +25,20 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
+import ca.tweetzy.auctionhouse.guis.abstraction.AuctionUpdatingPagedGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmCancel;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XSound;
+import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
-import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.messages.Titles;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -47,123 +47,121 @@ import java.util.stream.Collectors;
  * Time Created: 10:33 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class GUIActiveAuctions extends AbstractPlaceholderGui {
+public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 	private final AuctionPlayer auctionPlayer;
-	private BukkitTask task;
-
-	private List<AuctionedItem> items;
 
 	public GUIActiveAuctions(AuctionPlayer auctionPlayer) {
-		super(auctionPlayer);
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ACTIVE_AUCTIONS_TITLE.getString(), 6, 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
 		this.auctionPlayer = auctionPlayer;
-		setTitle(TextUtils.formatText(Settings.GUI_ACTIVE_AUCTIONS_TITLE.getString()));
-		setRows(6);
-		setAcceptsItems(false);
-		setNavigateSound(XSound.matchXSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(XSound.ENTITY_BAT_TAKEOFF).parseSound());
-		draw();
 
-		if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) {
-			setOnOpen(e -> makeMess());
-			setOnClose(e -> cleanup());
+		if (Settings.AUTO_REFRESH_ACTIVE_AUCTION_PAGES.getBoolean()) {
+			startTask();
+		}
+
+		applyClose();
+		draw();
+	}
+
+	@Override
+	protected void prePopulate() {
+		this.items = this.auctionPlayer.getItems(false);
+
+		if (Settings.PER_WORLD_ITEMS.getBoolean()) {
+			this.items = this.items.stream().filter(item -> item.getListedWorld() == null || this.auctionPlayer.getPlayer().getWorld().getName().equals(item.getListedWorld())).collect(Collectors.toList());
+		}
+
+		this.items.sort(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed());
+	}
+
+	@Override
+	protected ItemStack makeDisplayItem(AuctionedItem auctionedItem) {
+		return auctionedItem.isRequest() ? auctionedItem.getDisplayRequestStack(AuctionStackType.ACTIVE_AUCTIONS_LIST) : auctionedItem.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST);
+	}
+
+	@Override
+	protected void onClick(AuctionedItem item, GuiClickEvent click) {
+		switch (click.clickType) {
+			case LEFT:
+				if (item.isRequest()) {
+					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(item);
+					cancelTask();
+					click.manager.showGUI(click.player, new GUIActiveAuctions(this.auctionPlayer));
+					return;
+				}
+
+				if (Settings.SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID.getBoolean() && item.containsValidBid()) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.cannot cancel item with bid").sendPrefixedMessage(click.player);
+					return;
+				}
+
+				if (((item.getBidStartingPrice() > 0 || item.getBidIncrementPrice() > 0) && Settings.ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS.getBoolean()) || Settings.ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS.getBoolean()) {
+					if (item.getHighestBidder().equals(click.player.getUniqueId()) && item.isBidItem()) {
+						item.setExpired(true);
+						item.setExpiresAt(System.currentTimeMillis());
+						if (Settings.BIDDING_TAKES_MONEY.getBoolean() && !item.getHighestBidder().equals(item.getOwner())) {
+							final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(item.getHighestBidder());
+
+							if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
+								AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+										oldBidder.getUniqueId(),
+										item.getCurrentPrice(),
+										item.getItem(),
+										AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
+										PaymentReason.BID_RETURNED
+								), null);
+							else
+								EconomyManager.deposit(oldBidder, item.getCurrentPrice());
+
+							if (oldBidder.isOnline())
+								AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(item.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+
+						}
+
+						draw();
+						return;
+					}
+					cancelTask();
+					click.manager.showGUI(click.player, new GUIConfirmCancel(this.auctionPlayer, item));
+					return;
+				}
+
+				item.setExpired(true);
+				draw();
+				break;
+			case RIGHT:
+				if (Settings.ALLOW_PLAYERS_TO_ACCEPT_BID.getBoolean() && item.getBidStartingPrice() != 0 && !item.getHighestBidder().equals(click.player.getUniqueId())) {
+					item.setExpiresAt(System.currentTimeMillis());
+					draw();
+				}
+				break;
 		}
 	}
 
-	private void draw() {
-		reset();
-		drawFixedButtons();
-		drawItems();
-	}
+	@Override
+	protected void drawFixed() {
+		if (this.parent == null) {
+			setButton(getBackExitButtonSlot(), getExitButton(), click -> click.gui.close());
+		} else {
+			setButton(getBackExitButtonSlot(), getBackButton(), click -> {
+				cancelTask();
+				click.manager.showGUI(click.player, this.parent);
+			});
+		}
 
-	private void drawItems() {
-		AuctionHouse.newChain().asyncFirst(() -> {
-			this.items = this.auctionPlayer.getItems(false);
-
-			// per world check
-			if (Settings.PER_WORLD_ITEMS.getBoolean()) {
-				this.items = this.items.stream().filter(item -> item.getListedWorld() == null || this.auctionPlayer.getPlayer().getWorld().getName().equals(item.getListedWorld())).collect(Collectors.toList());
-			}
-
-			return this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).skip((page - 1) * 45L).limit(45).collect(Collectors.toList());
-		}).asyncLast((data) -> {
-			pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) 45L));
-			drawPaginationButtons();
-
-			int slot = 0;
-			for (AuctionedItem item : data) {
-				setButton(slot++, item.isRequest() ? item.getDisplayRequestStack(AuctionStackType.ACTIVE_AUCTIONS_LIST) : item.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST), e -> {
-					switch (e.clickType) {
-						case LEFT:
-							if (item.isRequest()) {
-								AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(item);
-								cleanup();
-								e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
-								return;
-							}
-
-							if (Settings.SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID.getBoolean() && item.containsValidBid()) {
-								AuctionHouse.getInstance().getLocale().getMessage("general.cannot cancel item with bid").sendPrefixedMessage(e.player);
-								return;
-							}
-
-							if (((item.getBidStartingPrice() > 0 || item.getBidIncrementPrice() > 0) && Settings.ASK_FOR_CANCEL_CONFIRM_ON_BID_ITEMS.getBoolean()) || Settings.ASK_FOR_CANCEL_CONFIRM_ON_NON_BID_ITEMS.getBoolean()) {
-								if (item.getHighestBidder().equals(e.player.getUniqueId()) && item.isBidItem()) {
-									item.setExpired(true);
-									item.setExpiresAt(System.currentTimeMillis());
-									if (Settings.BIDDING_TAKES_MONEY.getBoolean() && !item.getHighestBidder().equals(item.getOwner())) {
-										final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(item.getHighestBidder());
-
-										if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-											AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
-													oldBidder.getUniqueId(),
-													item.getCurrentPrice(),
-													item.getItem(),
-													AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
-													PaymentReason.BID_RETURNED
-											), null);
-										else
-											EconomyManager.deposit(oldBidder, item.getCurrentPrice());
-
-										if (oldBidder.isOnline())
-											AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(item.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
-
-									}
-
-									draw();
-									return;
-								}
-								cleanup();
-								e.manager.showGUI(e.player, new GUIConfirmCancel(this.auctionPlayer, item));
-								return;
-							}
-
-							item.setExpired(true);
-							draw();
-							break;
-						case RIGHT:
-							if (Settings.ALLOW_PLAYERS_TO_ACCEPT_BID.getBoolean() && item.getBidStartingPrice() != 0 && !item.getHighestBidder().equals(e.player.getUniqueId())) {
-								item.setExpiresAt(System.currentTimeMillis());
-								draw();
-							}
-							break;
-					}
-				});
-			}
-		}).execute();
-	}
-
-	private void drawFixedButtons() {
-		setButton(5, 0, getBackButtonItem(), e -> {
-			cleanup();
-			e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+		setButton(5, 4, getRefreshButton(), e -> {
+			cancelTask();
+			e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
 		});
 
-		setButton(5, 4, getRefreshButtonItem(), e -> e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer)));
-
-		setButton(5, 1, ConfigurationItemHelper.createConfigurationItem(this.player, Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString(), Settings.GUI_ACTIVE_AUCTIONS_NAME.getString(), Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList(), null), e -> {
+		setButton(5, 1, QuickItem
+				.of(Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString())
+				.name(Settings.GUI_ACTIVE_AUCTIONS_NAME.getString())
+				.lore(Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList())
+				.make(), e -> {
 
 			if (Settings.ASK_FOR_CANCEL_CONFIRM_ON_ALL_ITEMS.getBoolean()) {
-				cleanup();
+				cancelTask();
 				e.gui.exit();
 
 				Titles.sendTitle(e.player,
@@ -176,7 +174,6 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 
 				// reset the request time for cancel
 				this.auctionPlayer.setEndAllRequestTime(System.currentTimeMillis() + (1000 * 30));
-
 				return;
 			}
 
@@ -193,22 +190,5 @@ public class GUIActiveAuctions extends AbstractPlaceholderGui {
 			}
 			draw();
 		});
-	}
-
-	private void drawPaginationButtons() {
-		setPrevPage(5, 3, getPreviousPageItem());
-		setNextPage(5, 5, getNextPageItem());
-		setOnPage(e -> draw());
-	}
-
-	/*
-	====================== AUTO REFRESH ======================
-	 */
-	private void makeMess() {
-		task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::drawItems, 0L, (long) 20 * Settings.TICK_UPDATE_GUI_TIME.getInt());
-	}
-
-	private void cleanup() {
-		if (task != null) task.cancel();
 	}
 }
