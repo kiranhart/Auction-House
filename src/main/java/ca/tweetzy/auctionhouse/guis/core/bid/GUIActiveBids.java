@@ -23,7 +23,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -43,7 +43,7 @@ public class GUIActiveBids extends AuctionPagedGUI<AuctionedItem> {
 	private final AuctionPlayer auctionPlayer;
 
 	public GUIActiveBids(AuctionPlayer auctionPlayer) {
-		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ACTIVE_BIDS_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getInstance().getAuctionItemManager().getHighestBidItems(auctionPlayer.getPlayer())));
+		super(new GUIAuctionHouseV2(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ACTIVE_BIDS_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getInstance().getAuctionItemManager().getHighestBidItems(auctionPlayer.getPlayer())));
 		this.auctionPlayer = auctionPlayer;
 		draw();
 	}

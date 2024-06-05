@@ -24,8 +24,8 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
@@ -114,7 +114,7 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 		// Other Buttons
 		setButton(5, 0, getBackButton(), e -> {
 			if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !e.player.hasPermission("auctionhouse.transactions.viewall")) {
-				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+				e.manager.showGUI(e.player, new GUIAuctionHouseV2(this.auctionPlayer));
 			} else {
 				e.manager.showGUI(e.player, new GUITransactionType(e.player));
 			}

@@ -20,8 +20,8 @@ package ca.tweetzy.auctionhouse.guis.sell;
 
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.ListingType;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.NonNull;
@@ -58,7 +58,7 @@ public final class GUISellListingType extends AuctionBaseGUI {
 				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_ITEM.getString())
 				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_NAME.getString())
 				.lore(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_LORE.getStringList())
-				.make(), click -> click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer)));
+				.make(), click -> click.manager.showGUI(click.player, new GUIAuctionHouseV2(this.auctionPlayer)));
 	}
 
 	private void drawAuctionButton(int col) {

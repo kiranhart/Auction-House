@@ -20,7 +20,7 @@ package ca.tweetzy.auctionhouse.listeners;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.helpers.UpdateChecker;
@@ -178,7 +178,7 @@ public class PlayerListeners implements Listener {
 
 			if (!player.hasPermission("auctionhouse.useauctionchest")) return;
 
-			instance.getGuiManager().showGUI(player, new GUIAuctionHouse(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+			instance.getGuiManager().showGUI(player, new GUIAuctionHouseV2(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 		}
 	}
 

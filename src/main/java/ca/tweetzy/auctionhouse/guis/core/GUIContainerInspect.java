@@ -23,7 +23,6 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.guis.abstraction.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
@@ -74,7 +73,7 @@ public class GUIContainerInspect extends AuctionPagedGUI<ItemStack> {
 			this.items = Arrays.asList(skulkerBox.getInventory().getContents());
 		}
 
-		setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(close.player.getUniqueId()))));
+		setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouseV2(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(close.player.getUniqueId()))));
 		draw();
 	}
 
@@ -99,7 +98,7 @@ public class GUIContainerInspect extends AuctionPagedGUI<ItemStack> {
 				AuctionHouse.getInstance().getTransactionManager().addPrePurchase(e.player, auctionItem.getId());
 				e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));
 			} else {
-				e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId())));
+				e.manager.showGUI(e.player, new GUIAuctionHouseV2(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId())));
 			}
 		});
 	}

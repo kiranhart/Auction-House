@@ -25,9 +25,9 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
-import ca.tweetzy.auctionhouse.guis.core.GUIBundleCreation;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
+import ca.tweetzy.auctionhouse.guis.core.GUIBundleCreation;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellListingType;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
@@ -395,7 +395,7 @@ public final class CommandSell extends AbstractCommand {
 
 						if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
 							player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
-							instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
+							instance.getGuiManager().showGUI(player, new GUIAuctionHouseV2(auctionPlayer));
 						} else
 							AuctionHouse.newChain().sync(player::closeInventory).execute();
 					});
@@ -425,7 +425,7 @@ public final class CommandSell extends AbstractCommand {
 
 				if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
 					player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
-					instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
+					instance.getGuiManager().showGUI(player, new GUIAuctionHouseV2(auctionPlayer));
 				} else
 					AuctionHouse.newChain().sync(player::closeInventory).execute();
 			});

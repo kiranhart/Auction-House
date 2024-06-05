@@ -20,7 +20,7 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
 import org.apache.commons.lang.StringUtils;
@@ -57,13 +57,13 @@ public class CommandAuctionHouse extends AbstractCommand {
 			}
 
 			if (args.length == 0) {
-				instance.getGuiManager().showGUI(player, new GUIAuctionHouse(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+				instance.getGuiManager().showGUI(player, new GUIAuctionHouseV2(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 				return ReturnType.SUCCESS;
 			}
 
 			if (args.length == 1 && instance.getCommandManager().getSubCommands("auctionhouse").stream().noneMatch(cmd -> cmd.equalsIgnoreCase(StringUtils.join(args, ' ').trim()))) {
 				if (args[0].equalsIgnoreCase("NaN")) return ReturnType.FAILURE;
-				instance.getGuiManager().showGUI(player, new GUIAuctionHouse(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()), StringUtils.join(args, ' ').trim()));
+				instance.getGuiManager().showGUI(player, new GUIAuctionHouseV2(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()), StringUtils.join(args, ' ').trim()));
 			}
 		}
 		return ReturnType.SUCCESS;

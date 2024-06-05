@@ -22,12 +22,13 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
-import ca.tweetzy.auctionhouse.helpers.ConfigurationItemHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
+import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.commons.lang.StringUtils;
@@ -578,9 +579,11 @@ public class AuctionAPI {
 	 */
 	public ItemStack createBundledItem(ItemStack baseItem, ItemStack... items) {
 		Objects.requireNonNull(items, "Cannot create a bundled item with no items");
-		ItemStack item = ConfigurationItemHelper.createConfigurationItem(null, Settings.ITEM_BUNDLE_ITEM.getString(), Settings.ITEM_BUNDLE_NAME.getString(), Settings.ITEM_BUNDLE_LORE.getStringList(), new HashMap<String, Object>() {{
-			put("%item_name%", getItemName(baseItem));
-		}});
+		ItemStack item = QuickItem
+				.of(Settings.ITEM_BUNDLE_ITEM.getString())
+				.name(Settings.ITEM_BUNDLE_NAME.getString())
+				.lore(Replacer.replaceVariables(Settings.ITEM_BUNDLE_LORE.getStringList(), "item_name", getItemName(baseItem)))
+				.make();
 
 		ItemMeta meta = item.getItemMeta();
 		meta.addItemFlags(ItemFlag.values());

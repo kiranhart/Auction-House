@@ -27,7 +27,7 @@ import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
@@ -51,11 +51,11 @@ public class GUIBid extends AuctionBaseGUI {
 	private final AuctionedItem auctionItem;
 
 	public GUIBid(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
-		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_BIDDING_TITLE.getString(), 3);
+		super(new GUIAuctionHouseV2(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_BIDDING_TITLE.getString(), 3);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_BIDDING_BG_ITEM.getString()).make()));
-		setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouse(this.auctionPlayer)));
+		setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouseV2(this.auctionPlayer)));
 		draw();
 	}
 
@@ -92,7 +92,7 @@ public class GUIBid extends AuctionBaseGUI {
 
 				@Override
 				public void onExit(Player player) {
-					AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(GUIBid.this.auctionPlayer));
+					AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouseV2(GUIBid.this.auctionPlayer));
 				}
 
 				@Override
@@ -127,7 +127,7 @@ public class GUIBid extends AuctionBaseGUI {
 							newBiddingAmount = value;
 						} else {
 							if (Settings.BID_MUST_BE_HIGHER_THAN_PREVIOUS.getBoolean()) {
-								e.manager.showGUI(e.player, new GUIAuctionHouse(GUIBid.this.auctionPlayer));
+								e.manager.showGUI(e.player, new GUIAuctionHouseV2(GUIBid.this.auctionPlayer));
 								AuctionHouse.getInstance().getLocale().getMessage("pricing.bidmusthigherthanprevious").processPlaceholder("current_bid", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(e.player);
 								return true;
 							}
@@ -234,7 +234,7 @@ public class GUIBid extends AuctionBaseGUI {
 								.sendPrefixedMessage(player));
 					}
 
-					e.manager.showGUI(e.player, new GUIAuctionHouse(GUIBid.this.auctionPlayer));
+					e.manager.showGUI(e.player, new GUIAuctionHouseV2(GUIBid.this.auctionPlayer));
 
 					return true;
 				}

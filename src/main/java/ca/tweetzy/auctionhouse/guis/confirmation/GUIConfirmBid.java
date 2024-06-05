@@ -25,8 +25,8 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.events.AuctionBidEvent;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.abstraction.AuctionUpdatingPagedGUI;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
@@ -209,13 +209,13 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 				.make(), click -> {
 
 			cancelTask();
-			click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
+			click.manager.showGUI(click.player, new GUIAuctionHouseV2(this.auctionPlayer));
 		});
 	}
 
 	private void endAndReturn(GuiClickEvent event) {
 		cancelTask();
-		event.manager.showGUI(event.player, new GUIAuctionHouse(this.auctionPlayer));
+		event.manager.showGUI(event.player, new GUIAuctionHouseV2(this.auctionPlayer));
 	}
 
 	@Override
