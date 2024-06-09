@@ -16,17 +16,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.api;
+package ca.tweetzy.auctionhouse.api.sync;
 
-import lombok.NonNull;
-
-public interface Identifiable<T> {
+public interface Trackable {
 
 	/**
-	 * The identifier for the group.
+	 * Time when the element was created
 	 *
-	 * @return The id of the group.
+	 * @return created time
 	 */
-	@NonNull
-	T getId();
+	long getTimeCreated();
+
+	/**
+	 * Time when element was last updated
+	 *
+	 * @return last updated time
+	 */
+	long getLastUpdated();
 }

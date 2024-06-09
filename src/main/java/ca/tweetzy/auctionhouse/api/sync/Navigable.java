@@ -16,21 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.api;
+package ca.tweetzy.auctionhouse.api.sync;
 
-public interface Trackable {
+public interface Navigable<E extends Enum<E>> {
 
-	/**
-	 * Time when the element was created
-	 *
-	 * @return created time
-	 */
-	long getTimeCreated();
+	default E next() {
+		E[] values = enumClass().getEnumConstants();
+		E current = (E) this;
+		int ordinal = current.ordinal();
+		int nextOrdinal = (ordinal + 1) % values.length;
+		return values[nextOrdinal];
+	}
 
-	/**
-	 * Time when element was last updated
-	 *
-	 * @return last updated time
-	 */
-	long getLastUpdated();
+	default E previous() {
+		E[] values = enumClass().getEnumConstants();
+		E current = (E) this;
+		int ordinal = current.ordinal();
+		int previousOrdinal = (ordinal - 1 + values.length) % values.length;
+		return values[previousOrdinal];
+	}
+
+	Class<E> enumClass();
 }

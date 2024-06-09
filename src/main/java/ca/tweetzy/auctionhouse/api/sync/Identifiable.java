@@ -16,11 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.api;
+package ca.tweetzy.auctionhouse.api.sync;
 
-public interface Navigable<E extends Enum<E>> {
+import lombok.NonNull;
 
-	E next();
+public interface Identifiable<T> {
 
-	E previous();
+	/**
+	 * The identifier for the group.
+	 *
+	 * @return The id of the group.
+	 */
+	@NonNull
+	T getId();
 }

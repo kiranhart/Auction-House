@@ -18,5 +18,19 @@
 
 package ca.tweetzy.auctionhouse.api.auction;
 
+import ca.tweetzy.auctionhouse.api.SortType;
+
 public interface UserSettings {
+
+	//======================================================================//
+	// 						  Filtering Options	                            //
+	//======================================================================//
+
+	ListingType getFilterListingType();
+
+	void setFilterListingType(ListingType listingType);
+
+	SortType getFilterSortType();
+
+	void setFilterSortType(SortType sortType);
 }

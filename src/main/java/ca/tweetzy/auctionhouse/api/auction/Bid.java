@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.api.auction;
 
-import ca.tweetzy.auctionhouse.api.Identifiable;
+import ca.tweetzy.auctionhouse.api.sync.Identifiable;
 import ca.tweetzy.auctionhouse.api.sync.Storeable;
 
 import java.util.UUID;

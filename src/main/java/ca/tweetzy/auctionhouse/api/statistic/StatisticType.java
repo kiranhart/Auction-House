@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.api.statistic;
 
-import ca.tweetzy.auctionhouse.api.Navigable;
+import ca.tweetzy.auctionhouse.api.sync.Navigable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -45,5 +45,10 @@ public enum StatisticType implements Navigable<StatisticType> {
 	@Override
 	public StatisticType previous() {
 		return values()[(ordinal() - 1 + values().length) % values().length];
+	}
+
+	@Override
+	public Class<StatisticType> enumClass() {
+		return StatisticType.class;
 	}
 }

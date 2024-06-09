@@ -68,6 +68,7 @@ public class BinListing extends AuctionItem {
 		this.ownerUUID = ownerUUID;
 		this.ownerName = ownerName;
 		this.currency = currency;
+		this.currencyItem =  currencyItem;
 		this.binPrice = price;
 		this.listedWorld = listedWorld;
 		this.listedServer = listedServer;
