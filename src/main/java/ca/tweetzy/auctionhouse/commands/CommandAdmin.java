@@ -27,7 +27,7 @@ import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminExpired;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminLogs;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellListingType;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
@@ -204,7 +204,7 @@ public class CommandAdmin extends AbstractCommand {
 					instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 				}
 
-				instance.getGuiManager().showGUI(player, new GUIAuctionHouseV2(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+				instance.getGuiManager().showGUI(player, new GUIAuctionHouse(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 				break;
 		}
 

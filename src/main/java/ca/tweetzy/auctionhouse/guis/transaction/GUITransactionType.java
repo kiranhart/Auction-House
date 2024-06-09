@@ -21,7 +21,7 @@ package ca.tweetzy.auctionhouse.guis.transaction;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
@@ -44,7 +44,7 @@ public final class GUITransactionType extends AuctionBaseGUI {
 
 
 	public GUITransactionType(Player player) {
-		super(new GUIAuctionHouseV2(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())), player, Settings.GUI_TRANSACTIONS_TYPE_TITLE.getString(), 4);
+		super(new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())), player, Settings.GUI_TRANSACTIONS_TYPE_TITLE.getString(), 4);
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_TRANSACTIONS_TYPE_BG_ITEM.getString()).make()));
 		draw();
 	}

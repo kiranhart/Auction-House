@@ -52,7 +52,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 	private final AuctionPlayer auctionPlayer;
 
 	public GUIActiveAuctions(AuctionPlayer auctionPlayer) {
-		super(new GUIAuctionHouseV2(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ACTIVE_AUCTIONS_TITLE.getString(), 6, 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ACTIVE_AUCTIONS_TITLE.getString(), 6, 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
 		this.auctionPlayer = auctionPlayer;
 
 		if (Settings.AUTO_REFRESH_ACTIVE_AUCTION_PAGES.getBoolean()) {

@@ -27,7 +27,7 @@ import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
@@ -367,7 +367,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 
 			if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
 				player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
-				click.manager.showGUI(click.player, new GUIAuctionHouseV2(this.auctionPlayer));
+				click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
 			} else
 				AuctionHouse.newChain().sync(click.player::closeInventory).execute();
 		});

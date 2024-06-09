@@ -181,7 +181,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 
 						if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
 							player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
-							instance.getGuiManager().showGUI(auctionPlayer.getPlayer(), new GUIAuctionHouseV2(auctionPlayer));
+							instance.getGuiManager().showGUI(auctionPlayer.getPlayer(), new GUIAuctionHouse(auctionPlayer));
 						} else
 							AuctionHouse.newChain().sync(player::closeInventory).execute();
 					});
@@ -197,7 +197,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 
 					if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
 						player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
-						instance.getGuiManager().showGUI(auctionPlayer.getPlayer(), new GUIAuctionHouseV2(auctionPlayer));
+						instance.getGuiManager().showGUI(auctionPlayer.getPlayer(), new GUIAuctionHouse(auctionPlayer));
 					} else
 						AuctionHouse.newChain().sync(player::closeInventory).execute();
 				});

@@ -29,7 +29,7 @@ import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.exception.ItemNotFoundException;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.core.GUIContainerInspect;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -89,7 +89,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 		setOnClose(close -> {
 			AuctionHouse.getInstance().getTransactionManager().getPrePurchaseHolding().remove(close.player);
-			close.manager.showGUI(close.player, new GUIAuctionHouseV2(this.auctionPlayer));
+			close.manager.showGUI(close.player, new GUIAuctionHouse(this.auctionPlayer));
 			AuctionHouse.getInstance().getLogger().info("Removed " + close.player.getName() + " from confirmation pre purchase");
 		});
 
@@ -128,7 +128,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 				if (located == null || located.isExpired()) {
 					AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(e.player);
-					e.manager.showGUI(e.player, new GUIAuctionHouseV2(this.auctionPlayer));
+					e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 					return;
 				}
 

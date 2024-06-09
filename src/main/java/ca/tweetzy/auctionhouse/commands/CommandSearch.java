@@ -20,10 +20,9 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.flight.utils.Common;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -60,7 +59,7 @@ public class CommandSearch extends AbstractCommand {
 			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
-		instance.getGuiManager().showGUI(player, new GUIAuctionHouseV2(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()), builder.toString().trim()));
+		instance.getGuiManager().showGUI(player, new GUIAuctionHouse(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()), builder.toString().trim()));
 		return ReturnType.SUCCESS;
 	}
 

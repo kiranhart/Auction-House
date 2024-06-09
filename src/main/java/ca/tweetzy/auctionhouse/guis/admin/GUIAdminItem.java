@@ -28,7 +28,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AdminAction;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.events.AuctionAdminEvent;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
-import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouseV2;
+import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -50,12 +50,12 @@ public class GUIAdminItem extends AuctionBaseGUI {
 	private final AuctionedItem auctionItem;
 
 	public GUIAdminItem(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
-		super(new GUIAuctionHouseV2(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ITEM_ADMIN_TITLE.getString(), 3);
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ITEM_ADMIN_TITLE.getString(), 3);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		setAcceptsItems(false);
 		setUseLockedCells(true);
-		setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouseV2(this.auctionPlayer)));
+		setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouse(this.auctionPlayer)));
 		draw();
 	}
 

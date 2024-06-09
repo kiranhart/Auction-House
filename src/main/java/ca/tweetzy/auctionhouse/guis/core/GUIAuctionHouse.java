@@ -43,12 +43,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
-public final class GUIAuctionHouseV2 extends AuctionUpdatingPagedGUI<AuctionedItem> {
+public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 	private final AuctionPlayer auctionPlayer;
 	private String searchKeywords;
 
-	public GUIAuctionHouseV2(@NonNull final AuctionPlayer auctionPlayer, String searchKeywords) {
+	public GUIAuctionHouse(@NonNull final AuctionPlayer auctionPlayer, String searchKeywords) {
 		super(null, auctionPlayer.getPlayer(), Settings.GUI_AUCTION_HOUSE_TITLE.getString(), Settings.GUI_AUCTION_HOUSE_ROWS.getInt(), 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
 		this.auctionPlayer = auctionPlayer;
 		this.searchKeywords = searchKeywords;
@@ -71,7 +71,7 @@ public final class GUIAuctionHouseV2 extends AuctionUpdatingPagedGUI<AuctionedIt
 		draw();
 	}
 
-	public GUIAuctionHouseV2(@NonNull final AuctionPlayer auctionPlayer) {
+	public GUIAuctionHouse(@NonNull final AuctionPlayer auctionPlayer) {
 		this(auctionPlayer, null);
 	}
 
@@ -249,7 +249,7 @@ public final class GUIAuctionHouseV2 extends AuctionUpdatingPagedGUI<AuctionedIt
 
 				@Override
 				public void onExit(Player player) {
-					AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouseV2(GUIAuctionHouseV2.this.auctionPlayer));
+					AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(GUIAuctionHouse.this.auctionPlayer));
 				}
 
 				@Override
@@ -279,7 +279,7 @@ public final class GUIAuctionHouseV2 extends AuctionUpdatingPagedGUI<AuctionedIt
 							newBiddingAmount = value;
 						} else {
 							if (Settings.BID_MUST_BE_HIGHER_THAN_PREVIOUS.getBoolean()) {
-								click.manager.showGUI(click.player, new GUIAuctionHouseV2(GUIAuctionHouseV2.this.auctionPlayer));
+								click.manager.showGUI(click.player, new GUIAuctionHouse(GUIAuctionHouse.this.auctionPlayer));
 								AuctionHouse.getInstance().getLocale().getMessage("pricing.bidmusthigherthanprevious").processPlaceholder("current_bid", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(click.player);
 								return true;
 							}
@@ -294,12 +294,12 @@ public final class GUIAuctionHouseV2 extends AuctionUpdatingPagedGUI<AuctionedIt
 
 					if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(click.player, newBiddingAmount)) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(click.player);
-						AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouseV2(GUIAuctionHouseV2.this.auctionPlayer));
+						AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(GUIAuctionHouse.this.auctionPlayer));
 						return true;
 					}
 
 					if (Settings.ASK_FOR_BID_CONFIRMATION.getBoolean()) {
-						click.manager.showGUI(click.player, new GUIConfirmBid(GUIAuctionHouseV2.this.auctionPlayer, auctionItem, newBiddingAmount));
+						click.manager.showGUI(click.player, new GUIConfirmBid(GUIAuctionHouse.this.auctionPlayer, auctionItem, newBiddingAmount));
 						return true;
 					}
 
@@ -361,7 +361,7 @@ public final class GUIAuctionHouseV2 extends AuctionUpdatingPagedGUI<AuctionedIt
 						Bukkit.getOnlinePlayers().forEach(player -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.bid").processPlaceholder("player", click.player.getName()).processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(click.player)).processPlaceholder("amount", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack)).sendPrefixedMessage(player));
 					}
 
-					click.manager.showGUI(click.player, new GUIAuctionHouseV2(GUIAuctionHouseV2.this.auctionPlayer));
+					click.manager.showGUI(click.player, new GUIAuctionHouse(GUIAuctionHouse.this.auctionPlayer));
 
 					return true;
 				}
@@ -528,7 +528,7 @@ public final class GUIAuctionHouseV2 extends AuctionUpdatingPagedGUI<AuctionedIt
 					AuctionHouse.getInstance().getAuctionPlayerManager().addCooldown(this.auctionPlayer.getPlayer().getUniqueId());
 				}
 				cancelTask();
-				e.manager.showGUI(e.player, new GUIAuctionHouseV2(this.auctionPlayer));
+				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 		}
 	}
