@@ -16,9 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.guis.abstraction;
+package ca.tweetzy.auctionhouse.guis;
 
-import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.BaseGUI;
 import ca.tweetzy.core.gui.Gui;
@@ -26,33 +25,28 @@ import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
 import lombok.NonNull;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
+public abstract class AuctionPagedGUI<T> extends BaseGUI {
 
 	@Getter
 	protected final Player player;
 	protected final Gui parent;
 	protected List<T> items;
-	protected final int updateDelay;
-	protected BukkitTask task;
 
-	public AuctionUpdatingPagedGUI(final Gui parent, @NonNull final Player player, @NonNull final String title, final int rows, int updateDelay, @NonNull final List<T> items) {
+	public AuctionPagedGUI(Gui parent, @NonNull final Player player, @NonNull String title, int rows, @NonNull List<T> items) {
 		super(parent, title, rows);
 		this.parent = parent;
 		this.player = player;
 		this.items = items;
-		this.updateDelay = updateDelay;
 	}
 
-	public AuctionUpdatingPagedGUI(@NonNull final Player player, @NonNull final String title, final int rows, int updateDelay, @NonNull final List<T> items) {
-		this(null, player, title, rows, updateDelay, items);
+	public AuctionPagedGUI(@NonNull final Player player, @NonNull String title, int rows, @NonNull List<T> items) {
+		this(null, player, title, rows, items);
 	}
 
 	@Override
@@ -62,52 +56,30 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		drawFixed();
 	}
 
-	protected void startTask() {
-		this.task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), () -> {
-//			this.fillSlots().forEach(slot -> setItem(slot, getDefaultItem()));
-			populateItems();
-		}, 0L, updateDelay);
-	}
-
-	protected void applyClose() {
-		setOnClose(close -> cancelTask());
-	}
-
 	protected void prePopulate() {
 	}
 
 	protected void drawFixed() {
 	}
 
-	protected void cancelTask() {
-		if (this.task != null) {
-			this.task.cancel();
-			Bukkit.getServer().getConsoleSender().sendMessage("Cancelled updating task in menu");
-		}
-	}
-
 	private void populateItems() {
 		if (this.items != null) {
-			AuctionHouse.newChain().asyncFirst(() -> {
-				this.fillSlots().forEach(slot -> setItem(slot, getDefaultItem()));
-				prePopulate();
+			this.fillSlots().forEach(slot -> setItem(slot, getDefaultItem()));
+			prePopulate();
 
-				final List<T> itemsToFill = this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toList());
-				return itemsToFill;
-			}).asyncLast((data) -> {
-				pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
+			final List<T> itemsToFill = this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toList());
+			pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
 
-				setPrevPage(getPreviousButtonSlot(), getPreviousButton());
-				setNextPage(getNextButtonSlot(), getNextButton());
-				setOnPage(e -> draw());
+			setPrevPage(getPreviousButtonSlot(), getPreviousButton());
+			setNextPage(getNextButtonSlot(), getNextButton());
+			setOnPage(e -> draw());
 
-				for (int i = 0; i < this.rows * 9; i++) {
-					if (this.fillSlots().contains(i) && this.fillSlots().indexOf(i) < data.size()) {
-						final T object = data.get(this.fillSlots().indexOf(i));
-						setButton(i, this.makeDisplayItem(object), click -> this.onClick(object, click));
-					}
+			for (int i = 0; i < this.rows * 9; i++) {
+				if (this.fillSlots().contains(i) && this.fillSlots().indexOf(i) < itemsToFill.size()) {
+					final T object = itemsToFill.get(this.fillSlots().indexOf(i));
+					setButton(i, this.makeDisplayItem(object), click -> this.onClick(object, click));
 				}
-			}).execute();
+			}
 		}
 	}
 
@@ -148,14 +120,6 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 				.of(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString())
 				.name(Settings.GUI_NEXT_PAGE_BTN_NAME.getString())
 				.lore(Settings.GUI_NEXT_PAGE_BTN_LORE.getStringList())
-				.make();
-	}
-
-	protected ItemStack getRefreshButton() {
-		return QuickItem
-				.of(Settings.GUI_REFRESH_BTN_ITEM.getString())
-				.name(Settings.GUI_REFRESH_BTN_NAME.getString())
-				.lore(Settings.GUI_REFRESH_BTN_LORE.getStringList())
 				.make();
 	}
 

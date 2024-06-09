@@ -21,7 +21,7 @@ package ca.tweetzy.auctionhouse.guis.admin;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionBan;
-import ca.tweetzy.auctionhouse.guis.abstraction.AuctionUpdatingPagedGUI;
+import ca.tweetzy.auctionhouse.guis.AuctionUpdatingPagedGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.TimeUtils;

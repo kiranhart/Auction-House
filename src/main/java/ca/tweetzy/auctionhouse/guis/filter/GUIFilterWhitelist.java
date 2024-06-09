@@ -19,7 +19,7 @@
 package ca.tweetzy.auctionhouse.guis.filter;
 
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
-import ca.tweetzy.auctionhouse.guis.abstraction.AuctionBaseGUI;
+import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.entity.Player;
