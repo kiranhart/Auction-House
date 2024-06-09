@@ -79,11 +79,9 @@ public final class GUIAuctionHouseV2 extends AuctionUpdatingPagedGUI<AuctionedIt
 	protected void prePopulate() {
 		this.items = AuctionHouse.getInstance().getAuctionItemManager().getValidItems(this.player);
 
-		// TODO RE-IMPL search
 		if (this.searchKeywords != null && this.searchKeywords.length() != 0) {
 			this.items = this.items.stream().filter(item -> checkSearchCriteria(this.searchKeywords, item)).collect(Collectors.toList());
 		}
-
 
 		if (this.auctionPlayer != null) {
 			if (this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.ALL && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SEARCH && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SELF) {
