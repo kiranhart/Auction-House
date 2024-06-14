@@ -52,9 +52,6 @@ public final class CommandMiddleware {
 			return AbstractCommand.ReturnType.FAILURE;
 		}
 
-//		if (instance.getAuctionBanManager().checkAndHandleBan(player)) {
-//			return AbstractCommand.ReturnType.FAILURE;TODO CHECK BAN
-//		}
 
 		if (FloodGateHook.isFloodGateUser(player)) return AbstractCommand.ReturnType.FAILURE;
 

@@ -147,6 +147,13 @@ public class LocaleSettings {
 		languageNodes.put("titles.enter request price.title", "&eRequest Price");
 		languageNodes.put("titles.enter request price.subtitle", "&fEnter how much you'll pay in chat");
 
+		languageNodes.put("titles.ban reason.title", "&eBan Reason");
+		languageNodes.put("titles.ban reason.subtitle", "&fEnter reason for ban in chat");
+
+		languageNodes.put("titles.ban length.title", "&eBan Length");
+		languageNodes.put("titles.ban length.subtitle", "&fEnter ban length in chat. (ex. 1 day 12 hours)");
+
+
 		languageNodes.put("transaction.sale_type.bid_won", "Won Auction");
 		languageNodes.put("transaction.sale_type.immediate_buy", "Bought Immediately");
 
@@ -159,14 +166,17 @@ public class LocaleSettings {
 		languageNodes.put("discord.is_bid_true", "true");
 		languageNodes.put("discord.is_bid_false", "false");
 
-		languageNodes.put("bans.nobanreason", "&cPlease enter a ban reason");
-		languageNodes.put("bans.bannedplayer", "&aBanned &2%player% &afrom the auction house for &2%ban_amount%");
-		languageNodes.put("bans.playeralreadybanned", "&4%player% &cis already banned from the auction house");
-		languageNodes.put("bans.playernotbanned", "&4%player% &cis not banned from the auction house");
-		languageNodes.put("bans.playerunbanned", "&cUnbanned &4%player% &cfrom the auction house");
-		languageNodes.put("bans.remainingtime", "&cYou are banned from the auction house for &4%ban_amount%");
-		languageNodes.put("bans.unbanned", "&aYou are now unbanned from the auction house");
-		languageNodes.put("bans.ban expired", "&aBan Expired");
+
+		languageNodes.put("ban.user already banned", "&4%player_name% &cis already banned!");
+		languageNodes.put("ban.user not banned", "&4%player_name% &cis not banned!");
+		languageNodes.put("ban.user banned", "&4%player_name% &cis now banned!");
+		languageNodes.put("ban.user unbanned", "&4%player_name% &cis no longer banned!");
+		languageNodes.put("ban.select ban type", "&cPlease select at least one ban type");
+
+		languageNodes.put("ban.player permanently banned", "&cYou are permanently banned!");
+		languageNodes.put("ban.player still banned", "&cYou are banned until &e%ban_expiration%");
+		languageNodes.put("ban.player ban expired", "&aYou are no longer banned!");
+
 
 		languageNodes.put("auction_filter.sale_types.biddable", "Biddable");
 		languageNodes.put("auction_filter.sale_types.non_biddable", "Not Biddable");
@@ -249,7 +259,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.syntax.transactions", "transactions");
 		languageNodes.put("commands.syntax.upload", "upload");
 		languageNodes.put("commands.syntax.filter", "filter [additem] [category]");
-		languageNodes.put("commands.syntax.ban", "ban [player] [time] [reason]");
+		languageNodes.put("commands.syntax.ban", "ban [player]");
 		languageNodes.put("commands.syntax.unban", "unban <player>");
 		languageNodes.put("commands.syntax.togglelistinfo", "togglelistinfo");
 		languageNodes.put("commands.syntax.markchest", "markchest");

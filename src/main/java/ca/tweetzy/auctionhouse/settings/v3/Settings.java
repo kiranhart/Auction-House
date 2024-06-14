@@ -133,7 +133,7 @@ public final class Settings extends SettingTemp {
 	public static ConfigEntry GUI_MAIN_ITEMS_SEARCH_SLOT = create("gui.main.items.search.slot", 52, "What slot should this item be placed in?");
 	public static ConfigEntry GUI_MAIN_ITEMS_SEARCH_ITEM = create("gui.main.items.search.item", CompMaterial.DARK_OAK_SIGN.name(), "The material type/texture url for this item");
 
-	// ==================== Player Preferences Menu ==================== //
+	// ==================== Auction Collection Menu ==================== //
 	public static ConfigEntry GUI_COLLECTION_BIN_ROWS = create("gui.collection bin.rows", 6, "How many rows should the gui have");
 	public static ConfigEntry GUI_COLLECTION_BIN_FILL_SLOTS = create("gui.collection bin.fill slots", IntStream.rangeClosed(0, 44).boxed().collect(Collectors.toList()), "Slot numbers where collection items will be placed");
 	public static ConfigEntry GUI_COLLECTION_BIN_DECORATION = create("gui.collection bin.decoration", Collections.singletonList(""), "Additional Decoration Items, format is MATERIAL_NAME:slot so ex. DIAMOND:1");
@@ -162,6 +162,11 @@ public final class Settings extends SettingTemp {
 	public static ConfigEntry GUI_PROFILE_SETTINGS_ITEMS_SHOW_ALERT_ON_AUCTION_WIN_ITEM_ON = create("gui.profile settings.items.show alert on auction win.item on", CompMaterial.LIME_STAINED_GLASS_PANE.name(), "The material type/texture url for this item");
 	public static ConfigEntry GUI_PROFILE_SETTINGS_ITEMS_SHOW_ALERT_ON_AUCTION_WIN_ITEM_OFF = create("gui.profile settings.items.show alert on auction win.item off", CompMaterial.RED_STAINED_GLASS_PANE.name(), "The material type/texture url for this item");
 
+	// ==================== Auction Ban Menu ==================== //
+	public static ConfigEntry GUI_BAN_BACKGROUND = create("gui.ban.background.item", CompMaterial.BLACK_STAINED_GLASS_PANE.name(), "The background item for this menu");
+
+	// ==================== Player Selector Menu ==================== //
+	public static ConfigEntry GUI_PLAYER_SELECTOR_BACKGROUND = create("gui.player selector.background.item", CompMaterial.BLACK_STAINED_GLASS_PANE.name(), "The background item for this menu");
 
 	/*
 	==============================================================

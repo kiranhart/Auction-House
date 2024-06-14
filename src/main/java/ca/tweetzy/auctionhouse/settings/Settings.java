@@ -24,6 +24,7 @@ import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.configuration.ConfigSetting;
 import ca.tweetzy.core.hooks.EconomyManager;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -895,15 +896,88 @@ public class Settings {
 	/*  ===============================
 	 *         BANS GUI
 	 *  ===============================*/
-	public static final ConfigSetting GUI_BANS_TITLE = new ConfigSetting(config, "gui.bans.title", "&7&LAuction House &f- &eBans");
-	public static final ConfigSetting GUI_BANS_BG_ITEM = new ConfigSetting(config, "gui.bans.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
-	public static final ConfigSetting GUI_BANS_BAN_NAME = new ConfigSetting(config, "gui.bans.ban name", "&e%player_name%");
-	public static final ConfigSetting GUI_BANS_BAN_LORE = new ConfigSetting(config, "gui.bans.ban lore", Arrays.asList(
-			"&7Time Remaining&f: &e%ban_amount%",
-			"&7Ban Reason&f: &e%ban_reason%",
+	public static final ConfigSetting GUI_BANS_TITLE = new ConfigSetting(config, "gui.all bans.title", "&7&LAuction House &f- &eAll Bans");
+	public static final ConfigSetting GUI_BANS_BG_ITEM = new ConfigSetting(config, "gui.all bans.bg item", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_BANS_ITEMS_BAN_NAME = new ConfigSetting(config, "gui.all bans.items.user.name", "&e%player_name%");
+	public static final ConfigSetting GUI_BANS_ITEMS_BAN_LORE = new ConfigSetting(config, "gui.all bans.items.user.lore", Arrays.asList(
+			"&7Banned By&f: &e%ban_banner%",
 			"",
-			"&7Right-Click to unban this user"
+			"&7Banned On&f: &e%ban_date%",
+			"&7Expires on&f: &e%ban_expiration%",
+			"&7Permanent&F: %is_true%",
+			"",
+			"&7Ban Types",
+			"&e%ban_type_list%",
+			"",
+			"&EClick &7to unban this user"
 	));
+
+	public static final ConfigSetting GUI_BAN_TITLE = new ConfigSetting(config, "gui.ban.title", "&7&LAuction House &f- &eBan User");
+	public static final ConfigSetting GUI_BAN_BG_ITEM = new ConfigSetting(config, "gui.ban.bg item", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+
+	public static final ConfigSetting GUI_BAN_ITEMS_PLAYER_NAME = new ConfigSetting(config, "gui.ban.items.player.name", "&e%player_name%");
+	public static final ConfigSetting GUI_BAN_ITEMS_PLAYER_LORE = new ConfigSetting(config, "gui.ban.items.player.lore", Collections.singletonList("&7This is the selected user to be banned."));
+
+
+	public static final ConfigSetting GUI_BAN_ITEMS_TYPES_ITEM = new ConfigSetting(config, "gui.ban.items.types.item", CompMaterial.COMPARATOR.name());
+	public static final ConfigSetting GUI_BAN_ITEMS_TYPES_NAME = new ConfigSetting(config, "gui.ban.items.types.name", "&eBan Types");
+	public static final ConfigSetting GUI_BAN_ITEMS_TYPES_LORE = new ConfigSetting(config, "gui.ban.items.types.lore", Arrays.asList(
+			"&7The types of ban this player will receive",
+			"",
+			"&7Currently Selected Bans",
+			"&e%ban_type_list%",
+			"",
+			"&EClick &7to adjust ban types"
+	));
+
+	public static final ConfigSetting GUI_BAN_ITEMS_PERMA_ITEM = new ConfigSetting(config, "gui.ban.items.permanent.item", CompMaterial.LAVA_BUCKET.name());
+	public static final ConfigSetting GUI_BAN_ITEMS_PERMA_NAME = new ConfigSetting(config, "gui.ban.items.permanent.name", "&ePermanent");
+	public static final ConfigSetting GUI_BAN_ITEMS_PERMA_LORE = new ConfigSetting(config, "gui.ban.items.permanent.lore", Arrays.asList(
+			"&7Should this ban be permanent",
+			"",
+			"&7Permanent&f: &e%is_true%",
+			"",
+			"&EClick &7to toggle setting"
+	));
+
+	public static final ConfigSetting GUI_BAN_ITEMS_REASON_ITEM = new ConfigSetting(config, "gui.ban.items.reason.item", CompMaterial.PAPER.name());
+	public static final ConfigSetting GUI_BAN_ITEMS_REASON_NAME = new ConfigSetting(config, "gui.ban.items.reason.name", "&eBan Reason");
+	public static final ConfigSetting GUI_BAN_ITEMS_REASON_LORE = new ConfigSetting(config, "gui.ban.items.reason.lore", Arrays.asList(
+			"&7The reason for the ban",
+			"",
+			"&7Ban Reason&F:",
+			"&e%ban_reason%",
+			"",
+			"&EClick &7to change reason"
+	));
+
+	public static final ConfigSetting GUI_BAN_ITEMS_TIME_ITEM = new ConfigSetting(config, "gui.ban.items.expiration.item", CompMaterial.CLOCK.name());
+	public static final ConfigSetting GUI_BAN_ITEMS_TIME_NAME = new ConfigSetting(config, "gui.ban.items.expiration.name", "&eExpiration");
+	public static final ConfigSetting GUI_BAN_ITEMS_TIME_LORE = new ConfigSetting(config, "gui.ban.items.expiration.lore", Arrays.asList(
+			"&7When should this ban be lifted?",
+			"&7Will only matter if it's no permanent",
+			"",
+			"&7Expiration Date&F: &e%ban_time%",
+			"",
+			"&EClick &7to change ban length"
+	));
+
+	public static final ConfigSetting GUI_BAN_ITEMS_CREATE_ITEM = new ConfigSetting(config, "gui.ban.items.create.item", CompMaterial.LIME_DYE.name());
+	public static final ConfigSetting GUI_BAN_ITEMS_CREATE_NAME = new ConfigSetting(config, "gui.ban.items.create.name", "&eBan User");
+	public static final ConfigSetting GUI_BAN_ITEMS_CREATE_LORE = new ConfigSetting(config, "gui.ban.items.create.lore", Collections.singletonList(
+			"&EClick &7to confirm ban."
+	));
+
+	public static final ConfigSetting GUI_BAN_TYPES_TITLE = new ConfigSetting(config, "gui.ban types.title", "&7&LAuction House &f- &eBan Types");
+	public static final ConfigSetting GUI_BAN_TYPES_BG_ITEM = new ConfigSetting(config, "gui.ban types.bg item", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_BAN_TYPES_ITEMS_TYPE_NAME = new ConfigSetting(config, "gui.ban types.items.type.name", "&e%ban_type%");
+	public static final ConfigSetting GUI_BAN_TYPES_ITEMS_TYPE_LORE = new ConfigSetting(config, "gui.ban types.items.type.lore", Collections.singletonList(
+			"&EClick &7to toggle ban type"
+	));
+
+	public static final ConfigSetting GUI_PLAYER_SELECTOR_TITLE = new ConfigSetting(config, "gui.player selector.title", "&7&LAuction House &f- &eSelect Player");
+	public static final ConfigSetting GUI_PLAYER_SELECTOR_ITEMS_PLAYER_NAME = new ConfigSetting(config, "gui.player selector.items.player.name", "&e%player_name%");
+	public static final ConfigSetting GUI_PLAYER_SELECTOR_ITEMS_PLAYER_LORE = new ConfigSetting(config, "gui.player selector.items.player.lore", Collections.singletonList("&eClick &7To select player"));
 
 
 	/*  ===============================

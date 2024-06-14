@@ -20,6 +20,7 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
@@ -57,6 +58,7 @@ public class CommandRequest extends AbstractCommand {
 		final AuctionHouse instance = AuctionHouse.getInstance();
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
+		if (AuctionHouse.getInstance().getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.REQUESTS)) return ReturnType.FAILURE;
 
 		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
 			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());

@@ -19,13 +19,10 @@
 package ca.tweetzy.auctionhouse.settings.v3;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.core.configuration.ConfigSetting;
 import ca.tweetzy.flight.settings.TranslationEntry;
 import ca.tweetzy.flight.settings.TranslationManager;
 import lombok.NonNull;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Arrays;
 
 public final class Translations extends TranslationManager {
 
@@ -36,7 +33,15 @@ public final class Translations extends TranslationManager {
 
 	/*
 	==============================================================
-				          Main Auction Menu
+				           		Errors
+	==============================================================
+	 */
+	public static TranslationEntry BAN_PLAYER_IS_ALREADY_BANNED = create("error.bans.player already banned", "&4%player_name% &cis already banned!");
+
+
+	/*
+	==============================================================
+				          		Menus
 	==============================================================
 	 */
 	public static TranslationEntry GUI_MAIN_TITLE = create("gui.main.title", "<GRADIENT:FE8295>&lAuction House</GRADIENT:FFAD96>");
@@ -87,19 +92,17 @@ public final class Translations extends TranslationManager {
 			"&e&lClick &8» &7To refresh menu"
 	);
 
-	/*
-	==============================================================
-				         	Bans Menu
-	==============================================================
-	 */
-	public static TranslationEntry GUI_BANS_TITLE = create("gui.bans.title", "<GRADIENT:FE8295>&lAuction House</GRADIENT:FFAD96> &7> &eBans");
-	public static  TranslationEntry GUI_BANS_ITEMS_BAN_NAME = create("gui.bans.items.ban.name", "&e%player_name%");
-	public static  TranslationEntry GUI_BANS_ITEMS_BAN_LORE = create("gui.bans.items.ban.lore",
-			"&7Time Remaining&f: &e%ban_amount%",
-			"&7Ban Reason&f: &e%ban_reason%",
-			"",
-			"&7Right-Click to unban this user"
-	);
+
+	// ==================== Auction Ban Menu ==================== //
+	public static TranslationEntry GUI_BAN_TITLE = create("gui.ban.title", "<GRADIENT:FE8295>&lAuction House</GRADIENT:FFAD96> &7> &eBans");
+	public static TranslationEntry GUI_BAN_ITEMS_PLAYER_NAME = create("gui.ban.items.player.name", "<GRADIENT:FE8295>&l%player_name%</GRADIENT:FFAD96>");
+	public static TranslationEntry GUI_BAN_ITEMS_PLAYER_LORE = create("gui.ban.items.player.lore", "&7This is the selected user to be banned.");
+
+	// ==================== Player Selector Menu ==================== //
+	public static TranslationEntry GUI_PLAYER_SELECTOR_TITLE = create("gui.player selector.title", "<GRADIENT:FE8295>&lAuction House</GRADIENT:FFAD96> &7> &eSelect Player");
+	public static TranslationEntry GUI_PLAYER_SELECTOR_ITEMS_PLAYER_NAME = create("gui.player selector.items.player.name", "<GRADIENT:FE8295>&l%player_name%</GRADIENT:FFAD96>");
+	public static TranslationEntry GUI_PLAYER_SELECTOR_ITEMS_PLAYER_LORE = create("gui.player selector.items.player.lore", "&e&lClick &8» &7To refresh menu");
+
 
 	public static void init() {
 		new Translations(AuctionHouse.getInstance()).setup(AuctionHouse.getInstance());

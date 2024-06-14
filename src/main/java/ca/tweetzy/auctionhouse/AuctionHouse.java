@@ -176,8 +176,6 @@ public class AuctionHouse extends TweetyPlugin {
 		LocaleSettings.setup();
 
 
-
-
 		// Setup Economy
 		final String ECO_PLUGIN = Settings.ECONOMY_PLUGIN.getString();
 

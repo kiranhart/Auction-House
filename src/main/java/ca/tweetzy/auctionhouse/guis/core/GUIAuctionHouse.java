@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.guis.core;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -147,6 +148,8 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_PURCHASE.getString().toUpperCase())) {
 				// special case for request
 				if (auctionedItem.isRequest()) {
+					if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.REQUESTS)) return;
+
 					if (click.player.getUniqueId().equals(auctionedItem.getOwner()) && !Settings.OWNER_CAN_FULFILL_OWN_REQUEST.getBoolean()) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(click.player);
 						return;
@@ -158,6 +161,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					return;
 				}
 
+				if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
 				handleNonBidItem(auctionedItem, click, false);
 				return;
 			}
@@ -168,6 +172,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					return;
 				}
 
+				if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
 				handleNonBidItem(auctionedItem, click, true);
 				return;
 			}
@@ -176,11 +181,13 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		// Auction Items
 		if (click.clickType == ClickType.valueOf(Settings.CLICKS_BID_ITEM_PLACE_BID.getString().toUpperCase())) {
+			if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BIDDING)) return;
 			handleBidItem(auctionedItem, click, false);
 			return;
 		}
 
 		if (click.clickType == ClickType.valueOf(Settings.CLICKS_BID_ITEM_BUY_NOW.getString().toUpperCase())) {
+			if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
 			handleBidItem(auctionedItem, click, true);
 		}
 	}
@@ -463,6 +470,8 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 						.lore(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_LORE.getStringList())
 						.make(), e -> {
 
+					if (AuctionHouse.getInstance().getBanManager().isStillBanned(e.player, BanType.EVERYTHING, BanType.SELL)) return;
+
 					// using this will ignore the "SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM" setting
 					if (FloodGateHook.isFloodGateUser(e.player)) {
 						AuctionHouse.getInstance().getLocale().getMessage("commands.no_permission").sendPrefixedMessage(e.player);
@@ -577,7 +586,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 							.lore(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
 							.make() : QuickItem
 					.of(materialToBeUsed)
-					.name(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(),"filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
+					.name(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
 					.lore(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType())).make();
 
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED.getBoolean()) {

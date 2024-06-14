@@ -20,6 +20,7 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -27,6 +28,7 @@ import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminExpired;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminLogs;
+import ca.tweetzy.auctionhouse.guis.admin.bans.GUIBans;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellListingType;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
@@ -111,6 +113,12 @@ public class CommandAdmin extends AbstractCommand {
 				}
 				instance.getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(sender);
 				break;
+			case "bans":
+				if (!(sender instanceof Player)) break;
+				player = (Player) sender;
+				if (!player.hasPermission("auctionhouse.cmd.admin.bans")) return ReturnType.FAILURE;
+				instance.getGuiManager().showGUI(player, new GUIBans(player));
+				break;
 			case "relistall":
 				if (!sender.hasPermission("auctionhouse.cmd.admin.relistall")) return ReturnType.FAILURE;
 				for (UUID id : instance.getAuctionItemManager().getItems().keySet()) {
@@ -159,6 +167,7 @@ public class CommandAdmin extends AbstractCommand {
 
 				player = PlayerUtils.findPlayer(args[1]);
 				if (player == null) return ReturnType.FAILURE;
+				if (AuctionHouse.getInstance().getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.SELL)) return ReturnType.FAILURE;
 
 				ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 

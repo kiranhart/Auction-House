@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.guis.core;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
@@ -75,6 +76,8 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 
 	@Override
 	protected void onClick(AuctionedItem auctionedItem, GuiClickEvent click) {
+		if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.ITEM_COLLECTION)) return;
+
 		if (!Settings.ALLOW_INDIVIDUAL_ITEM_CLAIM.getBoolean()) return;
 
 		final boolean isBundle = BundleUtil.isBundledItem(auctionedItem.getItem());
@@ -129,6 +132,9 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 				.name(Settings.GUI_EXPIRED_AUCTIONS_NAME.getString())
 				.lore(Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList())
 				.make(), e -> {
+
+			if (AuctionHouse.getInstance().getBanManager().isStillBanned(e.player, BanType.EVERYTHING, BanType.ITEM_COLLECTION)) return;
+
 
 			if (this.lastClicked == null) {
 				this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();

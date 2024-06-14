@@ -21,6 +21,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.ListingResult;
+import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.ListingType;
@@ -68,6 +69,7 @@ public final class CommandSell extends AbstractCommand {
 		Player player = (Player) sender;
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
+		if (AuctionHouse.getInstance().getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.SELL)) return ReturnType.FAILURE;
 
 		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {

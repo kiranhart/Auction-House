@@ -78,7 +78,7 @@ public class DataManager extends DataManagerAbstract {
 
 				preparedStatement.setString(1, ban.getId().toString());
 				preparedStatement.setString(2, ban.getBanner().toString());
-				preparedStatement.setString(3, ban.getBansAsString());
+				preparedStatement.setString(3, ban.getBanString());
 				preparedStatement.setString(4, ban.getReason());
 				preparedStatement.setBoolean(5, ban.isPermanent());
 				preparedStatement.setLong(6, ban.getExpireDate());
