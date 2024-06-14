@@ -57,10 +57,10 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		setOnOpen(open -> {
 			// Player is banned from the auction house, close it
-			if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(open.player)) {
-				open.gui.exit();
-				return;
-			}
+//			if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(open.player)) {
+//				open.gui.exit();
+//				return;TODO CHECK BAN
+//			}
 
 			// start auto refresh if enabled
 			if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) startTask();

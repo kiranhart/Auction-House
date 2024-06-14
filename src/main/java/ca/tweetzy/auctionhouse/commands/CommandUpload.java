@@ -21,9 +21,9 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.core.commands.AbstractCommand;
-import ca.tweetzy.core.database.DatabaseConnector;
-import ca.tweetzy.core.database.SQLiteConnector;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.database.DatabaseConnector;
+import ca.tweetzy.flight.database.SQLiteConnector;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -65,17 +65,17 @@ public final class CommandUpload extends AbstractCommand {
 
 		manager.getItems((error, items) -> {
 			if (error == null)
-				items.forEach(item -> instance.getDataManager().insertAuctionAsync(item, null));
+				items.forEach(item -> instance.getDataManager().insertAuction(item, null));
 		});
 
 		manager.getAdminLogs((error, logs) -> {
 			if (error == null)
-				logs.forEach(log -> instance.getDataManager().insertLogAsync(log));
+				logs.forEach(log -> instance.getDataManager().insertLog(log));
 		});
 
 		manager.getTransactions((error, transactions) -> {
 			if (error == null)
-				transactions.forEach(transaction -> instance.getDataManager().insertTransactionAsync(transaction, null));
+				transactions.forEach(transaction -> instance.getDataManager().insertTransaction(transaction, null));
 		});
 
 		return ReturnType.SUCCESS;

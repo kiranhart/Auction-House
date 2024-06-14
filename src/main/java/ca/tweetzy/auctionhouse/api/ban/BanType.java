@@ -7,6 +7,5 @@ public enum BanType {
 	BIDDING,
 	REQUESTS,
 	ITEM_COLLECTION,
-
 	EVERYTHING
 }

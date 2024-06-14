@@ -27,9 +27,11 @@ import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.hooks.UltraEconomyHook;
 import ca.tweetzy.auctionhouse.listeners.*;
 import ca.tweetzy.auctionhouse.managers.*;
+import ca.tweetzy.auctionhouse.model.manager.BanManager;
 import ca.tweetzy.auctionhouse.model.manager.PaymentsManager;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.auctionhouse.settings.v3.Translations;
 import ca.tweetzy.auctionhouse.tasks.AutoSaveTask;
 import ca.tweetzy.auctionhouse.tasks.TickAuctionsTask;
 import ca.tweetzy.core.TweetyCore;
@@ -37,10 +39,6 @@ import ca.tweetzy.core.TweetyPlugin;
 import ca.tweetzy.core.commands.CommandManager;
 import ca.tweetzy.core.compatibility.ServerProject;
 import ca.tweetzy.core.configuration.Config;
-import ca.tweetzy.core.database.DataMigrationManager;
-import ca.tweetzy.core.database.DatabaseConnector;
-import ca.tweetzy.core.database.MySQLConnector;
-import ca.tweetzy.core.database.SQLiteConnector;
 import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.hooks.PluginHook;
@@ -48,6 +46,8 @@ import ca.tweetzy.core.hooks.economies.Economy;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
+import ca.tweetzy.flight.config.tweetzy.TweetzyYamlConfig;
+import ca.tweetzy.flight.database.*;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
@@ -60,6 +60,8 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 
@@ -72,8 +74,9 @@ import java.util.stream.Collectors;
 
 public class AuctionHouse extends TweetyPlugin {
 
-	//==========================================================================
-
+	//==========================================================================//
+	private static TweetzyYamlConfig migrationCoreConfig;
+	//==========================================================================//
 
 	private static TaskChainFactory taskChainFactory;
 	private static AuctionHouse instance;
@@ -105,7 +108,7 @@ public class AuctionHouse extends TweetyPlugin {
 	private FilterManager filterManager;
 
 	@Getter
-	private AuctionBanManager auctionBanManager;
+	private BanManager banManager;
 
 	@Getter
 	private AuctionStatisticManager auctionStatisticManager;
@@ -140,6 +143,8 @@ public class AuctionHouse extends TweetyPlugin {
 		}
 
 		taskChainFactory = BukkitTaskChainFactory.create(this);
+		migrationCoreConfig = new TweetzyYamlConfig(this, "migration-config-dont-touch.yml");
+
 
 		// Settings
 		Settings.setup();
@@ -159,8 +164,9 @@ public class AuctionHouse extends TweetyPlugin {
 
 		this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
 
-		// v3 translations & Settings
-//		Translations.init();
+		// translations & Settings migration stuff
+		Translations.init();
+		ca.tweetzy.auctionhouse.settings.v3.Settings.init();
 
 		// Load Economy
 		EconomyManager.load();
@@ -168,6 +174,9 @@ public class AuctionHouse extends TweetyPlugin {
 		// local
 		setLocale(Settings.LANG.getString());
 		LocaleSettings.setup();
+
+
+
 
 		// Setup Economy
 		final String ECO_PLUGIN = Settings.ECONOMY_PLUGIN.getString();
@@ -232,7 +241,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new _18_PaymentsItemMigration(),
 				new _19_ServerAuctionMigration(),
 				new _20_AuctionRequestsMigration(),
-				new _21_RequestsDynAmtMigration()
+				new _21_RequestsDynAmtMigration(),
+				new _22_BansV2Migration()
 		);
 
 		dataMigrationManager.runMigrations();
@@ -250,8 +260,8 @@ public class AuctionHouse extends TweetyPlugin {
 		this.filterManager.loadItems();
 
 		// load the bans
-		this.auctionBanManager = new AuctionBanManager();
-		this.auctionBanManager.loadBans();
+		this.banManager = new BanManager();
+		this.banManager.load();
 
 		this.minItemPriceManager = new MinItemPriceManager();
 		this.minItemPriceManager.loadMinPrices();
@@ -358,10 +368,9 @@ public class AuctionHouse extends TweetyPlugin {
 
 			this.auctionItemManager.end();
 			this.filterManager.saveFilterWhitelist(false);
-			this.auctionBanManager.saveBans(false);
-			this.dataManager.close();
 		}
 
+		shutdownDataManager(this.dataManager);
 		getServer().getScheduler().cancelTasks(this);
 	}
 
@@ -385,6 +394,10 @@ public class AuctionHouse extends TweetyPlugin {
 		return instance;
 	}
 
+	public static TweetzyYamlConfig getMigrationCoreConfig() {
+		return migrationCoreConfig;
+	}
+
 	public static <T> TaskChain<T> newChain() {
 		return taskChainFactory.newChain();
 	}
@@ -401,5 +414,43 @@ public class AuctionHouse extends TweetyPlugin {
 	String USERNAME = "%%__USERNAME__%%";
 	String RESOURCE = "%%__RESOURCE__%%";
 	String NONCE = "%%__NONCE__%%";
+
+	protected void shutdownDataManager(DataManagerAbstract dataManager) {
+		// 3 minutes is overkill, but we just want to make sure
+		shutdownDataManager(dataManager, 15, TimeUnit.MINUTES.toSeconds(3));
+	}
+
+	protected void shutdownDataManager(DataManagerAbstract dataManager, int reportInterval, long secondsUntilForceShutdown) {
+		dataManager.shutdownTaskQueue();
+
+		while (!dataManager.isTaskQueueTerminated() && secondsUntilForceShutdown > 0) {
+			long secondsToWait = Math.min(reportInterval, secondsUntilForceShutdown);
+
+			try {
+				if (dataManager.waitForShutdown(secondsToWait, TimeUnit.SECONDS)) {
+					break;
+				}
+
+				getLogger().info(String.format("A DataManager is currently working on %d tasks... " +
+								"We are giving him another %d seconds until we forcefully shut him down " +
+								"(continuing to report in %d second intervals)",
+						dataManager.getTaskQueueSize(), secondsUntilForceShutdown, reportInterval));
+			} catch (InterruptedException ignore) {
+			} finally {
+				secondsUntilForceShutdown -= secondsToWait;
+			}
+		}
+
+		if (!dataManager.isTaskQueueTerminated()) {
+			int unfinishedTasks = dataManager.forceShutdownTaskQueue().size();
+
+			if (unfinishedTasks > 0) {
+				getLogger().log(Level.WARNING,
+						String.format("A DataManager has been forcefully terminated with %d unfinished tasks - " +
+								"This can be a serious problem, please report it to us (Tweetzy)!", unfinishedTasks));
+			}
+		}
+	}
+
 
 }

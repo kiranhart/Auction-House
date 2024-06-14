@@ -77,7 +77,7 @@ public class CommandMinPrice extends AbstractCommand {
 
 			final double price = Double.parseDouble(args[1]);
 
-			instance.getDataManager().insertMinPriceAsync(new MinItemPrice(held.clone(), price), (error, inserted) -> {
+			instance.getDataManager().insertMinPrice(new MinItemPrice(held.clone(), price), (error, inserted) -> {
 				if (error == null) {
 					instance.getMinItemPriceManager().addItem(inserted);
 					instance.getLocale().getMessage("general.added min price")

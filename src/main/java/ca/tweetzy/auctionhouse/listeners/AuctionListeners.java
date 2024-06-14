@@ -105,7 +105,7 @@ public class AuctionListeners implements Listener {
 					price = auctionedItem.getCurrentPrice();
 				}
 
-				instance.getDataManager().insertTransactionAsync(new Transaction(
+				instance.getDataManager().insertTransaction(new Transaction(
 						UUID.randomUUID(),
 						originalOwnerUUID,
 						buyerUUID,
@@ -166,6 +166,6 @@ public class AuctionListeners implements Listener {
 	@EventHandler
 	public void onAdminAction(AuctionAdminEvent event) {
 		if (!Settings.LOG_ADMIN_ACTIONS.getBoolean()) return;
-		AuctionHouse.getInstance().getDataManager().insertLogAsync(event.getAuctionAdminLog());
+		AuctionHouse.getInstance().getDataManager().insertLog(event.getAuctionAdminLog());
 	}
 }

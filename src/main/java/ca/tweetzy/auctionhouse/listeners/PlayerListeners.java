@@ -172,9 +172,9 @@ public class PlayerListeners implements Listener {
 			e.setUseInteractedBlock(Event.Result.DENY);
 			e.setCancelled(true);
 
-			if (instance.getAuctionBanManager().checkAndHandleBan(player)) {
-				return;
-			}
+//			if (instance.getAuctionBanManager().checkAndHandleBan(player)) {
+//				return;TODO CHECK BAN
+//			}
 
 			if (!player.hasPermission("auctionhouse.useauctionchest")) return;
 

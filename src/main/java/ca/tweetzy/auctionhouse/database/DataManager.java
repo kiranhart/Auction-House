@@ -20,14 +20,15 @@ package ca.tweetzy.auctionhouse.database;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.ban.Ban;
+import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.*;
 import ca.tweetzy.auctionhouse.auction.enums.*;
+import ca.tweetzy.auctionhouse.impl.AuctionBan;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
-import ca.tweetzy.core.database.DataManagerAbstract;
-import ca.tweetzy.core.database.DatabaseConnector;
-import ca.tweetzy.core.database.MySQLConnector;
+import ca.tweetzy.flight.database.*;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -38,13 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -55,8 +50,6 @@ import java.util.logging.Level;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 public class DataManager extends DataManagerAbstract {
-
-	private final ExecutorService thread = Executors.newSingleThreadExecutor();
 
 	private final @Nullable String customTablePrefix;
 
@@ -70,67 +63,99 @@ public class DataManager extends DataManagerAbstract {
 		return customTablePrefix == null ? super.getTablePrefix() : customTablePrefix;
 	}
 
-	public void close() {
-		if (!this.thread.isShutdown()) {
-			this.thread.shutdown();
+	//=================================================================================================//
+	// 										 AUCTION BANS                                              //
+	//=================================================================================================//
+	public void insertBan(@NonNull final Ban ban, final Callback<Ban> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			final String query = "INSERT INTO " + this.getTablePrefix() + "bans (banned_player, banner, types, reason, permanent, expiration, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "bans WHERE banned_player = ?";
 
-			try {
-				if (!this.thread.awaitTermination(60, TimeUnit.SECONDS)) {
-					// Try stopping the thread forcefully (there is basically no hope left for the data)
-					this.thread.shutdownNow();
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
+
+				fetch.setString(1, ban.getId().toString());
+
+				preparedStatement.setString(1, ban.getId().toString());
+				preparedStatement.setString(2, ban.getBanner().toString());
+				preparedStatement.setString(3, ban.getBansAsString());
+				preparedStatement.setString(4, ban.getReason());
+				preparedStatement.setBoolean(5, ban.isPermanent());
+				preparedStatement.setLong(6, ban.getExpireDate());
+				preparedStatement.setLong(7, ban.getTimeCreated());
+
+				preparedStatement.executeUpdate();
+
+				if (callback != null) {
+					final ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractBan(res));
 				}
-			} catch (InterruptedException ex) {
-				AuctionAPI.getInstance().logException(super.plugin, ex);
-			}
 
-			this.databaseConnector.closeConnection();
-		}
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
 	}
 
-	public void saveBans(List<AuctionBan> bans, boolean async) {
-		String saveItems = "INSERT INTO " + this.getTablePrefix() + "bans(user, reason, time) VALUES(?, ?, ?)";
-		String truncate = AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector ? "TRUNCATE TABLE " + this.getTablePrefix() + "bans" : "DELETE FROM " + this.getTablePrefix() + "bans";
+	public void deleteBan(@NonNull final Ban ban, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "bans WHERE banned_player = ?")) {
+				statement.setString(1, ban.getId().toString());
 
-		if (async) {
-			this.async(() -> this.databaseConnector.connect(connection -> {
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
 
-				try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-					statement.execute();
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+				e.printStackTrace();
+			}
+		}));
+	}
+
+	public void getBans(@NonNull final Callback<List<Ban>> callback) {
+		final List<Ban> bans = new ArrayList<>();
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "bans")) {
+				final ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final Ban ban = extractBan(resultSet);
+					bans.add(ban);
 				}
 
-				PreparedStatement statement = connection.prepareStatement(saveItems);
-				bans.forEach(ban -> {
-					try {
-						statement.setString(1, ban.getBannedPlayer().toString());
-						statement.setString(2, ban.getReason());
-						statement.setLong(3, ban.getTime());
-						statement.addBatch();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				});
-				statement.executeBatch();
-			}));
-		} else {
-			this.databaseConnector.connect(connection -> {
-				try (PreparedStatement statement = connection.prepareStatement(truncate)) {
-					statement.execute();
-				}
+				callback.accept(null, bans);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
 
-				PreparedStatement statement = connection.prepareStatement(saveItems);
-				bans.forEach(ban -> {
-					try {
-						statement.setString(1, ban.getBannedPlayer().toString());
-						statement.setString(2, ban.getReason());
-						statement.setLong(3, ban.getTime());
-						statement.addBatch();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				});
-				statement.executeBatch();
-			});
+	public Ban extractBan(final ResultSet resultSet) throws SQLException {
+		final String[] rawBanTypes = resultSet.getString("types").split(",");
+		final HashSet<BanType> banTypes = new HashSet<>();
+
+		for (String possibleBanType : rawBanTypes) {
+			if (possibleBanType == null || possibleBanType.isEmpty()) {
+				continue;
+			}
+
+			try {
+				BanType foundType = Enum.valueOf(BanType.class, possibleBanType);
+				banTypes.add(foundType);
+			} catch (Exception ignored) {
+			}
 		}
+
+		return new AuctionBan(
+				UUID.fromString(resultSet.getString("banned_player")),
+				UUID.fromString(resultSet.getString("banner")),
+				banTypes,
+				resultSet.getString("reason"),
+				resultSet.getBoolean("permanent"),
+				resultSet.getLong("expiration"),
+				resultSet.getLong("created_at")
+		);
 	}
 
 	public void saveFilterWhitelist(List<AuctionFilterItem> filterItems, boolean async) {
@@ -138,7 +163,7 @@ public class DataManager extends DataManagerAbstract {
 		String truncate = AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector ? "TRUNCATE TABLE " + this.getTablePrefix() + "filter_whitelist" : "DELETE FROM " + this.getTablePrefix() + "filter_whitelist";
 
 		if (async) {
-			this.async(() -> this.databaseConnector.connect(connection -> {
+			this.runAsync(() -> this.databaseConnector.connect(connection -> {
 				try (PreparedStatement statement = connection.prepareStatement(truncate)) {
 					statement.execute();
 				}
@@ -174,28 +199,9 @@ public class DataManager extends DataManagerAbstract {
 		}
 	}
 
-	public void getBans(Consumer<ArrayList<AuctionBan>> callback) {
-		ArrayList<AuctionBan> bans = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
-			String select = "SELECT * FROM " + this.getTablePrefix() + "bans";
-
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					bans.add(new AuctionBan(
-							UUID.fromString(result.getString("user")),
-							result.getString("reason"),
-							result.getLong("time")
-					));
-				}
-			}
-			this.sync(() -> callback.accept(bans));
-		}));
-	}
-
 	public void getFilterWhitelist(Consumer<ArrayList<AuctionFilterItem>> callback) {
 		ArrayList<AuctionFilterItem> filterItems = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			String select = "SELECT * FROM " + this.getTablePrefix() + "filter_whitelist";
 
 			try (Statement statement = connection.createStatement()) {
@@ -210,7 +216,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void getItems(Callback<ArrayList<AuctionedItem>> callback) {
 		ArrayList<AuctionedItem> items = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions")) {
 				ResultSet resultSet = statement.executeQuery();
 				final List<UUID> toRemove = new ArrayList<>();
@@ -235,7 +241,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void getAdminLogs(Callback<ArrayList<AuctionAdminLog>> callback) {
 		ArrayList<AuctionAdminLog> logs = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "admin_logs")) {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
@@ -251,7 +257,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void getTransactions(Callback<ArrayList<Transaction>> callback) {
 		ArrayList<Transaction> transactions = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions")) {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
@@ -266,7 +272,7 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void insertTransaction(Transaction transaction, Callback<Transaction> callback) {
-		this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "transactions (id, seller, seller_name, buyer, buyer_name, transaction_time, item, auction_sale_type, final_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions WHERE id = ?");
 
@@ -292,11 +298,11 @@ public class DataManager extends DataManagerAbstract {
 				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
-		});
+		}));
 	}
 
 	public void insertLog(AuctionAdminLog adminLog) {
-		this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "admin_logs(admin, admin_name, target, target_name, item, item_id, action, time) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")) {
 
 				statement.setString(1, adminLog.getAdmin().toString());
@@ -311,19 +317,11 @@ public class DataManager extends DataManagerAbstract {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		});
-	}
-
-	public void insertLogAsync(AuctionAdminLog adminLog) {
-		this.thread.execute(() -> insertLog(adminLog));
-	}
-
-	public void insertTransactionAsync(Transaction transaction, Callback<Transaction> callback) {
-		this.thread.execute(() -> insertTransaction(transaction, callback));
+		}));
 	}
 
 	public void insertAuction(AuctionedItem item, Callback<AuctionedItem> callback) {
-		this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite, allow_partial_buys, server_auction, is_request, request_count) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 				final AuctionAPI api = AuctionAPI.getInstance();
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
@@ -365,11 +363,11 @@ public class DataManager extends DataManagerAbstract {
 				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
-		});
+		}));
 	}
 
 	public void insertMinPrice(MinItemPrice item, Callback<MinItemPrice> callback) {
-		this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "min_item_prices (id, item, price) VALUES(?, ?, ?)")) {
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "min_item_prices WHERE id = ?");
 
@@ -389,16 +387,12 @@ public class DataManager extends DataManagerAbstract {
 				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
-		});
-	}
-
-	public void insertMinPriceAsync(MinItemPrice item, Callback<MinItemPrice> callback) {
-		this.thread.execute(() -> this.insertMinPrice(item, callback));
+		}));
 	}
 
 	public void getMinItemPrices(Callback<ArrayList<MinItemPrice>> callback) {
 		ArrayList<MinItemPrice> minItemPrices = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "min_item_prices")) {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
@@ -413,7 +407,7 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void deleteMinItemPrice(Collection<UUID> minPrices) {
-		this.async(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "min_item_prices WHERE id = ?");
 			for (UUID id : minPrices) {
 				statement.setString(1, id.toString());
@@ -426,7 +420,7 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void insertStatistic(AuctionStatistic statistic, Callback<AuctionStatistic> callback) {
-		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "statistic (uuid, stat_owner, stat_type, value, time) VALUES (?, ?, ?, ?, ?)")) {
 
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "statistic WHERE uuid = ?");
@@ -454,7 +448,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void getStatistics(Callback<List<AuctionStatistic>> callback) {
 		List<AuctionStatistic> stats = new ArrayList<>();
-		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "statistic")) {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
@@ -468,12 +462,8 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
-	public void insertAuctionAsync(AuctionedItem item, Callback<AuctionedItem> callback) {
-		this.thread.execute(() -> insertAuction(item, callback));
-	}
-
 	public void deleteTransactions(Collection<UUID> transactions) {
-		this.async(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "transactions WHERE id = ?");
 			for (UUID id : transactions) {
 				statement.setString(1, id.toString());
@@ -485,9 +475,8 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
-
 	public void updateItemsAsync(Collection<AuctionedItem> items, UpdateCallback callback) {
-		this.async(() -> updateItems(items, callback));
+		this.runAsync(() -> updateItems(items, callback));
 	}
 
 	public void updateItems(Collection<AuctionedItem> items, UpdateCallback callback) {
@@ -545,11 +534,11 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void deleteItemsAsync(Collection<UUID> items) {
-		this.thread.execute(() -> deleteItems(items));
+		this.runAsync(() -> deleteItems(items));
 	}
 
 	public void insertAuctionPlayer(AuctionPlayer auctionPlayer, Callback<AuctionPlayer> callback) {
-		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "player (uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) VALUES (?, ?, ?, ?, ?)")) {
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "player WHERE uuid = ?");
 
@@ -576,7 +565,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void getAuctionPlayers(Callback<ArrayList<AuctionPlayer>> callback) {
 		ArrayList<AuctionPlayer> auctionPlayers = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "player")) {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
@@ -591,7 +580,7 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void updateAuctionPlayer(@NonNull final AuctionPlayer auctionPlayer, Callback<Boolean> callback) {
-		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "player SET filter_sale_type = ?, filter_item_category = ?, filter_sort_type = ?, last_listed_item = ? WHERE uuid = ?")) {
 				statement.setString(1, auctionPlayer.getSelectedSaleType().name());
 				statement.setString(2, auctionPlayer.getSelectedFilter().name());
@@ -612,7 +601,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void getAuctionPayments(Callback<ArrayList<AuctionPayment>> callback) {
 		ArrayList<AuctionPayment> payments = new ArrayList<>();
-		this.async(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "payments")) {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
@@ -627,7 +616,7 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void insertAuctionPayment(AuctionPayment auctionPayment, Callback<AuctionPayment> callback) {
-		this.thread.execute(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "payments (uuid, payment_for, amount, time, item, from_name, reason) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "payments WHERE uuid = ?");
 
@@ -659,7 +648,7 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void deletePayments(Collection<UUID> payments) {
-		this.async(() -> this.databaseConnector.connect(connection -> {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "payments WHERE uuid = ?");
 			for (UUID id : payments) {
 				statement.setString(1, id.toString());

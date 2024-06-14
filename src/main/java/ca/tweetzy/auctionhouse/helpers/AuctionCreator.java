@@ -178,7 +178,7 @@ public final class AuctionCreator {
 		//====================================================================================
 
 		// Actually attempt the insertion now
-		AuctionHouse.getInstance().getDataManager().insertAuctionAsync(auctionItem, (error, inserted) -> {
+		AuctionHouse.getInstance().getDataManager().insertAuction(auctionItem, (error, inserted) -> {
 			if (auctionPlayer != null)
 				auctionPlayer.setItemBeingListed(null);
 

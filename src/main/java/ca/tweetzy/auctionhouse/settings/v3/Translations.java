@@ -19,15 +19,19 @@
 package ca.tweetzy.auctionhouse.settings.v3;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.core.configuration.ConfigSetting;
 import ca.tweetzy.flight.settings.TranslationEntry;
 import ca.tweetzy.flight.settings.TranslationManager;
 import lombok.NonNull;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Arrays;
+
 public final class Translations extends TranslationManager {
 
 	public Translations(@NonNull JavaPlugin plugin) {
 		super(plugin);
+		this.mainLanguage = "migration_prep_dont_touch";
 	}
 
 	/*
@@ -83,7 +87,21 @@ public final class Translations extends TranslationManager {
 			"&e&lClick &8» &7To refresh menu"
 	);
 
+	/*
+	==============================================================
+				         	Bans Menu
+	==============================================================
+	 */
+	public static TranslationEntry GUI_BANS_TITLE = create("gui.bans.title", "<GRADIENT:FE8295>&lAuction House</GRADIENT:FFAD96> &7> &eBans");
+	public static  TranslationEntry GUI_BANS_ITEMS_BAN_NAME = create("gui.bans.items.ban.name", "&e%player_name%");
+	public static  TranslationEntry GUI_BANS_ITEMS_BAN_LORE = create("gui.bans.items.ban.lore",
+			"&7Time Remaining&f: &e%ban_amount%",
+			"&7Ban Reason&f: &e%ban_reason%",
+			"",
+			"&7Right-Click to unban this user"
+	);
+
 	public static void init() {
-		new Translations(AuctionHouse.getInstance()).setup();
+		new Translations(AuctionHouse.getInstance()).setup(AuctionHouse.getInstance());
 	}
 }

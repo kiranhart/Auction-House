@@ -183,7 +183,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 					toGive.setRequestAmount(amountNeeded);
 
-					AuctionHouse.getInstance().getDataManager().insertAuctionAsync(toGive, (error, inserted) -> AuctionHouse.getInstance().getAuctionItemManager().addAuctionItem(toGive));
+					AuctionHouse.getInstance().getDataManager().insertAuction(toGive, (error, inserted) -> AuctionHouse.getInstance().getAuctionItemManager().addAuctionItem(toGive));
 					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(this.auctionItem);
 
 					AuctionHouse.getInstance().getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(player -> {

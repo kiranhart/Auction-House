@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.database.migrations;
 
-import ca.tweetzy.core.database.DataMigration;
+import ca.tweetzy.flight.database.DataMigration;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -20,12 +20,12 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.auction.AuctionBan;
 import ca.tweetzy.auctionhouse.events.AuctionBanPlayerEvent;
 import ca.tweetzy.auctionhouse.guis.admin.GUIBans;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TimeUtils;
+import ca.tweetzy.flight.utils.Common;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -51,70 +51,74 @@ public class CommandBan extends AbstractCommand {
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		Player player = (Player) sender;
+
+
+
 //		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
-		final AuctionHouse instance = AuctionHouse.getInstance();
-		if (args.length == 0) {
-			// Open the bans menu
-			instance.getGuiManager().showGUI(player, new GUIBans(player));
-			return ReturnType.SUCCESS;
-		}
-
-		if (args.length < 3) {
-			return ReturnType.SYNTAX_ERROR;
-		}
-
-		final Player target = PlayerUtils.findPlayer(args[0]);
-		String timeString = args[1];
-		StringBuilder reason = new StringBuilder();
-		for (int i = 2; i < args.length; i++) {
-			reason.append(args[i]).append(" ");
-		}
-
-		AuctionHouse.newChain().async(() -> {
-			OfflinePlayer offlinePlayer = null;
-
-			if (target == null) {
-				// try and look for an offline player
-				offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
-				if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
-					instance.getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
-					return;
-				}
-			}
-
-			UUID toBan = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
-
-			if (!AuctionAPI.getInstance().isValidTimeString(timeString)) {
-				instance.getLocale().getMessage("general.invalidtimestring").sendPrefixedMessage(player);
-				return;
-			}
-
-			if (reason.toString().length() == 0) {
-				instance.getLocale().getMessage("bans.nobanreason").sendPrefixedMessage(player);
-				return;
-			}
-
-			if (instance.getAuctionBanManager().getBans().containsKey(toBan)) {
-				instance.getLocale().getMessage("bans.playeralreadybanned").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
-				return;
-			}
-
-			long bannedSeconds = AuctionAPI.getInstance().getSecondsFromString(timeString);
-
-			AuctionBanPlayerEvent auctionBanPlayerEvent = new AuctionBanPlayerEvent(player, toBan, reason.toString().trim(), bannedSeconds, true);
-			Bukkit.getServer().getPluginManager().callEvent(auctionBanPlayerEvent);
-			if (auctionBanPlayerEvent.isCancelled()) return;
-
-			AuctionBan auctionBan = new AuctionBan(toBan, reason.toString().trim(), System.currentTimeMillis() + bannedSeconds * 1000);
-			instance.getAuctionBanManager().addBan(auctionBan);
-			instance.getLocale().getMessage("bans.bannedplayer").processPlaceholder("player", args[0]).processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(player);
-
-			if (target != null) {
-				instance.getLocale().getMessage("bans.remainingtime").processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(target);
-			}
-		}).execute();
-
+//		final AuctionHouse instance = AuctionHouse.getInstance();
+//		if (args.length == 0) {
+//			// Open the bans menu
+//			instance.getGuiManager().showGUI(player, new GUIBans(player));
+//			return ReturnType.SUCCESS;
+//		}
+//
+//		if (args.length < 3) {
+//			return ReturnType.SYNTAX_ERROR;
+//		}
+//
+//		final Player target = PlayerUtils.findPlayer(args[0]);
+//		String timeString = args[1];
+//		StringBuilder reason = new StringBuilder();
+//		for (int i = 2; i < args.length; i++) {
+//			reason.append(args[i]).append(" ");
+//		}
+//
+//		AuctionHouse.newChain().async(() -> {
+//			OfflinePlayer offlinePlayer = null;
+//
+//			if (target == null) {
+//				// try and look for an offline player
+//				offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
+//				if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
+//					instance.getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
+//					return;
+//				}
+//			}
+//
+//			UUID toBan = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
+//
+//			if (!AuctionAPI.getInstance().isValidTimeString(timeString)) {
+//				instance.getLocale().getMessage("general.invalidtimestring").sendPrefixedMessage(player);
+//				return;
+//			}
+//
+//			if (reason.toString().length() == 0) {
+//				instance.getLocale().getMessage("bans.nobanreason").sendPrefixedMessage(player);
+//				return;
+//			}
+//
+////			if (instance.getAuctionBanManager().getBans().containsKey(toBan)) {
+////				instance.getLocale().getMessage("bans.playeralreadybanned").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
+////				return;
+////			}
+//
+//			long bannedSeconds = AuctionAPI.getInstance().getSecondsFromString(timeString);
+//
+//			AuctionBanPlayerEvent auctionBanPlayerEvent = new AuctionBanPlayerEvent(player, toBan, reason.toString().trim(), bannedSeconds, true);
+//			Bukkit.getServer().getPluginManager().callEvent(auctionBanPlayerEvent);
+//			if (auctionBanPlayerEvent.isCancelled()) return;
+//
+////			AuctionBan auctionBan = new AuctionBan(toBan, reason.toString().trim(), System.currentTimeMillis() + bannedSeconds * 1000);
+////			instance.getAuctionBanManager().addBan(auctionBan);
+//			instance.getLocale().getMessage("bans.bannedplayer").processPlaceholder("player", args[0]).processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(player);
+//
+//			if (target != null) {
+//				instance.getLocale().getMessage("bans.remainingtime").processPlaceholder("ban_amount", TimeUtils.makeReadable(bannedSeconds * 1000)).sendPrefixedMessage(target);
+//			}
+//		}).execute();
+//
+		player.sendMessage(Common.colorize("&cSorry banning is currently disabled, it will be back as soon as possible (v2.113.0"));
 		return ReturnType.SUCCESS;
 	}
 

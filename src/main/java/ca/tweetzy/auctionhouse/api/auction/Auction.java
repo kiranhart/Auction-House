@@ -19,8 +19,8 @@
 package ca.tweetzy.auctionhouse.api.auction;
 
 import ca.tweetzy.auctionhouse.api.sync.Identifiable;
-import ca.tweetzy.auctionhouse.api.sync.Trackable;
 import ca.tweetzy.auctionhouse.api.sync.Synchronize;
+import ca.tweetzy.auctionhouse.api.sync.Trackable;
 import ca.tweetzy.flight.utils.Filterer;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;

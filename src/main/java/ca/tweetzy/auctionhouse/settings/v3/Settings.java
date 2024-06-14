@@ -18,16 +18,17 @@
 
 package ca.tweetzy.auctionhouse.settings.v3;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionUsageMode;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.config.ConfigEntry;
-import ca.tweetzy.flight.settings.FlightSettings;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public final class Settings extends FlightSettings {
+public final class Settings extends SettingTemp {
+
 
 	public static ConfigEntry PREFIX = create("prefix", "&8[&eAuctionHouse&8]", "The prefix for the plugin");
 	public static ConfigEntry LANGUAGE = create("language", "en_us", "The primary language of the plugin");
@@ -173,4 +174,7 @@ public final class Settings extends FlightSettings {
 	public static ConfigEntry CONFIRM_ACCEPT_BID = create("settings.confirmation.accept bid", false, "Ask for confirmation before accepting current bid?");
 	public static ConfigEntry CONFIRM_CANCEL_LISTING = create("settings.confirmation.cancel listing", false, "Ask for confirmation before canceling a listing?");
 
+	public static void init() {
+		AuctionHouse.getInstance().getMigrationCoreConfig().init();
+	}
 }
