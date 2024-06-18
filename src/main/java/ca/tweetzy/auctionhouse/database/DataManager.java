@@ -31,6 +31,7 @@ import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
 import ca.tweetzy.flight.database.*;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -261,7 +262,10 @@ public class DataManager extends DataManagerAbstract {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions")) {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
-					transactions.add(extractTransaction(resultSet));
+
+					final Transaction transaction = extractTransaction(resultSet);
+					if (transaction != null)
+						transactions.add(transaction);
 				}
 
 				callback.accept(null, transactions);
@@ -291,7 +295,10 @@ public class DataManager extends DataManagerAbstract {
 				if (callback != null) {
 					ResultSet res = fetch.executeQuery();
 					res.next();
-					callback.accept(null, extractTransaction(res));
+
+					final Transaction inserted = extractTransaction(res);
+
+					callback.accept(null, inserted);
 				}
 
 			} catch (Exception e) {
@@ -539,21 +546,37 @@ public class DataManager extends DataManagerAbstract {
 
 	public void insertAuctionPlayer(AuctionPlayer auctionPlayer, Callback<AuctionPlayer> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "player (uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) VALUES (?, ?, ?, ?, ?)")) {
-				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "player WHERE uuid = ?");
+			try (PreparedStatement statement = connection.prepareStatement(
+					"INSERT INTO " + getTablePrefix() + "player (uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) VALUES (?,?,?,?,?)"
+			)) {
+				PreparedStatement fetch = connection.prepareStatement(
+						"SELECT * FROM " + this.getTablePrefix() + "player WHERE uuid =?"
+				);
 
+				// Set parameters for the fetch query
 				fetch.setString(1, auctionPlayer.getUuid().toString());
-				statement.setString(1, auctionPlayer.getPlayer().getUniqueId().toString());
-				statement.setString(2, auctionPlayer.getSelectedSaleType().name());
-				statement.setString(3, auctionPlayer.getSelectedFilter().name());
-				statement.setString(4, auctionPlayer.getAuctionSortType().name());
-				statement.setLong(5, auctionPlayer.getLastListedItem());
-				statement.executeUpdate();
 
-				if (callback != null) {
-					ResultSet res = fetch.executeQuery();
-					res.next();
-					callback.accept(null, extractAuctionPlayer(res));
+				// Execute the fetch query
+				ResultSet res = fetch.executeQuery();
+
+				// Check if the UUID already exists
+				if (!res.next()) {
+					// UUID does not exist, proceed with insertion
+					statement.setString(1, auctionPlayer.getPlayer().getUniqueId().toString());
+					statement.setString(2, auctionPlayer.getSelectedSaleType().name());
+					statement.setString(3, auctionPlayer.getSelectedFilter().name());
+					statement.setString(4, auctionPlayer.getAuctionSortType().name());
+					statement.setLong(5, auctionPlayer.getLastListedItem());
+					statement.executeUpdate();
+
+					// After successful insertion, call the callback with the newly inserted player
+					if (callback != null) {
+						AuctionPlayer insertedPlayer = extractAuctionPlayer(res);
+						callback.accept(null, insertedPlayer);
+					}
+				} else {
+					// UUID already exists, handle accordingly (e.g., log, notify)
+					System.out.println("UUID already exists, skipping insertion.");
 				}
 
 			} catch (Exception e) {

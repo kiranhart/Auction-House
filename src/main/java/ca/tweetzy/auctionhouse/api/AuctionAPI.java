@@ -221,7 +221,6 @@ public class AuctionAPI {
 		YamlConfiguration config = new YamlConfiguration();
 		config.set("i", itemStack);
 		return config.saveToString();
-//        return DatatypeConverter.printBase64Binary(config.saveToString().getBytes(StandardCharsets.UTF_8));
 	}
 
 	public static ItemStack decodeItem(String string) {
@@ -581,7 +580,7 @@ public class AuctionAPI {
 		Objects.requireNonNull(items, "Cannot create a bundled item with no items");
 		ItemStack item = QuickItem
 				.of(Settings.ITEM_BUNDLE_ITEM.getString())
-				.name(Settings.ITEM_BUNDLE_NAME.getString())
+				.name(Replacer.replaceVariables(Settings.ITEM_BUNDLE_NAME.getString(),"item_name", getItemName(baseItem)))
 				.lore(Replacer.replaceVariables(Settings.ITEM_BUNDLE_LORE.getStringList(), "item_name", getItemName(baseItem)))
 				.make();
 
