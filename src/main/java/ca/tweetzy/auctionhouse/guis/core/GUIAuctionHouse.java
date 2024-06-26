@@ -50,7 +50,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 	private String searchKeywords;
 
 	public GUIAuctionHouse(@NonNull final AuctionPlayer auctionPlayer, String searchKeywords) {
-		super(null, auctionPlayer.getPlayer(), Settings.GUI_AUCTION_HOUSE_TITLE.getString(), Settings.GUI_AUCTION_HOUSE_ROWS.getInt(), 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
+		super(null, Bukkit.getPlayer(auctionPlayer.getUuid()), Settings.GUI_AUCTION_HOUSE_TITLE.getString(), Settings.GUI_AUCTION_HOUSE_ROWS.getInt(), 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
 		this.auctionPlayer = auctionPlayer;
 		this.searchKeywords = searchKeywords;
 

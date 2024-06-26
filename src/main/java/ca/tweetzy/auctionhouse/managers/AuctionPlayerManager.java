@@ -69,7 +69,6 @@ public class AuctionPlayerManager {
 					AuctionHouse.getInstance().getLogger().info("Creating profile for player: " + player.getName());
 					addPlayer(created);
 				}
-
 			});
 
 			return;

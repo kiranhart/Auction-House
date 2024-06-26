@@ -88,13 +88,20 @@ public class PlayerListeners implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
+	public void onPlayerLogin(PlayerLoginEvent event) {
+		if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
+		final Player player = event.getPlayer();
+		AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(player);
+
+	}
+
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		final Player player = e.getPlayer();
 		final AuctionHouse instance = AuctionHouse.getInstance();
 		Titles.sendTitle(player, 1, 1, 1, " ", " ");
 
-		instance.getAuctionPlayerManager().addPlayer(player);
-
+//		instance.getAuctionPlayerManager().addPlayer(player);
 
 		// DUPE TRACKING
 		for (ItemStack item : player.getInventory().getStorageContents()) {
@@ -142,6 +149,8 @@ public class PlayerListeners implements Listener {
 
 		instance.getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
 		instance.getLogger().info("Removing sell holding instance for user: " + player.getName());
+
+		instance.getDataManager().deletePlayer(player.getUniqueId());
 	}
 
 	@EventHandler

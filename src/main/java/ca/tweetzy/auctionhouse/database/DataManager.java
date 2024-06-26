@@ -28,9 +28,11 @@ import ca.tweetzy.auctionhouse.impl.AuctionBan;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.database.*;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -43,6 +45,8 @@ import java.time.Instant;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The current file has been created by Kiran Hart
@@ -263,9 +267,8 @@ public class DataManager extends DataManagerAbstract {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
 
-					final Transaction transaction = extractTransaction(resultSet);
-					if (transaction != null)
-						transactions.add(transaction);
+
+						transactions.add(extractTransaction(resultSet));
 				}
 
 				callback.accept(null, transactions);
@@ -544,39 +547,31 @@ public class DataManager extends DataManagerAbstract {
 		this.runAsync(() -> deleteItems(items));
 	}
 
+	public void deletePlayer(UUID uuid) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "player WHERE uuid = ?");
+			statement.setString(1, uuid.toString());
+			statement.execute();
+		}));
+	}
+
 	public void insertAuctionPlayer(AuctionPlayer auctionPlayer, Callback<AuctionPlayer> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement(
-					"INSERT INTO " + getTablePrefix() + "player (uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) VALUES (?,?,?,?,?)"
-			)) {
-				PreparedStatement fetch = connection.prepareStatement(
-						"SELECT * FROM " + this.getTablePrefix() + "player WHERE uuid =?"
-				);
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "player (uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) VALUES (?, ?, ?, ?, ?)")) {
+				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "player WHERE uuid = ?");
 
-				// Set parameters for the fetch query
 				fetch.setString(1, auctionPlayer.getUuid().toString());
+				statement.setString(1, auctionPlayer.getPlayer().getUniqueId().toString());
+				statement.setString(2, auctionPlayer.getSelectedSaleType().name());
+				statement.setString(3, auctionPlayer.getSelectedFilter().name());
+				statement.setString(4, auctionPlayer.getAuctionSortType().name());
+				statement.setLong(5, auctionPlayer.getLastListedItem());
+				statement.executeUpdate();
 
-				// Execute the fetch query
-				ResultSet res = fetch.executeQuery();
-
-				// Check if the UUID already exists
-				if (!res.next()) {
-					// UUID does not exist, proceed with insertion
-					statement.setString(1, auctionPlayer.getPlayer().getUniqueId().toString());
-					statement.setString(2, auctionPlayer.getSelectedSaleType().name());
-					statement.setString(3, auctionPlayer.getSelectedFilter().name());
-					statement.setString(4, auctionPlayer.getAuctionSortType().name());
-					statement.setLong(5, auctionPlayer.getLastListedItem());
-					statement.executeUpdate();
-
-					// After successful insertion, call the callback with the newly inserted player
-					if (callback != null) {
-						AuctionPlayer insertedPlayer = extractAuctionPlayer(res);
-						callback.accept(null, insertedPlayer);
-					}
-				} else {
-					// UUID already exists, handle accordingly (e.g., log, notify)
-					System.out.println("UUID already exists, skipping insertion.");
+				if (callback != null) {
+					ResultSet res = fetch.executeQuery();
+					res.next();
+					callback.accept(null, extractAuctionPlayer(res));
 				}
 
 			} catch (Exception e) {
