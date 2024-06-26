@@ -22,6 +22,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.BaseGUI;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
+import ca.tweetzy.flight.comp.enums.CompSound;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
 import lombok.NonNull;
@@ -43,10 +44,12 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 		this.parent = parent;
 		this.player = player;
 		this.items = items;
+		applyDefaults();
 	}
 
 	public AuctionPagedGUI(@NonNull final Player player, @NonNull String title, int rows, @NonNull List<T> items) {
 		this(null, player, title, rows, items);
+		applyDefaults();
 	}
 
 	@Override
@@ -132,4 +135,10 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 	protected int getNextButtonSlot() {
 		return 50;
 	}
+
+	private void applyDefaults() {
+		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILLER.getString()).make()));
+		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF).parseSound());
+	}
+
 }
