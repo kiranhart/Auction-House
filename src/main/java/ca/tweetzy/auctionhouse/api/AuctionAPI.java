@@ -205,6 +205,7 @@ public class AuctionAPI {
 	 * @return Serialized data.
 	 */
 	public byte[] serializeItem(ItemStack item) {
+
 		try (ByteArrayOutputStream stream = new ByteArrayOutputStream(); BukkitObjectOutputStream bukkitStream = new BukkitObjectOutputStream(stream)) {
 			bukkitStream.writeObject(item);
 			return stream.toByteArray();
@@ -580,7 +581,7 @@ public class AuctionAPI {
 		Objects.requireNonNull(items, "Cannot create a bundled item with no items");
 		ItemStack item = QuickItem
 				.of(Settings.ITEM_BUNDLE_ITEM.getString())
-				.name(Replacer.replaceVariables(Settings.ITEM_BUNDLE_NAME.getString(),"item_name", getItemName(baseItem)))
+				.name(Replacer.replaceVariables(Settings.ITEM_BUNDLE_NAME.getString(), "item_name", getItemName(baseItem)))
 				.lore(Replacer.replaceVariables(Settings.ITEM_BUNDLE_LORE.getStringList(), "item_name", getItemName(baseItem)))
 				.make();
 
@@ -853,70 +854,77 @@ public class AuctionAPI {
 		return meets;
 	}
 
-	private String enchantmentName(String arg) {
-		switch (Enchantment.getByName(arg).getName()) {
-			case "ARROW_DAMAGE":
-				return "Power";
-			case "ARROW_FIRE":
-				return "Flame";
-			case "ARROW_INFINITE":
-				return "Infinity";
-			case "ARROW_KNOCKBACK":
-				return "Punch";
-			case "BINDING_CURSE":
-				return "Curse of Binding";
-			case "DAMAGE_ALL":
-				return "Sharpness";
-			case "DAMAGE_ARTHROPODS":
-				return "Bane of Arthropods";
-			case "DAMAGE_UNDEAD":
-				return "Smite";
-			case "DEPTH_STRIDER":
-				return "Depth Strider";
-			case "DIG_SPEED":
-				return "Efficiency";
-			case "DURABILITY":
-				return "Unbreaking";
-			case "FIRE_ASPECT":
-				return "Fire Aspect";
-			case "FROST_WALKER":
-				return "Frost Walker";
-			case "KNOCKBACK":
-				return "Knockback";
-			case "LOOT_BONUS_BLOCKS":
-				return "Fortune";
-			case "LOOT_BONUS_MOBS":
-				return "Looting";
-			case "LUCK":
-				return "Luck of the Sea";
-			case "LURE":
-				return "Lure";
-			case "MENDING":
-				return "Mending";
-			case "OXYGEN":
-				return "Respiration";
-			case "PROTECTION_ENVIRONMENTAL":
-				return "Protection";
-			case "PROTECTION_EXPLOSIONS":
-				return "Blast Protection";
-			case "PROTECTION_FALL":
-				return "Feather Falling";
-			case "PROTECTION_FIRE":
-				return "Fire Protection";
-			case "PROTECTION_PROJECTILE":
-				return "Projectile Protection";
-			case "SILK_TOUCH":
-				return "Silk Touch";
-			case "SWEEPING_EDGE":
-				return "Sweeping Edge";
-			case "THORNS":
-				return "Thorns";
-			case "VANISHING_CURSE":
-				return "Cure of Vanishing";
-			case "WATER_WORKER":
-				return "Aqua Affinity";
-			default:
-				return "Unknown";
+	public  String enchantmentName(String arg) {
+		try {
+			final Enchantment enchantment = Enchantment.getByName(arg);
+			if (enchantment == null) return "Unknown";
+
+			switch (enchantment.getName()) {
+				case "ARROW_DAMAGE":
+					return "Power";
+				case "ARROW_FIRE":
+					return "Flame";
+				case "ARROW_INFINITE":
+					return "Infinity";
+				case "ARROW_KNOCKBACK":
+					return "Punch";
+				case "BINDING_CURSE":
+					return "Curse of Binding";
+				case "DAMAGE_ALL":
+					return "Sharpness";
+				case "DAMAGE_ARTHROPODS":
+					return "Bane of Arthropods";
+				case "DAMAGE_UNDEAD":
+					return "Smite";
+				case "DEPTH_STRIDER":
+					return "Depth Strider";
+				case "DIG_SPEED":
+					return "Efficiency";
+				case "DURABILITY":
+					return "Unbreaking";
+				case "FIRE_ASPECT":
+					return "Fire Aspect";
+				case "FROST_WALKER":
+					return "Frost Walker";
+				case "KNOCKBACK":
+					return "Knockback";
+				case "LOOT_BONUS_BLOCKS":
+					return "Fortune";
+				case "LOOT_BONUS_MOBS":
+					return "Looting";
+				case "LUCK":
+					return "Luck of the Sea";
+				case "LURE":
+					return "Lure";
+				case "MENDING":
+					return "Mending";
+				case "OXYGEN":
+					return "Respiration";
+				case "PROTECTION_ENVIRONMENTAL":
+					return "Protection";
+				case "PROTECTION_EXPLOSIONS":
+					return "Blast Protection";
+				case "PROTECTION_FALL":
+					return "Feather Falling";
+				case "PROTECTION_FIRE":
+					return "Fire Protection";
+				case "PROTECTION_PROJECTILE":
+					return "Projectile Protection";
+				case "SILK_TOUCH":
+					return "Silk Touch";
+				case "SWEEPING_EDGE":
+					return "Sweeping Edge";
+				case "THORNS":
+					return "Thorns";
+				case "VANISHING_CURSE":
+					return "Cure of Vanishing";
+				case "WATER_WORKER":
+					return "Aqua Affinity";
+				default:
+					return "Unknown";
+			}
+		} catch (NullPointerException e) {
+			return "Unknown";
 		}
 	}
 }

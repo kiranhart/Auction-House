@@ -28,12 +28,9 @@ import ca.tweetzy.auctionhouse.impl.AuctionBan;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.database.*;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -45,8 +42,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * The current file has been created by Kiran Hart
@@ -266,9 +261,9 @@ public class DataManager extends DataManagerAbstract {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions")) {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
-
-
-						transactions.add(extractTransaction(resultSet));
+					final Transaction transaction = extractTransaction(resultSet);
+					if (transaction != null)
+						transactions.add(transaction);
 				}
 
 				callback.accept(null, transactions);
@@ -300,8 +295,8 @@ public class DataManager extends DataManagerAbstract {
 					res.next();
 
 					final Transaction inserted = extractTransaction(res);
-
-					callback.accept(null, inserted);
+					if (inserted != null)
+						callback.accept(null, inserted);
 				}
 
 			} catch (Exception e) {
@@ -555,27 +550,77 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+//	public void insertAuctionPlayer(AuctionPlayer auctionPlayer, Callback<AuctionPlayer> callback) {
+//		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+//			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "player (uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) VALUES (?, ?, ?, ?, ?)")) {
+//				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "player WHERE uuid = ?");
+//
+//				fetch.setString(1, auctionPlayer.getUuid().toString());
+//				statement.setString(1, auctionPlayer.getPlayer().getUniqueId().toString());
+//				statement.setString(2, auctionPlayer.getSelectedSaleType().name());
+//				statement.setString(3, auctionPlayer.getSelectedFilter().name());
+//				statement.setString(4, auctionPlayer.getAuctionSortType().name());
+//				statement.setLong(5, auctionPlayer.getLastListedItem());
+//				statement.executeUpdate();
+//
+//				if (callback != null) {
+//					ResultSet res = fetch.executeQuery();
+//					res.next();
+//					callback.accept(null, extractAuctionPlayer(res));
+//				}
+//
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				resolveCallback(callback, e);
+//			}
+//		}));
+//	}
+
 	public void insertAuctionPlayer(AuctionPlayer auctionPlayer, Callback<AuctionPlayer> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "player (uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) VALUES (?, ?, ?, ?, ?)")) {
-				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "player WHERE uuid = ?");
+			try {
 
-				fetch.setString(1, auctionPlayer.getUuid().toString());
-				statement.setString(1, auctionPlayer.getPlayer().getUniqueId().toString());
-				statement.setString(2, auctionPlayer.getSelectedSaleType().name());
-				statement.setString(3, auctionPlayer.getSelectedFilter().name());
-				statement.setString(4, auctionPlayer.getAuctionSortType().name());
-				statement.setLong(5, auctionPlayer.getLastListedItem());
-				statement.executeUpdate();
+				String insertQuery = "INSERT OR IGNORE INTO " + getTablePrefix() + "player " +
+						"(uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) " +
+						"VALUES (?, ?, ?, ?, ?)";
 
-				if (callback != null) {
+
+				if (AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector) {
+					insertQuery = "INSERT INTO " + getTablePrefix() + "player " +
+							"(uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) " +
+							"VALUES (?, ?, ?, ?, ?) " +
+							"ON DUPLICATE KEY UPDATE " +
+							"filter_sale_type = VALUES(filter_sale_type), " +
+							"filter_item_category = VALUES(filter_item_category), " +
+							"filter_sort_type = VALUES(filter_sort_type), " +
+							"last_listed_item = VALUES(last_listed_item)";
+				}
+
+				// Attempt to insert the new auction player
+				try (PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+					statement.setString(1, auctionPlayer.getPlayer().getUniqueId().toString());
+					statement.setString(2, auctionPlayer.getSelectedSaleType().name());
+					statement.setString(3, auctionPlayer.getSelectedFilter().name());
+					statement.setString(4, auctionPlayer.getAuctionSortType().name());
+					statement.setLong(5, auctionPlayer.getLastListedItem());
+					statement.executeUpdate();
+				}
+
+				// Fetch the auction player (whether newly inserted or already existing)
+				try (PreparedStatement fetch = connection.prepareStatement(
+						"SELECT * FROM " + this.getTablePrefix() + "player WHERE uuid = ?")) {
+					fetch.setString(1, auctionPlayer.getUuid().toString());
 					ResultSet res = fetch.executeQuery();
-					res.next();
-					callback.accept(null, extractAuctionPlayer(res));
+					if (callback != null) {
+						if (res.next()) {
+							callback.accept(null, extractAuctionPlayer(res));
+						} else {
+							callback.accept(null, auctionPlayer); // Should not reach here
+						}
+					}
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
 		}));
@@ -764,6 +809,10 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	private Transaction extractTransaction(ResultSet resultSet) throws SQLException {
+		String possibleItem = resultSet.getString("item");
+		if (possibleItem.contains("Head Database"))
+			possibleItem = possibleItem.replace("Head Database", "HeadDatabase");
+
 		return new Transaction(
 				UUID.fromString(resultSet.getString("id")),
 				UUID.fromString(resultSet.getString("seller")),
@@ -771,7 +820,7 @@ public class DataManager extends DataManagerAbstract {
 				resultSet.getString("seller_name"),
 				resultSet.getString("buyer_name"),
 				resultSet.getLong("transaction_time"),
-				AuctionAPI.decodeItem(resultSet.getString("item")),
+				AuctionAPI.decodeItem(possibleItem),
 				AuctionSaleType.valueOf(resultSet.getString("auction_sale_type")),
 				resultSet.getDouble("final_price")
 		);

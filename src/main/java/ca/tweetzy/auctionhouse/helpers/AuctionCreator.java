@@ -190,7 +190,7 @@ public final class AuctionCreator {
 				if (seller != null) {
 					instance.getLocale().getMessage("general.something_went_wrong_while_listing").sendPrefixedMessage(seller);
 
-					ItemStack originalCopy = auctionItem.getItem().clone();
+					ItemStack originalCopy = auctionItem.getCleanItem().clone();
 					int totalOriginal = BundleUtil.isBundledItem(originalCopy) ? AuctionAPI.getInstance().getItemCountInPlayerInventory(seller, originalCopy) : originalCopy.getAmount();
 
 					if (!auctionItem.isRequest()) {

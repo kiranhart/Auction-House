@@ -390,7 +390,7 @@ public final class CommandSell extends AbstractCommand {
 						AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
 
 						if (listingResult != ListingResult.SUCCESS) {
-							PlayerUtils.giveItem(player, auction.getCleanItem());
+//							PlayerUtils.giveItem(player, auction.getCleanItem());
 							auctionPlayer.setItemBeingListed(null);
 							return;
 						}
