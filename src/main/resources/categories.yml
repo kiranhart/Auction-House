@@ -1,8 +1,0 @@
-food:
-    icon: BEEF
-    enabled: true
-    field requirement:
-        - "is_edible"
-
-    material list:
-        -
