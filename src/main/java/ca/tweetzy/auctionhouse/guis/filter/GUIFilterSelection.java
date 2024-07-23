@@ -54,21 +54,21 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 	protected void draw() {
 
 		if (AuctionItemCategory.ALL.isEnabled())
-			setButton(1, 3, QuickItem.of(Settings.GUI_FILTER_ITEMS_ALL_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_ALL_NAME.getString()).lore(Settings.GUI_FILTER_ITEMS_ALL_LORE.getStringList()).make(), e -> {
+			setButton(1, 3, QuickItem.of(Settings.GUI_FILTER_ITEMS_ALL_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_ALL_NAME.getString()).lore(this.player,Settings.GUI_FILTER_ITEMS_ALL_LORE.getStringList()).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.ALL);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.SELF.isEnabled())
-			setButton(1, 4, QuickItem.of(this.player).name(Settings.GUI_FILTER_ITEMS_OWN_NAME.getString()).lore(Settings.GUI_FILTER_ITEMS_OWN_LORE.getStringList()).make(), e -> {
+			setButton(1, 4, QuickItem.of(this.player).name(Settings.GUI_FILTER_ITEMS_OWN_NAME.getString()).lore(this.player,Settings.GUI_FILTER_ITEMS_OWN_LORE.getStringList()).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.SELF);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.SEARCH.isEnabled())
-			setButton(1, 5, QuickItem.of(Settings.GUI_FILTER_ITEMS_SEARCH_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_SEARCH_NAME.getString()).lore(Replacer.replaceVariables(Settings.GUI_FILTER_ITEMS_SEARCH_LORE.getStringList(), "filter_search_phrase", this.auctionPlayer.getCurrentSearchPhrase())).make(), e -> {
+			setButton(1, 5, QuickItem.of(Settings.GUI_FILTER_ITEMS_SEARCH_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_SEARCH_NAME.getString()).lore(this.player,Replacer.replaceVariables(Settings.GUI_FILTER_ITEMS_SEARCH_LORE.getStringList(), "filter_search_phrase", this.auctionPlayer.getCurrentSearchPhrase())).make(), e -> {
 				if (!e.player.hasPermission("auctionhouse.cmd.search")) {
 					AuctionHouse.getInstance().getLocale().getMessage("commands.no_permission").sendPrefixedMessage(e.player);
 					return;
@@ -86,56 +86,56 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 			});
 
 		if (AuctionItemCategory.MISC.isEnabled())
-			setButton(2, 1, QuickItem.of(Settings.GUI_FILTER_ITEMS_MISC_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_MISC_NAME.getString()).lore(Settings.GUI_FILTER_ITEMS_MISC_LORE.getStringList()).make(), e -> {
+			setButton(2, 1, QuickItem.of(Settings.GUI_FILTER_ITEMS_MISC_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_MISC_NAME.getString()).lore(this.player,Settings.GUI_FILTER_ITEMS_MISC_LORE.getStringList()).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.MISC);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.ENCHANTS.isEnabled())
-			setButton(2, 2, QuickItem.of(Settings.GUI_FILTER_ITEMS_ENCHANTS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_ENCHANTS_NAME.getString()).lore(Settings.GUI_FILTER_ITEMS_ENCHANTS_LORE.getStringList()).make(), e -> {
+			setButton(2, 2, QuickItem.of(Settings.GUI_FILTER_ITEMS_ENCHANTS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_ENCHANTS_NAME.getString()).lore(this.player,Settings.GUI_FILTER_ITEMS_ENCHANTS_LORE.getStringList()).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.ENCHANTS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.ARMOR.isEnabled())
-			setButton(2, 3, QuickItem.of(Settings.GUI_FILTER_ITEMS_ARMOR_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_ARMOR_NAME.getString()).lore(Settings.GUI_FILTER_ITEMS_ARMOR_LORE.getStringList()).make(), e -> {
+			setButton(2, 3, QuickItem.of(Settings.GUI_FILTER_ITEMS_ARMOR_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_ARMOR_NAME.getString()).lore(this.player,Settings.GUI_FILTER_ITEMS_ARMOR_LORE.getStringList()).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.ARMOR);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.WEAPONS.isEnabled())
-			setButton(2, 4, QuickItem.of(Settings.GUI_FILTER_ITEMS_WEAPONS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_WEAPONS_NAME.getString()).lore(Settings.GUI_FILTER_ITEMS_WEAPONS_LORE.getStringList()).make(), e -> {
+			setButton(2, 4, QuickItem.of(Settings.GUI_FILTER_ITEMS_WEAPONS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_WEAPONS_NAME.getString()).lore(this.player,Settings.GUI_FILTER_ITEMS_WEAPONS_LORE.getStringList()).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.WEAPONS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.TOOLS.isEnabled())
-			setButton(2, 5, QuickItem.of(Settings.GUI_FILTER_ITEMS_TOOLS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_TOOLS_NAME.getString()).lore(Settings.GUI_FILTER_ITEMS_TOOLS_LORE.getStringList()).make(), e -> {
+			setButton(2, 5, QuickItem.of(Settings.GUI_FILTER_ITEMS_TOOLS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_TOOLS_NAME.getString()).lore(this.player,Settings.GUI_FILTER_ITEMS_TOOLS_LORE.getStringList()).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.TOOLS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.SPAWNERS.isEnabled())
-			setButton(2, 6, QuickItem.of(Settings.GUI_FILTER_ITEMS_SPAWNERS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_SPAWNERS_NAME.getString()).lore(Settings.GUI_FILTER_ITEMS_SPAWNERS_LORE.getStringList()).make(), e -> {
+			setButton(2, 6, QuickItem.of(Settings.GUI_FILTER_ITEMS_SPAWNERS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_SPAWNERS_NAME.getString()).lore(this.player,Settings.GUI_FILTER_ITEMS_SPAWNERS_LORE.getStringList()).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.SPAWNERS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.BLOCKS.isEnabled())
-			setButton(2, 7, QuickItem.of(Settings.GUI_FILTER_ITEMS_BLOCKS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_BLOCKS_NAME.getString()).lore(Settings.GUI_FILTER_ITEMS_BLOCKS_LORE.getStringList()).make(), e -> {
+			setButton(2, 7, QuickItem.of(Settings.GUI_FILTER_ITEMS_BLOCKS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_BLOCKS_NAME.getString()).lore(this.player,Settings.GUI_FILTER_ITEMS_BLOCKS_LORE.getStringList()).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.BLOCKS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 
 		if (AuctionItemCategory.POTIONS.isEnabled())
-			setButton(3, 4, QuickItem.of(Settings.GUI_FILTER_ITEMS_POTIONS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_POTIONS_NAME.getString()).lore(Settings.GUI_FILTER_ITEMS_POTIONS_LORE.getStringList()).make(), e -> {
+			setButton(3, 4, QuickItem.of(Settings.GUI_FILTER_ITEMS_POTIONS_ITEM.getString()).name(Settings.GUI_FILTER_ITEMS_POTIONS_NAME.getString()).lore(this.player,Settings.GUI_FILTER_ITEMS_POTIONS_LORE.getStringList()).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.POTIONS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));

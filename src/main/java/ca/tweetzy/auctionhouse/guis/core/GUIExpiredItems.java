@@ -123,14 +123,14 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 		if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean()) {
 			setButton(5, 2, QuickItem
 					.of(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_ITEM.getString())
-					.name(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_NAME.getString()).lore(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_LORE.getStringList())
+					.name(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_NAME.getString()).lore(this.player,Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_LORE.getStringList())
 					.make(), e -> e.manager.showGUI(e.player, new GUIPaymentCollection(this, this.auctionPlayer)));
 		}
 
 		setButton(5, 1, QuickItem
 				.of(Settings.GUI_EXPIRED_AUCTIONS_ITEM.getString())
 				.name(Settings.GUI_EXPIRED_AUCTIONS_NAME.getString())
-				.lore(Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList())
+				.lore(this.player,Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList())
 				.make(), e -> {
 
 			if (AuctionHouse.getInstance().getBanManager().isStillBanned(e.player, BanType.EVERYTHING, BanType.ITEM_COLLECTION)) return;

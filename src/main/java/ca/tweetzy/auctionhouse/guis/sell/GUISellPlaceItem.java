@@ -95,7 +95,7 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM.getString())
 				.name(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_NAME.getString())
-				.lore(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_LORE.getStringList())
+				.lore(this.player,Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_LORE.getStringList())
 				.make(), click -> {
 
 			final ArrayList<ItemStack> items = gatherSellableItems();
@@ -133,7 +133,7 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 			setButton(getRows() - 1, 8, QuickItem
 					.of(this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_ITEM.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_ITEM.getString())
 					.name(this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_NAME.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_NAME.getString())
-					.lore(this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_LORE.getStringList() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_LORE.getStringList())
+					.lore(this.player,this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_LORE.getStringList() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_LORE.getStringList())
 					.make(), click -> {
 
 				if (auctionPlayer.isAtBundleLimit()) {

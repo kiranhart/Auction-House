@@ -28,6 +28,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
+import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -139,16 +140,10 @@ public class AuctionedItem {
 	}
 
 
-	public ItemStack getBidStack() {
-		ItemStack itemStack = this.item.clone();
-		itemStack.setAmount(Math.max(this.item.getAmount(), 1));
-		ItemMeta meta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
-//		List<String> lore = (meta.hasLore()) ? meta.getLore() : new ArrayList<>();
-
+	public ItemStack getBidStack(Player player) {
+		QuickItem itemStack = QuickItem.of(this.item.clone());
+		itemStack.amount(Math.max(this.item.getAmount(), 1));
 		List<String> lore = new ArrayList<>();
-
-		if (meta != null && meta.getLore() != null)
-			lore.addAll(meta.getLore());
 
 		if (this.serverItem)
 			this.ownerName = AuctionHouse.getInstance().getLocale().getMessage("general.server listing").getMessage();
@@ -174,20 +169,15 @@ public class AuctionedItem {
 
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_FOOTER.getStringList()));
 
-		meta.setLore(lore);
-		itemStack.setItemMeta(meta);
-		return itemStack;
+		itemStack.lore(player, lore);
+		return itemStack.make();
 	}
 
-	public ItemStack getDisplayRequestStack(AuctionStackType type) {
-		ItemStack itemStack = this.item.clone();
-		itemStack.setAmount(Math.max(this.item.getAmount(), 1));
-		ItemMeta meta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
+	public ItemStack getDisplayRequestStack(Player player, AuctionStackType type) {
+		QuickItem itemStack = QuickItem.of(this.item.clone());
+		itemStack.amount(Math.max(this.item.getAmount(), 1));
 
 		List<String> lore = new ArrayList<>();
-
-		if (meta != null && meta.getLore() != null)
-			lore.addAll(meta.getLore());
 
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HEADER.getStringList()));
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_REQUESTER.getStringList().stream().map(s -> s.replace("%requester%", this.ownerName)).collect(Collectors.toList())));
@@ -214,20 +204,15 @@ public class AuctionedItem {
 
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_FOOTER.getStringList()));
 
-		meta.setLore(lore);
-		itemStack.setItemMeta(meta);
-		return itemStack;
+		itemStack.lore(player, lore);
+		return itemStack.make();
 	}
 
-	public ItemStack getDisplayStack(AuctionStackType type) {
-		ItemStack itemStack = this.item.clone();
-		itemStack.setAmount(Math.max(this.item.getAmount(), 1));
-		ItemMeta meta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(itemStack.getType());
+	public ItemStack getDisplayStack(Player player, AuctionStackType type) {
+		QuickItem itemStack = QuickItem.of(this.item.clone());
+		itemStack.amount(Math.max(this.item.getAmount(), 1));
 
 		List<String> lore = new ArrayList<>();
-
-		if (meta != null && meta.getLore() != null)
-			lore.addAll(meta.getLore());
 
 		if (this.serverItem)
 			this.ownerName = AuctionHouse.getInstance().getLocale().getMessage("general.server listing").getMessage();
@@ -281,7 +266,7 @@ public class AuctionedItem {
 				}
 			}
 
-			if (BundleUtil.isBundledItem(itemStack) || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && itemStack.getType().name().contains("SHULKER_BOX"))) {
+			if (BundleUtil.isBundledItem(this.item.clone()) || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && this.item.clone().getType().name().contains("SHULKER_BOX"))) {
 				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_INSPECTION.getStringList()));
 			}
 		} else {
@@ -305,9 +290,8 @@ public class AuctionedItem {
 
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_FOOTER.getStringList()));
 
-		meta.setLore(lore);
-		itemStack.setItemMeta(meta);
-		return itemStack;
+		itemStack.lore(player, lore);
+		return itemStack.make();
 	}
 
 	public ItemStack getCleanItem() {

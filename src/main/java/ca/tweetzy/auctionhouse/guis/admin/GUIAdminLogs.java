@@ -60,7 +60,7 @@ public final class GUIAdminLogs extends AuctionPagedGUI<AuctionAdminLog> {
 		return QuickItem
 				.of(log.getItem())
 				.name(AuctionAPI.getInstance().getItemName(log.getItem()))
-				.lore(Replacer.replaceVariables(Settings.GUI_LOGS_LORE.getStringList(),
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_LOGS_LORE.getStringList(),
 						"admin", log.getAdminName(),
 						"target", log.getTargetName(),
 						"admin_uuid", log.getAdmin(),

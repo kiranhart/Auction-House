@@ -60,7 +60,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 		setButton(3, 2, QuickItem
 				.of(Settings.GUI_REQUEST_ITEMS_AMT_ITEM.getString())
 				.name(Settings.GUI_REQUEST_ITEMS_AMT_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_AMT_LORE.getStringList(), "request_amount", amount))
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_AMT_LORE.getStringList(), "request_amount", amount))
 				.make(), click -> {
 
 			click.gui.exit();
@@ -106,7 +106,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 		setButton(3, 6, QuickItem
 				.of(Settings.GUI_REQUEST_ITEMS_PRICE_ITEM.getString())
 				.name(Settings.GUI_REQUEST_ITEMS_PRICE_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_PRICE_LORE.getStringList(), "request_price", AuctionAPI.getInstance().formatNumber(price)))
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_PRICE_LORE.getStringList(), "request_price", AuctionAPI.getInstance().formatNumber(price)))
 				.make(), click -> {
 
 			click.gui.exit();
@@ -154,7 +154,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_REQUEST_ITEMS_REQUEST_ITEM.getString())
 				.name(Settings.GUI_REQUEST_ITEMS_REQUEST_NAME.getString())
-				.lore(Settings.GUI_REQUEST_ITEMS_REQUEST_LORE.getStringList())
+				.lore(this.player,Settings.GUI_REQUEST_ITEMS_REQUEST_LORE.getStringList())
 				.make(), click -> {
 
 			// Check for block items

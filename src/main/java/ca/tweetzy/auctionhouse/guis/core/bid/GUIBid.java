@@ -66,7 +66,7 @@ public class GUIBid extends AuctionBaseGUI {
 		setButton(1, 2, QuickItem
 				.of(Settings.GUI_BIDDING_ITEMS_DEFAULT_ITEM.getString())
 				.name(Settings.GUI_BIDDING_ITEMS_DEFAULT_NAME.getString())
-				.lore(Settings.GUI_BIDDING_ITEMS_DEFAULT_LORE.getStringList()).make(), e -> {
+				.lore(this.player,Settings.GUI_BIDDING_ITEMS_DEFAULT_LORE.getStringList()).make(), e -> {
 
 			if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice())) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
@@ -83,7 +83,7 @@ public class GUIBid extends AuctionBaseGUI {
 		setButton(1, 6, QuickItem
 				.of(Settings.GUI_BIDDING_ITEMS_CUSTOM_ITEM.getString())
 				.name(Settings.GUI_BIDDING_ITEMS_CUSTOM_NAME.getString())
-				.lore(Settings.GUI_BIDDING_ITEMS_CUSTOM_LORE.getStringList())
+				.lore(this.player,Settings.GUI_BIDDING_ITEMS_CUSTOM_LORE.getStringList())
 				.make(), e -> {
 
 			e.gui.exit();

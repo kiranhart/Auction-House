@@ -58,7 +58,7 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 		for (int i = 0; i < 4; i++)
 			drawYes(i);
 
-		setItem(0, 4, this.auctionItem.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST));
+		setItem(0, 4, this.auctionItem.getDisplayStack(this.player, AuctionStackType.ACTIVE_AUCTIONS_LIST));
 
 		for (int i = 5; i < 9; i++)
 			drawNo(i);
@@ -68,7 +68,7 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_CANCEL_NO_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_CANCEL_NO_NAME.getString())
-				.lore(Settings.GUI_CONFIRM_CANCEL_NO_LORE.getStringList())
+				.lore(this.player,Settings.GUI_CONFIRM_CANCEL_NO_LORE.getStringList())
 				.make(), click -> click.manager.showGUI(click.player, new GUIActiveAuctions(this.auctionPlayer)));
 	}
 
@@ -76,7 +76,7 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_CANCEL_YES_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_CANCEL_YES_NAME.getString())
-				.lore(Settings.GUI_CONFIRM_CANCEL_YES_LORE.getStringList())
+				.lore(this.player,Settings.GUI_CONFIRM_CANCEL_YES_LORE.getStringList())
 				.make(), click -> {
 
 			// Re-select the item to ensure that it's available

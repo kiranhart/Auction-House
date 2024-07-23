@@ -854,7 +854,7 @@ public class AuctionAPI {
 		return meets;
 	}
 
-	public  String enchantmentName(String arg) {
+	public String enchantmentName(String arg) {
 		try {
 			final Enchantment enchantment = Enchantment.getByName(arg);
 			if (enchantment == null) return "Unknown";

@@ -24,6 +24,7 @@ import ca.tweetzy.core.gui.BaseGUI;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.comp.enums.CompSound;
+import ca.tweetzy.flight.hooks.PlaceholderAPIHook;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
 import lombok.NonNull;
@@ -45,7 +46,7 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	protected BukkitTask task;
 
 	public AuctionUpdatingPagedGUI(final Gui parent, @NonNull final Player player, @NonNull final String title, final int rows, int updateDelay, @NonNull final List<T> items) {
-		super(parent, title, rows);
+		super(parent, PlaceholderAPIHook.tryReplace(player, title), rows);
 		this.parent = parent;
 		this.player = player;
 		this.items = items;
@@ -123,7 +124,7 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		return QuickItem
 				.of(Settings.GUI_BACK_BTN_ITEM.getString())
 				.name(Settings.GUI_BACK_BTN_NAME.getString())
-				.lore(Settings.GUI_BACK_BTN_LORE.getStringList())
+				.lore(this.player, Settings.GUI_BACK_BTN_LORE.getStringList())
 				.make();
 	}
 
@@ -132,7 +133,7 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		return QuickItem
 				.of(Settings.GUI_CLOSE_BTN_ITEM.getString())
 				.name(Settings.GUI_CLOSE_BTN_NAME.getString())
-				.lore(Settings.GUI_CLOSE_BTN_LORE.getStringList())
+				.lore(this.player, Settings.GUI_CLOSE_BTN_LORE.getStringList())
 				.make();
 	}
 
@@ -141,7 +142,7 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		return QuickItem
 				.of(Settings.GUI_PREV_PAGE_BTN_ITEM.getString())
 				.name(Settings.GUI_PREV_PAGE_BTN_NAME.getString())
-				.lore(Settings.GUI_PREV_PAGE_BTN_LORE.getStringList())
+				.lore(this.player, Settings.GUI_PREV_PAGE_BTN_LORE.getStringList())
 				.make();
 	}
 
@@ -150,7 +151,7 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		return QuickItem
 				.of(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString())
 				.name(Settings.GUI_NEXT_PAGE_BTN_NAME.getString())
-				.lore(Settings.GUI_NEXT_PAGE_BTN_LORE.getStringList())
+				.lore(this.player, Settings.GUI_NEXT_PAGE_BTN_LORE.getStringList())
 				.make();
 	}
 
@@ -158,7 +159,7 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		return QuickItem
 				.of(Settings.GUI_REFRESH_BTN_ITEM.getString())
 				.name(Settings.GUI_REFRESH_BTN_NAME.getString())
-				.lore(Settings.GUI_REFRESH_BTN_LORE.getStringList())
+				.lore(this.player, Settings.GUI_REFRESH_BTN_LORE.getStringList())
 				.make();
 	}
 

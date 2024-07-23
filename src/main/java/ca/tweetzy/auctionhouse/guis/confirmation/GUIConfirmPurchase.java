@@ -102,7 +102,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 		final boolean isRequest = this.auctionItem.isRequest();
 
 		setItems(this.buyingSpecificQuantity ? 9 : 0, this.buyingSpecificQuantity ? 12 : 3, isRequest ? getConfirmRequestYesItem() : getConfirmBuyYesItem());
-		setItem(this.buyingSpecificQuantity ? 1 : 0, 4, isRequest ? this.auctionItem.getDisplayRequestStack(AuctionStackType.MAIN_AUCTION_HOUSE) : this.auctionItem.getDisplayStack(AuctionStackType.LISTING_PREVIEW));
+		setItem(this.buyingSpecificQuantity ? 1 : 0, 4, isRequest ? this.auctionItem.getDisplayRequestStack(this.player, AuctionStackType.MAIN_AUCTION_HOUSE) : this.auctionItem.getDisplayStack(this.player, AuctionStackType.LISTING_PREVIEW));
 		setItems(this.buyingSpecificQuantity ? 14 : 5, this.buyingSpecificQuantity ? 17 : 8, isRequest ? getConfirmRequestNoItem() : getConfirmBuyNoItem());
 
 		setAction(this.buyingSpecificQuantity ? 1 : 0, 4, ClickType.LEFT, e -> {
@@ -361,7 +361,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 				.of(Settings.GUI_CONFIRM_QTY_INFO_ITEM.getString())
 				.amount(qty)
 				.name(Settings.GUI_CONFIRM_QTY_INFO_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_CONFIRM_QTY_INFO_LORE.getStringList(),
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_CONFIRM_QTY_INFO_LORE.getStringList(),
 						"original_stack_size", maxStackSize,
 						"original_stack_price", AuctionAPI.getInstance().formatNumber(auctionItem.getBasePrice()),
 						"price_per_item", AuctionAPI.getInstance().formatNumber(pricePerItem),
@@ -372,26 +372,26 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 	}
 
 	private ItemStack getIncreaseQtyButtonItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_INCREASE_QTY_ITEM.getString()).name(Settings.GUI_CONFIRM_INCREASE_QTY_NAME.getString()).lore(Settings.GUI_CONFIRM_INCREASE_QTY_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_INCREASE_QTY_ITEM.getString()).name(Settings.GUI_CONFIRM_INCREASE_QTY_NAME.getString()).lore(this.player,Settings.GUI_CONFIRM_INCREASE_QTY_LORE.getStringList()).make();
 	}
 
 	private ItemStack getDecreaseQtyButtonItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_DECREASE_QTY_ITEM.getString()).name(Settings.GUI_CONFIRM_DECREASE_QTY_NAME.getString()).lore(Settings.GUI_CONFIRM_DECREASE_QTY_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_DECREASE_QTY_ITEM.getString()).name(Settings.GUI_CONFIRM_DECREASE_QTY_NAME.getString()).lore(this.player,Settings.GUI_CONFIRM_DECREASE_QTY_LORE.getStringList()).make();
 	}
 
 	protected ItemStack getConfirmBuyYesItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_BUY_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_YES_NAME.getString()).lore(Settings.GUI_CONFIRM_BUY_YES_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_BUY_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_YES_NAME.getString()).lore(this.player,Settings.GUI_CONFIRM_BUY_YES_LORE.getStringList()).make();
 	}
 
 	protected ItemStack getConfirmBuyNoItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_BUY_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_NO_NAME.getString()).lore(Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_BUY_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_NO_NAME.getString()).lore(this.player,Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList()).make();
 	}
 
 	protected ItemStack getConfirmRequestYesItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_REQUEST_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_YES_NAME.getString()).lore(Settings.GUI_CONFIRM_REQUEST_YES_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_REQUEST_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_YES_NAME.getString()).lore(this.player,Settings.GUI_CONFIRM_REQUEST_YES_LORE.getStringList()).make();
 	}
 
 	protected ItemStack getConfirmRequestNoItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_REQUEST_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_NO_NAME.getString()).lore(Settings.GUI_CONFIRM_REQUEST_NO_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_REQUEST_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_NO_NAME.getString()).lore(this.player,Settings.GUI_CONFIRM_REQUEST_NO_LORE.getStringList()).make();
 	}
 }

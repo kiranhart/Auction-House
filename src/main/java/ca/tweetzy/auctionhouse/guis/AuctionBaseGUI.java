@@ -22,6 +22,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.BaseGUI;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.flight.comp.enums.CompSound;
+import ca.tweetzy.flight.hooks.PlaceholderAPIHook;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
 import lombok.NonNull;
@@ -36,21 +37,21 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 	public AuctionBaseGUI(Gui parent, @NonNull final Player player, @NonNull String title, int rows) {
 		super(parent, title, rows);
 		this.player = player;
-		setTitle(title);
+		setTitle(PlaceholderAPIHook.tryReplace(player, title));
 		applyDefaults();
 	}
 
 	public AuctionBaseGUI(Gui parent, @NonNull final Player player, @NonNull String title) {
 		super(parent, title);
 		this.player = player;
-		setTitle(title);
+		setTitle(PlaceholderAPIHook.tryReplace(player, title));
 		applyDefaults();
 	}
 
 	public AuctionBaseGUI(@NonNull final Player player, @NonNull String title) {
 		super(title);
 		this.player = player;
-		setTitle(title);
+		setTitle(PlaceholderAPIHook.tryReplace(player, title));
 		applyDefaults();
 	}
 
@@ -64,7 +65,7 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 		return QuickItem
 				.of(Settings.GUI_BACK_BTN_ITEM.getString())
 				.name(Settings.GUI_BACK_BTN_NAME.getString())
-				.lore(Settings.GUI_BACK_BTN_LORE.getStringList())
+				.lore(this.player, Settings.GUI_BACK_BTN_LORE.getStringList())
 				.make();
 	}
 
@@ -73,7 +74,7 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 		return QuickItem
 				.of(Settings.GUI_CLOSE_BTN_ITEM.getString())
 				.name(Settings.GUI_CLOSE_BTN_NAME.getString())
-				.lore(Settings.GUI_CLOSE_BTN_LORE.getStringList())
+				.lore(this.player, Settings.GUI_CLOSE_BTN_LORE.getStringList())
 				.make();
 	}
 
@@ -82,7 +83,7 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 		return QuickItem
 				.of(Settings.GUI_PREV_PAGE_BTN_ITEM.getString())
 				.name(Settings.GUI_PREV_PAGE_BTN_NAME.getString())
-				.lore(Settings.GUI_PREV_PAGE_BTN_LORE.getStringList())
+				.lore(this.player, Settings.GUI_PREV_PAGE_BTN_LORE.getStringList())
 				.make();
 	}
 
@@ -91,7 +92,7 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 		return QuickItem
 				.of(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString())
 				.name(Settings.GUI_NEXT_PAGE_BTN_NAME.getString())
-				.lore(Settings.GUI_NEXT_PAGE_BTN_LORE.getStringList())
+				.lore(this.player, Settings.GUI_NEXT_PAGE_BTN_LORE.getStringList())
 				.make();
 	}
 

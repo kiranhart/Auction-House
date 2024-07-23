@@ -62,7 +62,7 @@ public class GUITransactionView extends AuctionBaseGUI {
 		setItem(3, 2, QuickItem
 				.of(AuctionAPI.getInstance().getPlayerHead(seller.getName()))
 				.name(Replacer.replaceVariables(Settings.GUI_TRANSACTION_VIEW_ITEM_SELLER_NAME.getString(), "seller", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME))
-				.lore(Replacer.replaceVariables(Settings.GUI_TRANSACTION_VIEW_ITEM_SELLER_LORE.getStringList(),
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_TRANSACTION_VIEW_ITEM_SELLER_LORE.getStringList(),
 						"transaction_id", transaction.getId().toString(),
 						"seller", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME,
 						"buyer", buyer.getName(),
@@ -72,7 +72,7 @@ public class GUITransactionView extends AuctionBaseGUI {
 		setItem(3, 6, QuickItem
 				.of(AuctionAPI.getInstance().getPlayerHead(Bukkit.getOfflinePlayer(transaction.getBuyer()).getName()))
 				.name(Replacer.replaceVariables(Settings.GUI_TRANSACTION_VIEW_ITEM_BUYER_NAME.getString(), "buyer", buyer.getName()))
-				.lore(Replacer.replaceVariables(Settings.GUI_TRANSACTION_VIEW_ITEM_BUYER_LORE.getStringList(),
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_TRANSACTION_VIEW_ITEM_BUYER_LORE.getStringList(),
 						"transaction_id", transaction.getId().toString(),
 						"seller", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME,
 						"buyer", buyer.getName(),
@@ -83,7 +83,7 @@ public class GUITransactionView extends AuctionBaseGUI {
 		setItem(3, 4, QuickItem
 				.of(Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_ITEM.getString())
 				.name(Replacer.replaceVariables(Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_NAME.getString(), "transaction_id", transaction.getId().toString()))
-				.lore(Replacer.replaceVariables(Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_LORE.getStringList(),
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_TRANSACTION_VIEW_ITEM_INFO_LORE.getStringList(),
 						"transaction_id", transaction.getId().toString(),
 						"sale_type", transaction.getAuctionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? AuctionHouse.getInstance().getLocale().getMessage("transaction.sale_type.bid_won").getMessage() : AuctionHouse.getInstance().getLocale().getMessage("transaction.sale_type.immediate_buy").getMessage(),
 						"transaction_date", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()),

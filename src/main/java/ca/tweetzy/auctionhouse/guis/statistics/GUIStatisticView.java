@@ -47,42 +47,42 @@ public final class GUIStatisticView extends AuctionBaseGUI {
 		setItem(1, 1, QuickItem
 				.of(isSelf ? Settings.GUI_STATS_SELF_ITEMS_CREATED_AUCTION_ITEM.getString() : Settings.GUI_STATS_SEARCH_ITEMS_CREATED_AUCTION_ITEM.getString())
 				.name(isSelf ? Settings.GUI_STATS_SELF_ITEMS_CREATED_AUCTION_NAME.getString() : Settings.GUI_STATS_SEARCH_ITEMS_CREATED_AUCTION_NAME.getString())
-				.lore(Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_CREATED_AUCTION_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_CREATED_AUCTION_LORE.getStringList(), "created_auctions", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.CREATED_AUCTION)))
+				.lore(this.player,Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_CREATED_AUCTION_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_CREATED_AUCTION_LORE.getStringList(), "created_auctions", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.CREATED_AUCTION)))
 				.make());
 
 		// sold auction
 		setItem(3, 1, QuickItem
 				.of(isSelf ? Settings.GUI_STATS_SELF_ITEMS_SOLD_AUCTION_ITEM.getString() : Settings.GUI_STATS_SEARCH_ITEMS_SOLD_AUCTION_ITEM.getString())
 				.name(isSelf ? Settings.GUI_STATS_SELF_ITEMS_SOLD_AUCTION_NAME.getString() : Settings.GUI_STATS_SEARCH_ITEMS_SOLD_AUCTION_NAME.getString())
-				.lore(Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_SOLD_AUCTION_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_SOLD_AUCTION_LORE.getStringList(), "sold_auctions", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.SOLD_AUCTION)))
+				.lore(this.player,Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_SOLD_AUCTION_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_SOLD_AUCTION_LORE.getStringList(), "sold_auctions", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.SOLD_AUCTION)))
 				.make());
 
 		// created bin
 		setItem(1, 4, QuickItem
 				.of(isSelf ? Settings.GUI_STATS_SELF_ITEMS_CREATED_BIN_ITEM.getString() : Settings.GUI_STATS_SEARCH_ITEMS_CREATED_BIN_ITEM.getString())
 				.name(isSelf ? Settings.GUI_STATS_SELF_ITEMS_CREATED_BIN_NAME.getString() : Settings.GUI_STATS_SEARCH_ITEMS_CREATED_BIN_NAME.getString())
-				.lore(Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_CREATED_BIN_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_CREATED_BIN_LORE.getStringList(), "created_bins", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.CREATED_BIN)))
+				.lore(this.player,Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_CREATED_BIN_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_CREATED_BIN_LORE.getStringList(), "created_bins", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.CREATED_BIN)))
 				.make());
 
 		// sold bin
 		setItem(3, 4, QuickItem
 				.of(isSelf ? Settings.GUI_STATS_SELF_ITEMS_SOLD_BIN_ITEM.getString() : Settings.GUI_STATS_SEARCH_ITEMS_SOLD_BIN_ITEM.getString())
 				.name(isSelf ? Settings.GUI_STATS_SELF_ITEMS_SOLD_BIN_NAME.getString() : Settings.GUI_STATS_SEARCH_ITEMS_SOLD_BIN_NAME.getString())
-				.lore(Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_SOLD_BIN_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_SOLD_BIN_LORE.getStringList(), "sold_bins", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.SOLD_BIN)))
+				.lore(this.player,Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_SOLD_BIN_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_SOLD_BIN_LORE.getStringList(), "sold_bins", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.SOLD_BIN)))
 				.make());
 
 		// money earned
 		setItem(1, 7, QuickItem
 				.of(isSelf ? Settings.GUI_STATS_SELF_ITEMS_MONEY_EARNED_ITEM.getString() : Settings.GUI_STATS_SEARCH_ITEMS_MONEY_EARNED_ITEM.getString())
 				.name(isSelf ? Settings.GUI_STATS_SELF_ITEMS_MONEY_EARNED_NAME.getString() : Settings.GUI_STATS_SEARCH_ITEMS_MONEY_EARNED_NAME.getString())
-				.lore(Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_MONEY_EARNED_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_MONEY_EARNED_LORE.getStringList(), "money_earned", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.MONEY_EARNED)))
+				.lore(this.player,Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_MONEY_EARNED_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_MONEY_EARNED_LORE.getStringList(), "money_earned", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.MONEY_EARNED)))
 				.make());
 
 		// money spent
 		setItem(3, 7, QuickItem
 				.of(isSelf ? Settings.GUI_STATS_SELF_ITEMS_MONEY_SPENT_ITEM.getString() : Settings.GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_ITEM.getString())
 				.name(isSelf ? Settings.GUI_STATS_SELF_ITEMS_MONEY_SPENT_NAME.getString() : Settings.GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_NAME.getString())
-				.lore(Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_MONEY_SPENT_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_LORE.getStringList(), "money_spent", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.MONEY_SPENT)))
+				.lore(this.player,Replacer.replaceVariables(isSelf ? Settings.GUI_STATS_SELF_ITEMS_MONEY_SPENT_LORE.getStringList() : Settings.GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_LORE.getStringList(), "money_spent", (int) AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetPlayer.getUuid(), AuctionStatisticType.MONEY_SPENT)))
 				.make());
 	}
 }

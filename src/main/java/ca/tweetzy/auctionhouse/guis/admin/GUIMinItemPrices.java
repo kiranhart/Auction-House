@@ -58,7 +58,7 @@ public final class GUIMinItemPrices extends AuctionPagedGUI<MinItemPrice> {
 		return QuickItem
 				.of(minItemPrice.getItemStack().clone())
 				.name(AuctionAPI.getInstance().getItemName(minItemPrice.getItemStack()))
-				.lore(Replacer.replaceVariables(lore, "price", AuctionAPI.getInstance().formatNumber(minItemPrice.getPrice())))
+				.lore(this.player,Replacer.replaceVariables(lore, "price", AuctionAPI.getInstance().formatNumber(minItemPrice.getPrice())))
 				.make();
 	}
 

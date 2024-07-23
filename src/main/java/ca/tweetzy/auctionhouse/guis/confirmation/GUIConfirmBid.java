@@ -81,7 +81,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_BID_YES_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_BID_YES_NAME.getString())
-				.lore(Settings.GUI_CONFIRM_BID_YES_LORE.getStringList())
+				.lore(this.player,Settings.GUI_CONFIRM_BID_YES_LORE.getStringList())
 				.make(), click -> {
 
 			// Re-select the item to ensure that it's available
@@ -205,7 +205,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_BID_NO_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_BID_NO_NAME.getString())
-				.lore(Settings.GUI_CONFIRM_BID_NO_LORE.getStringList())
+				.lore(this.player,Settings.GUI_CONFIRM_BID_NO_LORE.getStringList())
 				.make(), click -> {
 
 			cancelTask();
@@ -220,7 +220,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 	@Override
 	protected ItemStack makeDisplayItem(AuctionedItem auctionItem) {
-		return auctionItem.getBidStack();
+		return auctionItem.getBidStack(this.player);
 	}
 
 	@Override

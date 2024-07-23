@@ -95,7 +95,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_CREATE_BUNDLE_CONFIRM_ITEM.getString())
 				.name(Settings.GUI_CREATE_BUNDLE_CONFIRM_NAME.getString())
-				.lore(Settings.GUI_CREATE_BUNDLE_CONFIRM_LORE.getStringList())
+				.lore(this.player,Settings.GUI_CREATE_BUNDLE_CONFIRM_LORE.getStringList())
 				.make(), ClickType.LEFT, e -> {
 
 

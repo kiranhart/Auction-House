@@ -31,7 +31,7 @@ public final class GUIBanUser extends AuctionBaseGUI {
 		setItem(1, 4, QuickItem
 				.of(Bukkit.getOfflinePlayer(ban.getId()))
 				.name(Settings.GUI_BAN_ITEMS_PLAYER_NAME.getString().replace("%player_name%", this.ban.locatePlayer().getName()))
-				.lore(Settings.GUI_BAN_ITEMS_PLAYER_LORE.getStringList())
+				.lore(this.player,Settings.GUI_BAN_ITEMS_PLAYER_LORE.getStringList())
 				.make());
 
 		// types
@@ -49,7 +49,7 @@ public final class GUIBanUser extends AuctionBaseGUI {
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_BAN_ITEMS_CREATE_ITEM.getString())
 				.name(Settings.GUI_BAN_ITEMS_CREATE_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_BAN_ITEMS_CREATE_LORE.getStringList()))
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_BAN_ITEMS_CREATE_LORE.getStringList()))
 				.make(), click -> {
 
 			if (this.ban.getTypes().isEmpty()) {
@@ -70,7 +70,7 @@ public final class GUIBanUser extends AuctionBaseGUI {
 		setButton(3, 1, QuickItem
 				.of(Settings.GUI_BAN_ITEMS_TYPES_ITEM.getString())
 				.name(Settings.GUI_BAN_ITEMS_TYPES_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_BAN_ITEMS_TYPES_LORE.getStringList(), "ban_type_list", this.ban.getBansAsString()))
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_BAN_ITEMS_TYPES_LORE.getStringList(), "ban_type_list", this.ban.getBansAsString()))
 				.make(), click -> click.manager.showGUI(click.player, new GUIBanTypeSelection(click.player, this.ban)));
 	}
 
@@ -78,7 +78,7 @@ public final class GUIBanUser extends AuctionBaseGUI {
 		setButton(3, 3, QuickItem
 				.of(Settings.GUI_BAN_ITEMS_PERMA_ITEM.getString())
 				.name(Settings.GUI_BAN_ITEMS_PERMA_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_BAN_ITEMS_PERMA_LORE.getStringList(), "is_true", (this.ban.isPermanent() ? "&aTrue" : "&cFalse")))
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_BAN_ITEMS_PERMA_LORE.getStringList(), "is_true", (this.ban.isPermanent() ? "&aTrue" : "&cFalse")))
 				.make(), click -> {
 
 			this.ban.setIsPermanent(!this.ban.isPermanent());
@@ -90,7 +90,7 @@ public final class GUIBanUser extends AuctionBaseGUI {
 		setButton(3, 5, QuickItem
 				.of(Settings.GUI_BAN_ITEMS_REASON_ITEM.getString())
 				.name(Settings.GUI_BAN_ITEMS_REASON_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_BAN_ITEMS_REASON_LORE.getStringList(), "ban_reason", this.ban.getReason()))
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_BAN_ITEMS_REASON_LORE.getStringList(), "ban_reason", this.ban.getReason()))
 				.make(), click -> new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.ban reason.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.ban reason.subtitle").getMessage()) {
 
 			@Override
@@ -111,7 +111,7 @@ public final class GUIBanUser extends AuctionBaseGUI {
 		setButton(3, 7, QuickItem
 				.of(Settings.GUI_BAN_ITEMS_TIME_ITEM.getString())
 				.name(Settings.GUI_BAN_ITEMS_TIME_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_BAN_ITEMS_TIME_LORE.getStringList(), "ban_time", this.ban.getReadableExpirationDate()))
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_BAN_ITEMS_TIME_LORE.getStringList(), "ban_time", this.ban.getReadableExpirationDate()))
 				.make(), click -> new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.ban length.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.ban length.subtitle").getMessage()) {
 
 			@Override

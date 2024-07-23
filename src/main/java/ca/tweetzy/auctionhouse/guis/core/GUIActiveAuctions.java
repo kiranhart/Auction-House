@@ -76,7 +76,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 	@Override
 	protected ItemStack makeDisplayItem(AuctionedItem auctionedItem) {
-		return auctionedItem.isRequest() ? auctionedItem.getDisplayRequestStack(AuctionStackType.ACTIVE_AUCTIONS_LIST) : auctionedItem.getDisplayStack(AuctionStackType.ACTIVE_AUCTIONS_LIST);
+		return auctionedItem.isRequest() ? auctionedItem.getDisplayRequestStack(this.player, AuctionStackType.ACTIVE_AUCTIONS_LIST) : auctionedItem.getDisplayStack(this.player, AuctionStackType.ACTIVE_AUCTIONS_LIST);
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 		setButton(5, 1, QuickItem
 				.of(Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString())
 				.name(Settings.GUI_ACTIVE_AUCTIONS_NAME.getString())
-				.lore(Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList())
+				.lore(this.player,Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList())
 				.make(), e -> {
 
 			if (Settings.ASK_FOR_CANCEL_CONFIRM_ON_ALL_ITEMS.getBoolean()) {

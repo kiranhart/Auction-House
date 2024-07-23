@@ -63,7 +63,7 @@ public class GUIActiveBids extends AuctionPagedGUI<AuctionedItem> {
 
 	@Override
 	protected ItemStack makeDisplayItem(AuctionedItem auctionedItem) {
-		return auctionedItem.getDisplayStack(AuctionStackType.HIGHEST_BID_PREVIEW);
+		return auctionedItem.getDisplayStack(this.player, AuctionStackType.HIGHEST_BID_PREVIEW);
 	}
 
 	@Override

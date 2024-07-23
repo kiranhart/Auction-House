@@ -22,7 +22,6 @@ import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
-import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.hooks.EconomyManager;
@@ -115,7 +114,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 	@Override
 	protected ItemStack makeDisplayItem(AuctionedItem auctionedItem) {
-		return auctionedItem.isRequest() ? auctionedItem.getDisplayRequestStack(AuctionStackType.MAIN_AUCTION_HOUSE) : auctionedItem.getDisplayStack(AuctionStackType.MAIN_AUCTION_HOUSE);
+		return auctionedItem.isRequest() ? auctionedItem.getDisplayRequestStack(this.player, AuctionStackType.MAIN_AUCTION_HOUSE) : auctionedItem.getDisplayStack(this.player, AuctionStackType.MAIN_AUCTION_HOUSE);
 	}
 
 	@Override
@@ -430,7 +429,10 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 	//======================================================================================================//
 	private void drawVariableButtons() {
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_SLOT.getInt(), QuickItem.of(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString()).name(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString()).lore(Replacer.replaceVariables(PlaceholderAPIHook.PAPIReplacer.tryReplace(this.auctionPlayer.getPlayer(), Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList()), "active_player_auctions", auctionPlayer.getItems(false).size(), "player_balance", Settings.USE_SHORT_NUMBERS_ON_PLAYER_BALANCE.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(EconomyManager.getBalance(auctionPlayer.getPlayer())) : AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(auctionPlayer.getPlayer())))).make(), e -> {
+			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_SLOT.getInt(), QuickItem
+					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString())
+					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString())
+					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), "active_player_auctions", auctionPlayer.getItems(false).size(), "player_balance", Settings.USE_SHORT_NUMBERS_ON_PLAYER_BALANCE.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(EconomyManager.getBalance(auctionPlayer.getPlayer())) : AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(auctionPlayer.getPlayer())))).make(), e -> {
 
 				cancelTask();
 				e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
@@ -438,7 +440,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT.getInt(), QuickItem.of(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString()).name(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString()).lore(Replacer.replaceVariables(PlaceholderAPIHook.PAPIReplacer.tryReplace(this.auctionPlayer.getPlayer(), Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList()), "expired_player_auctions", auctionPlayer.getItems(true).size())).make(), e -> {
+			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT.getInt(), QuickItem.of(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString()).name(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString()).lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), "expired_player_auctions", auctionPlayer.getItems(true).size())).make(), e -> {
 
 				cancelTask();
 				e.manager.showGUI(e.player, new GUIExpiredItems(this, this.auctionPlayer));
@@ -446,7 +448,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_SLOT.getInt(), QuickItem.of(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString()).name(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString()).lore(Replacer.replaceVariables(PlaceholderAPIHook.PAPIReplacer.tryReplace(this.auctionPlayer.getPlayer(), Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList()), "total_items_bought", AuctionHouse.getInstance().getTransactionManager().getTotalItemsBought(auctionPlayer.getPlayer().getUniqueId()), "total_items_sold", AuctionHouse.getInstance().getTransactionManager().getTotalItemsSold(auctionPlayer.getPlayer().getUniqueId()))).make(), e -> {
+			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_SLOT.getInt(), QuickItem.of(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString()).name(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString()).lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList(), "total_items_bought", AuctionHouse.getInstance().getTransactionManager().getTotalItemsBought(auctionPlayer.getPlayer().getUniqueId()), "total_items_sold", AuctionHouse.getInstance().getTransactionManager().getTotalItemsSold(auctionPlayer.getPlayer().getUniqueId()))).make(), e -> {
 
 				cancelTask();
 				if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !e.player.hasPermission("auctionhouse.transactions.viewall")) {
@@ -467,7 +469,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_SLOT.getInt(), QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ITEM.getString())
 						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_NAME.getString())
-						.lore(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_LORE.getStringList())
+						.lore(this.player,Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_LORE.getStringList())
 						.make(), e -> {
 
 					if (AuctionHouse.getInstance().getBanManager().isStillBanned(e.player, BanType.EVERYTHING, BanType.SELL)) return;
@@ -514,7 +516,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				setItem(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_SLOT.getInt(), QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ITEM.getString())
 						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_NAME.getString())
-						.lore(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList())
+						.lore(this.player,Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList())
 						.make());
 			}
 		}
@@ -522,7 +524,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ENABLED.getBoolean()) {
 			setItem(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT.getInt(), QuickItem
 					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM.getString())
-					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString()).lore(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList())
+					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString()).lore(this.player,Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList())
 					.make());
 		}
 
@@ -583,11 +585,11 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					QuickItem
 							.of(AuctionAPI.getInstance().getPlayerHead(this.auctionPlayer.getPlayer().getName()))
 							.name(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
-							.lore(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
+							.lore(this.player,Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
 							.make() : QuickItem
 					.of(materialToBeUsed)
 					.name(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
-					.lore(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType())).make();
+					.lore(this.player,Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType())).make();
 
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED.getBoolean()) {
 				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getInt(), item, e -> {
@@ -627,7 +629,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT.getInt(), QuickItem
 					.of(this.auctionPlayer.getSelectedFilter().getFilterIcon())
 					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME.getString())
-					.lore(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(),
+					.lore(this.player,Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(),
 							"filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(),
 							"filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(),
 							"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))

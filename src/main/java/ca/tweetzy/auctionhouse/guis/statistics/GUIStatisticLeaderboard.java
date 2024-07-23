@@ -66,7 +66,7 @@ public final class GUIStatisticLeaderboard extends AuctionPagedGUI<Pair<UUID, Do
 
 		setButton(5, 4, QuickItem.of(Settings.GUI_STATS_LEADERBOARD_ITEMS_STAT_ITEM.getString())
 				.name(Settings.GUI_STATS_LEADERBOARD_ITEMS_STAT_NAME.getString())
-				.lore(Replacer.replaceVariables(Settings.GUI_STATS_LEADERBOARD_ITEMS_STAT_LORE.getStringList(), "statistic_name", statisticType.getTranslatedType()))
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_STATS_LEADERBOARD_ITEMS_STAT_LORE.getStringList(), "statistic_name", statisticType.getTranslatedType()))
 				.make(), click -> click.manager.showGUI(click.player, new GUIStatisticLeaderboard(this.auctionPlayer, this.statisticType.next())));
 	}
 
@@ -79,7 +79,7 @@ public final class GUIStatisticLeaderboard extends AuctionPagedGUI<Pair<UUID, Do
 		return QuickItem
 				.of(head)
 				.name(Settings.GUI_STATS_LEADERBOARD_ITEMS_PLAYER_NAME.getString().replace("%player_name%", targetUser.getName() == null ? "&e&lUsername not found" : targetUser.getName()))
-				.lore(Replacer.replaceVariables(Settings.GUI_STATS_LEADERBOARD_ITEMS_PLAYER_LORE.getStringList(),
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_STATS_LEADERBOARD_ITEMS_PLAYER_LORE.getStringList(),
 						"player_name", targetUser.getName() == null ? "&e&lUsername not found" : targetUser.getName(),
 						"auction_statistic_name", statisticType.getTranslatedType(),
 						"auction_statistic_value", AuctionAPI.getInstance().formatNumber(entry.getSecond())

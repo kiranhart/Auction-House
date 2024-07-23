@@ -83,7 +83,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 		for (int i = 0; i < 4; i++)
 			drawYes(i);
 
-		setItem(0, 4, this.auctionedItem.getDisplayStack(AuctionStackType.LISTING_PREVIEW));
+		setItem(0, 4, this.auctionedItem.getDisplayStack(this.player, AuctionStackType.LISTING_PREVIEW));
 
 		for (int i = 5; i < 9; i++)
 			drawNo(i);
@@ -94,7 +94,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_LISTING_NO_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_LISTING_NO_NAME.getString())
-				.lore(Settings.GUI_CONFIRM_LISTING_NO_LORE.getStringList())
+				.lore(this.player,Settings.GUI_CONFIRM_LISTING_NO_LORE.getStringList())
 				.make(), click -> {
 
 			if (resulted.contains(click.player.getUniqueId())) return;
@@ -111,7 +111,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_LISTING_YES_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_LISTING_YES_NAME.getString())
-				.lore(Settings.GUI_CONFIRM_LISTING_YES_LORE.getStringList())
+				.lore(this.player,Settings.GUI_CONFIRM_LISTING_YES_LORE.getStringList())
 				.make(), click -> {
 
 			if (resulted.contains(click.player.getUniqueId())) return;

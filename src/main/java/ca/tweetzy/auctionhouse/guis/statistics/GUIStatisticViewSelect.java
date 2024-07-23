@@ -41,12 +41,12 @@ public final class GUIStatisticViewSelect extends AuctionBaseGUI {
 		// self
 		setButton(1, 2, QuickItem.of(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_USE_HEAD.getBoolean() ? AuctionAPI.getInstance().getPlayerHead(this.player.getName()) : QuickItem.of(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_ITEM.getString()).make())
 				.name(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_NAME.getString())
-				.lore(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_LORE.getStringList())
+				.lore(this.player,Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_LORE.getStringList())
 				.make(), click -> click.manager.showGUI(click.player, new GUIStatisticView(this.auctionPlayer, this.auctionPlayer)));
 
 		setButton(1, 6, QuickItem.of(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_ITEM.getString())
 				.name(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_NAME.getString())
-				.lore(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_LORE.getStringList())
+				.lore(this.player,Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_LORE.getStringList())
 				.make(), click -> click.manager.showGUI(click.player, new GUIStatisticLeaderboard(this.auctionPlayer, AuctionStatisticType.MONEY_EARNED)));
 	}
 }

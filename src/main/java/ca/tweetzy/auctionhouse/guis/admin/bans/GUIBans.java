@@ -30,7 +30,7 @@ public final class GUIBans extends AuctionPagedGUI<Ban> {
 		return QuickItem
 				.of(Bukkit.getOfflinePlayer(ban.getId()))
 				.name(Settings.GUI_BANS_ITEMS_BAN_NAME.getString().replace("%player_name%", ban.locatePlayer().getName()))
-				.lore(Replacer.replaceVariables(Settings.GUI_BANS_ITEMS_BAN_LORE.getStringList(),
+				.lore(this.player,Replacer.replaceVariables(Settings.GUI_BANS_ITEMS_BAN_LORE.getStringList(),
 						"ban_banner", Bukkit.getOfflinePlayer(ban.getBanner()).getName(),
 						"ban_date", AuctionAPI.getInstance().convertMillisToDate(ban.getTimeCreated()),
 						"ban_expiration", ban.getReadableExpirationDate(),
