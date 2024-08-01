@@ -214,7 +214,7 @@ public class AuctionHouse extends TweetyPlugin {
 		// commands
 		this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
 		this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
-		this.commandManager.registerCommandDynamically(new CommandAuctionHouse()).addSubCommands(
+		this.commandManager.addCommand(new CommandAuctionHouse()).addSubCommands(
 				new CommandSell(),
 				new CommandActive(),
 				new CommandExpired(),
