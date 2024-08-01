@@ -28,10 +28,8 @@ import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
-import ca.tweetzy.flight.utils.Common;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
@@ -108,15 +106,15 @@ public final class AuctionCreator {
 
 		// check tax
 		if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean() && !auctionItem.isServerItem() && !auctionItem.isRequest()) {
-			if (!EconomyManager.hasBalance(seller, listingFee)) {
+			if (!AuctionHouse.getCurrencyManager().has(seller, listingFee)) {
 				instance.getLocale().getMessage("auction.tax.cannotpaylistingfee").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(listingFee)).sendPrefixedMessage(seller);
 				result.accept(auctionItem, CANNOT_PAY_LISTING_FEE);
 				return;
 			}
 
-			EconomyManager.withdrawBalance(seller, listingFee);
+			AuctionHouse.getCurrencyManager().withdraw(seller, listingFee);
 			AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(listingFee)).sendPrefixedMessage(seller);
-			AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(listingFee)).sendPrefixedMessage(seller);
+			AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(listingFee)).sendPrefixedMessage(seller);
 		}
 
 		// final item adjustments
@@ -215,8 +213,8 @@ public final class AuctionCreator {
 								PaymentReason.LISTING_FAILED
 						), null);
 					else
-						EconomyManager.deposit(seller, listingFee);
-					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(listingFee)).sendPrefixedMessage(seller);
+						AuctionHouse.getCurrencyManager().deposit(seller, listingFee);
+					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(seller))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(listingFee)).sendPrefixedMessage(seller);
 				}
 
 				result.accept(auctionItem, UNKNOWN);

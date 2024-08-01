@@ -123,7 +123,7 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 		setButton(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_SLOT.getInt(), QuickItem
 				.of(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_ITEM.getString())
 				.name(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_NAME.getString())
-				.lore(this.player,Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_LORE.getStringList(),
+				.lore(this.player, Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_LORE.getStringList(),
 						"filter_category", auctionPlayer.getSelectedTransactionFilter().getTranslatedType(),
 						"filter_auction_type", auctionPlayer.getSelectedTransactionSaleType().getTranslatedType(),
 						"filter_sort_order", auctionPlayer.getTransactionSortType().getTranslatedType(),
@@ -173,7 +173,7 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 		return QuickItem
 				.of(item)
 				.name(Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), "item_name", AuctionAPI.getInstance().getItemName(item), "transaction_id", transaction.getId().toString()))
-				.lore(this.player,Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(),
+				.lore(this.player, Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(),
 						"transaction_id", transaction.getId().toString(),
 						"seller", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME,
 						"buyer", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName(),

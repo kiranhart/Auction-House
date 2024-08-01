@@ -29,7 +29,6 @@ import ca.tweetzy.auctionhouse.guis.AuctionUpdatingPagedGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
-import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -81,7 +80,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_BID_YES_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_BID_YES_NAME.getString())
-				.lore(this.player,Settings.GUI_CONFIRM_BID_YES_LORE.getStringList())
+				.lore(this.player, Settings.GUI_CONFIRM_BID_YES_LORE.getStringList())
 				.make(), click -> {
 
 			// Re-select the item to ensure that it's available
@@ -112,7 +111,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 			newBiddingAmount = Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(newBiddingAmount) : newBiddingAmount;
 
-			if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(click.player, newBiddingAmount)) {
+			if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getCurrencyManager().has(click.player, newBiddingAmount)) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(click.player);
 				return;
 			}
@@ -129,7 +128,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 			if (Settings.BIDDING_TAKES_MONEY.getBoolean()) {
 				final double oldBidAmount = auctionItem.getCurrentPrice();
 
-				if (!EconomyManager.hasBalance(click.player, newBiddingAmount)) {
+				if (!AuctionHouse.getCurrencyManager().has(click.player, newBiddingAmount)) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(click.player);
 					return;
 				}
@@ -148,15 +147,15 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 								PaymentReason.BID_RETURNED
 						), null);
 					else
-						EconomyManager.deposit(oldBidder, oldBidAmount);
+						AuctionHouse.getCurrencyManager().deposit(oldBidder, oldBidAmount);
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(oldBidAmount)).sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(oldBidAmount)).sendPrefixedMessage(oldBidder.getPlayer());
 				}
 
 
-				EconomyManager.withdrawBalance(click.player, newBiddingAmount);
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(click.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(newBiddingAmount)).sendPrefixedMessage(click.player);
+				AuctionHouse.getCurrencyManager().withdraw(click.player, newBiddingAmount);
+				AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(click.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(newBiddingAmount)).sendPrefixedMessage(click.player);
 
 			}
 
@@ -205,7 +204,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_BID_NO_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_BID_NO_NAME.getString())
-				.lore(this.player,Settings.GUI_CONFIRM_BID_NO_LORE.getStringList())
+				.lore(this.player, Settings.GUI_CONFIRM_BID_NO_LORE.getStringList())
 				.make(), click -> {
 
 			cancelTask();

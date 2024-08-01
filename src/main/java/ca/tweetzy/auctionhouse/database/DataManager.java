@@ -160,7 +160,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void saveFilterWhitelist(List<AuctionFilterItem> filterItems, boolean async) {
 		String saveItems = "INSERT INTO " + this.getTablePrefix() + "filter_whitelist(data) VALUES(?)";
-		String truncate = AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector ? "TRUNCATE TABLE " + this.getTablePrefix() + "filter_whitelist" : "DELETE FROM " + this.getTablePrefix() + "filter_whitelist";
+		String truncate = AuctionHouse.getDatabaseConnector() instanceof MySQLConnector ? "TRUNCATE TABLE " + this.getTablePrefix() + "filter_whitelist" : "DELETE FROM " + this.getTablePrefix() + "filter_whitelist";
 
 		if (async) {
 			this.runAsync(() -> this.databaseConnector.connect(connection -> {
@@ -585,7 +585,7 @@ public class DataManager extends DataManagerAbstract {
 						"VALUES (?, ?, ?, ?, ?)";
 
 
-				if (AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector) {
+				if (AuctionHouse.getDatabaseConnector() instanceof MySQLConnector) {
 					insertQuery = "INSERT INTO " + getTablePrefix() + "player " +
 							"(uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) " +
 							"VALUES (?, ?, ?, ?, ?) " +

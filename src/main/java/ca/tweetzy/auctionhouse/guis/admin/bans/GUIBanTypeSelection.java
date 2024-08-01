@@ -38,7 +38,7 @@ public final class GUIBanTypeSelection extends AuctionPagedGUI<BanType> {
 		return QuickItem
 				.of(this.ban.getTypes().contains(banType) ? CompMaterial.LIME_STAINED_GLASS_PANE : CompMaterial.RED_STAINED_GLASS_PANE)
 				.name(Settings.GUI_BAN_TYPES_ITEMS_TYPE_NAME.getString().replace("%ban_type%", ChatUtil.capitalizeFully(banType)))
-				.lore(this.player,Settings.GUI_BAN_TYPES_ITEMS_TYPE_LORE.getStringList())
+				.lore(this.player, Settings.GUI_BAN_TYPES_ITEMS_TYPE_LORE.getStringList())
 				.make();
 	}
 

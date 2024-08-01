@@ -48,6 +48,18 @@ public final class Settings extends SettingTemp {
 
 	/*
 	==============================================================
+						  Economy Settings
+	==============================================================
+	 */
+	public static ConfigEntry CURRENCY_ALLOW_PICK = create("settings.currency.allow user to pick", true).withComment("If true, players will be able to select which currency they want to use.");
+	public static ConfigEntry CURRENCY_DEFAULT_SELECTED = create("settings.currency.default selection", "Vault/Vault").withComment("The default currency selection, PluginName/CurrencyName -> Ex. Vault/Vault");
+	public static ConfigEntry CURRENCY_ITEM_DEFAULT_SELECTED = create("settings.currency.default item selection", "DIAMOND").withComment("The default currency selection if using item only mode");
+	public static ConfigEntry CURRENCY_VAULT_SYMBOL = create("settings.currency.vault symbol", "$").withComment("When using default/vault currency, what symbol should be used.");
+	public static ConfigEntry CURRENCY_USE_ITEM_ONLY = create("settings.currency.use item only", false).withComment("If true, Auction House will only allow the usage of another item for currency.");
+	public static ConfigEntry CURRENCY_BLACKLISTED = create("settings.currency.black listed", Collections.singletonList("UltraEconomy:Test")).withComment("A list of owning plugins & the currency to be blacklisted. Ex. UltraEconomy:Test");
+
+	/*
+	==============================================================
 					TBD
 	==============================================================
 	 */
@@ -88,7 +100,6 @@ public final class Settings extends SettingTemp {
 	public static ConfigEntry DATE_FORMAT = create("settings.formatting.date format", "MMMM/dd/yyyy - hh:mm a", "The default date format to be used");
 	public static ConfigEntry TIME_FORMAT = create("settings.formatting.time format", "hh:mm:ss a", "The default time format to be used");
 	public static ConfigEntry DATETIME_FORMAT = create("settings.formatting.datetime format", "MMMM/dd/yyyy - hh:mm:ss a", "The default combined date/time format to be used");
-
 	public static ConfigEntry CURRENCY_FORMAT = create("settings.formatting.number format", "%,.2f", "The default currency formatting (#,###.##)");
 
 	/*

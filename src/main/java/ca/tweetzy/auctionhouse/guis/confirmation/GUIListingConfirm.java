@@ -94,7 +94,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_LISTING_NO_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_LISTING_NO_NAME.getString())
-				.lore(this.player,Settings.GUI_CONFIRM_LISTING_NO_LORE.getStringList())
+				.lore(this.player, Settings.GUI_CONFIRM_LISTING_NO_LORE.getStringList())
 				.make(), click -> {
 
 			if (resulted.contains(click.player.getUniqueId())) return;
@@ -111,7 +111,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_LISTING_YES_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_LISTING_YES_NAME.getString())
-				.lore(this.player,Settings.GUI_CONFIRM_LISTING_YES_LORE.getStringList())
+				.lore(this.player, Settings.GUI_CONFIRM_LISTING_YES_LORE.getStringList())
 				.make(), click -> {
 
 			if (resulted.contains(click.player.getUniqueId())) return;

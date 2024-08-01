@@ -29,7 +29,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public class BinListing extends AuctionItem {
 
@@ -164,10 +163,6 @@ public class BinListing extends AuctionItem {
 		this.currency = currency;
 	}
 
-	public void setCurrencyItem(ItemStack currencyItem) {
-		this.currencyItem = currencyItem;
-	}
-
 	@Override
 	public void setBinPrice(double binPrice) {
 		this.binPrice = binPrice;
@@ -191,21 +186,6 @@ public class BinListing extends AuctionItem {
 	@Override
 	public long getLastUpdated() {
 		return 0;
-	}
-
-	@Override
-	public void sync(Consumer<Boolean> wasSuccess) {
-
-	}
-
-	@Override
-	public void store(Consumer<AuctionItem> stored) {
-//		AuctionHouse.getDataManager().createListing(this, (error, created) -> {
-//			if (error != null) return;
-//
-//			if (stored != null)
-//				stored.accept(created);
-//		});
 	}
 
 	@Override

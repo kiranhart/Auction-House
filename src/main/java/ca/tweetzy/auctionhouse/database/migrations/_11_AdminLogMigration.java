@@ -41,7 +41,7 @@ public final class _11_AdminLogMigration extends DataMigration {
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
-			String autoIncrement = AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
+			String autoIncrement = AuctionHouse.getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
 
 
 			statement.execute("CREATE TABLE IF NOT EXISTS " + tablePrefix + "admin_logs (" +

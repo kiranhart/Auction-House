@@ -42,7 +42,7 @@ public class _7_TransactionBigIntMigration extends DataMigration {
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
 
-			if (AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector) {
+			if (AuctionHouse.getDatabaseConnector() instanceof MySQLConnector) {
 				statement.execute("ALTER TABLE " + tablePrefix + "transactions MODIFY COLUMN transaction_time BigInt(20)");
 
 			} else {

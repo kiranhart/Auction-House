@@ -30,7 +30,6 @@ import ca.tweetzy.auctionhouse.events.AuctionAdminEvent;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.Bukkit;
@@ -72,7 +71,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 	private void drawReturnButton() {
 
 		if (Settings.ADMIN_OPTION_SHOW_RETURN_ITEM.getBoolean())
-			setButton(1, 1, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_NAME.getString()).lore(this.player,Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_LORE.getStringList()).make(), click -> {
+			setButton(1, 1, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_NAME.getString()).lore(this.player, Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_LORE.getStringList()).make(), click -> {
 
 				if (!click.player.hasPermission("auctionhouse.admin.returnitem")) return;
 
@@ -90,10 +89,10 @@ public class GUIAdminItem extends AuctionBaseGUI {
 
 					if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
 						AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), auctionItem.getCurrentPrice(), auctionItem.getItem(), click.player.getName(), PaymentReason.ADMIN_REMOVED), null);
-					else EconomyManager.deposit(oldBidder, auctionItem.getCurrentPrice());
+					else AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
 
 				}
 
@@ -103,7 +102,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 
 	private void drawClaimButton() {
 		if (Settings.ADMIN_OPTION_SHOW_CLAIM_ITEM.getBoolean())
-			setButton(1, 3, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_NAME.getString()).lore(this.player,Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_LORE.getStringList()).make(), click -> {
+			setButton(1, 3, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_NAME.getString()).lore(this.player, Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_LORE.getStringList()).make(), click -> {
 
 				if (!click.player.hasPermission("auctionhouse.admin.claimitem")) return;
 
@@ -118,10 +117,10 @@ public class GUIAdminItem extends AuctionBaseGUI {
 
 					if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
 						AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), auctionItem.getCurrentPrice(), auctionItem.getItem(), click.player.getName(), PaymentReason.ADMIN_REMOVED), null);
-					else EconomyManager.deposit(oldBidder, auctionItem.getCurrentPrice());
+					else AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
 
 				}
 
@@ -132,7 +131,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 
 	private void drawDeleteButton() {
 		if (Settings.ADMIN_OPTION_SHOW_DELETE_ITEM.getBoolean())
-			setButton(1, 5, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_NAME.getString()).lore(this.player,Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_LORE.getStringList()).make(), click -> {
+			setButton(1, 5, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_NAME.getString()).lore(this.player, Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_LORE.getStringList()).make(), click -> {
 
 				if (!click.player.hasPermission("auctionhouse.admin.deleteitem")) return;
 				AuctionAdminEvent event = new AuctionAdminEvent(createLog(click.player, AdminAction.DELETE_ITEM));
@@ -151,10 +150,10 @@ public class GUIAdminItem extends AuctionBaseGUI {
 								PaymentReason.ADMIN_REMOVED
 						), null);
 					else
-						EconomyManager.deposit(oldBidder, auctionItem.getCurrentPrice());
+						AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
 
 				}
 
@@ -165,7 +164,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 
 	private void drawCopyButton() {
 		if (Settings.ADMIN_OPTION_SHOW_COPY_ITEM.getBoolean())
-			setButton(1, 7, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_COPY_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_COPY_NAME.getString()).lore(this.player,Settings.GUI_ITEM_ADMIN_ITEMS_COPY_LORE.getStringList()).make(), click -> {
+			setButton(1, 7, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_COPY_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_COPY_NAME.getString()).lore(this.player, Settings.GUI_ITEM_ADMIN_ITEMS_COPY_LORE.getStringList()).make(), click -> {
 
 				if (!click.player.hasPermission("auctionhouse.admin.copyitem")) return;
 				if (Settings.ITEM_COPY_REQUIRES_GMC.getBoolean() && click.player.getGameMode() != GameMode.CREATIVE) {

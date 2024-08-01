@@ -57,7 +57,7 @@ public final class GUISellListingType extends AuctionBaseGUI {
 		setButton(getRows() - 1, 0, QuickItem
 				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_ITEM.getString())
 				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_NAME.getString())
-				.lore(this.player,Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_LORE.getStringList())
+				.lore(this.player, Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_LORE.getStringList())
 				.make(), click -> click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer)));
 	}
 
@@ -65,7 +65,7 @@ public final class GUISellListingType extends AuctionBaseGUI {
 		setButton(1, col, QuickItem
 				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_ITEM.getString())
 				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_NAME.getString())
-				.lore(this.player,Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_LORE.getStringList())
+				.lore(this.player, Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_LORE.getStringList())
 				.make(), click -> {
 
 			if (this.listingType != null)
@@ -77,7 +77,7 @@ public final class GUISellListingType extends AuctionBaseGUI {
 		setButton(1, col, QuickItem
 				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_ITEM.getString())
 				.name(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_NAME.getString())
-				.lore(this.player,Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_LORE.getStringList())
+				.lore(this.player, Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_LORE.getStringList())
 				.make(), click -> {
 
 			if (this.listingType != null)

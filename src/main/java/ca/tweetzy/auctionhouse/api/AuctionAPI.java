@@ -24,7 +24,6 @@ import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -754,9 +753,9 @@ public class AuctionAPI {
 			}).execute();
 		} else {
 			if (Settings.FORCE_SYNC_MONEY_ACTIONS.getBoolean())
-				AuctionHouse.newChain().sync(() -> EconomyManager.withdrawBalance(player, amount)).execute();
+				AuctionHouse.newChain().sync(() -> AuctionHouse.getCurrencyManager().withdraw(player, amount)).execute();
 			else
-				EconomyManager.withdrawBalance(player, amount);
+				AuctionHouse.getCurrencyManager().withdraw(player, amount);
 		}
 	}
 
@@ -764,14 +763,14 @@ public class AuctionAPI {
 		if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean()) {
 			if (Settings.MANUAL_PAYMENTS_ONLY_FOR_OFFLINE_USERS.getBoolean()) {
 				if (!player.isOnline()) {
-					AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, item, paidFrom.getName(), PaymentReason.ITEM_SOLD), null);
+					AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, item, paidFrom.getName(), PaymentReason.ITEM_SOLD), null);
 				} else {
 					initiatePayment(player, amount);
 				}
 				return;
 			}
 
-			AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, item, paidFrom.getName(), PaymentReason.ITEM_SOLD), null);
+			AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, item, paidFrom.getName(), PaymentReason.ITEM_SOLD), null);
 			return;
 		}
 
@@ -785,9 +784,9 @@ public class AuctionAPI {
 			}).execute();
 		} else {
 			if (Settings.FORCE_SYNC_MONEY_ACTIONS.getBoolean())
-				AuctionHouse.newChain().sync(() -> EconomyManager.deposit(player, amount)).execute();
+				AuctionHouse.newChain().sync(() -> AuctionHouse.getCurrencyManager().deposit(player, amount)).execute();
 			else
-				EconomyManager.deposit(player, amount);
+				AuctionHouse.getCurrencyManager().deposit(player, amount);
 		}
 	}
 

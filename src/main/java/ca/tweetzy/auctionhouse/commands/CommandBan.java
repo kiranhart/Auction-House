@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class CommandBan extends AbstractCommand {
 
 	public CommandBan() {
-			super(CommandType.PLAYER_ONLY, "ban");
+		super(CommandType.PLAYER_ONLY, "ban");
 	}
 
 	@Override

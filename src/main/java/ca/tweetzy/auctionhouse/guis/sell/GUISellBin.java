@@ -95,7 +95,7 @@ public final class GUISellBin extends AuctionBaseGUI {
 			setButton(3, 1, QuickItem
 					.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_ITEM.getString())
 					.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_NAME.getString())
-					.lore(this.player,Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_LORE.getStringList(),
+					.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_LORE.getStringList(),
 							"remaining_days", times[0],
 							"remaining_hours", times[1],
 							"remaining_minutes", times[2],
@@ -134,7 +134,7 @@ public final class GUISellBin extends AuctionBaseGUI {
 		setButton(3, 4, QuickItem
 				.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_ITEM.getString())
 				.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_NAME.getString())
-				.lore(this.player,Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(listingPrice)))
+				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(listingPrice)))
 				.make(), click -> {
 
 			click.gui.exit();
@@ -177,7 +177,7 @@ public final class GUISellBin extends AuctionBaseGUI {
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_ITEM.getString())
 				.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_NAME.getString())
-				.lore(this.player,Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_LORE.getStringList())
+				.lore(this.player, Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_LORE.getStringList())
 				.make(), click -> {
 
 			if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, this.auctionPlayer.getItemBeingListed())) return;
@@ -223,7 +223,7 @@ public final class GUISellBin extends AuctionBaseGUI {
 			setButton(3, 7, QuickItem
 					.of(this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_ITEM.getString() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_ITEM.getString())
 					.name(this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_NAME.getString() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_NAME.getString())
-					.lore(this.player,this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_LORE.getStringList() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_LORE.getStringList())
+					.lore(this.player, this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_LORE.getStringList() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_LORE.getStringList())
 					.make(), e -> {
 
 				this.allowPartialBuy = !allowPartialBuy;

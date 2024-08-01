@@ -21,7 +21,6 @@ package ca.tweetzy.auctionhouse.auction;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
-import ca.tweetzy.core.hooks.EconomyManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.entity.Player;
@@ -49,7 +48,7 @@ public final class AuctionPayment {
 
 
 	public void pay(Player player) {
-		EconomyManager.deposit(player, this.amount);
-		AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.amount)).sendPrefixedMessage(player);
+		AuctionHouse.getCurrencyManager().deposit(player, this.amount);
+		AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.amount)).sendPrefixedMessage(player);
 	}
 }

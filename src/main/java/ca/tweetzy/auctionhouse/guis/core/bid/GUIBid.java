@@ -30,7 +30,6 @@ import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.Bukkit;
@@ -66,9 +65,9 @@ public class GUIBid extends AuctionBaseGUI {
 		setButton(1, 2, QuickItem
 				.of(Settings.GUI_BIDDING_ITEMS_DEFAULT_ITEM.getString())
 				.name(Settings.GUI_BIDDING_ITEMS_DEFAULT_NAME.getString())
-				.lore(this.player,Settings.GUI_BIDDING_ITEMS_DEFAULT_LORE.getStringList()).make(), e -> {
+				.lore(this.player, Settings.GUI_BIDDING_ITEMS_DEFAULT_LORE.getStringList()).make(), e -> {
 
-			if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice())) {
+			if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getCurrencyManager().has(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice())) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
 				return;
 			}
@@ -83,7 +82,7 @@ public class GUIBid extends AuctionBaseGUI {
 		setButton(1, 6, QuickItem
 				.of(Settings.GUI_BIDDING_ITEMS_CUSTOM_ITEM.getString())
 				.name(Settings.GUI_BIDDING_ITEMS_CUSTOM_NAME.getString())
-				.lore(this.player,Settings.GUI_BIDDING_ITEMS_CUSTOM_LORE.getStringList())
+				.lore(this.player, Settings.GUI_BIDDING_ITEMS_CUSTOM_LORE.getStringList())
 				.make(), e -> {
 
 			e.gui.exit();
@@ -145,7 +144,7 @@ public class GUIBid extends AuctionBaseGUI {
 
 					newBiddingAmount = Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(newBiddingAmount) : newBiddingAmount;
 
-					if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !EconomyManager.hasBalance(e.player, newBiddingAmount)) {
+					if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getCurrencyManager().has(e.player, newBiddingAmount)) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
 						return true;
 					}
@@ -167,7 +166,7 @@ public class GUIBid extends AuctionBaseGUI {
 					if (Settings.BIDDING_TAKES_MONEY.getBoolean()) {
 						final double oldBidAmount = auctionItem.getCurrentPrice();
 
-						if (!EconomyManager.hasBalance(e.player, newBiddingAmount)) {
+						if (!AuctionHouse.getCurrencyManager().has(e.player, newBiddingAmount)) {
 							AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
 							return true;
 						}
@@ -186,13 +185,13 @@ public class GUIBid extends AuctionBaseGUI {
 										PaymentReason.BID_RETURNED
 								), null);
 							else
-								EconomyManager.deposit(oldBidder, oldBidAmount);
+								AuctionHouse.getCurrencyManager().deposit(oldBidder, oldBidAmount);
 							if (oldBidder.isOnline())
-								AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(oldBidAmount)).sendPrefixedMessage(oldBidder.getPlayer());
+								AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(oldBidAmount)).sendPrefixedMessage(oldBidder.getPlayer());
 						}
 
-						EconomyManager.withdrawBalance(e.player, newBiddingAmount);
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(e.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(newBiddingAmount)).sendPrefixedMessage(e.player);
+						AuctionHouse.getCurrencyManager().withdraw(e.player, newBiddingAmount);
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(e.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(newBiddingAmount)).sendPrefixedMessage(e.player);
 
 					}
 

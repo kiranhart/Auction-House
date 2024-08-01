@@ -25,7 +25,6 @@ import ca.tweetzy.auctionhouse.api.sync.Storeable;
 import ca.tweetzy.auctionhouse.api.sync.Unstoreable;
 import lombok.AllArgsConstructor;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -36,17 +35,12 @@ public abstract class AuctionItem implements Auction, Storeable<AuctionItem>, Un
 	protected final ListingType listingType;
 
 	@Override
-	public void unStore(@Nullable Consumer<ListingDeleteResult> result) {
-//		AuctionHouse.getDataManager().deleteListing(this, (error, status) -> {
-//			if (error != null && result != null) {
-//				error.printStackTrace();
-//				result.accept(ListingDeleteResult.NOT_DELETED);
-//				return;
-//			}
-//
-//			if (result != null)
-//				result.accept(status);
-//
-//		});
+	public void store(Consumer<AuctionItem> stored) {
+
+	}
+
+	@Override
+	public void sync(Consumer<Boolean> wasSuccess) {
+
 	}
 }

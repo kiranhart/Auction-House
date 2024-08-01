@@ -18,5 +18,7 @@
 
 package ca.tweetzy.auctionhouse.impl;
 
-public final class AuctionAPI {
+import ca.tweetzy.auctionhouse.api.AuctionHouseAPI;
+
+public final class AuctionAPI implements AuctionHouseAPI {
 }

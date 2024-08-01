@@ -58,7 +58,7 @@ public final class GUITransactionType extends AuctionBaseGUI {
 		setButton(11, QuickItem
 				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_ITEM.getString())
 				.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_NAME.getString())
-				.lore(this.player,Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_LORE.getStringList())
+				.lore(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_LORE.getStringList())
 				.make(), e -> {
 
 			if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !e.player.hasPermission("auctionhouse.transactions.viewall")) {
@@ -72,7 +72,7 @@ public final class GUITransactionType extends AuctionBaseGUI {
 		setButton(15, QuickItem
 				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_ITEM.getString())
 				.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_NAME.getString())
-				.lore(this.player,Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_LORE.getStringList())
+				.lore(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_LORE.getStringList())
 				.make(), e -> e.manager.showGUI(e.player, new GUITransactionList(e.player, false)));
 
 		if (player.isOp() || player.hasPermission("auctionhouse.admin")) {
@@ -80,7 +80,7 @@ public final class GUITransactionType extends AuctionBaseGUI {
 			setButton(3, 8, QuickItem
 					.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_ITEM.getString())
 					.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_NAME.getString())
-					.lore(this.player,Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_LORE.getStringList())
+					.lore(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_LORE.getStringList())
 					.make(), e -> {
 
 				e.gui.close();

@@ -67,7 +67,7 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 		return QuickItem
 				.of(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_ITEM.getString())
 				.name(Replacer.replaceVariables(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_NAME.getString(), "payment_amount", AuctionAPI.getInstance().formatNumber(payment.getAmount())))
-				.lore(this.player,Replacer.replaceVariables(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList(),
+				.lore(this.player, Replacer.replaceVariables(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList(),
 						"item_name", AuctionAPI.getInstance().getItemName(payment.getItem()),
 						"from_name", payment.getFromName(),
 						"payment_reason", payment.getReason().getTranslation()
@@ -98,7 +98,7 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 
 		setButton(5, 1, QuickItem.of(Settings.GUI_PAYMENT_COLLECTION_ITEM.getString())
 				.name(Settings.GUI_PAYMENT_COLLECTION_NAME.getString())
-				.lore(this.player,Settings.GUI_PAYMENT_COLLECTION_LORE.getStringList())
+				.lore(this.player, Settings.GUI_PAYMENT_COLLECTION_LORE.getStringList())
 				.make(), e -> {
 
 			if (this.lastClicked == null) {

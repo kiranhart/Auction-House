@@ -29,7 +29,6 @@ import ca.tweetzy.auctionhouse.guis.AuctionUpdatingPagedGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmCancel;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
-import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.messages.Titles;
@@ -111,10 +110,10 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 										PaymentReason.BID_RETURNED
 								), null);
 							else
-								EconomyManager.deposit(oldBidder, item.getCurrentPrice());
+								AuctionHouse.getCurrencyManager().deposit(oldBidder, item.getCurrentPrice());
 
 							if (oldBidder.isOnline())
-								AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(item.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+								AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(item.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
 
 						}
 
@@ -157,7 +156,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 		setButton(5, 1, QuickItem
 				.of(Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString())
 				.name(Settings.GUI_ACTIVE_AUCTIONS_NAME.getString())
-				.lore(this.player,Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList())
+				.lore(this.player, Settings.GUI_ACTIVE_AUCTIONS_LORE.getStringList())
 				.make(), e -> {
 
 			if (Settings.ASK_FOR_CANCEL_CONFIRM_ON_ALL_ITEMS.getBoolean()) {

@@ -47,6 +47,11 @@ public class Settings {
 			"You have the following supported economy plugins installed: \"" + EconomyManager.getManager().getPossiblePlugins().stream().collect(Collectors.joining("\", \"")) + "\"."
 	);
 
+	public static final ConfigSetting CURRENCY_DEFAULT_SELECTED = new ConfigSetting(config, "settings.currency.default selection", "Vault/Vault", "The default currency selection, PluginName/CurrencyName -> Ex. Vault/Vault or UltraEconomy/Gems etc");
+	public static final ConfigSetting CURRENCY_VAULT_SYMBOL = new ConfigSetting(config, "settings.currency.vault symbol", "$", "When using default/vault currency, what symbol should be used.");
+	public static final ConfigSetting CURRENCY_BLACKLISTED = new ConfigSetting(config, "settings.currency.black listed", Collections.singletonList("UltraEconomy:Test"), "A list of owning plugins & the currency to be blacklisted. Ex. UltraEconomy:Test");
+
+
 	public static final ConfigSetting ALLOW_USAGE_OF_IN_GAME_EDITOR = new ConfigSetting(config, "Allow Usage Of This Menu In Game", true, "Once you set this to true, you will no longer be able to access it unless you enable it within the actual config.yml");
 	public static final ConfigSetting UPDATE_CHECKER = new ConfigSetting(config, "update checker", true, "If true, auction house will check for updates periodically");
 

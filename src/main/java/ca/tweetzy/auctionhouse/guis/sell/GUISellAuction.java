@@ -100,7 +100,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 			setButton(3, 1, QuickItem
 					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM.getString())
 					.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_NAME.getString())
-					.lore(this.player,Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_LORE.getStringList(),
+					.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_LORE.getStringList(),
 							"remaining_days", times[0],
 							"remaining_hours", times[1],
 							"remaining_minutes", times[2],
@@ -152,7 +152,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 				setButton(3, 4, QuickItem
 						.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_ITEM.getString())
 						.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_NAME.getString())
-						.lore(this.player,Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(binPrice)))
+						.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(binPrice)))
 						.make(), click -> {
 
 					click.gui.exit();
@@ -201,7 +201,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 		setButton(3, 3, QuickItem
 				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_ITEM.getString())
 				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_NAME.getString())
-				.lore(this.player,Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(), "listing_start_price", AuctionAPI.getInstance().formatNumber(startingBid)))
+				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(), "listing_start_price", AuctionAPI.getInstance().formatNumber(startingBid)))
 				.make(), click -> {
 
 			click.gui.exit();
@@ -259,7 +259,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 		setButton(3, 5, QuickItem
 				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getString())
 				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME.getString())
-				.lore(this.player,Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(), "listing_increment_price", AuctionAPI.getInstance().formatNumber(bidIncrement)))
+				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(), "listing_increment_price", AuctionAPI.getInstance().formatNumber(bidIncrement)))
 				.make(), click -> {
 
 			click.gui.exit();
@@ -311,7 +311,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_ITEM.getString())
 				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_NAME.getString())
-				.lore(this.player,Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_LORE.getStringList())
+				.lore(this.player, Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_LORE.getStringList())
 				.make(), click -> {
 
 			if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, this.auctionPlayer.getItemBeingListed())) return;
@@ -341,7 +341,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 			setButton(3, 7, QuickItem
 					.of(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_ITEM.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_ITEM.getString())
 					.name(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_NAME.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_NAME.getString())
-					.lore(this.player,this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_LORE.getStringList() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_LORE.getStringList())
+					.lore(this.player, this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_LORE.getStringList() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_LORE.getStringList())
 					.make(), e -> {
 
 				this.allowBuyNow = !allowBuyNow;

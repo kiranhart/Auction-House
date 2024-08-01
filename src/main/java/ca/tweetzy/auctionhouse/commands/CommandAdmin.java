@@ -36,7 +36,6 @@ import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
@@ -261,7 +260,7 @@ public class CommandAdmin extends AbstractCommand {
 							PaymentReason.BID_RETURNED
 					), null);
 				else
-					EconomyManager.deposit(player, auctionedItem.getCurrentPrice());
+					AuctionHouse.getCurrencyManager().deposit(player, auctionedItem.getCurrentPrice());
 		}
 	}
 
@@ -289,10 +288,10 @@ public class CommandAdmin extends AbstractCommand {
 								PaymentReason.ADMIN_REMOVED
 						), null);
 					else
-						EconomyManager.deposit(oldBidder, auctionItem.getCurrentPrice());
+						AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
 
 				}
 			}

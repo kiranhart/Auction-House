@@ -28,7 +28,6 @@ import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIActiveAuctions;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -68,7 +67,7 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_CANCEL_NO_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_CANCEL_NO_NAME.getString())
-				.lore(this.player,Settings.GUI_CONFIRM_CANCEL_NO_LORE.getStringList())
+				.lore(this.player, Settings.GUI_CONFIRM_CANCEL_NO_LORE.getStringList())
 				.make(), click -> click.manager.showGUI(click.player, new GUIActiveAuctions(this.auctionPlayer)));
 	}
 
@@ -76,7 +75,7 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_CANCEL_YES_ITEM.getString())
 				.name(Settings.GUI_CONFIRM_CANCEL_YES_NAME.getString())
-				.lore(this.player,Settings.GUI_CONFIRM_CANCEL_YES_LORE.getStringList())
+				.lore(this.player, Settings.GUI_CONFIRM_CANCEL_YES_LORE.getStringList())
 				.make(), click -> {
 
 			// Re-select the item to ensure that it's available
@@ -101,10 +100,10 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 
 					), null);
 				else
-					EconomyManager.deposit(oldBidder, located.getCurrentPrice());
+					AuctionHouse.getCurrencyManager().deposit(oldBidder, located.getCurrentPrice());
 
 				if (oldBidder.isOnline())
-					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(EconomyManager.getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(located.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(located.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
 
 			}
 

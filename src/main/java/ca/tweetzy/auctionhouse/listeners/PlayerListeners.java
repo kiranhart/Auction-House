@@ -92,7 +92,6 @@ public class PlayerListeners implements Listener {
 		if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
 		final Player player = event.getPlayer();
 		AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(player);
-
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -101,24 +100,22 @@ public class PlayerListeners implements Listener {
 		final AuctionHouse instance = AuctionHouse.getInstance();
 		Titles.sendTitle(player, 1, 1, 1, " ", " ");
 
-//		instance.getAuctionPlayerManager().addPlayer(player);
-
 		// DUPE TRACKING
-		for (ItemStack item : player.getInventory().getStorageContents()) {
-			if (item == null || item.getType() == XMaterial.AIR.parseMaterial() || item.getAmount() == 0) continue;
+		AuctionHouse.newChain().async(() -> {
+			for (ItemStack item : player.getInventory().getStorageContents()) {
+				if (item == null || item.getType() == XMaterial.AIR.parseMaterial() || item.getAmount() == 0) continue;
 
-			final UUID auctionItemId = NBT.get(item, nbt -> (UUID) nbt.getUUID("AuctionDupeTracking"));
-			if (auctionItemId == null) return;
+				final UUID auctionItemId = NBT.get(item, nbt -> (UUID) nbt.getUUID("AuctionDupeTracking"));
+				if (auctionItemId == null) continue;
 
-			if (AuctionHouse.getInstance().getAuctionItemManager().getItem(auctionItemId) != null) {
-				player.getInventory().remove(item);
-				Bukkit.getServer().getConsoleSender().sendMessage(Common.colorize("&8[&eAuctionHouse&8] &CRemoving duped item from " + player.getName() + "'s inventory!"));
+				if (AuctionHouse.getInstance().getAuctionItemManager().getItem(auctionItemId) != null) {
+					player.getInventory().remove(item);
+					Bukkit.getServer().getConsoleSender().sendMessage(Common.colorize("&8[&eAuctionHouse&8] &CRemoving duped item from " + player.getName() + "'s inventory!"));
+				}
 			}
-		}
-
+		}).execute();
 
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
-
 			if (Settings.UPDATE_CHECKER.getBoolean() && instance.getStatus() == UpdateChecker.UpdateStatus.UNRELEASED_VERSION && player.isOp()) {
 				instance.getLocale().newMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", instance.getDescription().getVersion()))).sendPrefixedMessage(player);
 			}

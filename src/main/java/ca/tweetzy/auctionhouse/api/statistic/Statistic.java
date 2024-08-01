@@ -33,14 +33,16 @@ public interface Statistic extends Identifiable<UUID>, Trackable, Storeable<Stat
 	 *
 	 * @return the {@link UUID} of the statistic owner
 	 */
-	@NonNull UUID getOwner();
+	@NonNull
+	UUID getOwner();
 
 	/**
 	 * Get the statistic type that is being tracked
 	 *
 	 * @return the tracked {@link AuctionStatisticType}
 	 */
-	@NonNull AuctionStatisticType getType();
+	@NonNull
+	AuctionStatisticType getType();
 
 	/**
 	 * The total value of this statistic

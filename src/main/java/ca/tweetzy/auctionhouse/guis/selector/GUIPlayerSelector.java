@@ -30,7 +30,7 @@ public final class GUIPlayerSelector extends AuctionPagedGUI<OfflinePlayer> {
 		return QuickItem
 				.of(player)
 				.name(Settings.GUI_PLAYER_SELECTOR_ITEMS_PLAYER_NAME.getString().replace("%player_name%", name))
-				.lore(this.player,Settings.GUI_PLAYER_SELECTOR_ITEMS_PLAYER_LORE.getStringList())
+				.lore(this.player, Settings.GUI_PLAYER_SELECTOR_ITEMS_PLAYER_LORE.getStringList())
 				.make();
 	}
 

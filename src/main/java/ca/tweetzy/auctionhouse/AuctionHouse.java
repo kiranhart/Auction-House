@@ -24,10 +24,10 @@ import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations.*;
 import ca.tweetzy.auctionhouse.helpers.UpdateChecker;
 import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
-import ca.tweetzy.auctionhouse.hooks.UltraEconomyHook;
 import ca.tweetzy.auctionhouse.listeners.*;
 import ca.tweetzy.auctionhouse.managers.*;
 import ca.tweetzy.auctionhouse.model.manager.BanManager;
+import ca.tweetzy.auctionhouse.model.manager.CurrencyManager;
 import ca.tweetzy.auctionhouse.model.manager.PaymentsManager;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -40,9 +40,6 @@ import ca.tweetzy.core.commands.CommandManager;
 import ca.tweetzy.core.compatibility.ServerProject;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.gui.GuiManager;
-import ca.tweetzy.core.hooks.EconomyManager;
-import ca.tweetzy.core.hooks.PluginHook;
-import ca.tweetzy.core.hooks.economies.Economy;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
@@ -53,9 +50,11 @@ import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import lombok.Getter;
 import lombok.Setter;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,62 +74,47 @@ import java.util.stream.Collectors;
 public class AuctionHouse extends TweetyPlugin {
 
 	//==========================================================================//
+	// "v3" stuff for organization
+	@Getter
 	private static TweetzyYamlConfig migrationCoreConfig;
+
+	private DatabaseConnector databaseConnector;
+	private DataManager dataManager;
+
+
+	private final CurrencyManager currencyManager = new CurrencyManager();
+	private final CommandManager commandManager = new CommandManager(this);
+	private final GuiManager guiManager = new GuiManager(this);
+
+	private final AuctionPlayerManager auctionPlayerManager = new AuctionPlayerManager();
+	private final AuctionItemManager auctionItemManager = new AuctionItemManager();
+	private final TransactionManager transactionManager = new TransactionManager();
+	private final FilterManager filterManager = new FilterManager();
+	private final BanManager banManager = new BanManager();
+	private final AuctionStatisticManager auctionStatisticManager = new AuctionStatisticManager();
+	private final MinItemPriceManager minItemPriceManager = new MinItemPriceManager();
+	private final PaymentsManager paymentsManager = new PaymentsManager();
+
+
+	// the default vault economy
+	private Economy economy = null;
+
+
 	//==========================================================================//
 
 	private static TaskChainFactory taskChainFactory;
-	private static AuctionHouse instance;
-	private PluginHook ultraEconomyHook;
 
 	@Getter
 	@Setter
 	private boolean migrating = false;
 
-	@Getter
-	private final GuiManager guiManager = new GuiManager(this);
-
 	protected Metrics metrics;
-
-	@Getter
-	private CommandManager commandManager;
-
-
-	@Getter
-	private AuctionPlayerManager auctionPlayerManager;
-
-	@Getter
-	private AuctionItemManager auctionItemManager;
-
-	@Getter
-	private TransactionManager transactionManager;
-
-	@Getter
-	private FilterManager filterManager;
-
-	@Getter
-	private BanManager banManager;
-
-	@Getter
-	private AuctionStatisticManager auctionStatisticManager;
-
-	@Getter
-	private MinItemPriceManager minItemPriceManager;
-
-	@Getter
-	private PaymentsManager paymentsManager;
-
-	@Getter
-	private DatabaseConnector databaseConnector;
-
-	@Getter
-	private DataManager dataManager;
 
 	@Getter
 	private UpdateChecker.UpdateStatus status;
 
 	@Override
 	public void onPluginLoad() {
-		instance = this;
 	}
 
 	@Override
@@ -145,63 +129,17 @@ public class AuctionHouse extends TweetyPlugin {
 		taskChainFactory = BukkitTaskChainFactory.create(this);
 		migrationCoreConfig = new TweetzyYamlConfig(this, "migration-config-dont-touch.yml");
 
-
-		// Settings
+		// Settings & Locale
 		Settings.setup();
-
-		if (Settings.AUTO_BSTATS.getBoolean()) {
-			final File file = new File("plugins" + File.separator + "bStats" + File.separator + "config.yml");
-			if (file.exists()) {
-				final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-				configuration.set("enabled", true);
-				try {
-					configuration.save(file);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		this.ultraEconomyHook = PluginHook.addHook(Economy.class, "UltraEconomy", UltraEconomyHook.class);
-
-		// translations & Settings migration stuff
-		Translations.init();
-		ca.tweetzy.auctionhouse.settings.v3.Settings.init();
-
-		// Load Economy
-		EconomyManager.load();
-
-		// local
 		setLocale(Settings.LANG.getString());
 		LocaleSettings.setup();
 
+		initializeBStats();
 
-		// Setup Economy
-		final String ECO_PLUGIN = Settings.ECONOMY_PLUGIN.getString();
+		// settings / locales v3
+		Translations.init();
+		ca.tweetzy.auctionhouse.settings.v3.Settings.init();
 
-
-		if (ECO_PLUGIN.startsWith("UltraEconomy")) {
-			EconomyManager.getManager().setPreferredHook(this.ultraEconomyHook);
-		} else {
-			EconomyManager.getManager().setPreferredHook(ECO_PLUGIN);
-		}
-
-		if (!EconomyManager.getManager().isEnabled()) {
-			getLogger().severe("Could not find a valid economy provider for Auction House");
-			getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
-
-		// listeners
-		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new MeteorClientListeners(), this);
-		Bukkit.getServer().getPluginManager().registerEvents(new AuctionListeners(), this);
-
-		if (getServer().getPluginManager().isPluginEnabled("ChestShop"))
-			Bukkit.getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
-
-		if (getServer().getPluginManager().isPluginEnabled("CMI"))
-			Bukkit.getServer().getPluginManager().registerEvents(new CMIListener(), this);
 
 		// Setup the database if enabled
 		this.databaseConnector = Settings.DATABASE_USE.getBoolean() ? new MySQLConnector(
@@ -245,44 +183,38 @@ public class AuctionHouse extends TweetyPlugin {
 
 		dataMigrationManager.runMigrations();
 
-		// load auction items
-		this.auctionItemManager = new AuctionItemManager();
-		this.auctionItemManager.start();
-
-		// load transactions
-		this.transactionManager = new TransactionManager();
-		this.transactionManager.loadTransactions();
-
-		// load the filter whitelist items
-		this.filterManager = new FilterManager();
-		this.filterManager.loadItems();
-
-		// load the bans
-		this.banManager = new BanManager();
-		this.banManager.load();
-
-		this.minItemPriceManager = new MinItemPriceManager();
-		this.minItemPriceManager.loadMinPrices();
-
-		this.auctionStatisticManager = new AuctionStatisticManager();
-		this.auctionStatisticManager.loadStatistics();
-
-		// auction players
-		this.auctionPlayerManager = new AuctionPlayerManager();
-		this.auctionPlayerManager.loadPlayers();
-
-		// payments
-		this.paymentsManager = new PaymentsManager();
-		this.paymentsManager.load();
+		// setup Vault Economy
+		setupEconomy(); // todo auto apply ultra economy currency if it was used.
 
 		// gui manager
 		this.guiManager.init();
+		this.banManager.load();
+		this.currencyManager.load();
+		this.paymentsManager.load();
+
+		// listeners
+		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
+		Bukkit.getServer().getPluginManager().registerEvents(new MeteorClientListeners(), this);
+		Bukkit.getServer().getPluginManager().registerEvents(new AuctionListeners(), this);
+
+		if (getServer().getPluginManager().isPluginEnabled("ChestShop"))
+			Bukkit.getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
+
+		if (getServer().getPluginManager().isPluginEnabled("CMI"))
+			Bukkit.getServer().getPluginManager().registerEvents(new CMIListener(), this);
+
+
+		this.auctionItemManager.start();
+		this.transactionManager.loadTransactions();
+		this.filterManager.loadItems();
+		this.minItemPriceManager.loadMinPrices();
+		this.auctionStatisticManager.loadStatistics();
+		this.auctionPlayerManager.loadPlayers();
 
 		// commands
-		this.commandManager = new CommandManager(this);
 		this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
 		this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
-		this.commandManager.addCommand(new CommandAuctionHouse()).addSubCommands(
+		this.commandManager.registerCommandDynamically(new CommandAuctionHouse()).addSubCommands(
 				new CommandSell(),
 				new CommandActive(),
 				new CommandExpired(),
@@ -334,10 +266,6 @@ public class AuctionHouse extends TweetyPlugin {
 				getLogger().severe("You will not receive any support while using a non-supported jar, support jars: Spigot or Paper");
 			}
 
-//			if (ServerVersion.isServerVersionBelow(ServerVersion.V1_16)) {
-//				getLogger().severe("You are receiving this message because you're running Auction House on a Minecraft version older than 1.16. As a heads up, Auction House 3.0 is going to be for 1.16+ only");
-//			}
-
 			if (!ServerProject.isServer(ServerProject.PAPER, ServerProject.SPIGOT)) {
 				getLogger().warning("You're running Auction House on a non supported server jar, although small, there's a chance somethings will not work or just entirely break.");
 			}
@@ -358,11 +286,26 @@ public class AuctionHouse extends TweetyPlugin {
 		}, 1L);
 	}
 
+	private void initializeBStats() {
+		if (Settings.AUTO_BSTATS.getBoolean()) {
+			final File file = new File("plugins" + File.separator + "bStats" + File.separator + "config.yml");
+			if (file.exists()) {
+				final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+				configuration.set("enabled", true);
+				try {
+					configuration.save(file);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
 	@Override
 	public void onPluginDisable() {
 		if (this.dataManager != null) {
 			// clean up the garbage items
-			AuctionHouse.getInstance().getDataManager().deleteItems(AuctionHouse.getInstance().getAuctionItemManager().getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
+			this.dataManager.deleteItems(this.auctionItemManager.getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
 
 			this.auctionItemManager.end();
 			this.filterManager.saveFilterWhitelist(false);
@@ -374,28 +317,14 @@ public class AuctionHouse extends TweetyPlugin {
 
 	@Override
 	public void onConfigReload() {
-		EconomyManager.load();
 		Settings.setup();
-		EconomyManager.getManager().setPreferredHook(Settings.ECONOMY_PLUGIN.getString());
 		setLocale(Settings.LANG.getString());
 		LocaleSettings.setup();
 		this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
 		this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
 	}
 
-	@Override
-	public List<Config> getExtraConfig() {
-		return null;
-	}
-
-	public static AuctionHouse getInstance() {
-		return instance;
-	}
-
-	public static TweetzyYamlConfig getMigrationCoreConfig() {
-		return migrationCoreConfig;
-	}
-
+	//========================================== Getters ==========================================
 	public static <T> TaskChain<T> newChain() {
 		return taskChainFactory.newChain();
 	}
@@ -404,6 +333,71 @@ public class AuctionHouse extends TweetyPlugin {
 		return taskChainFactory.newSharedChain(name);
 	}
 
+	public static AuctionHouse getInstance() {
+		return (AuctionHouse) TweetyPlugin.getInstance();
+	}
+
+	public static DataManager getDataManager() {
+		return getInstance().dataManager;
+	}
+
+	public static DatabaseConnector getDatabaseConnector() {
+		return getInstance().databaseConnector;
+	}
+
+	public static GuiManager getGuiManager() {
+		return getInstance().guiManager;
+	}
+
+	public static CommandManager getCommandManager() {
+		return getInstance().commandManager;
+	}
+
+	public static AuctionPlayerManager getAuctionPlayerManager() {
+		return getInstance().auctionPlayerManager;
+	}
+
+	public static AuctionItemManager getAuctionItemManager() {
+		return getInstance().auctionItemManager;
+	}
+
+	public static TransactionManager getTransactionManager() {
+		return getInstance().transactionManager;
+	}
+
+	public static BanManager getBanManager() {
+		return getInstance().banManager;
+	}
+
+	public static FilterManager getFilterManager() {
+		return getInstance().filterManager;
+	}
+
+	public static AuctionStatisticManager getAuctionStatisticManager() {
+		return getInstance().auctionStatisticManager;
+	}
+
+	public static MinItemPriceManager getMinItemPriceManager() {
+		return getInstance().minItemPriceManager;
+	}
+
+	public static PaymentsManager getPaymentsManager() {
+		return getInstance().paymentsManager;
+	}
+
+	public static CurrencyManager getCurrencyManager() {
+		return getInstance().currencyManager;
+	}
+
+	public static Economy getEconomy() {
+		return getInstance().economy;
+	}
+
+	//========================================== LEGACY ==========================================
+	@Override
+	public List<Config> getExtraConfig() {
+		return null;
+	}
 
 	String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
 	String SONGODA_NODE = "%%__SONGODA_NODE__%%";
@@ -450,5 +444,18 @@ public class AuctionHouse extends TweetyPlugin {
 		}
 	}
 
+	// helpers
+	private void setupEconomy() {
+		if (getServer().getPluginManager().getPlugin("Vault") == null) {
+			return;
+		}
 
+		final RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+
+		if (rsp == null) {
+			return;
+		}
+
+		this.economy = rsp.getProvider();
+	}
 }

@@ -50,20 +50,19 @@ public class CommandAuctionHouse extends AbstractCommand {
 
 			if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
-			final AuctionHouse instance = AuctionHouse.getInstance();
-			if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-				instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
-				instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+			if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
+				AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+				AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 			}
 
 			if (args.length == 0) {
-				instance.getGuiManager().showGUI(player, new GUIAuctionHouse(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+				AuctionHouse.getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 				return ReturnType.SUCCESS;
 			}
 
-			if (args.length == 1 && instance.getCommandManager().getSubCommands("auctionhouse").stream().noneMatch(cmd -> cmd.equalsIgnoreCase(StringUtils.join(args, ' ').trim()))) {
+			if (args.length == 1 && AuctionHouse.getCommandManager().getSubCommands("auctionhouse").stream().noneMatch(cmd -> cmd.equalsIgnoreCase(StringUtils.join(args, ' ').trim()))) {
 				if (args[0].equalsIgnoreCase("NaN")) return ReturnType.FAILURE;
-				instance.getGuiManager().showGUI(player, new GUIAuctionHouse(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()), StringUtils.join(args, ' ').trim()));
+				AuctionHouse.getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()), StringUtils.join(args, ' ').trim()));
 			}
 		}
 		return ReturnType.SUCCESS;
@@ -72,7 +71,7 @@ public class CommandAuctionHouse extends AbstractCommand {
 	@Override
 	protected List<String> onTab(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
-		return AuctionHouse.getInstance().getCommandManager().getAllCommands().stream().filter(cmd -> cmd.getPermissionNode() == null || player.hasPermission(cmd.getPermissionNode())).map(AbstractCommand::getSyntax).collect(Collectors.toList());
+		return AuctionHouse.getCommandManager().getAllCommands().stream().filter(cmd -> cmd.getPermissionNode() == null || player.hasPermission(cmd.getPermissionNode())).map(AbstractCommand::getSyntax).collect(Collectors.toList());
 	}
 
 	@Override

@@ -56,7 +56,7 @@ public final class GUIAdminExpired extends AuctionPagedGUI<AuctionedItem> {
 	@Override
 	protected ItemStack makeDisplayItem(AuctionedItem auctionedItem) {
 		final ItemStack item = auctionedItem.getItem().clone();
-		return QuickItem.of(item).lore(this.player,Settings.GUI_EXPIRED_ITEMS_ADMIN_ITEMS_LORE.getStringList()).make();
+		return QuickItem.of(item).lore(this.player, Settings.GUI_EXPIRED_ITEMS_ADMIN_ITEMS_LORE.getStringList()).make();
 	}
 
 	@Override

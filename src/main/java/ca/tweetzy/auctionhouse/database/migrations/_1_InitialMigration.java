@@ -40,7 +40,7 @@ public class _1_InitialMigration extends DataMigration {
 
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
-		String autoIncrement = AuctionHouse.getInstance().getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
+		String autoIncrement = AuctionHouse.getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
 
 		try (Statement statement = connection.createStatement()) {
 			statement.execute("CREATE TABLE " + tablePrefix + "items (" +
