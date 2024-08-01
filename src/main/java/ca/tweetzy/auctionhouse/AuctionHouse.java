@@ -184,13 +184,18 @@ public class AuctionHouse extends TweetyPlugin {
 		dataMigrationManager.runMigrations();
 
 		// setup Vault Economy
-		setupEconomy(); // todo auto apply ultra economy currency if it was used.
+		setupEconomy();
 
 		// gui manager
 		this.guiManager.init();
 		this.banManager.load();
 		this.currencyManager.load();
 		this.paymentsManager.load();
+
+		// warn users if there is a mismatch between new economy and old
+		if (Settings.ECONOMY_PLUGIN.getString().toLowerCase().contains("ultraeconomy") && !Settings.CURRENCY_DEFAULT_SELECTED.getString().toLowerCase().contains("ultraeconomy")) {
+			getLogger().warning("You are seeing this message because there is a miss match between your old economy provider settings and the new one. While the plugin will default to Vault, if you are seeing this message it's likely because you were using UltraEconomy and you haven't set it up back under 'default selection' in the config.yml!");
+		}
 
 		// listeners
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
