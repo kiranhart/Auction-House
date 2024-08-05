@@ -16,8 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.helpers.discord;
+package ca.tweetzy.auctionhouse.model.discord;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
@@ -197,6 +198,7 @@ public final class DiscordMessageCreator {
 
 	@SneakyThrows
 	public void send() {
-		generate().execute();
+		final DiscordWebhook hook = generate();
+		hook.execute();
 	}
 }

@@ -390,6 +390,8 @@ public class Settings {
 	public static final ConfigSetting DISCORD_MSG_USERNAME = new ConfigSetting(config, "discord.user.username", "Auction House", "The name of the user who will send the message");
 	public static final ConfigSetting DISCORD_MSG_PFP = new ConfigSetting(config, "discord.user.avatar picture", "https://cdn.kiranhart.com/spigot/auctionhouse/icon.png", "The avatar image of the discord user");
 	public static final ConfigSetting DISCORD_WEBHOOKS = new ConfigSetting(config, "discord.webhooks", Collections.singletonList("https://discord.com/api/webhooks/1077667480920653840/CZbJG7DBoGhPXYICgp2--Ey_itVVmYqaQgorBfpvL7nQoQZWWMxz1TQgs1xG45Mzlpsn"), "A list of webhook urls (channels) you want a message sent to");
+	public static final ConfigSetting DISCORD_DELAY_LISTINGS = new ConfigSetting(config, "discord.delay options.delay listing", false, "If true AuctionHouse will delay sending new listing messages by the specified seconds.");
+	public static final ConfigSetting DISCORD_DELAY_LISTING_TIME = new ConfigSetting(config, "discord.delay options.delay listing time", 10, "How many seconds should Auction House wait to send the discord message for new listings");
 
 	// options for when the alerts should be sent
 	public static final ConfigSetting DISCORD_ALERT_ON_AUCTION_START = new ConfigSetting(config, "discord.alerts.new auction listing", true, "Should a message be sent when a new auction listing is made");

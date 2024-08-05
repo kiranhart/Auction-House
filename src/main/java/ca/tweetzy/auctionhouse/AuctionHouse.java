@@ -28,6 +28,7 @@ import ca.tweetzy.auctionhouse.listeners.*;
 import ca.tweetzy.auctionhouse.managers.*;
 import ca.tweetzy.auctionhouse.model.manager.BanManager;
 import ca.tweetzy.auctionhouse.model.manager.CurrencyManager;
+import ca.tweetzy.auctionhouse.model.manager.ListingManager;
 import ca.tweetzy.auctionhouse.model.manager.PaymentsManager;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -85,6 +86,7 @@ public class AuctionHouse extends TweetyPlugin {
 	private final CurrencyManager currencyManager = new CurrencyManager();
 	private final CommandManager commandManager = new CommandManager(this);
 	private final GuiManager guiManager = new GuiManager(this);
+	private final ListingManager listingManager = new ListingManager();
 
 	private final AuctionPlayerManager auctionPlayerManager = new AuctionPlayerManager();
 	private final AuctionItemManager auctionItemManager = new AuctionItemManager();
@@ -94,6 +96,8 @@ public class AuctionHouse extends TweetyPlugin {
 	private final AuctionStatisticManager auctionStatisticManager = new AuctionStatisticManager();
 	private final MinItemPriceManager minItemPriceManager = new MinItemPriceManager();
 	private final PaymentsManager paymentsManager = new PaymentsManager();
+
+
 
 
 	// the default vault economy
@@ -318,6 +322,8 @@ public class AuctionHouse extends TweetyPlugin {
 
 		shutdownDataManager(this.dataManager);
 		getServer().getScheduler().cancelTasks(this);
+		// send out remaining webhooks
+//		this.listingManager.sendPendingDiscordWebhooks();
 	}
 
 	@Override
@@ -392,6 +398,10 @@ public class AuctionHouse extends TweetyPlugin {
 
 	public static CurrencyManager getCurrencyManager() {
 		return getInstance().currencyManager;
+	}
+
+	public static ListingManager getListingManager() {
+		return getInstance().listingManager;
 	}
 
 	public static Economy getEconomy() {

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.helpers.discord;
+package ca.tweetzy.auctionhouse.model.discord;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;

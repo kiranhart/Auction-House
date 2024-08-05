@@ -27,7 +27,7 @@ import ca.tweetzy.auctionhouse.events.AuctionAdminEvent;
 import ca.tweetzy.auctionhouse.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.events.AuctionStartEvent;
-import ca.tweetzy.auctionhouse.helpers.discord.DiscordMessageCreator;
+import ca.tweetzy.auctionhouse.model.discord.DiscordMessageCreator;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import org.bukkit.Bukkit;
@@ -62,20 +62,32 @@ public class AuctionListeners implements Listener {
 				Settings.DISCORD_WEBHOOKS.getStringList().forEach(hook -> {
 					final boolean isBid = e.getAuctionItem().isBidItem();
 
-					if (isBid && Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean())
-						DiscordMessageCreator
+					if (isBid && Settings.DISCORD_ALERT_ON_AUCTION_START.getBoolean()) {
+						DiscordMessageCreator webhook = DiscordMessageCreator
 								.of(hook, DiscordMessageCreator.MessageType.NEW_AUCTION_LISTING)
 								.seller(seller)
-								.listing(auctionedItem)
-								.send();
+								.listing(auctionedItem);
 
-					if (!isBid && Settings.DISCORD_ALERT_ON_BIN_START.getBoolean())
-						DiscordMessageCreator
+						if (Settings.DISCORD_DELAY_LISTINGS.getBoolean()) {
+							AuctionHouse.getListingManager().addListingWebhook(auctionedItem.getId(), webhook);
+							return;
+						}
+
+						webhook.send();
+					}
+
+					if (!isBid && Settings.DISCORD_ALERT_ON_BIN_START.getBoolean()) {
+						DiscordMessageCreator webhook = DiscordMessageCreator
 								.of(hook, DiscordMessageCreator.MessageType.NEW_BIN_LISTING)
 								.seller(seller)
-								.listing(auctionedItem)
-								.send();
+								.listing(auctionedItem);
 
+						if (Settings.DISCORD_DELAY_LISTINGS.getBoolean()) {
+							AuctionHouse.getListingManager().addListingWebhook(auctionedItem.getId(), webhook);
+							return;
+						}
+						webhook.send();
+					}
 				});
 			}).execute();
 
@@ -94,18 +106,18 @@ public class AuctionListeners implements Listener {
 			new AuctionStatistic(originalOwnerUUID, AuctionStatisticType.MONEY_EARNED, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? auctionedItem.getCurrentPrice() : auctionedItem.getBasePrice()).store(null);
 		}
 
+		AuctionHouse.getListingManager().cancelListingWebhook(auctionedItem.getId());
 		new AuctionStatistic(buyerUUID, AuctionStatisticType.MONEY_SPENT, e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? auctionedItem.getCurrentPrice() : auctionedItem.getBasePrice()).store(null);
 
 		AuctionHouse.newChain().async(() -> {
 			if (Settings.RECORD_TRANSACTIONS.getBoolean()) {
-				final AuctionHouse instance = AuctionHouse.getInstance();
 
 				double price = auctionedItem.getBasePrice();
 				if (e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM) {
 					price = auctionedItem.getCurrentPrice();
 				}
 
-				instance.getDataManager().insertTransaction(new Transaction(
+				AuctionHouse.getDataManager().insertTransaction(new Transaction(
 						UUID.randomUUID(),
 						originalOwnerUUID,
 						buyerUUID,
@@ -117,7 +129,7 @@ public class AuctionListeners implements Listener {
 						price
 				), (error, transaction) -> {
 					if (error == null) {
-						instance.getTransactionManager().addTransaction(transaction);
+						AuctionHouse.getTransactionManager().addTransaction(transaction);
 					}
 				});
 			}
@@ -166,6 +178,7 @@ public class AuctionListeners implements Listener {
 	@EventHandler
 	public void onAdminAction(AuctionAdminEvent event) {
 		if (!Settings.LOG_ADMIN_ACTIONS.getBoolean()) return;
-		AuctionHouse.getInstance().getDataManager().insertLog(event.getAuctionAdminLog());
+		AuctionHouse.getListingManager().cancelListingWebhook(event.getAuctionAdminLog().getItemId());
+		AuctionHouse.getDataManager().insertLog(event.getAuctionAdminLog());
 	}
 }

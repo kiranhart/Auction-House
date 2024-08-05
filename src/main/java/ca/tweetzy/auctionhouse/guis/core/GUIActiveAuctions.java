@@ -182,7 +182,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 					continue;
 
 				if (item.isRequest()) {
-					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(item);
+					AuctionHouse.getAuctionItemManager().sendToGarbage(item);
 				} else {
 					item.setExpired(true);
 				}
