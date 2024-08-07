@@ -18,6 +18,7 @@
 
 package ca.tweetzy.auctionhouse.impl;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.statistic.Statistic;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,10 @@ public final class AuctionStatistic implements Statistic {
 	private final UUID owner;
 	private final double value;
 	private final long createdAt;
+
+	public AuctionStatistic(UUID statOwner, AuctionStatisticType type, double value) {
+		this(UUID.randomUUID(), type, statOwner, value, System.currentTimeMillis());
+	}
 
 	@Override
 	public @NonNull UUID getId() {
@@ -67,6 +72,15 @@ public final class AuctionStatistic implements Statistic {
 
 	@Override
 	public void store(Consumer<Statistic> stored) {
+		AuctionHouse.getDataManager().insertStatistic(this, (error, statistic) -> {
+			if (error != null) return;
 
+			if (statistic != null) {
+				AuctionHouse.getAuctionStatisticManager().addStatistic(statistic);
+
+				if (stored != null)
+					stored.accept(statistic);
+			}
+		});
 	}
 }

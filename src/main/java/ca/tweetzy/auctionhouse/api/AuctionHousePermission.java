@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @AllArgsConstructor
+@Getter
 public enum AuctionHousePermission {
 
 	COMMAND_SELL(cmd("sell"), "Allows the user to use /ah sell"),
@@ -33,12 +34,12 @@ public enum AuctionHousePermission {
 	COMMAND_ADMIN(cmd("admin"), "Allows the user to use /ah admin"),
 	COMMAND_RELOAD(cmd("reload"), "Allows the user to use /ah reload"),
 
-	UNLIMITED_LISTINGS(wild("auctionhouse.maxallowedlistings"), "Allows the user to have unlimited listings");
+	UNLIMITED_LISTINGS(wild("auctionhouse.maxallowedlistings"), "Allows the user to have unlimited listings"),
 
-	@Getter
+	;
+
 	private final String permission;
 
-	@Getter
 	private final String description;
 
 	private static String cmd(@NonNull final String value) {

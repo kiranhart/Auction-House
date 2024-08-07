@@ -191,6 +191,6 @@ public final class Settings extends SettingTemp {
 	public static ConfigEntry CONFIRM_CANCEL_LISTING = create("settings.confirmation.cancel listing", false, "Ask for confirmation before canceling a listing?");
 
 	public static void init() {
-		AuctionHouse.getInstance().getMigrationCoreConfig().init();
+		AuctionHouse.getMigrationCoreConfig().init();
 	}
 }

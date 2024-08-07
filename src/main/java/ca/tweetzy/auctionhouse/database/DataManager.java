@@ -22,22 +22,20 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.ban.Ban;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
+import ca.tweetzy.auctionhouse.api.statistic.Statistic;
 import ca.tweetzy.auctionhouse.auction.*;
 import ca.tweetzy.auctionhouse.auction.enums.*;
 import ca.tweetzy.auctionhouse.impl.AuctionBan;
+import ca.tweetzy.auctionhouse.impl.AuctionStatistic;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.database.*;
-import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.nbtapi.NbtApiException;
-import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -647,7 +645,7 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
-	public void insertStatistic(AuctionStatistic statistic, Callback<AuctionStatistic> callback) {
+	public void insertStatistic(Statistic statistic, Callback<Statistic> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "statistic (uuid, stat_owner, stat_type, value, time) VALUES (?, ?, ?, ?, ?)")) {
 
@@ -655,10 +653,10 @@ public class DataManager extends DataManagerAbstract {
 
 				fetch.setString(1, statistic.getId().toString());
 				statement.setString(1, statistic.getId().toString());
-				statement.setString(2, statistic.getStatOwner().toString());
-				statement.setString(3, statistic.getStatisticType().name());
+				statement.setString(2, statistic.getOwner().toString());
+				statement.setString(3, statistic.getType().name());
 				statement.setDouble(4, statistic.getValue());
-				statement.setLong(5, statistic.getTime());
+				statement.setLong(5, statistic.getTimeCreated());
 				statement.executeUpdate();
 
 				if (callback != null) {
@@ -674,8 +672,8 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
-	public void getStatistics(Callback<List<AuctionStatistic>> callback) {
-		List<AuctionStatistic> stats = new ArrayList<>();
+	public void getStatistics(Callback<List<Statistic>> callback) {
+		List<Statistic> stats = new ArrayList<>();
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "statistic")) {
 				ResultSet resultSet = statement.executeQuery();
@@ -886,11 +884,11 @@ public class DataManager extends DataManagerAbstract {
 		);
 	}
 
-	private AuctionStatistic extractAuctionStatistic(ResultSet resultSet) throws SQLException {
+	private Statistic extractAuctionStatistic(ResultSet resultSet) throws SQLException {
 		return new AuctionStatistic(
 				UUID.fromString(resultSet.getString("uuid")),
-				UUID.fromString(resultSet.getString("stat_owner")),
 				AuctionStatisticType.valueOf(resultSet.getString("stat_type")),
+				UUID.fromString(resultSet.getString("stat_owner")),
 				resultSet.getDouble("value"),
 				resultSet.getLong("time")
 		);

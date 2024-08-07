@@ -19,7 +19,6 @@
 package ca.tweetzy.auctionhouse.listeners;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.auction.AuctionStatistic;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
@@ -27,6 +26,7 @@ import ca.tweetzy.auctionhouse.events.AuctionAdminEvent;
 import ca.tweetzy.auctionhouse.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.events.AuctionStartEvent;
+import ca.tweetzy.auctionhouse.impl.AuctionStatistic;
 import ca.tweetzy.auctionhouse.model.discord.DiscordMessageCreator;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;

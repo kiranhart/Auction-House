@@ -19,7 +19,7 @@
 package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.auction.AuctionStatistic;
+import ca.tweetzy.auctionhouse.api.statistic.Statistic;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
 
 import java.time.Instant;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 public final class AuctionStatisticManager {
 
-	private final List<AuctionStatistic> statistics = Collections.synchronizedList(new ArrayList<>());
+	private final List<Statistic> statistics = Collections.synchronizedList(new ArrayList<>());
 
 	// 'cheat' way of doing this leaderboard thing, I will fix this eventually...
 	private final Map<UUID, Double> createdAuctionCount = new ConcurrentHashMap<>();
@@ -41,15 +41,15 @@ public final class AuctionStatisticManager {
 	private final Map<UUID, Double> moneyEarnedCount = new ConcurrentHashMap<>();
 
 
-	public void addStatistic(AuctionStatistic statistic) {
+	public void addStatistic(Statistic statistic) {
 		synchronized (this.statistics) {
 			if (this.statistics.contains(statistic)) return;
 			this.statistics.add(statistic);
 
-			final UUID owner = statistic.getStatOwner();
+			final UUID owner = statistic.getOwner();
 			final double value = statistic.getValue();
 
-			switch (statistic.getStatisticType()) {
+			switch (statistic.getType()) {
 				case CREATED_AUCTION:
 					this.createdAuctionCount.put(owner, this.createdAuctionCount.getOrDefault(owner, 0D) + value);
 					break;
@@ -72,13 +72,13 @@ public final class AuctionStatisticManager {
 		}
 	}
 
-	public void addStatistics(List<AuctionStatistic> statisticsList) {
+	public void addStatistics(List<Statistic> statisticsList) {
 		synchronized (this.statistics) {
 			statisticsList.forEach(this::addStatistic);
 		}
 	}
 
-	public List<AuctionStatistic> getStatistics() {
+	public List<Statistic> getStatistics() {
 		synchronized (this.statistics) {
 			return this.statistics;
 		}
@@ -103,39 +103,39 @@ public final class AuctionStatisticManager {
 		return new HashMap<>();
 	}
 
-	public List<AuctionStatistic> getStatistics(AuctionStatisticType statisticType) {
+	public List<Statistic> getStatistics(AuctionStatisticType statisticType) {
 		synchronized (this.statistics) {
-			return this.statistics.stream().filter(stat -> stat.getStatisticType() == statisticType).collect(Collectors.toList());
+			return this.statistics.stream().filter(stat -> stat.getType() == statisticType).collect(Collectors.toList());
 		}
 	}
 
 	public double getStatistic(AuctionStatisticType statisticType) {
 		synchronized (this.statistics) {
-			return this.statistics.stream().filter(stat -> stat.getStatisticType() == statisticType).mapToDouble(AuctionStatistic::getValue).sum();
+			return this.statistics.stream().filter(stat -> stat.getType() == statisticType).mapToDouble(Statistic::getValue).sum();
 		}
 	}
 
 	public double getStatistic(AuctionStatisticType statisticType, ChronoUnit timeUnit, int timeAmount) {
 		synchronized (this.statistics) {
-			final List<AuctionStatistic> globalStats = this.statistics.stream().filter(stat -> stat.getStatisticType() == statisticType).collect(Collectors.toList());
+			final List<Statistic> globalStats = this.statistics.stream().filter(stat -> stat.getType() == statisticType).collect(Collectors.toList());
 			final long time = Instant.now().minus(timeAmount, timeUnit).toEpochMilli();
 
-			return globalStats.stream().filter(stat -> stat.getTime() >= time).mapToDouble(AuctionStatistic::getValue).sum();
+			return globalStats.stream().filter(stat -> stat.getTimeCreated() >= time).mapToDouble(Statistic::getValue).sum();
 		}
 	}
 
 	public double getStatisticByPlayer(UUID playerUuid, AuctionStatisticType statisticType) {
 		synchronized (this.statistics) {
-			return this.statistics.stream().filter(stat -> stat.getStatOwner().equals(playerUuid) && stat.getStatisticType() == statisticType).mapToDouble(AuctionStatistic::getValue).sum();
+			return this.statistics.stream().filter(stat -> stat.getOwner().equals(playerUuid) && stat.getType() == statisticType).mapToDouble(Statistic::getValue).sum();
 		}
 	}
 
 	public double getStatisticByPlayer(UUID playerUuid, AuctionStatisticType statisticType, ChronoUnit timeUnit, int timeAmount) {
 		synchronized (this.statistics) {
-			final List<AuctionStatistic> playerStats = this.statistics.stream().filter(stat -> stat.getStatOwner().equals(playerUuid) && stat.getStatisticType() == statisticType).collect(Collectors.toList());
+			final List<Statistic> playerStats = this.statistics.stream().filter(stat -> stat.getOwner().equals(playerUuid) && stat.getType() == statisticType).collect(Collectors.toList());
 			final long time = Instant.now().minus(timeAmount, timeUnit).toEpochMilli();
 
-			return playerStats.stream().filter(stat -> stat.getTime() >= time).mapToDouble(AuctionStatistic::getValue).sum();
+			return playerStats.stream().filter(stat -> stat.getTimeCreated() >= time).mapToDouble(Statistic::getValue).sum();
 		}
 	}
 
