@@ -233,6 +233,16 @@ public class AuctionAPI {
 		return config.getItemStack("i", null);
 	}
 
+	public static ItemStack decodeItemTransaction(String string) {
+		YamlConfiguration config = new YamlConfiguration();
+		try {
+			config.loadFromString(string);
+		} catch (IllegalArgumentException | InvalidConfigurationException e) {
+			return null;
+		}
+		return config.getItemStack("i", null);
+	}
+
 	public static boolean tellMigrationStatus(CommandSender commandSender) {
 		if (AuctionHouse.getInstance().isMigrating()) {
 			AuctionHouse.getInstance().getLocale().newMessage("&cAuction House is currently migrating auction items, auction usage is disabled until it's finished").sendPrefixedMessage(commandSender);

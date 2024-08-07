@@ -16,9 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.database.migrations;
+package ca.tweetzy.auctionhouse.database.migrations.v2;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.flight.database.DataMigration;
+import ca.tweetzy.flight.database.MySQLConnector;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -26,27 +28,26 @@ import java.sql.Statement;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: August 12 2021
- * Time Created: 11:58 a.m.
+ * Date Created: July 21 2021
+ * Time Created: 2:21 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class _15_AuctionPlayerMigration extends DataMigration {
+public class _3_BansMigration extends DataMigration {
 
-	public _15_AuctionPlayerMigration() {
-		super(15);
+	public _3_BansMigration() {
+		super(3);
 	}
 
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
-		try (Statement statement = connection.createStatement()) {
-			statement.execute("CREATE TABLE " + tablePrefix + "player (" +
-					"uuid VARCHAR(36) PRIMARY KEY, " +
-					"filter_sale_type VARCHAR(32) NOT NULL, " +
-					"filter_item_category VARCHAR(16) NOT NULL, " +
-					"filter_sort_type VARCHAR(12) NOT NULL, " +
-					"last_listed_item LONG NOT NULL" +
-					")");
+		String autoIncrement = AuctionHouse.getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
 
+		try (Statement statement = connection.createStatement()) {
+			statement.execute("CREATE TABLE " + tablePrefix + "bans (" +
+					"id INTEGER PRIMARY KEY" + autoIncrement + ", " +
+					"user VARCHAR(36) NOT NULL, " +
+					"reason TEXT NOT NULL, " +
+					"time BigInt NOT NULL )");
 		}
 	}
 }

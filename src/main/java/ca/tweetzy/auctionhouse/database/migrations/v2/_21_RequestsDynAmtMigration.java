@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.database.migrations;
+package ca.tweetzy.auctionhouse.database.migrations.v2;
 
 import ca.tweetzy.flight.database.DataMigration;
 
@@ -26,20 +26,20 @@ import java.sql.Statement;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: August 12 2021
+ * Date Created: February 09, 2024,
  * Time Created: 11:58 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class _14_PartialQtyBuyMigration extends DataMigration {
+public class _21_RequestsDynAmtMigration extends DataMigration {
 
-	public _14_PartialQtyBuyMigration() {
-		super(14);
+	public _21_RequestsDynAmtMigration() {
+		super(21);
 	}
 
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD allow_partial_buys BOOLEAN NULL");
+			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD request_count INTEGER NOT NULL DEFAULT 0");
 
 		}
 	}

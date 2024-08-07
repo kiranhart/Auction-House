@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.database.migrations;
+package ca.tweetzy.auctionhouse.database.migrations.v2;
 
 import ca.tweetzy.flight.database.DataMigration;
 
@@ -30,16 +30,22 @@ import java.sql.Statement;
  * Time Created: 4:04 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class _10_InfiniteItemsMigration extends DataMigration {
+public final class _9_StatsMigration extends DataMigration {
 
-	public _10_InfiniteItemsMigration() {
-		super(10);
+	public _9_StatsMigration() {
+		super(9);
 	}
 
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD infinite BOOLEAN NULL");
+			statement.execute("CREATE TABLE " + tablePrefix + "stats (" +
+					"id VARCHAR(36) PRIMARY KEY, " +
+					"auctions_created INT NOT NULL, " +
+					"auctions_sold INT NOT NULL, " +
+					"auctions_expired INT NOT NULL, " +
+					"money_earned DOUBLE NOT NULL, " +
+					"money_spent DOUBLE NOT NULL )");
 		}
 	}
 }

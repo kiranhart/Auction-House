@@ -28,9 +28,16 @@ import ca.tweetzy.auctionhouse.impl.AuctionBan;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.database.*;
+import ca.tweetzy.flight.nbtapi.NBT;
+import ca.tweetzy.flight.nbtapi.NbtApiException;
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.utils.QuickItem;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -158,6 +165,10 @@ public class DataManager extends DataManagerAbstract {
 		);
 	}
 
+	//=================================================================================================//
+	// 										 WHITE LIST                                                //
+	//=================================================================================================//
+
 	public void saveFilterWhitelist(List<AuctionFilterItem> filterItems, boolean async) {
 		String saveItems = "INSERT INTO " + this.getTablePrefix() + "filter_whitelist(data) VALUES(?)";
 		String truncate = AuctionHouse.getDatabaseConnector() instanceof MySQLConnector ? "TRUNCATE TABLE " + this.getTablePrefix() + "filter_whitelist" : "DELETE FROM " + this.getTablePrefix() + "filter_whitelist";
@@ -214,6 +225,81 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	//=================================================================================================//
+	// 								      AUCTION LISTINGS                                             //
+	//=================================================================================================//
+	public void updateItemsAsync(Collection<AuctionedItem> items, UpdateCallback callback) {
+		this.runAsync(() -> updateItems(items, callback));
+	}
+
+	public void updateItems(Collection<AuctionedItem> items, UpdateCallback callback) {
+		this.databaseConnector.connect(connection -> {
+			connection.setAutoCommit(false);
+			SQLException err = null;
+
+			PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET owner = ?, owner_name = ?, highest_bidder = ?, highest_bidder_name = ?, base_price = ?, bid_start_price = ?, bid_increment_price = ?, current_price = ?, expires_at = ?, expired = ?, item = ?, serialize_version = ?, itemstack = ? WHERE id = ?");
+			for (AuctionedItem item : items) {
+				try {
+					statement.setString(1, item.getOwner().toString());
+					statement.setString(2, item.getOwnerName());
+					statement.setString(3, item.getHighestBidder().toString());
+					statement.setString(4, item.getHighestBidderName());
+					statement.setDouble(5, item.getBasePrice());
+					statement.setDouble(6, item.getBidStartingPrice());
+					statement.setDouble(7, item.getBidIncrementPrice());
+					statement.setDouble(8, item.getCurrentPrice());
+					statement.setLong(9, item.getExpiresAt());
+					statement.setBoolean(10, item.isExpired());
+					statement.setString(11, AuctionAPI.encodeItem(item.getItem()));
+
+					try {
+						statement.setInt(12, 1);
+						statement.setString(13, QuickItem.toString(item.getItem()));
+
+					} catch (NbtApiException e){
+						statement.setInt(12, 0);
+						statement.setString(13, null);
+					}
+
+					statement.setString(14, item.getId().toString());
+					statement.addBatch();
+				} catch (SQLException e) {
+					err = e;
+					break;
+				}
+			}
+			statement.executeBatch();
+
+			if (err == null) {
+				connection.commit();
+				resolveUpdateCallback(callback, null);
+			} else {
+				connection.rollback();
+				resolveUpdateCallback(callback, err);
+			}
+
+			connection.setAutoCommit(true);
+		});
+	}
+
+	public void deleteItems(Collection<UUID> items) {
+		this.databaseConnector.connect(connection -> {
+			connection.setAutoCommit(false);
+			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
+			for (UUID id : items) {
+				statement.setString(1, id.toString());
+				statement.addBatch();
+			}
+
+			statement.executeBatch();
+			connection.setAutoCommit(true);
+		});
+	}
+
+	public void deleteItemsAsync(Collection<UUID> items) {
+		this.runAsync(() -> deleteItems(items));
+	}
+
 	public void getItems(Callback<ArrayList<AuctionedItem>> callback) {
 		ArrayList<AuctionedItem> items = new ArrayList<>();
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
@@ -222,12 +308,24 @@ public class DataManager extends DataManagerAbstract {
 				final List<UUID> toRemove = new ArrayList<>();
 
 				while (resultSet.next()) {
+					AuctionedItem item = extractAuctionedItem(resultSet);
+
+					if (item == null || item.getItem().getType() == CompMaterial.AIR.parseMaterial()) {
+						continue;
+					}
+
+					if (resultSet.getInt("serialize_version") == 0) {
+						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
+							updateStatement.setString(1, QuickItem.toString(item.getItem()));
+							updateStatement.setString(2, resultSet.getString("id"));
+							updateStatement.executeUpdate();
+						}
+					}
+
 					if (resultSet.getBoolean("expired") && Settings.EXPIRATION_TIME_LIMIT_ENABLED.getBoolean() && Instant.ofEpochMilli(resultSet.getLong("expires_at")).isBefore(Instant.now().minus(Duration.ofHours(Settings.EXPIRATION_TIME_LIMIT.getInt())))) {
 						toRemove.add(UUID.fromString(resultSet.getString("id")));
 					} else {
-						final AuctionedItem item = extractAuctionedItem(resultSet);
-						if (item != null)
-							items.add(item);
+						items.add(item);
 					}
 				}
 
@@ -239,95 +337,9 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
-	public void getAdminLogs(Callback<ArrayList<AuctionAdminLog>> callback) {
-		ArrayList<AuctionAdminLog> logs = new ArrayList<>();
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "admin_logs")) {
-				ResultSet resultSet = statement.executeQuery();
-				while (resultSet.next()) {
-					logs.add(extractAdminLog(resultSet));
-				}
-
-				callback.accept(null, logs);
-			} catch (Exception e) {
-				resolveCallback(callback, e);
-			}
-		}));
-	}
-
-	public void getTransactions(Callback<ArrayList<Transaction>> callback) {
-		ArrayList<Transaction> transactions = new ArrayList<>();
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions")) {
-				ResultSet resultSet = statement.executeQuery();
-				while (resultSet.next()) {
-					final Transaction transaction = extractTransaction(resultSet);
-					if (transaction != null)
-						transactions.add(transaction);
-				}
-
-				callback.accept(null, transactions);
-			} catch (Exception e) {
-				resolveCallback(callback, e);
-			}
-		}));
-	}
-
-	public void insertTransaction(Transaction transaction, Callback<Transaction> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "transactions (id, seller, seller_name, buyer, buyer_name, transaction_time, item, auction_sale_type, final_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions WHERE id = ?");
-
-				fetch.setString(1, transaction.getId().toString());
-				statement.setString(1, transaction.getId().toString());
-				statement.setString(2, transaction.getSeller().toString());
-				statement.setString(3, transaction.getSellerName());
-				statement.setString(4, transaction.getBuyer().toString());
-				statement.setString(5, transaction.getBuyerName());
-				statement.setLong(6, transaction.getTransactionTime());
-				statement.setString(7, AuctionAPI.encodeItem(transaction.getItem()));
-				statement.setString(8, transaction.getAuctionSaleType().name());
-				statement.setDouble(9, transaction.getFinalPrice());
-				statement.executeUpdate();
-
-				if (callback != null) {
-					ResultSet res = fetch.executeQuery();
-					res.next();
-
-					final Transaction inserted = extractTransaction(res);
-					if (inserted != null)
-						callback.accept(null, inserted);
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				resolveCallback(callback, e);
-			}
-		}));
-	}
-
-	public void insertLog(AuctionAdminLog adminLog) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "admin_logs(admin, admin_name, target, target_name, item, item_id, action, time) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")) {
-
-				statement.setString(1, adminLog.getAdmin().toString());
-				statement.setString(2, adminLog.getAdminName());
-				statement.setString(3, adminLog.getTarget().toString());
-				statement.setString(4, adminLog.getTargetName());
-				statement.setString(5, AuctionAPI.encodeItem(adminLog.getItem()));
-				statement.setString(6, adminLog.getItemId().toString());
-				statement.setString(7, adminLog.getAdminAction().name());
-				statement.setLong(8, adminLog.getTime());
-				statement.executeUpdate();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}));
-	}
-
 	public void insertAuction(AuctionedItem item, Callback<AuctionedItem> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite, allow_partial_buys, server_auction, is_request, request_count) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite, allow_partial_buys, server_auction, is_request, request_count, serialize_version, itemstack) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 				final AuctionAPI api = AuctionAPI.getInstance();
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
 
@@ -356,6 +368,14 @@ public class DataManager extends DataManagerAbstract {
 				statement.setBoolean(22, item.isRequest());
 				statement.setInt(23, item.getRequestAmount());
 
+				try {
+					statement.setInt(24, 1);
+					statement.setString(25, QuickItem.toString(item.getItem()));
+				}catch (NbtApiException e) {
+					statement.setInt(24, 0);
+					statement.setString(25, null);
+				}
+
 				statement.executeUpdate();
 
 				if (callback != null) {
@@ -371,15 +391,202 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	private AuctionedItem extractAuctionedItem(ResultSet resultSet) throws SQLException {
+		final ItemStack item = resultSet.getInt("serialize_version") == 1 ? QuickItem.getItem(resultSet.getString("itemstack")) : AuctionAPI.decodeItem(resultSet.getString("item"));
+
+		if (item == null) {
+			AuctionHouse.getInstance().getLogger().log(Level.WARNING, "Auction Item with id " + resultSet.getString("id") + " is using an unknown material, it is being skipped!");
+			return null;
+		}
+
+		AuctionedItem auctionItem = new AuctionedItem(
+				UUID.fromString(resultSet.getString("id")),
+				UUID.fromString(resultSet.getString("owner")),
+				UUID.fromString(resultSet.getString("highest_bidder")),
+				resultSet.getString("owner_name"),
+				resultSet.getString("highest_bidder_name"),
+				AuctionItemCategory.valueOf(resultSet.getString("category")),
+				item,
+				resultSet.getDouble("base_price"),
+				resultSet.getDouble("bid_start_price"),
+				resultSet.getDouble("bid_increment_price"),
+				resultSet.getDouble("current_price"),
+				resultSet.getDouble("bid_start_price") >= 1 || resultSet.getDouble("bid_increment_price") >= 1,
+				resultSet.getBoolean("expired"),
+				resultSet.getLong("expires_at")
+		);
+
+		auctionItem.setListedWorld(resultSet.getString("listed_world"));
+		auctionItem.setInfinite(hasColumn(resultSet, "infinite") && resultSet.getBoolean("infinite"));
+		auctionItem.setAllowPartialBuy(hasColumn(resultSet, "allow_partial_buys") && resultSet.getBoolean("allow_partial_buys"));
+		auctionItem.setServerItem(resultSet.getBoolean("server_auction"));
+		auctionItem.setRequest(resultSet.getBoolean("is_request"));
+		auctionItem.setRequestAmount(resultSet.getInt("request_count"));
+
+		return auctionItem;
+	}
+
+
+	//=================================================================================================//
+	// 								         AUCTION LOGS                                             //
+	//=================================================================================================//
+
+	public void getAdminLogs(Callback<ArrayList<AuctionAdminLog>> callback) {
+		ArrayList<AuctionAdminLog> logs = new ArrayList<>();
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "admin_logs")) {
+				ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+
+					final AuctionAdminLog log = extractAdminLog(resultSet);
+					if (log == null || log.getItem() == null || log.getItem().getType() == CompMaterial.AIR.parseMaterial()) continue;
+
+					if (resultSet.getInt("serialize_version") == 0) {
+						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "admin_logs SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
+							try {
+								String possible = QuickItem.toString(log.getItem());
+								updateStatement.setString(1, possible);
+								updateStatement.setInt(2, resultSet.getInt("id"));
+								updateStatement.executeUpdate();
+							} catch (NbtApiException ignored) {
+							}
+						}
+					}
+
+					logs.add(log);
+				}
+
+				callback.accept(null, logs);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getTransactions(Callback<ArrayList<Transaction>> callback) {
+		ArrayList<Transaction> transactions = new ArrayList<>();
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions")) {
+				ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final Transaction transaction = extractTransaction(resultSet);
+
+					if (transaction == null || transaction.getItem().getType() == CompMaterial.AIR.parseMaterial()) {
+						continue;
+					}
+
+					if (resultSet.getInt("serialize_version") == 0) {
+						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "transactions SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
+							try {
+								String possible = QuickItem.toString(transaction.getItem());
+								updateStatement.setString(1, possible);
+								updateStatement.setString(2, resultSet.getString("id"));
+								updateStatement.executeUpdate();
+							} catch (NbtApiException e) {
+								//todo idk do something
+							}
+						}
+					}
+
+					transactions.add(transaction);
+				}
+
+				callback.accept(null, transactions);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void insertTransaction(Transaction transaction, Callback<Transaction> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "transactions (id, seller, seller_name, buyer, buyer_name, transaction_time, item, auction_sale_type, final_price, serialize_version, itemstack) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions WHERE id = ?");
+
+				fetch.setString(1, transaction.getId().toString());
+				statement.setString(1, transaction.getId().toString());
+				statement.setString(2, transaction.getSeller().toString());
+				statement.setString(3, transaction.getSellerName());
+				statement.setString(4, transaction.getBuyer().toString());
+				statement.setString(5, transaction.getBuyerName());
+				statement.setLong(6, transaction.getTransactionTime());
+				statement.setString(7, AuctionAPI.encodeItem(transaction.getItem()));
+				statement.setString(8, transaction.getAuctionSaleType().name());
+				statement.setDouble(9, transaction.getFinalPrice());
+
+				try {
+					statement.setInt(10, 1);
+					statement.setString(11, QuickItem.toString(transaction.getItem()));
+				} catch (NbtApiException e) {
+					statement.setInt(10, 0);
+					statement.setString(11, null);
+				}
+
+				statement.executeUpdate();
+
+				if (callback != null) {
+					ResultSet res = fetch.executeQuery();
+					res.next();
+
+					final Transaction inserted = extractTransaction(res);
+					if (inserted != null)
+						callback.accept(null, inserted);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void insertLog(AuctionAdminLog adminLog) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "admin_logs(admin, admin_name, target, target_name, item, item_id, action, time, serialize_version, itemstack) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+
+				statement.setString(1, adminLog.getAdmin().toString());
+				statement.setString(2, adminLog.getAdminName());
+				statement.setString(3, adminLog.getTarget().toString());
+				statement.setString(4, adminLog.getTargetName());
+				statement.setString(5, AuctionAPI.encodeItem(adminLog.getItem()));
+				statement.setString(6, adminLog.getItemId().toString());
+				statement.setString(7, adminLog.getAdminAction().name());
+				statement.setLong(8, adminLog.getTime());
+
+				try {
+					statement.setInt(9, 1);
+					statement.setString(10, QuickItem.toString(adminLog.getItem()));
+				} catch (NbtApiException e) {
+					statement.setInt(9, 0);
+					statement.setString(10, null);
+				}
+
+				statement.executeUpdate();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}));
+	}
+
 	public void insertMinPrice(MinItemPrice item, Callback<MinItemPrice> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "min_item_prices (id, item, price) VALUES(?, ?, ?)")) {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "min_item_prices (id, item, price, serialize_version, itemstack) VALUES(?, ?, ?, ?, ?)")) {
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "min_item_prices WHERE id = ?");
 
 				fetch.setString(1, item.getUuid().toString());
 				statement.setString(1, item.getUuid().toString());
 				statement.setString(2, AuctionAPI.encodeItem(item.getItemStack()));
 				statement.setDouble(3, item.getPrice());
+
+				try {
+					statement.setInt(4, 1);
+					statement.setString(5, QuickItem.toString(item.getItemStack()));
+				} catch (NbtApiException e) {
+					statement.setInt(4, 0);
+					statement.setString(5, null);
+				}
+
+
 				statement.executeUpdate();
 
 				if (callback != null) {
@@ -401,7 +608,23 @@ public class DataManager extends DataManagerAbstract {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "min_item_prices")) {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
-					minItemPrices.add(extractMinItemPrice(resultSet));
+
+					final MinItemPrice minItemPrice = extractMinItemPrice(resultSet);
+					if (minItemPrice == null || minItemPrice.getItemStack() == null || minItemPrice.getItemStack().getType() == CompMaterial.AIR.parseMaterial()) continue;
+
+					if (resultSet.getInt("serialize_version") == 0) {
+						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "min_item_prices SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
+							try {
+								String possible = QuickItem.toString(minItemPrice.getItemStack());
+								updateStatement.setString(1, possible);
+								updateStatement.setString(2, resultSet.getString("id"));
+								updateStatement.executeUpdate();
+							} catch (NbtApiException ignored) {
+							}
+						}
+					}
+
+					minItemPrices.add(minItemPrice);
 				}
 
 				callback.accept(null, minItemPrices);
@@ -479,102 +702,6 @@ public class DataManager extends DataManagerAbstract {
 
 		}));
 	}
-
-	public void updateItemsAsync(Collection<AuctionedItem> items, UpdateCallback callback) {
-		this.runAsync(() -> updateItems(items, callback));
-	}
-
-	public void updateItems(Collection<AuctionedItem> items, UpdateCallback callback) {
-		this.databaseConnector.connect(connection -> {
-			connection.setAutoCommit(false);
-			SQLException err = null;
-
-			PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET owner = ?, owner_name = ?, highest_bidder = ?, highest_bidder_name = ?, base_price = ?, bid_start_price = ?, bid_increment_price = ?, current_price = ?, expires_at = ?, expired = ?, item = ? WHERE id = ?");
-			for (AuctionedItem item : items) {
-				try {
-					statement.setString(1, item.getOwner().toString());
-					statement.setString(2, item.getOwnerName());
-					statement.setString(3, item.getHighestBidder().toString());
-					statement.setString(4, item.getHighestBidderName());
-					statement.setDouble(5, item.getBasePrice());
-					statement.setDouble(6, item.getBidStartingPrice());
-					statement.setDouble(7, item.getBidIncrementPrice());
-					statement.setDouble(8, item.getCurrentPrice());
-					statement.setLong(9, item.getExpiresAt());
-					statement.setBoolean(10, item.isExpired());
-					statement.setString(11, AuctionAPI.encodeItem(item.getItem()));
-					statement.setString(12, item.getId().toString());
-					statement.addBatch();
-				} catch (SQLException e) {
-					err = e;
-					break;
-				}
-			}
-			statement.executeBatch();
-
-			if (err == null) {
-				connection.commit();
-				resolveUpdateCallback(callback, null);
-			} else {
-				connection.rollback();
-				resolveUpdateCallback(callback, err);
-			}
-
-			connection.setAutoCommit(true);
-		});
-	}
-
-	public void deleteItems(Collection<UUID> items) {
-		this.databaseConnector.connect(connection -> {
-			connection.setAutoCommit(false);
-			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
-			for (UUID id : items) {
-				statement.setString(1, id.toString());
-				statement.addBatch();
-			}
-
-			statement.executeBatch();
-			connection.setAutoCommit(true);
-		});
-	}
-
-	public void deleteItemsAsync(Collection<UUID> items) {
-		this.runAsync(() -> deleteItems(items));
-	}
-
-	public void deletePlayer(UUID uuid) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "player WHERE uuid = ?");
-			statement.setString(1, uuid.toString());
-			statement.execute();
-		}));
-	}
-
-//	public void insertAuctionPlayer(AuctionPlayer auctionPlayer, Callback<AuctionPlayer> callback) {
-//		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-//			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "player (uuid, filter_sale_type, filter_item_category, filter_sort_type, last_listed_item) VALUES (?, ?, ?, ?, ?)")) {
-//				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "player WHERE uuid = ?");
-//
-//				fetch.setString(1, auctionPlayer.getUuid().toString());
-//				statement.setString(1, auctionPlayer.getPlayer().getUniqueId().toString());
-//				statement.setString(2, auctionPlayer.getSelectedSaleType().name());
-//				statement.setString(3, auctionPlayer.getSelectedFilter().name());
-//				statement.setString(4, auctionPlayer.getAuctionSortType().name());
-//				statement.setLong(5, auctionPlayer.getLastListedItem());
-//				statement.executeUpdate();
-//
-//				if (callback != null) {
-//					ResultSet res = fetch.executeQuery();
-//					res.next();
-//					callback.accept(null, extractAuctionPlayer(res));
-//				}
-//
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//				resolveCallback(callback, e);
-//			}
-//		}));
-//	}
 
 	public void insertAuctionPlayer(AuctionPlayer auctionPlayer, Callback<AuctionPlayer> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
@@ -668,7 +795,24 @@ public class DataManager extends DataManagerAbstract {
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "payments")) {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
-					payments.add(extractAuctionPayment(resultSet));
+
+					final AuctionPayment payment = extractAuctionPayment(resultSet);
+					if (payment == null || payment.getItem() == null || payment.getItem().getType() == CompMaterial.AIR.parseMaterial()) continue;
+
+					if (resultSet.getInt("serialize_version") == 0) {
+						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "payments SET serialize_version = 1, itemstack = ? WHERE uuid = ? AND time = ?")) {
+							try {
+								String possible = QuickItem.toString(payment.getItem());
+								updateStatement.setString(1, possible);
+								updateStatement.setString(2, resultSet.getString("uuid"));
+								updateStatement.setLong(3, resultSet.getLong("time"));
+								updateStatement.executeUpdate();
+							} catch (NbtApiException ignored) {
+							}
+						}
+					}
+
+					payments.add(payment);
 				}
 
 				callback.accept(null, payments);
@@ -695,7 +839,7 @@ public class DataManager extends DataManagerAbstract {
 				statement.executeUpdate();
 
 				// insert into storage
-				AuctionHouse.getInstance().getPaymentsManager().add(auctionPayment);
+				AuctionHouse.getPaymentsManager().add(auctionPayment);
 
 				if (callback != null) {
 					ResultSet res = fetch.executeQuery();
@@ -724,10 +868,17 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	private AuctionPayment extractAuctionPayment(ResultSet resultSet) throws SQLException {
+
+		String possibleItem = resultSet.getString("item");
+		if (possibleItem.contains("Head Database"))
+			possibleItem = possibleItem.replace("Head Database", "HeadDatabase");
+
+		ItemStack item = resultSet.getInt("serialize_version") == 1 ? QuickItem.getItem(resultSet.getString("itemstack")) : AuctionAPI.decodeItem(possibleItem);
+
 		return new AuctionPayment(
 				UUID.fromString(resultSet.getString("uuid")),
 				UUID.fromString(resultSet.getString("payment_for")),
-				(resultSet.getString("item") == null || resultSet.getString("item").trim().isEmpty()) ? null : AuctionAPI.decodeItem(resultSet.getString("item")),
+				item,
 				(resultSet.getString("from_name") == null || resultSet.getString("from_name").trim().isEmpty()) ? null : resultSet.getString("from_name"),
 				(resultSet.getString("reason") == null || resultSet.getString("reason").trim().isEmpty()) ? PaymentReason.ITEM_SOLD : PaymentReason.valueOf(resultSet.getString("reason")),
 				resultSet.getDouble("amount"),
@@ -765,45 +916,17 @@ public class DataManager extends DataManagerAbstract {
 		);
 	}
 
-
-	private AuctionedItem extractAuctionedItem(ResultSet resultSet) throws SQLException {
-		final ItemStack item = AuctionAPI.decodeItem(resultSet.getString("item"));
-		if (item == null) {
-			AuctionHouse.getInstance().getLogger().log(Level.WARNING, "Auction Item with id " + resultSet.getString("id") + " is using an unknown material, it is being skipped!");
-			return null;
-		}
-
-		AuctionedItem auctionItem = new AuctionedItem(
-				UUID.fromString(resultSet.getString("id")),
-				UUID.fromString(resultSet.getString("owner")),
-				UUID.fromString(resultSet.getString("highest_bidder")),
-				resultSet.getString("owner_name"),
-				resultSet.getString("highest_bidder_name"),
-				AuctionItemCategory.valueOf(resultSet.getString("category")),
-				item,
-				resultSet.getDouble("base_price"),
-				resultSet.getDouble("bid_start_price"),
-				resultSet.getDouble("bid_increment_price"),
-				resultSet.getDouble("current_price"),
-				resultSet.getDouble("bid_start_price") >= 1 || resultSet.getDouble("bid_increment_price") >= 1,
-				resultSet.getBoolean("expired"),
-				resultSet.getLong("expires_at")
-		);
-
-		auctionItem.setListedWorld(resultSet.getString("listed_world"));
-		auctionItem.setInfinite(hasColumn(resultSet, "infinite") && resultSet.getBoolean("infinite"));
-		auctionItem.setAllowPartialBuy(hasColumn(resultSet, "allow_partial_buys") && resultSet.getBoolean("allow_partial_buys"));
-		auctionItem.setServerItem(resultSet.getBoolean("server_auction"));
-		auctionItem.setRequest(resultSet.getBoolean("is_request"));
-		auctionItem.setRequestAmount(resultSet.getInt("request_count"));
-
-		return auctionItem;
-	}
-
 	private MinItemPrice extractMinItemPrice(ResultSet resultSet) throws SQLException {
+
+		String possibleItem = resultSet.getString("item");
+		if (possibleItem.contains("Head Database"))
+			possibleItem = possibleItem.replace("Head Database", "HeadDatabase");
+
+		ItemStack item = resultSet.getInt("serialize_version") == 1 ? QuickItem.getItem(resultSet.getString("itemstack")) : AuctionAPI.decodeItem(possibleItem);
+
 		return new MinItemPrice(
 				UUID.fromString(resultSet.getString("id")),
-				AuctionAPI.decodeItem(resultSet.getString("item")),
+				item,
 				resultSet.getDouble("price")
 		);
 	}
@@ -813,6 +936,8 @@ public class DataManager extends DataManagerAbstract {
 		if (possibleItem.contains("Head Database"))
 			possibleItem = possibleItem.replace("Head Database", "HeadDatabase");
 
+		ItemStack item = resultSet.getInt("serialize_version") == 1 ? QuickItem.getItem(resultSet.getString("itemstack")) : AuctionAPI.decodeItemTransaction(possibleItem);
+
 		return new Transaction(
 				UUID.fromString(resultSet.getString("id")),
 				UUID.fromString(resultSet.getString("seller")),
@@ -820,19 +945,27 @@ public class DataManager extends DataManagerAbstract {
 				resultSet.getString("seller_name"),
 				resultSet.getString("buyer_name"),
 				resultSet.getLong("transaction_time"),
-				AuctionAPI.decodeItem(possibleItem),
+				item,
 				AuctionSaleType.valueOf(resultSet.getString("auction_sale_type")),
 				resultSet.getDouble("final_price")
 		);
 	}
 
 	private AuctionAdminLog extractAdminLog(ResultSet resultSet) throws SQLException {
+
+		String possibleItem = resultSet.getString("item");
+		if (possibleItem.contains("Head Database"))
+			possibleItem = possibleItem.replace("Head Database", "HeadDatabase");
+
+		ItemStack item = resultSet.getInt("serialize_version") == 1 ? QuickItem.getItem(resultSet.getString("itemstack")) : AuctionAPI.decodeItem(possibleItem);
+
+
 		return new AuctionAdminLog(
 				UUID.fromString(resultSet.getString("admin")),
 				resultSet.getString("admin_name"),
 				UUID.fromString(resultSet.getString("target")),
 				resultSet.getString("target_name"),
-				AuctionAPI.decodeItem(resultSet.getString("item")),
+				item,
 				UUID.fromString(resultSet.getString("item_id")),
 				AdminAction.valueOf(resultSet.getString("action").toUpperCase()),
 				resultSet.getLong("time")

@@ -18,9 +18,7 @@
 
 package ca.tweetzy.auctionhouse.database.migrations;
 
-import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.flight.database.DataMigration;
-import ca.tweetzy.flight.database.MySQLConnector;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,28 +26,24 @@ import java.sql.Statement;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: April 15 2021
- * Time Created: 2:41 p.m.
+ * Date Created: February 09, 2024,
+ * Time Created: 11:58 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class _1_InitialMigration extends DataMigration {
+public class _23_ItemToNBTSerializationMigration extends DataMigration {
 
-	public _1_InitialMigration() {
-		super(1);
+	public _23_ItemToNBTSerializationMigration() {
+		super(23);
 	}
 
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
-		String autoIncrement = AuctionHouse.getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
-
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("CREATE TABLE " + tablePrefix + "items (" +
-					"id INTEGER PRIMARY KEY" + autoIncrement + ", " +
-					"data LONGTEXT NOT NULL )");
+			statement.execute("ALTER TABLE " + tablePrefix + "transactions ADD itemstack TEXT NULL");
+			statement.execute("ALTER TABLE " + tablePrefix + "transactions ADD serialize_version INTEGER DEFAULT 0");
 
-			statement.execute("CREATE TABLE " + tablePrefix + "transactions (" +
-					"id INTEGER PRIMARY KEY" + autoIncrement + ", " +
-					"data LONGTEXT NOT NULL )");
+			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD itemstack TEXT NULL");
+			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD serialize_version INTEGER DEFAULT 0");
 		}
 	}
 }

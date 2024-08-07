@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.database.migrations;
+package ca.tweetzy.auctionhouse.database.migrations.v2;
 
 import ca.tweetzy.flight.database.DataMigration;
 
@@ -26,20 +26,26 @@ import java.sql.Statement;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: February 09, 2024,
- * Time Created: 11:58 a.m.
+ * Date Created: September 08 2022
+ * Time Created: 9:13 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class _21_RequestsDynAmtMigration extends DataMigration {
+public class _17_PaymentsMigration extends DataMigration {
 
-	public _21_RequestsDynAmtMigration() {
-		super(21);
+	public _17_PaymentsMigration() {
+		super(17);
 	}
 
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
+
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD request_count INTEGER NOT NULL DEFAULT 0");
+			statement.execute("CREATE TABLE " + tablePrefix + "payments (" +
+					"uuid VARCHAR(36) PRIMARY KEY, " +
+					"payment_for VARCHAR(36) NOT NULL, " +
+					"amount DOUBLE NOT NULL, " +
+					"time BigInt NOT NULL" +
+					")");
 
 		}
 	}

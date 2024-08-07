@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.database.migrations;
+package ca.tweetzy.auctionhouse.database.migrations.v2;
 
 import ca.tweetzy.flight.database.DataMigration;
 
@@ -26,28 +26,24 @@ import java.sql.Statement;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: September 08 2022
- * Time Created: 9:13 a.m.
+ * Date Created: August 12 2021
+ * Time Created: 11:58 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class _16_StatisticVersionTwoMigration extends DataMigration {
+public class _13_MinItemPriceMigration extends DataMigration {
 
-	public _16_StatisticVersionTwoMigration() {
-		super(16);
+	public _13_MinItemPriceMigration() {
+		super(13);
 	}
 
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
-
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("CREATE TABLE " + tablePrefix + "statistic (" +
-					"uuid VARCHAR(36) PRIMARY KEY, " +
-					"stat_owner VARCHAR(36) NOT NULL, " +
-					"stat_type VARCHAR(20) NOT NULL, " +
-					"value DOUBLE NOT NULL, " +
-					"time LONG NOT NULL" +
-					")");
-
+			statement.execute("CREATE TABLE IF NOT EXISTS " + tablePrefix + "min_item_prices (" +
+					"id VARCHAR(36) PRIMARY KEY, " +
+					"item TEXT NOT NULL, " +
+					"price DOUBLE NOT NULL" +
+					" )");
 		}
 	}
 }

@@ -22,6 +22,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.auctionhouse.database.migrations.*;
+import ca.tweetzy.auctionhouse.database.migrations.v2.*;
 import ca.tweetzy.auctionhouse.helpers.UpdateChecker;
 import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.listeners.*;
@@ -182,7 +183,9 @@ public class AuctionHouse extends TweetyPlugin {
 				new _19_ServerAuctionMigration(),
 				new _20_AuctionRequestsMigration(),
 				new _21_RequestsDynAmtMigration(),
-				new _22_BansV2Migration()
+				new _22_BansV2Migration(),
+				new _23_ItemToNBTSerializationMigration(),
+				new _24_RemainingItemToNBTSerializationMigration()
 		);
 
 		dataMigrationManager.runMigrations();

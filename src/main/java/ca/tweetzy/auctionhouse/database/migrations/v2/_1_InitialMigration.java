@@ -16,9 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.database.migrations;
+package ca.tweetzy.auctionhouse.database.migrations.v2;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.flight.database.DataMigration;
+import ca.tweetzy.flight.database.MySQLConnector;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -26,29 +28,28 @@ import java.sql.Statement;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: February 09, 2024,
- * Time Created: 11:58 a.m.
+ * Date Created: April 15 2021
+ * Time Created: 2:41 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class _22_BansV2Migration extends DataMigration {
+public class _1_InitialMigration extends DataMigration {
 
-	public _22_BansV2Migration() {
-		super(22);
+	public _1_InitialMigration() {
+		super(1);
 	}
 
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
-		try (Statement statement = connection.createStatement()) {
-			statement.execute("DROP TABLE IF EXISTS " + tablePrefix + "bans");
+		String autoIncrement = AuctionHouse.getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
 
-			statement.execute("CREATE TABLE " + tablePrefix + "bans (" +
-					"banned_player VARCHAR(36) NOT NULL PRIMARY KEY, " +
-					"banner VARCHAR(36) NOT NULL, " +
-					"types TEXT NOT NULL, " +
-					"reason TEXT NOT NULL, " +
-					"permanent BOOLEAN NOT NULL, " +
-					"expiration BigInt NOT NULL, " +
-					"created_at BigInt NOT NULL )");
+		try (Statement statement = connection.createStatement()) {
+			statement.execute("CREATE TABLE " + tablePrefix + "items (" +
+					"id INTEGER PRIMARY KEY" + autoIncrement + ", " +
+					"data LONGTEXT NOT NULL )");
+
+			statement.execute("CREATE TABLE " + tablePrefix + "transactions (" +
+					"id INTEGER PRIMARY KEY" + autoIncrement + ", " +
+					"data LONGTEXT NOT NULL )");
 		}
 	}
 }

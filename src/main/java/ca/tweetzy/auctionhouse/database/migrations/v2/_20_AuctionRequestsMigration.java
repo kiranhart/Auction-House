@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.database.migrations;
+package ca.tweetzy.auctionhouse.database.migrations.v2;
 
 import ca.tweetzy.flight.database.DataMigration;
 
@@ -26,20 +26,21 @@ import java.sql.Statement;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: August 24 2021
- * Time Created: 4:04 p.m.
+ * Date Created: August 12 2021
+ * Time Created: 11:58 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class _8_ItemPerWorldMigration extends DataMigration {
+public class _20_AuctionRequestsMigration extends DataMigration {
 
-	public _8_ItemPerWorldMigration() {
-		super(8);
+	public _20_AuctionRequestsMigration() {
+		super(20);
 	}
 
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD listed_world VARCHAR(64) NULL");
+			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD is_request BOOLEAN NOT NULL DEFAULT 0");
+
 		}
 	}
 }

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.database.migrations;
+package ca.tweetzy.auctionhouse.database.migrations.v2;
 
 import ca.tweetzy.flight.database.DataMigration;
 
@@ -26,26 +26,27 @@ import java.sql.Statement;
 
 /**
  * The current file has been created by Kiran Hart
- * Date Created: August 24 2021
- * Time Created: 4:04 p.m.
+ * Date Created: August 12 2021
+ * Time Created: 11:58 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class _9_StatsMigration extends DataMigration {
+public class _15_AuctionPlayerMigration extends DataMigration {
 
-	public _9_StatsMigration() {
-		super(9);
+	public _15_AuctionPlayerMigration() {
+		super(15);
 	}
 
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("CREATE TABLE " + tablePrefix + "stats (" +
-					"id VARCHAR(36) PRIMARY KEY, " +
-					"auctions_created INT NOT NULL, " +
-					"auctions_sold INT NOT NULL, " +
-					"auctions_expired INT NOT NULL, " +
-					"money_earned DOUBLE NOT NULL, " +
-					"money_spent DOUBLE NOT NULL )");
+			statement.execute("CREATE TABLE " + tablePrefix + "player (" +
+					"uuid VARCHAR(36) PRIMARY KEY, " +
+					"filter_sale_type VARCHAR(32) NOT NULL, " +
+					"filter_item_category VARCHAR(16) NOT NULL, " +
+					"filter_sort_type VARCHAR(12) NOT NULL, " +
+					"last_listed_item LONG NOT NULL" +
+					")");
+
 		}
 	}
 }

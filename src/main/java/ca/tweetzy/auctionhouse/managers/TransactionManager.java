@@ -98,11 +98,13 @@ public class TransactionManager {
 	}
 
 	public void loadTransactions() {
-		AuctionHouse.getInstance().getDataManager().getTransactions((error, results) -> {
+		AuctionHouse.getDataManager().getTransactions((error, results) -> {
 			if (error == null) {
 				for (Transaction transaction : results) {
 					addTransaction(transaction);
 				}
+			} else {
+				error.printStackTrace();
 			}
 		});
 	}

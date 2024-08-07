@@ -59,11 +59,13 @@ public class AuctionItemManager {
 
 
 	public void start() {
-		AuctionHouse.getInstance().getDataManager().getItems((error, results) -> {
+		AuctionHouse.getDataManager().getItems((error, results) -> {
 			if (error == null) {
 				for (AuctionedItem item : results) {
 					addAuctionItem(item);
 				}
+			} else {
+				error.printStackTrace();
 			}
 		});
 	}

@@ -78,26 +78,32 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
 		// legacy placeholders
 		if (params.equalsIgnoreCase("total_money_earned"))
-			return String.valueOf(AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.MONEY_EARNED));
+			return String.valueOf(AuctionHouse.getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.MONEY_EARNED));
 
 		if (params.equalsIgnoreCase("total_money_spent"))
-			return String.valueOf(AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.MONEY_SPENT));
+			return String.valueOf(AuctionHouse.getAuctionStatisticManager().getStatisticByPlayer(player.getUniqueId(), AuctionStatisticType.MONEY_SPENT));
+
+		if (params.equalsIgnoreCase("total_items_bought"))
+			return String.valueOf(AuctionHouse.getTransactionManager().getTotalItemsBought(player.getUniqueId()));
+
+		if (params.equalsIgnoreCase("total_items_sold"))
+			return String.valueOf(AuctionHouse.getTransactionManager().getTotalItemsSold(player.getUniqueId()));
 
 
 		if (params.equalsIgnoreCase("active_auctions")) {
-			AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
+			AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 			if (auctionPlayer == null) return null;
 			return String.valueOf(auctionPlayer.getItems(false).size());
 		}
 
 		if (params.equalsIgnoreCase("expired_auctions")) {
-			AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
+			AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 			if (auctionPlayer == null) return null;
 			return String.valueOf(auctionPlayer.getItems(true).size());
 		}
 
 		if (params.equalsIgnoreCase("server_active_auctions")) {
-			return String.valueOf(AuctionHouse.getInstance().getAuctionItemManager().getItems().size());
+			return String.valueOf(AuctionHouse.getAuctionItemManager().getItems().size());
 		}
 
 		// cool statistic stuff
@@ -111,10 +117,10 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 				final int duration = Integer.parseInt(splitString(paramSplit[2])[0]);
 				final ChronoUnit unit = getChronoUnitFromParam(splitString(paramSplit[2])[1]);
 
-				return String.valueOf(AuctionHouse.getInstance().getAuctionStatisticManager().getStatistic(auctionStatisticType, unit, duration));
+				return String.valueOf(AuctionHouse.getAuctionStatisticManager().getStatistic(auctionStatisticType, unit, duration));
 			}
 
-			return String.valueOf(AuctionHouse.getInstance().getAuctionStatisticManager().getStatistic(auctionStatisticType));
+			return String.valueOf(AuctionHouse.getAuctionStatisticManager().getStatistic(auctionStatisticType));
 		}
 
 		if (paramSplit[0].equalsIgnoreCase("pstat")) {
@@ -146,10 +152,10 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 				final int duration = Integer.parseInt(chronoSplit[0]);
 				final ChronoUnit unit = getChronoUnitFromParam(chronoSplit[1]);
 
-				return String.valueOf(AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetUser.getUniqueId(), auctionStatisticType, unit, duration));
+				return String.valueOf(AuctionHouse.getAuctionStatisticManager().getStatisticByPlayer(targetUser.getUniqueId(), auctionStatisticType, unit, duration));
 			}
 
-			return String.valueOf(AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticByPlayer(targetUser.getUniqueId(), auctionStatisticType));
+			return String.valueOf(AuctionHouse.getAuctionStatisticManager().getStatisticByPlayer(targetUser.getUniqueId(), auctionStatisticType));
 		}
 
 		return null;
