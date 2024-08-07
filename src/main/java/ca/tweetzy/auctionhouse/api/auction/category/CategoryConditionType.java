@@ -5,6 +5,6 @@ public enum CategoryConditionType {
 	MATERIAL,
 	NAME,
 	LORE,
-	ENCHANTMENT;
-
+	ENCHANTMENT,
+	MODEL_DATA;
 }

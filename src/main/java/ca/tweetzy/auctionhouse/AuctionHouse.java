@@ -181,8 +181,11 @@ public class AuctionHouse extends TweetyPlugin {
 				new _20_AuctionRequestsMigration(),
 				new _21_RequestsDynAmtMigration(),
 				new _22_BansV2Migration(),
+				//	================ BEGIN MAJOR CHANGES ================ //
 				new _23_ItemToNBTSerializationMigration(),
-				new _24_RemainingItemToNBTSerializationMigration()
+				new _24_RemainingItemToNBTSerializationMigration(),
+				new _25_BidHistoryMigration(),
+				new _26_MultiSerAndCurrencyMigration()
 		);
 
 		dataMigrationManager.runMigrations();

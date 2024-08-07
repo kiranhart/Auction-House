@@ -84,7 +84,7 @@ public final class AuctionListing extends BinListing implements Biddable {
 	}
 
 	public UUID getHighestBidderUUID() {
-		return highestBidderUUID;
+		return this.highestBidderUUID;
 	}
 
 	public void setHighestBidderUUID(@NonNull final UUID highestBidderUUID) {
@@ -92,7 +92,7 @@ public final class AuctionListing extends BinListing implements Biddable {
 	}
 
 	public String getHighestBidderName() {
-		return highestBidderName;
+		return this.highestBidderName;
 	}
 
 	public void setHighestBidderName(@NonNull String highestBidderName) {

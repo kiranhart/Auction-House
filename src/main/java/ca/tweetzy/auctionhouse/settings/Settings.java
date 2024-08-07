@@ -232,7 +232,7 @@ public class Settings {
 	public static final ConfigSetting SEARCH_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.search", true, "Should this filter be enabled?");
 	public static final ConfigSetting SELF_FILTER_ENABLED = new ConfigSetting(config, "auction setting.enabled filters.self", true, "Should this filter be enabled?");
 	public static final ConfigSetting USE_AUCTION_CHEST_MODE = new ConfigSetting(config, "auction setting.use auction chest mode", false, "Enabling this will make it so players can only access the auction through the auction chest");
-	public static final ConfigSetting AUTO_BSTATS = new ConfigSetting(config, "auction setting.auto bstats", true, "Auto enable bStats");
+	public static final ConfigSetting AUTO_BSTATS = new ConfigSetting(config, "auction setting.use bstats", true, "Auto enable bStats");
 	public static final ConfigSetting FORCE_MATERIAL_NAMES_FOR_DISCORD = new ConfigSetting(config, "auction setting.force material names for discord", false, "If true, auction house will use the actual material name rather than custom name");
 
 	public static final ConfigSetting ALLOW_ITEM_BUNDLES = new ConfigSetting(config, "auction setting.bundles.enabled", true, "If true, players can use -b in the sell command to bundle all similar items into a single item.");
