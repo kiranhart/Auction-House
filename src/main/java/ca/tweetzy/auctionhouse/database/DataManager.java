@@ -314,9 +314,11 @@ public class DataManager extends DataManagerAbstract {
 
 					if (resultSet.getInt("serialize_version") == 0) {
 						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
-							updateStatement.setString(1, QuickItem.toString(item.getItem()));
-							updateStatement.setString(2, resultSet.getString("id"));
-							updateStatement.executeUpdate();
+							try {
+								updateStatement.setString(1, QuickItem.toString(item.getItem()));
+								updateStatement.setString(2, resultSet.getString("id"));
+								updateStatement.executeUpdate();
+							} catch (NbtApiException ignored) {}
 						}
 					}
 
@@ -934,7 +936,14 @@ public class DataManager extends DataManagerAbstract {
 		if (possibleItem.contains("Head Database"))
 			possibleItem = possibleItem.replace("Head Database", "HeadDatabase");
 
-		ItemStack item = resultSet.getInt("serialize_version") == 1 ? QuickItem.getItem(resultSet.getString("itemstack")) : AuctionAPI.decodeItemTransaction(possibleItem);
+
+		ItemStack item = null;
+
+		if (resultSet.getInt("serialize_version") == 1)
+			item = QuickItem.getItem(resultSet.getString("itemstack"));
+
+//		AuctionAPI.decodeItemTransaction(possibleItem);
+		if (item == null) return null;
 
 		return new Transaction(
 				UUID.fromString(resultSet.getString("id")),
