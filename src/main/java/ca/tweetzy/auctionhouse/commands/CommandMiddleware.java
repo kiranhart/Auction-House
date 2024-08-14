@@ -22,7 +22,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.flight.command.ReturnType;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;
@@ -36,23 +36,23 @@ import org.bukkit.entity.Player;
 @UtilityClass
 public final class CommandMiddleware {
 
-	public AbstractCommand.ReturnType handle(@NonNull final Player player) {
-		if (AuctionAPI.tellMigrationStatus(player)) return AbstractCommand.ReturnType.FAILURE;
+	public ReturnType handle(@NonNull final Player player) {
+		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAIL;
 
 		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (Settings.BLOCKED_WORLDS.getStringList().contains(player.getWorld().getName())) {
 			instance.getLocale().getMessage("general.disabled in world").sendPrefixedMessage(player);
-			return AbstractCommand.ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		if (Settings.USE_AUCTION_CHEST_MODE.getBoolean() && !player.hasPermission("auctionhouse.auctionchestbypass")) {
 			instance.getLocale().getMessage("general.visit auction chest").sendPrefixedMessage(player);
-			return AbstractCommand.ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 
-		if (FloodGateHook.isFloodGateUser(player)) return AbstractCommand.ReturnType.FAILURE;
+		if (FloodGateHook.isFloodGateUser(player)) return ReturnType.FAIL;
 
-		return AbstractCommand.ReturnType.SUCCESS;
+		return ReturnType.SUCCESS;
 	}
 }

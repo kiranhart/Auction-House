@@ -21,8 +21,10 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,15 +38,15 @@ import java.util.UUID;
  * Time Created: 2:27 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class CommandToggleListInfo extends AbstractCommand {
+public class CommandToggleListInfo extends Command {
 
 	public CommandToggleListInfo() {
-		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_TOGGLELISTINFO.getStringList().toArray(new String[0]));
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_TOGGLELISTINFO.getStringList().toArray(new String[0]));
 	}
 
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
+	protected ReturnType execute(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
 		final UUID playerUUID = player.getUniqueId();
 
@@ -61,7 +63,7 @@ public class CommandToggleListInfo extends AbstractCommand {
 	}
 
 	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
+	protected List<String> tab(CommandSender sender, String... args) {
 		return null;
 	}
 

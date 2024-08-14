@@ -22,8 +22,10 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,18 +38,18 @@ import java.util.List;
  * Time Created: 9:36 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class CommandSearch extends AbstractCommand {
+public class CommandSearch extends Command {
 
 	public CommandSearch() {
-		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_SEARCH.getStringList().toArray(new String[0]));
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_SEARCH.getStringList().toArray(new String[0]));
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
-		if (args.length <= 0) return ReturnType.SYNTAX_ERROR;
+	protected ReturnType execute(CommandSender sender, String... args) {
+		if (args.length <= 0) return ReturnType.INVALID_SYNTAX;
 		final Player player = (Player) sender;
 
-		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
+		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
 		final StringBuilder builder = new StringBuilder();
 		for (String arg : args) {
@@ -79,7 +81,7 @@ public class CommandSearch extends AbstractCommand {
 	}
 
 	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
+	protected List<String> tab(CommandSender sender, String... args) {
 		return null;
 	}
 }

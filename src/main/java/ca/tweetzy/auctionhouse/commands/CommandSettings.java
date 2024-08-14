@@ -21,8 +21,10 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.configuration.editor.PluginConfigGui;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -34,25 +36,25 @@ import java.util.List;
  * Time Created: 12:17 a.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class CommandSettings extends AbstractCommand {
+public class CommandSettings extends Command {
 
 	public CommandSettings() {
-		super(CommandType.PLAYER_ONLY, "settings");
+		super(AllowedExecutor.PLAYER, "settings");
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
-		if (!Settings.ALLOW_USAGE_OF_IN_GAME_EDITOR.getBoolean()) return ReturnType.FAILURE;
+	protected ReturnType execute(CommandSender sender, String... args) {
+		if (!Settings.ALLOW_USAGE_OF_IN_GAME_EDITOR.getBoolean()) return ReturnType.FAIL;
 
 		Player player = (Player) sender;
-		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
+		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAIL;
 
 		AuctionHouse.getGuiManager().showGUI(player, new PluginConfigGui(AuctionHouse.getInstance(), AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage()));
 		return ReturnType.SUCCESS;
 	}
 
 	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
+	protected List<String> tab(CommandSender sender, String... args) {
 		return null;
 	}
 

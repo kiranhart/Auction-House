@@ -22,7 +22,9 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.guis.admin.bans.GUIBanUser;
 import ca.tweetzy.auctionhouse.guis.selector.GUIPlayerSelector;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,14 +38,14 @@ import java.util.stream.Collectors;
  * Time Created: 3:05 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class CommandBan extends AbstractCommand {
+public class CommandBan extends Command {
 
 	public CommandBan() {
-		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_BAN.getStringList().toArray(new String[0]));
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_BAN.getStringList().toArray(new String[0]));
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
+	protected ReturnType execute(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
 
 		if (args.length == 0) {
@@ -63,12 +65,12 @@ public class CommandBan extends AbstractCommand {
 
 		if (target == null) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		if (AuctionHouse.getBanManager().isBannedAlready(target)) {
 			AuctionHouse.getInstance().getLocale().getMessage("ban.user already banned").processPlaceholder("player_name", args[0]).sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		AuctionHouse.getGuiManager().showGUI(player, new GUIBanUser(player, AuctionHouse.getBanManager().generateEmptyBan(player, target)));
@@ -76,7 +78,7 @@ public class CommandBan extends AbstractCommand {
 	}
 
 	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
+	protected List<String> tab(CommandSender sender, String... args) {
 		if (args.length == 1) {
 			return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
 		}

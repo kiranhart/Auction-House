@@ -23,8 +23,10 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.ban.Ban;
 import ca.tweetzy.auctionhouse.api.sync.SynchronizeResult;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -39,16 +41,16 @@ import java.util.UUID;
  * Time Created: 4:11 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class CommandUnban extends AbstractCommand {
+public class CommandUnban extends Command {
 
 	public CommandUnban() {
-		super(CommandType.CONSOLE_OK, Settings.CMD_ALIAS_SUB_UNBAN.getStringList().toArray(new String[0]));
+		super(AllowedExecutor.BOTH, Settings.CMD_ALIAS_SUB_UNBAN.getStringList().toArray(new String[0]));
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
-		if (args.length != 1) return ReturnType.SYNTAX_ERROR;
-		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAILURE;
+	protected ReturnType execute(CommandSender sender, String... args) {
+		if (args.length != 1) return ReturnType.INVALID_SYNTAX;
+		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAIL;
 
 		final Player target = PlayerUtils.findPlayer(args[0]);
 		OfflinePlayer offlinePlayer = null;
@@ -57,7 +59,7 @@ public class CommandUnban extends AbstractCommand {
 			offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
 			if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
-				return ReturnType.FAILURE;
+				return ReturnType.FAIL;
 			}
 		}
 
@@ -65,7 +67,7 @@ public class CommandUnban extends AbstractCommand {
 
 		if (!AuctionHouse.getBanManager().getManagerContent().containsKey(toUnBan)) {
 			AuctionHouse.getInstance().getLocale().getMessage("ban.user not banned").processPlaceholder("player_name", args[0]).sendPrefixedMessage(sender);
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		final Ban ban = AuctionHouse.getBanManager().get(toUnBan);
@@ -79,7 +81,7 @@ public class CommandUnban extends AbstractCommand {
 	}
 
 	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
+	protected List<String> tab(CommandSender sender, String... args) {
 //		if (args.length == 1)
 //			return AuctionHouse.getInstance().getAuctionBanManager().getBans().values().stream().map(ban -> Bukkit.getOfflinePlayer(ban.getBannedPlayer()).getName()).collect(Collectors.toList());
 		return null;

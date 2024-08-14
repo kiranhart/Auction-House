@@ -23,8 +23,10 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.statistics.GUIStatisticView;
 import ca.tweetzy.auctionhouse.guis.statistics.GUIStatisticViewSelect;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,17 +39,17 @@ import java.util.List;
  * Time Created: 4:32 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class CommandStats extends AbstractCommand {
+public class CommandStats extends Command {
 
 	public CommandStats() {
-		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_STATS.getStringList().toArray(new String[0]));
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_STATS.getStringList().toArray(new String[0]));
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
+	protected ReturnType execute(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
 
-		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
+		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 		AuctionPlayer user = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
 		if (user == null) {
@@ -66,7 +68,7 @@ public class CommandStats extends AbstractCommand {
 
 		if (target == null) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		final AuctionPlayer targetAuctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(target.getUniqueId());
@@ -91,7 +93,7 @@ public class CommandStats extends AbstractCommand {
 	}
 
 	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
+	protected List<String> tab(CommandSender sender, String... args) {
 		return null;
 	}
 }

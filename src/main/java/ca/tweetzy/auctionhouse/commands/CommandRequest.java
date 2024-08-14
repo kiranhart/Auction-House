@@ -29,10 +29,12 @@ import ca.tweetzy.auctionhouse.guis.sell.GUIRequestItem;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -46,18 +48,18 @@ import java.util.List;
  * Time Created: 4:32 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class CommandRequest extends AbstractCommand {
+public class CommandRequest extends Command {
 
 	public CommandRequest() {
-		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_REQUEST.getStringList().toArray(new String[0]));
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_REQUEST.getStringList().toArray(new String[0]));
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
+	protected ReturnType execute(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
 
-		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
-		if (AuctionHouse.getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.REQUESTS)) return ReturnType.FAILURE;
+		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
+		if (AuctionHouse.getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.REQUESTS)) return ReturnType.FAIL;
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
 			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
@@ -71,7 +73,7 @@ public class CommandRequest extends AbstractCommand {
 
 		if (originalItem.getType() == XMaterial.AIR.parseMaterial()) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		if (args.length < 1) {
@@ -82,16 +84,16 @@ public class CommandRequest extends AbstractCommand {
 		// check if price is even a number
 		if (!NumberUtils.isDouble(args[0])) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		// Check for block items
-		if (!AuctionAPI.getInstance().meetsListingRequirements(player, originalItem)) return ReturnType.FAILURE;
+		if (!AuctionAPI.getInstance().meetsListingRequirements(player, originalItem)) return ReturnType.FAIL;
 
 		// check if at limit
 		if (auctionPlayer.isAtItemLimit(player)) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.requestlimit").sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		// get the max allowed time for this player.
@@ -99,7 +101,7 @@ public class CommandRequest extends AbstractCommand {
 
 		// Check list delay
 		if (!auctionPlayer.canListItem()) {
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		// check min/max prices
@@ -107,19 +109,19 @@ public class CommandRequest extends AbstractCommand {
 
 		if (price < Settings.MIN_AUCTION_PRICE.getDouble()) {
 			AuctionHouse.getInstance().getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		if (price > Settings.MAX_AUCTION_PRICE.getDouble()) {
 			AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		AuctionedItem auctionedItem = AuctionedItem.createRequest(player, originalItem, originalItem.getAmount(), price, allowedTime);
 
 		AuctionHouse.getAuctionPlayerManager().addToSellProcess(player);
 		if (auctionPlayer.getPlayer() == null || !auctionPlayer.getPlayer().isOnline()) {
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
 		AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
@@ -151,7 +153,7 @@ public class CommandRequest extends AbstractCommand {
 	}
 
 	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
+	protected List<String> tab(CommandSender sender, String... args) {
 		return null;
 	}
 }

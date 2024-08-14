@@ -22,8 +22,10 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.utils.messages.Titles;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -37,17 +39,17 @@ import java.util.List;
  * Time Created: 4:32 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class CommandConfirm extends AbstractCommand {
+public class CommandConfirm extends Command {
 
 	public CommandConfirm() {
-		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_CONFIRM.getStringList().toArray(new String[0]));
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_CONFIRM.getStringList().toArray(new String[0]));
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
+	protected ReturnType execute(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
 
-		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
+		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
 			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
@@ -102,7 +104,7 @@ public class CommandConfirm extends AbstractCommand {
 	}
 
 	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
+	protected List<String> tab(CommandSender sender, String... args) {
 		return null;
 	}
 }

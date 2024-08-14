@@ -20,8 +20,10 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.database.DataManager;
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.database.DatabaseConnector;
 import ca.tweetzy.flight.database.SQLiteConnector;
 import org.bukkit.command.CommandSender;
@@ -35,14 +37,14 @@ import java.util.List;
  *
  * @author Kiran Hart
  */
-public final class CommandUpload extends AbstractCommand {
+public final class CommandUpload extends Command {
 
 	public CommandUpload() {
-		super(CommandType.CONSOLE_OK, "upload");
+		super(AllowedExecutor.BOTH, "upload");
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
+	protected ReturnType execute(CommandSender sender, String... args) {
 		if (args.length < 1) {
 			List<String> warning = Arrays.asList(
 					"&cPlease add &4-confirm &cto confirm you understand the following risks.",
@@ -54,10 +56,10 @@ public final class CommandUpload extends AbstractCommand {
 			);
 
 			TextUtils.formatText(warning).forEach(sender::sendMessage);
-			return ReturnType.FAILURE;
+			return ReturnType.FAIL;
 		}
 
-		if (!args[0].equalsIgnoreCase("-confirm")) return ReturnType.FAILURE;
+		if (!args[0].equalsIgnoreCase("-confirm")) return ReturnType.FAIL;
 
 		final DatabaseConnector databaseConnector = new SQLiteConnector(AuctionHouse.getInstance());
 		final DataManager manager = new DataManager(databaseConnector, AuctionHouse.getInstance(), null);
@@ -81,7 +83,7 @@ public final class CommandUpload extends AbstractCommand {
 	}
 
 	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
+	protected List<String> tab(CommandSender sender, String... args) {
 		return null;
 	}
 

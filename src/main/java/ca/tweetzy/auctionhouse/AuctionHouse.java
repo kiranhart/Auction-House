@@ -38,12 +38,12 @@ import ca.tweetzy.auctionhouse.tasks.AutoSaveTask;
 import ca.tweetzy.auctionhouse.tasks.TickAuctionsTask;
 import ca.tweetzy.core.TweetyCore;
 import ca.tweetzy.core.TweetyPlugin;
-import ca.tweetzy.core.commands.CommandManager;
 import ca.tweetzy.core.compatibility.ServerProject;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.command.CommandManager;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.config.tweetzy.TweetzyYamlConfig;
 import ca.tweetzy.flight.database.*;
@@ -225,9 +225,7 @@ public class AuctionHouse extends TweetyPlugin {
 		this.auctionPlayerManager.loadPlayers();
 
 		// commands
-		this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
-		this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
-		this.commandManager.addCommand(new CommandAuctionHouse()).addSubCommands(
+		this.commandManager.registerCommandDynamically(new CommandAuctionHouse()).addSubCommands(
 				new CommandSell(),
 				new CommandActive(),
 				new CommandExpired(),
@@ -335,8 +333,6 @@ public class AuctionHouse extends TweetyPlugin {
 		Settings.setup();
 		setLocale(Settings.LANG.getString());
 		LocaleSettings.setup();
-		this.commandManager.setSyntaxErrorMessage(TextUtils.formatText(getLocale().getMessage("commands.invalid_syntax").getMessage().split("\n")));
-		this.commandManager.setNoPermsMessage(TextUtils.formatText(getLocale().getMessage("commands.no_permission").getMessage()));
 	}
 
 	//========================================== Getters ==========================================

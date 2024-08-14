@@ -20,8 +20,10 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -38,21 +40,21 @@ import java.util.List;
  * Time Created: 11:30 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public final class CommandMarkChest extends AbstractCommand {
+public final class CommandMarkChest extends Command {
 
 	public CommandMarkChest() {
-		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_MARKCHEST.getStringList().toArray(new String[0]));
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_MARKCHEST.getStringList().toArray(new String[0]));
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
-		if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) return ReturnType.FAILURE;
+	protected ReturnType execute(CommandSender sender, String... args) {
+		if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) return ReturnType.FAIL;
 		final Player player = (Player) sender;
 
-//		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
+//		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
 		final Block targetBlock = player.getTargetBlock(null, 10);
-		if (targetBlock.getType() != XMaterial.CHEST.parseMaterial()) return ReturnType.FAILURE;
+		if (targetBlock.getType() != XMaterial.CHEST.parseMaterial()) return ReturnType.FAIL;
 
 		final Chest chest = (Chest) targetBlock.getState();
 		final AuctionHouse instance = AuctionHouse.getInstance();
@@ -72,7 +74,7 @@ public final class CommandMarkChest extends AbstractCommand {
 	}
 
 	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
+	protected List<String> tab(CommandSender sender, String... args) {
 		return null;
 	}
 

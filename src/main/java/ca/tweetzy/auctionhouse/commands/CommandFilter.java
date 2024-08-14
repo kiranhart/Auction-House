@@ -25,8 +25,10 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.guis.filter.GUIFilterWhitelist;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.command.AllowedExecutor;
+import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -42,16 +44,16 @@ import java.util.stream.Collectors;
  * Time Created: 3:18 p.m.
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
-public class CommandFilter extends AbstractCommand {
+public class CommandFilter extends Command {
 
 	public CommandFilter() {
-		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_FILTER.getStringList().toArray(new String[0]));
+		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_FILTER.getStringList().toArray(new String[0]));
 	}
 
 	@Override
-	protected ReturnType runCommand(CommandSender sender, String... args) {
+	protected ReturnType execute(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
-//		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
+//		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
 		if (args.length == 0) {
 			AuctionHouse.getGuiManager().showGUI(player, new GUIFilterWhitelist(player));
@@ -72,13 +74,13 @@ public class CommandFilter extends AbstractCommand {
 				ItemStack held = PlayerHelper.getHeldItem(player);
 				if (held.getType() == XMaterial.AIR.parseMaterial()) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.filter air").sendPrefixedMessage(player);
-					return ReturnType.FAILURE;
+					return ReturnType.FAIL;
 				}
 
 
 				if (AuctionHouse.getFilterManager().getFilteredItem(held) != null && AuctionHouse.getFilterManager().getFilteredItem(held).getCategory() == AuctionItemCategory.valueOf(args[1].toUpperCase())) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.filteritemaddedalready").sendPrefixedMessage(player);
-					return ReturnType.FAILURE;
+					return ReturnType.FAIL;
 				}
 
 				AuctionFilterItem filterItem = new AuctionFilterItem(held, AuctionItemCategory.valueOf(args[1].toUpperCase()));
@@ -106,7 +108,7 @@ public class CommandFilter extends AbstractCommand {
 	}
 
 	@Override
-	protected List<String> onTab(CommandSender sender, String... args) {
+	protected List<String> tab(CommandSender sender, String... args) {
 		if (args.length == 1) return Collections.singletonList("additem");
 		if (args.length == 2)
 			return Arrays.stream(AuctionItemCategory.values()).filter(AuctionItemCategory::isWhitelistAllowed).map(AuctionItemCategory::getTranslatedType).collect(Collectors.toList());
