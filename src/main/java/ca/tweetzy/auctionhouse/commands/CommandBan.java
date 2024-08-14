@@ -21,6 +21,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.guis.admin.bans.GUIBanUser;
 import ca.tweetzy.auctionhouse.guis.selector.GUIPlayerSelector;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -38,23 +39,22 @@ import java.util.stream.Collectors;
 public class CommandBan extends AbstractCommand {
 
 	public CommandBan() {
-		super(CommandType.PLAYER_ONLY, "ban");
+		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_BAN.getStringList().toArray(new String[0]));
 	}
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
-		final AuctionHouse instance = AuctionHouse.getInstance();
 
 		if (args.length == 0) {
 			// open the player picker then redirect to the ban user menu
-			instance.getGuiManager().showGUI(player, new GUIPlayerSelector(player, selected -> {
-				if (instance.getBanManager().isBannedAlready(selected)) {
-					instance.getLocale().getMessage("ban.user already banned").processPlaceholder("player_name", selected.getName()).sendPrefixedMessage(player);
+			AuctionHouse.getGuiManager().showGUI(player, new GUIPlayerSelector(player, selected -> {
+				if (AuctionHouse.getBanManager().isBannedAlready(selected)) {
+					AuctionHouse.getInstance().getLocale().getMessage("ban.user already banned").processPlaceholder("player_name", selected.getName()).sendPrefixedMessage(player);
 					return;
 				}
 
-				instance.getGuiManager().showGUI(player, new GUIBanUser(player, instance.getBanManager().generateEmptyBan(player, selected)));
+				AuctionHouse.getGuiManager().showGUI(player, new GUIBanUser(player, AuctionHouse.getBanManager().generateEmptyBan(player, selected)));
 			}));
 			return ReturnType.SUCCESS;
 		}
@@ -62,16 +62,16 @@ public class CommandBan extends AbstractCommand {
 		final Player target = Bukkit.getPlayerExact(args[0]);
 
 		if (target == null) {
-			instance.getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
 			return ReturnType.FAILURE;
 		}
 
-		if (instance.getBanManager().isBannedAlready(target)) {
-			instance.getLocale().getMessage("ban.user already banned").processPlaceholder("player_name", args[0]).sendPrefixedMessage(player);
+		if (AuctionHouse.getBanManager().isBannedAlready(target)) {
+			AuctionHouse.getInstance().getLocale().getMessage("ban.user already banned").processPlaceholder("player_name", args[0]).sendPrefixedMessage(player);
 			return ReturnType.FAILURE;
 		}
 
-		instance.getGuiManager().showGUI(player, new GUIBanUser(player, instance.getBanManager().generateEmptyBan(player, target)));
+		AuctionHouse.getGuiManager().showGUI(player, new GUIBanUser(player, AuctionHouse.getBanManager().generateEmptyBan(player, target)));
 		return ReturnType.SUCCESS;
 	}
 

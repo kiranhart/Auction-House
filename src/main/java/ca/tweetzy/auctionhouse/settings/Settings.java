@@ -51,6 +51,25 @@ public class Settings {
 	public static final ConfigSetting CURRENCY_VAULT_SYMBOL = new ConfigSetting(config, "economy.currency.vault symbol", "$", "When using default/vault currency, what symbol should be used.");
 	public static final ConfigSetting CURRENCY_BLACKLISTED = new ConfigSetting(config, "economy.currency.black listed", Collections.singletonList("UltraEconomy:Test"), "A list of owning plugins & the currency to be blacklisted. Ex. UltraEconomy:Test");
 
+	public static final ConfigSetting CMD_ALIAS_MAIN = new ConfigSetting(config, "command aliases.main", Arrays.asList("ah", "auctions", "auctionhouses", "ahgui", "auctiongui"), "Command aliases for the main command");
+	public static final ConfigSetting CMD_ALIAS_SUB_ACTIVE = new ConfigSetting(config, "command aliases.subcommands.active", Collections.singletonList("active"), "Command aliases for the active command");
+	public static final ConfigSetting CMD_ALIAS_SUB_ADMIN = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("admin"), "Command aliases for the admin command");
+	public static final ConfigSetting CMD_ALIAS_SUB_BAN = new ConfigSetting(config, "command aliases.subcommands.ban", Collections.singletonList("ban"), "Command aliases for the ban command");
+	public static final ConfigSetting CMD_ALIAS_SUB_BIDS = new ConfigSetting(config, "command aliases.subcommands.bids", Collections.singletonList("bids"), "Command aliases for the bids command");
+	public static final ConfigSetting CMD_ALIAS_SUB_CONFIRM = new ConfigSetting(config, "command aliases.subcommands.confirm", Collections.singletonList("confirm"), "Command aliases for the confirm command");
+	public static final ConfigSetting CMD_ALIAS_SUB_EXPIRED = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("expired"), "Command aliases for the expired command");
+	public static final ConfigSetting CMD_ALIAS_SUB_FILTER = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("filter"), "Command aliases for the filter command");
+	public static final ConfigSetting CMD_ALIAS_SUB_MARKCHEST = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("markchest"), "Command aliases for the markchest command");
+	public static final ConfigSetting CMD_ALIAS_SUB_MINPRICE = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("minprices"), "Command aliases for the minprices command");
+	public static final ConfigSetting CMD_ALIAS_SUB_PAYMENTS = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("payments"), "Command aliases for the payments command");
+	public static final ConfigSetting CMD_ALIAS_SUB_REQUEST = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("request"), "Command aliases for the request command");
+	public static final ConfigSetting CMD_ALIAS_SUB_SEARCH = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("search"), "Command aliases for the search command");
+	public static final ConfigSetting CMD_ALIAS_SUB_SELL = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("sell"), "Command aliases for the sell command");
+	public static final ConfigSetting CMD_ALIAS_SUB_STATS = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("stats"), "Command aliases for the stats command");
+	public static final ConfigSetting CMD_ALIAS_SUB_TOGGLELISTINFO = new ConfigSetting(config, "command aliases.subcommands.togglelistinfo", Collections.singletonList("togglelistinfo"), "Command aliases for the toggle list info command");
+	public static final ConfigSetting CMD_ALIAS_SUB_TRANSACTIONS = new ConfigSetting(config, "command aliases.subcommands.transactions", Collections.singletonList("transactions"), "Command aliases for the transactions command");
+	public static final ConfigSetting CMD_ALIAS_SUB_UNBAN = new ConfigSetting(config, "command aliases.subcommands.unban", Collections.singletonList("unban"), "Command aliases for the unban command");
+
 
 	public static final ConfigSetting ALLOW_USAGE_OF_IN_GAME_EDITOR = new ConfigSetting(config, "Allow Usage Of This Menu In Game", true, "Once you set this to true, you will no longer be able to access it unless you enable it within the actual config.yml");
 	public static final ConfigSetting UPDATE_CHECKER = new ConfigSetting(config, "update checker", true, "If true, auction house will check for updates periodically");
@@ -76,7 +95,6 @@ public class Settings {
 	public static final ConfigSetting DEFAULT_FILTER_SORT = new ConfigSetting(config, "auction setting.default filters.auction sort", "RECENT", "Valid Options: RECENT, OLDEST, PRICE");
 	public static final ConfigSetting DEFAULT_FILTER_SALE_TYPE = new ConfigSetting(config, "auction setting.default filters.sale type", "BOTH", "Valid Options: USED_BIDDING_SYSTEM, WITHOUT_BIDDING_SYSTEM, BOTH");
 
-
 	public static final ConfigSetting INTERNAL_CREATE_DELAY = new ConfigSetting(config, "auction setting.internal create delay", 2, "How many ticks should auction house wait before actually creating the item.");
 	public static final ConfigSetting MAX_AUCTION_PRICE = new ConfigSetting(config, "auction setting.pricing.max auction price", 1000000000, "The max price for buy only / buy now items");
 	public static final ConfigSetting MAX_AUCTION_START_PRICE = new ConfigSetting(config, "auction setting.pricing.max auction start price", 1000000000, "The max price starting a bidding auction");
@@ -90,8 +108,6 @@ public class Settings {
 	public static final ConfigSetting MAX_REQUEST_AMOUNT = new ConfigSetting(config, "auction setting.max request amount", 64, "How much of an item should a player be able to ask for in a single request?");
 	public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGES = new ConfigSetting(config, "auction setting.auto refresh auction pages", true, "Should auction pages auto refresh?");
 	public static final ConfigSetting AUTO_REFRESH_ACTIVE_AUCTION_PAGES = new ConfigSetting(config, "auction setting.auto refresh active auction pages", false, "Should the /ah active pages be auto refreshed?");
-	public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGE_SYNC = new ConfigSetting(config, "auction setting.auto refresh auction pages synchronously", false, "Should auction pages auto refresh use a synchronous?");
-	public static final ConfigSetting AUTO_REFRESH_DOES_SLOT_CLEAR = new ConfigSetting(config, "auction setting.auto refresh does slot clear", true, "If true, on every refresh, the slots will be cleared (replaced by default item) then the actual listings will be placed.");
 	public static final ConfigSetting USE_SHORT_NUMBERS_ON_ITEMS = new ConfigSetting(config, "auction setting.use short numbers", false, "Should numbers be shortened into a prefixed form?");
 	public static final ConfigSetting USE_SHORT_NUMBERS_ON_PLAYER_BALANCE = new ConfigSetting(config, "auction setting.use short numbers on balance", false, "Should numbers be shortened into a prefixed form for the player balance?");
 	public static final ConfigSetting INCREASE_TIME_ON_BID = new ConfigSetting(config, "auction setting.increase time on bid", true, "Should the remaining time be increased when a bid is placed?");

@@ -22,6 +22,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.statistics.GUIStatisticView;
 import ca.tweetzy.auctionhouse.guis.statistics.GUIStatisticViewSelect;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
@@ -39,7 +40,7 @@ import java.util.List;
 public class CommandStats extends AbstractCommand {
 
 	public CommandStats() {
-		super(CommandType.PLAYER_ONLY, "stats");
+		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_STATS.getStringList().toArray(new String[0]));
 	}
 
 	@Override
@@ -47,31 +48,29 @@ public class CommandStats extends AbstractCommand {
 		final Player player = (Player) sender;
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
-
-		final AuctionHouse instance = AuctionHouse.getInstance();
-		AuctionPlayer user = instance.getAuctionPlayerManager().getPlayer(player.getUniqueId());
+		AuctionPlayer user = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
 		if (user == null) {
-			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 			AuctionPlayer newAHPlayer = new AuctionPlayer(player);
 			user = newAHPlayer;
-			instance.getAuctionPlayerManager().addPlayer(newAHPlayer);
+			AuctionHouse.getAuctionPlayerManager().addPlayer(newAHPlayer);
 		}
 
 		if (args.length == 0) {
-			instance.getGuiManager().showGUI(player, new GUIStatisticViewSelect(user));
+			AuctionHouse.getGuiManager().showGUI(player, new GUIStatisticViewSelect(user));
 			return ReturnType.SUCCESS;
 		}
 
 		final Player target = Bukkit.getPlayerExact(args[0]);
 
 		if (target == null) {
-			instance.getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
+			AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
 			return ReturnType.FAILURE;
 		}
 
-		final AuctionPlayer targetAuctionPlayer = instance.getAuctionPlayerManager().getPlayer(target.getUniqueId());
-		instance.getGuiManager().showGUI(player, new GUIStatisticView(user, targetAuctionPlayer));
+		final AuctionPlayer targetAuctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(target.getUniqueId());
+		AuctionHouse.getGuiManager().showGUI(player, new GUIStatisticView(user, targetAuctionPlayer));
 
 		return ReturnType.SUCCESS;
 	}

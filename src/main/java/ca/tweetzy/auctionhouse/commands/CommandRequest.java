@@ -49,40 +49,39 @@ import java.util.List;
 public class CommandRequest extends AbstractCommand {
 
 	public CommandRequest() {
-		super(CommandType.PLAYER_ONLY, "request");
+		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_REQUEST.getStringList().toArray(new String[0]));
 	}
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
-		final AuctionHouse instance = AuctionHouse.getInstance();
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
-		if (AuctionHouse.getInstance().getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.REQUESTS)) return ReturnType.FAILURE;
+		if (AuctionHouse.getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.REQUESTS)) return ReturnType.FAILURE;
 
-		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
-			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
+			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
-		final AuctionPlayer auctionPlayer = instance.getAuctionPlayerManager().getPlayer(player.getUniqueId());
+		final AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
 		// grab held item & check valid
 		final ItemStack originalItem = PlayerHelper.getHeldItem(player).clone();
 
 		if (originalItem.getType() == XMaterial.AIR.parseMaterial()) {
-			instance.getLocale().getMessage("general.air").sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
 			return ReturnType.FAILURE;
 		}
 
 		if (args.length < 1) {
-			instance.getGuiManager().showGUI(player, new GUIRequestItem(auctionPlayer, originalItem, originalItem.getAmount(), 1));
+			AuctionHouse.getGuiManager().showGUI(player, new GUIRequestItem(auctionPlayer, originalItem, originalItem.getAmount(), 1));
 			return ReturnType.SUCCESS;
 		}
 
 		// check if price is even a number
 		if (!NumberUtils.isDouble(args[0])) {
-			instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
 			return ReturnType.FAILURE;
 		}
 
@@ -91,7 +90,7 @@ public class CommandRequest extends AbstractCommand {
 
 		// check if at limit
 		if (auctionPlayer.isAtItemLimit(player)) {
-			instance.getLocale().getMessage("general.requestlimit").sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("general.requestlimit").sendPrefixedMessage(player);
 			return ReturnType.FAILURE;
 		}
 
@@ -107,47 +106,28 @@ public class CommandRequest extends AbstractCommand {
 		final double price = Double.parseDouble(args[0]);
 
 		if (price < Settings.MIN_AUCTION_PRICE.getDouble()) {
-			instance.getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
 			return ReturnType.FAILURE;
 		}
 
 		if (price > Settings.MAX_AUCTION_PRICE.getDouble()) {
-			instance.getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
 			return ReturnType.FAILURE;
 		}
 
 		AuctionedItem auctionedItem = AuctionedItem.createRequest(player, originalItem, originalItem.getAmount(), price, allowedTime);
 
-		// TODO REMOVE THIS
-//		auctionedItem.setId(UUID.randomUUID());
-//		auctionedItem.setOwner(player.getUniqueId());
-//		auctionedItem.setHighestBidder(player.getUniqueId());
-//		auctionedItem.setOwnerName(player.getName());
-//		auctionedItem.setHighestBidderName(player.getName());
-//		auctionedItem.setBasePrice(price);
-//		auctionedItem.setItem(originalItem.clone());
-//		auctionedItem.setCategory(MaterialCategorizer.getMaterialCategory(originalItem));
-//		auctionedItem.setExpiresAt(System.currentTimeMillis() + 1000L * allowedTime);
-//		auctionedItem.setBidItem(false);
-//		auctionedItem.setServerItem(false);
-//		auctionedItem.setExpired(false);
-//		auctionedItem.setListedWorld(player.getWorld().getName());
-//		auctionedItem.setInfinite(false);
-//		auctionedItem.setAllowPartialBuy(false);
-//		auctionedItem.setRequest(true);
-//		auctionedItem.setRequestAmount(originalItem.getAmount());
-
-		AuctionHouse.getInstance().getAuctionPlayerManager().addToSellProcess(player);
+		AuctionHouse.getAuctionPlayerManager().addToSellProcess(player);
 		if (auctionPlayer.getPlayer() == null || !auctionPlayer.getPlayer().isOnline()) {
 			return ReturnType.FAILURE;
 		}
 
 		AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
-			AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
+			AuctionHouse.getAuctionPlayerManager().processSell(player);
 
 			if (Settings.OPEN_MAIN_AUCTION_HOUSE_AFTER_MENU_LIST.getBoolean()) {
 				player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
-				instance.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
+				AuctionHouse.getGuiManager().showGUI(player, new GUIAuctionHouse(auctionPlayer));
 			} else
 				AuctionHouse.newChain().sync(player::closeInventory).execute();
 		});

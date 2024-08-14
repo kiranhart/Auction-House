@@ -1,9 +1,5 @@
 package ca.tweetzy.auctionhouse.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import ca.tweetzy.auctionhouse.api.auction.Bid;
 import ca.tweetzy.auctionhouse.api.auction.ListingType;
 import ca.tweetzy.auctionhouse.impl.listing.AuctionListing;
@@ -12,6 +8,10 @@ import ca.tweetzy.flight.comp.enums.CompMaterial;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class ListingBuilder {
 

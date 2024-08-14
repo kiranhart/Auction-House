@@ -22,6 +22,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.ban.Ban;
 import ca.tweetzy.auctionhouse.api.sync.SynchronizeResult;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.PlayerUtils;
 import org.bukkit.Bukkit;
@@ -41,7 +42,7 @@ import java.util.UUID;
 public class CommandUnban extends AbstractCommand {
 
 	public CommandUnban() {
-		super(CommandType.CONSOLE_OK, "unban");
+		super(CommandType.CONSOLE_OK, Settings.CMD_ALIAS_SUB_UNBAN.getStringList().toArray(new String[0]));
 	}
 
 	@Override
@@ -52,26 +53,25 @@ public class CommandUnban extends AbstractCommand {
 		final Player target = PlayerUtils.findPlayer(args[0]);
 		OfflinePlayer offlinePlayer = null;
 
-		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (target == null) {
 			offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
 			if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
-				instance.getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
+				AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(sender);
 				return ReturnType.FAILURE;
 			}
 		}
 
 		UUID toUnBan = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
 
-		if (!instance.getBanManager().getManagerContent().containsKey(toUnBan)) {
-			instance.getLocale().getMessage("ban.user not banned").processPlaceholder("player_name", args[0]).sendPrefixedMessage(sender);
+		if (!AuctionHouse.getBanManager().getManagerContent().containsKey(toUnBan)) {
+			AuctionHouse.getInstance().getLocale().getMessage("ban.user not banned").processPlaceholder("player_name", args[0]).sendPrefixedMessage(sender);
 			return ReturnType.FAILURE;
 		}
 
-		final Ban ban = instance.getBanManager().get(toUnBan);
+		final Ban ban = AuctionHouse.getBanManager().get(toUnBan);
 		ban.unStore(result -> {
 			if (result == SynchronizeResult.SUCCESS) {
-				instance.getLocale().getMessage("ban.user unbanned").processPlaceholder("player_name", args[0]).sendPrefixedMessage(sender);
+				AuctionHouse.getInstance().getLocale().getMessage("ban.user unbanned").processPlaceholder("player_name", args[0]).sendPrefixedMessage(sender);
 			}
 		});
 

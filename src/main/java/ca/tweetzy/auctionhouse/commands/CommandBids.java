@@ -21,6 +21,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.core.bid.GUIActiveBids;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
@@ -38,7 +39,7 @@ import java.util.List;
 public class CommandBids extends AbstractCommand {
 
 	public CommandBids() {
-		super(CommandType.PLAYER_ONLY, "bids");
+		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_BIDS.getStringList().toArray(new String[0]));
 	}
 
 	@Override
@@ -47,12 +48,11 @@ public class CommandBids extends AbstractCommand {
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
-		final AuctionHouse instance = AuctionHouse.getInstance();
-		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
-			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
+			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
-		instance.getGuiManager().showGUI(player, new GUIActiveBids(instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+		AuctionHouse.getGuiManager().showGUI(player, new GUIActiveBids(AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 		return ReturnType.SUCCESS;
 	}
 

@@ -21,6 +21,7 @@ package ca.tweetzy.auctionhouse.commands;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.core.GUIExpiredItems;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
@@ -37,12 +38,8 @@ import java.util.List;
  */
 public class CommandExpired extends AbstractCommand {
 
-	final AuctionHouse instance;
-
-
 	public CommandExpired() {
-		super(CommandType.PLAYER_ONLY, "expired");
-		instance = AuctionHouse.getInstance();
+		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_EXPIRED.getStringList().toArray(new String[0]));
 	}
 
 	@Override
@@ -50,12 +47,12 @@ public class CommandExpired extends AbstractCommand {
 		final Player player = (Player) sender;
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
-		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
-			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
+			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
-		instance.getGuiManager().showGUI(player, new GUIExpiredItems(null, instance.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+		AuctionHouse.getGuiManager().showGUI(player, new GUIExpiredItems(null, AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 		return ReturnType.SUCCESS;
 	}
 
@@ -66,12 +63,12 @@ public class CommandExpired extends AbstractCommand {
 
 	@Override
 	public String getSyntax() {
-		return instance.getLocale().getMessage("commands.syntax.expired").getMessage();
+		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.expired").getMessage();
 	}
 
 	@Override
 	public String getDescription() {
-		return instance.getLocale().getMessage("commands.description.expired").getMessage();
+		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.expired").getMessage();
 	}
 
 	@Override

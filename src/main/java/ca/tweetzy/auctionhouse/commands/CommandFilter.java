@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.guis.filter.GUIFilterWhitelist;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import org.bukkit.command.CommandSender;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
 public class CommandFilter extends AbstractCommand {
 
 	public CommandFilter() {
-		super(CommandType.PLAYER_ONLY, "filter");
+		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_FILTER.getStringList().toArray(new String[0]));
 	}
 
 	@Override
@@ -52,9 +53,8 @@ public class CommandFilter extends AbstractCommand {
 		final Player player = (Player) sender;
 //		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
-		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (args.length == 0) {
-			instance.getGuiManager().showGUI(player, new GUIFilterWhitelist(player));
+			AuctionHouse.getGuiManager().showGUI(player, new GUIFilterWhitelist(player));
 			return ReturnType.SUCCESS;
 		}
 
@@ -71,19 +71,19 @@ public class CommandFilter extends AbstractCommand {
 
 				ItemStack held = PlayerHelper.getHeldItem(player);
 				if (held.getType() == XMaterial.AIR.parseMaterial()) {
-					instance.getLocale().getMessage("general.filter air").sendPrefixedMessage(player);
+					AuctionHouse.getInstance().getLocale().getMessage("general.filter air").sendPrefixedMessage(player);
 					return ReturnType.FAILURE;
 				}
 
 
-				if (instance.getFilterManager().getFilteredItem(held) != null && instance.getFilterManager().getFilteredItem(held).getCategory() == AuctionItemCategory.valueOf(args[1].toUpperCase())) {
-					instance.getLocale().getMessage("general.filteritemaddedalready").sendPrefixedMessage(player);
+				if (AuctionHouse.getFilterManager().getFilteredItem(held) != null && AuctionHouse.getFilterManager().getFilteredItem(held).getCategory() == AuctionItemCategory.valueOf(args[1].toUpperCase())) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.filteritemaddedalready").sendPrefixedMessage(player);
 					return ReturnType.FAILURE;
 				}
 
 				AuctionFilterItem filterItem = new AuctionFilterItem(held, AuctionItemCategory.valueOf(args[1].toUpperCase()));
-				instance.getFilterManager().addFilterItem(filterItem);
-				instance.getLocale().getMessage("general.addeditemtofilterwhitelist").processPlaceholder("item_name", AuctionAPI.getInstance().getItemName(held)).processPlaceholder("filter_category", args[1]).sendPrefixedMessage(player);
+				AuctionHouse.getFilterManager().addFilterItem(filterItem);
+				AuctionHouse.getInstance().getLocale().getMessage("general.addeditemtofilterwhitelist").processPlaceholder("item_name", AuctionAPI.getInstance().getItemName(held)).processPlaceholder("filter_category", args[1]).sendPrefixedMessage(player);
 			}
 		}
 

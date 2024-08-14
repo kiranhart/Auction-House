@@ -20,6 +20,7 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.utils.TextUtils;
 import org.bukkit.Bukkit;
@@ -38,7 +39,7 @@ import java.util.UUID;
 public class CommandToggleListInfo extends AbstractCommand {
 
 	public CommandToggleListInfo() {
-		super(CommandType.PLAYER_ONLY, "togglelistinfo");
+		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_TOGGLELISTINFO.getStringList().toArray(new String[0]));
 	}
 
 
@@ -46,15 +47,15 @@ public class CommandToggleListInfo extends AbstractCommand {
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
 		final UUID playerUUID = player.getUniqueId();
-		final AuctionHouse instance = AuctionHouse.getInstance();
-		if (instance.getAuctionPlayerManager().getPlayer(playerUUID) == null) {
-			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
-			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+
+		if (AuctionHouse.getAuctionPlayerManager().getPlayer(playerUUID) == null) {
+			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
-		final AuctionPlayer auctionPlayer = instance.getAuctionPlayerManager().getPlayer(playerUUID);
+		final AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(playerUUID);
 		auctionPlayer.setShowListingInfo(!auctionPlayer.isShowListingInfo());
-		instance.getLocale().getMessage("general.toggled listing." + (auctionPlayer.isShowListingInfo() ? "on" : "off")).sendPrefixedMessage(player);
+		AuctionHouse.getInstance().getLocale().getMessage("general.toggled listing." + (auctionPlayer.isShowListingInfo() ? "on" : "off")).sendPrefixedMessage(player);
 
 		return ReturnType.SUCCESS;
 	}

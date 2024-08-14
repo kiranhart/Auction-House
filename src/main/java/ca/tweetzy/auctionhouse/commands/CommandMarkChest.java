@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
@@ -40,7 +41,7 @@ import java.util.List;
 public final class CommandMarkChest extends AbstractCommand {
 
 	public CommandMarkChest() {
-		super(CommandType.PLAYER_ONLY, "markchest");
+		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_MARKCHEST.getStringList().toArray(new String[0]));
 	}
 
 	@Override

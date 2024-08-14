@@ -41,7 +41,7 @@ import java.util.UUID;
 public class CommandTransactions extends AbstractCommand {
 
 	public CommandTransactions() {
-		super(CommandType.PLAYER_ONLY, "transactions");
+		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_TRANSACTIONS.getStringList().toArray(new String[0]));
 	}
 
 	@Override
@@ -51,11 +51,11 @@ public class CommandTransactions extends AbstractCommand {
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
 		if (args.length == 0) {
-			final AuctionHouse instance = AuctionHouse.getInstance();
+
 			if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !player.hasPermission("auctionhouse.transactions.viewall")) {
-				instance.getGuiManager().showGUI(player, new GUITransactionList(player, false));
+				AuctionHouse.getGuiManager().showGUI(player, new GUITransactionList(player, false));
 			} else {
-				instance.getGuiManager().showGUI(player, new GUITransactionType(player));
+				AuctionHouse.getGuiManager().showGUI(player, new GUITransactionType(player));
 			}
 
 			return ReturnType.SUCCESS;
@@ -77,7 +77,7 @@ public class CommandTransactions extends AbstractCommand {
 				}
 
 				UUID toLookup = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
-				AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUITransactionList(player, toLookup));
+				AuctionHouse.getGuiManager().showGUI(player, new GUITransactionList(player, toLookup));
 
 			}).execute();
 

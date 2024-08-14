@@ -254,7 +254,7 @@ public class DataManager extends DataManagerAbstract {
 						statement.setInt(12, 1);
 						statement.setString(13, QuickItem.toString(item.getItem()));
 
-					} catch (NbtApiException e){
+					} catch (NbtApiException e) {
 						statement.setInt(12, 0);
 						statement.setString(13, null);
 					}
@@ -318,7 +318,8 @@ public class DataManager extends DataManagerAbstract {
 								updateStatement.setString(1, QuickItem.toString(item.getItem()));
 								updateStatement.setString(2, resultSet.getString("id"));
 								updateStatement.executeUpdate();
-							} catch (NbtApiException ignored) {}
+							} catch (NbtApiException ignored) {
+							}
 						}
 					}
 
@@ -371,7 +372,7 @@ public class DataManager extends DataManagerAbstract {
 				try {
 					statement.setInt(24, 1);
 					statement.setString(25, QuickItem.toString(item.getItem()));
-				}catch (NbtApiException e) {
+				} catch (NbtApiException e) {
 					statement.setInt(24, 0);
 					statement.setString(25, null);
 				}

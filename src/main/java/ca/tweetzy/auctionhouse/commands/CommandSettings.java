@@ -47,8 +47,7 @@ public class CommandSettings extends AbstractCommand {
 		Player player = (Player) sender;
 		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAILURE;
 
-		final AuctionHouse instance = AuctionHouse.getInstance();
-		instance.getGuiManager().showGUI(player, new PluginConfigGui(instance, instance.getLocale().getMessage("general.prefix").getMessage()));
+		AuctionHouse.getGuiManager().showGUI(player, new PluginConfigGui(AuctionHouse.getInstance(), AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage()));
 		return ReturnType.SUCCESS;
 	}
 

@@ -59,23 +59,22 @@ public final class CommandUpload extends AbstractCommand {
 
 		if (!args[0].equalsIgnoreCase("-confirm")) return ReturnType.FAILURE;
 
-		final AuctionHouse instance = AuctionHouse.getInstance();
-		final DatabaseConnector databaseConnector = new SQLiteConnector(instance);
-		final DataManager manager = new DataManager(databaseConnector, instance, null);
+		final DatabaseConnector databaseConnector = new SQLiteConnector(AuctionHouse.getInstance());
+		final DataManager manager = new DataManager(databaseConnector, AuctionHouse.getInstance(), null);
 
 		manager.getItems((error, items) -> {
 			if (error == null)
-				items.forEach(item -> instance.getDataManager().insertAuction(item, null));
+				items.forEach(item -> AuctionHouse.getDataManager().insertAuction(item, null));
 		});
 
 		manager.getAdminLogs((error, logs) -> {
 			if (error == null)
-				logs.forEach(log -> instance.getDataManager().insertLog(log));
+				logs.forEach(log -> AuctionHouse.getDataManager().insertLog(log));
 		});
 
 		manager.getTransactions((error, transactions) -> {
 			if (error == null)
-				transactions.forEach(transaction -> instance.getDataManager().insertTransaction(transaction, null));
+				transactions.forEach(transaction -> AuctionHouse.getDataManager().insertTransaction(transaction, null));
 		});
 
 		return ReturnType.SUCCESS;

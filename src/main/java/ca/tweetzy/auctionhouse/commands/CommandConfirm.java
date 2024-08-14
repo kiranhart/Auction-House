@@ -40,7 +40,7 @@ import java.util.List;
 public class CommandConfirm extends AbstractCommand {
 
 	public CommandConfirm() {
-		super(CommandType.PLAYER_ONLY, "confirm");
+		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_CONFIRM.getStringList().toArray(new String[0]));
 	}
 
 	@Override
@@ -49,27 +49,25 @@ public class CommandConfirm extends AbstractCommand {
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
 
-		final AuctionHouse instance = AuctionHouse.getInstance();
-
-		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			instance.getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
-			instance.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
+		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
+			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
-		final AuctionPlayer auctionPlayer = instance.getAuctionPlayerManager().getPlayer(player.getUniqueId());
+		final AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
 		if (auctionPlayer.getEndAllRequestTime() == -1) {
-			instance.getLocale().getMessage("general.nothing to confirm").sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("general.nothing to confirm").sendPrefixedMessage(player);
 			return ReturnType.SUCCESS;
 		}
 
 		if (System.currentTimeMillis() > auctionPlayer.getEndAllRequestTime()) {
-			instance.getLocale().getMessage("general.confirm time limit reached").sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("general.confirm time limit reached").sendPrefixedMessage(player);
 			return ReturnType.SUCCESS;
 		}
 
 		if (System.currentTimeMillis() <= auctionPlayer.getEndAllRequestTime()) {
-			instance.getLocale().getMessage("general.confirmed cancellation").sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("general.confirmed cancellation").sendPrefixedMessage(player);
 			auctionPlayer.setEndAllRequestTime(-1);
 			Titles.clearTitle(player);
 
@@ -78,7 +76,7 @@ public class CommandConfirm extends AbstractCommand {
 					continue;
 
 				if (item.isRequest()) {
-					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(item);
+					AuctionHouse.getAuctionItemManager().sendToGarbage(item);
 				} else {
 					item.setExpired(true);
 				}

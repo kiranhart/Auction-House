@@ -23,6 +23,7 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import ca.tweetzy.auctionhouse.guis.admin.GUIMinItemPrices;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
+import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.commands.AbstractCommand;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
@@ -42,17 +43,15 @@ import java.util.List;
 public class CommandMinPrice extends AbstractCommand {
 
 	public CommandMinPrice() {
-		super(CommandType.PLAYER_ONLY, "minprices");
+		super(CommandType.PLAYER_ONLY, Settings.CMD_ALIAS_SUB_MINPRICE.getStringList().toArray(new String[0]));
 	}
 
 	@Override
 	protected ReturnType runCommand(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
 //		if (CommandMiddleware.handle(player) == ReturnType.FAILURE) return ReturnType.FAILURE;
-
-		final AuctionHouse instance = AuctionHouse.getInstance();
 		if (args.length == 0) {
-			instance.getGuiManager().showGUI(player, new GUIMinItemPrices(player));
+			AuctionHouse.getGuiManager().showGUI(player, new GUIMinItemPrices(player));
 			return ReturnType.SUCCESS;
 		}
 
@@ -61,26 +60,26 @@ public class CommandMinPrice extends AbstractCommand {
 			ItemStack held = PlayerHelper.getHeldItem(player);
 
 			if (held.getType() == XMaterial.AIR.parseMaterial()) {
-				instance.getLocale().getMessage("general.min item price air").sendPrefixedMessage(player);
+				AuctionHouse.getInstance().getLocale().getMessage("general.min item price air").sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
 			}
 
-			if (instance.getMinItemPriceManager().getMinPrice(held.clone()) != null) {
-				instance.getLocale().getMessage("general.min price already added").sendPrefixedMessage(player);
+			if (AuctionHouse.getMinItemPriceManager().getMinPrice(held.clone()) != null) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.min price already added").sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
 			}
 
 			if (!NumberUtils.isNumeric(args[1])) {
-				instance.getLocale().getMessage("general.notanumber").processPlaceholder("value", args[1]).sendPrefixedMessage(player);
+				AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[1]).sendPrefixedMessage(player);
 				return ReturnType.FAILURE;
 			}
 
 			final double price = Double.parseDouble(args[1]);
 
-			instance.getDataManager().insertMinPrice(new MinItemPrice(held.clone(), price), (error, inserted) -> {
+			AuctionHouse.getDataManager().insertMinPrice(new MinItemPrice(held.clone(), price), (error, inserted) -> {
 				if (error == null) {
-					instance.getMinItemPriceManager().addItem(inserted);
-					instance.getLocale().getMessage("general.added min price")
+					AuctionHouse.getMinItemPriceManager().addItem(inserted);
+					AuctionHouse.getInstance().getLocale().getMessage("general.added min price")
 							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(inserted.getItemStack()))
 							.processPlaceholder("price", AuctionAPI.getInstance().formatNumber(inserted.getPrice()))
 							.sendPrefixedMessage(player);
