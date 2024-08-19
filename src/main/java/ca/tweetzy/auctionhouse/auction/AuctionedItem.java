@@ -76,6 +76,10 @@ public class AuctionedItem {
 	private boolean isRequest = false;
 	private int requestAmount = 0;
 
+	// priority listing
+	private boolean hasListingPriority = false;
+	private long priorityExpiresAt = 0;
+
 	public AuctionedItem() {
 	}
 
@@ -136,7 +140,6 @@ public class AuctionedItem {
 
 		return requested;
 	}
-
 
 	public ItemStack getBidStack(Player player) {
 		QuickItem itemStack = QuickItem.of(this.item.clone());
@@ -303,5 +306,9 @@ public class AuctionedItem {
 
 	public boolean containsValidBid() {
 		return isBidItem() && !this.highestBidder.equals(this.owner);
+	}
+
+	public boolean isListingPriorityActive() {
+		return this.hasListingPriority && this.priorityExpiresAt > System.currentTimeMillis();
 	}
 }

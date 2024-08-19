@@ -424,6 +424,10 @@ public class DataManager extends DataManagerAbstract {
 		auctionItem.setRequest(resultSet.getBoolean("is_request"));
 		auctionItem.setRequestAmount(resultSet.getInt("request_count"));
 
+		auctionItem.setHasListingPriority(resultSet.getBoolean("listing_priority"));
+		auctionItem.setPriorityExpiresAt(resultSet.getLong("priority_expires_at"));
+
+
 		return auctionItem;
 	}
 
