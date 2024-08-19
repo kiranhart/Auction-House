@@ -33,6 +33,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,10 +95,15 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		if (this.items != null) {
 			AuctionHouse.newChain().asyncFirst(() -> {
 				this.fillSlots().forEach(slot -> setItem(slot, getDefaultItem()));
+
+				List<T> itemsCopy;
+				synchronized (this.items) {
+					itemsCopy = new ArrayList<>(this.items);
+				}
+
 				prePopulate();
 
-				final List<T> itemsToFill = this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toList());
-				return itemsToFill;
+				return itemsCopy.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toCollection(ArrayList::new));
 			}).asyncLast((data) -> {
 				pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
 
