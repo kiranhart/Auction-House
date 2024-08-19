@@ -95,15 +95,8 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		if (this.items != null) {
 			AuctionHouse.newChain().asyncFirst(() -> {
 				this.fillSlots().forEach(slot -> setItem(slot, getDefaultItem()));
-
-				List<T> itemsCopy;
-				synchronized (this.items) {
-					itemsCopy = new ArrayList<>(this.items);
-				}
-
 				prePopulate();
-
-				return itemsCopy.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toCollection(ArrayList::new));
+				return this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toCollection(ArrayList::new));
 			}).asyncLast((data) -> {
 				pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
 

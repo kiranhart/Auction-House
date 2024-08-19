@@ -78,6 +78,13 @@ public class Settings {
 	/*  ===============================
 	 *          BASIC SETTINGS
 	 *  ===============================*/
+
+	//	Listing Priority
+	public static final ConfigSetting LISTING_PRIORITY_ENABLED = new ConfigSetting(config, "auction setting.listing priority.enabled", true, "If true, players will be able to pay to prioritize listings");
+	public static final ConfigSetting LISTING_PRIORITY_TIME_PER_BOOST = new ConfigSetting(config, "auction setting.listing priority.time per boost", 60 * 30, "How many seconds should the priority last for each time they pay", "By default users will be able to stack boosts");
+	public static final ConfigSetting LISTING_PRIORITY_TIME_ALLOW_MULTI_BOOST = new ConfigSetting(config, "auction setting.listing priority.allow multiple boost", false, "If true players can boost an item multiple times before it runs out. (ex. if they have a boost active they can extend by paying before it expires)");
+	public static final ConfigSetting LISTING_PRIORITY_TIME_COST_PER_BOOST = new ConfigSetting(config, "auction setting.listing priority.cost per boost", 1000, "How much should it cost the player to boost their item each time");
+
 	public static final ConfigSetting SHOW_LISTING_ERROR_IN_CONSOLE = new ConfigSetting(config, "auction setting.show listing error in console", false, "If true, an exception will be thrown and shown in the console if something goes wrong during item listing");
 	public static final ConfigSetting STORE_PAYMENTS_FOR_MANUAL_COLLECTION = new ConfigSetting(config, "auction setting.store payments for manual collection", false, "If true, auction house will store the payments to be manually collected rather than automatically given to the player");
 	public static final ConfigSetting MANUAL_PAYMENTS_ONLY_FOR_OFFLINE_USERS = new ConfigSetting(config, "auction setting.use stored payments for offline only", false, "If true, the usage of the manual payment collection will only be done if the user is offline");
@@ -1503,6 +1510,10 @@ public class Settings {
 			"&eHighest Bidder: &a%highestbidder%"
 	));
 
+	public static final ConfigSetting AUCTION_STACK_DETAILS_PRIORITY_LISTING = new ConfigSetting(config, "auction stack.priority listing lines", Collections.singletonList(
+			"<GRADIENT:F55C7A>&LPriority Listing</GRADIENT:F6BC66>"
+	));
+
 	public static final ConfigSetting AUCTION_STACK_DETAILS_TIME_LEFT = new ConfigSetting(config, "auction stack.time left lines", Arrays.asList(
 			"",
 			"&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
@@ -1518,6 +1529,7 @@ public class Settings {
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROL_FOOTER = new ConfigSetting(config, "auction stack.controls.footer", Collections.singletonList("&7&m-------------------------"));
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_INSPECTION = new ConfigSetting(config, "auction stack.controls.inspection", Collections.singletonList("&eShift Right-Click to inspect"), "This will only be added to the control lore if the item can be inspected (skulker box/bundled item)");
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_ACCEPT_BID = new ConfigSetting(config, "auction stack.controls.accept bid", Collections.singletonList("&eRight-Click to accept the current bid"), "This will only show on items within the active listings menu on biddable items.");
+	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_PRIORITY_LISTING = new ConfigSetting(config, "auction stack.controls.priority listing", Collections.singletonList("&eShift + Left-Click to prioritize listing"), "This will only show on items within the active listings menu");
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_ITEM = new ConfigSetting(config, "auction stack.controls.cancel item", Collections.singletonList("&eLeft-Click to cancel this listing"));
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_REQUEST = new ConfigSetting(config, "auction stack.controls.cancel request", Collections.singletonList("&eLeft-Click to cancel this request"));
 	public static final ConfigSetting AUCTION_STACK_LISTING_PREVIEW_ITEM = new ConfigSetting(config, "auction stack.controls.preview item", Collections.singletonList("&ePreviewing Listing"));

@@ -104,6 +104,8 @@ public class LocaleSettings {
 		languageNodes.put("general.invalid deletion range", "&cPlease enter a valid deletion range");
 		languageNodes.put("general.admin.cleared bids", "&aSuccessfully cleared any bids for the player&F: &e%player%");
 
+		languageNodes.put("general.priority boost.boosted", "&aSuccessfully boosted this item to the top of the Auction House");
+		languageNodes.put("general.priority boost.already boosted", "&cThis item already has priority listing");
 
 		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
 		languageNodes.put("pricing.minstartingprice", "&cThe minimum starting bid price must be &a$%price%");

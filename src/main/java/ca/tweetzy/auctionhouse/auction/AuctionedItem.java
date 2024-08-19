@@ -28,6 +28,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
 import lombok.NonNull;
@@ -77,8 +78,8 @@ public class AuctionedItem {
 	private int requestAmount = 0;
 
 	// priority listing
-	private boolean hasListingPriority = false;
-	private long priorityExpiresAt = 0;
+	private boolean hasListingPriority;
+	private long priorityExpiresAt;
 
 	public AuctionedItem() {
 	}
@@ -115,6 +116,8 @@ public class AuctionedItem {
 		this.expiresAt = expiresAt;
 		this.serverItem = false;
 		this.isRequest = false;
+		this.hasListingPriority = false;
+		this.priorityExpiresAt = 0;
 	}
 
 	public static AuctionedItem createRequest(Player player, ItemStack item, int requestAmount, double price, int allowedTime) {
@@ -206,6 +209,7 @@ public class AuctionedItem {
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_FOOTER.getStringList()));
 
 		itemStack.lore(player, lore);
+
 		return itemStack.make();
 	}
 
@@ -251,6 +255,9 @@ public class AuctionedItem {
 			).collect(Collectors.toList())));
 		}
 
+		if (isListingPriorityActive())
+			lore.addAll(Common.colorize(Settings.AUCTION_STACK_DETAILS_PRIORITY_LISTING.getStringList()));
+
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_HEADER.getStringList()));
 
 		if (type == AuctionStackType.MAIN_AUCTION_HOUSE) {
@@ -285,13 +292,17 @@ public class AuctionedItem {
 							lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_ACCEPT_BID.getStringList()));
 						}
 					}
+
+					if (Settings.LISTING_PRIORITY_ENABLED.getBoolean()) {
+						lore.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_PRIORITY_LISTING.getStringList()));
+					}
 				}
 			}
 		}
 
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_FOOTER.getStringList()));
-
 		itemStack.lore(player, lore);
+
 		return itemStack.make();
 	}
 

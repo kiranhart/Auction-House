@@ -32,12 +32,15 @@ import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.messages.Titles;
+import io.lumine.mythic.utils.time.Time;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -64,7 +67,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 	@Override
 	protected void prePopulate() {
-		this.items = this.auctionPlayer.getItems(false);
+		this.items = new ArrayList<>(this.auctionPlayer.getItems(false));
 
 		if (Settings.PER_WORLD_ITEMS.getBoolean()) {
 			this.items = this.items.stream().filter(item -> item.getListedWorld() == null || this.auctionPlayer.getPlayer().getWorld().getName().equals(item.getListedWorld())).collect(Collectors.toList());
@@ -133,6 +136,29 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 					item.setExpiresAt(System.currentTimeMillis());
 					draw();
 				}
+				break;
+
+			case SHIFT_LEFT:
+				if (!Settings.LISTING_PRIORITY_ENABLED.getBoolean()) return;
+				if (!Settings.LISTING_PRIORITY_TIME_ALLOW_MULTI_BOOST.getBoolean() && item.isListingPriorityActive()) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.priority boost.already boosted").sendPrefixedMessage(click.player);
+					return;
+				}
+
+				// check bal
+				if (!AuctionHouse.getEconomy().has(click.player, Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble())) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(click.player);
+					return;
+				}
+
+				AuctionHouse.getEconomy().withdrawPlayer(click.player, Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble());
+				AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(click.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble())).sendPrefixedMessage(click.player);
+
+				long newBoostTime = item.getPriorityExpiresAt() + (System.currentTimeMillis() + (1000L * Settings.LISTING_PRIORITY_TIME_PER_BOOST.getInt()));
+
+				item.setHasListingPriority(true);
+				item.setPriorityExpiresAt(newBoostTime);
+				draw();
 				break;
 		}
 	}

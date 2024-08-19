@@ -76,7 +76,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 	@Override
 	protected void prePopulate() {
-		this.items = AuctionHouse.getInstance().getAuctionItemManager().getValidItems(this.player);
+		this.items = new ArrayList<>(AuctionHouse.getAuctionItemManager().getValidItems(this.player));
 
 		if (this.searchKeywords != null && this.searchKeywords.length() != 0) {
 			this.items = this.items.stream().filter(item -> checkSearchCriteria(this.searchKeywords, item)).collect(Collectors.toList());
@@ -109,6 +109,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		this.items.sort(Comparator.comparing(AuctionedItem::isInfinite).reversed());
+		this.items.sort(Comparator.comparing(AuctionedItem::isListingPriorityActive).reversed());
 	}
 
 	@Override
@@ -146,7 +147,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_PURCHASE.getString().toUpperCase())) {
 				// special case for request
 				if (auctionedItem.isRequest()) {
-					if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.REQUESTS)) return;
+					if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.REQUESTS)) return;
 
 					if (click.player.getUniqueId().equals(auctionedItem.getOwner()) && !Settings.OWNER_CAN_FULFILL_OWN_REQUEST.getBoolean()) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(click.player);
@@ -155,11 +156,11 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 					cancelTask();
 					click.manager.showGUI(click.player, new GUIConfirmPurchase(this.auctionPlayer, auctionedItem, false));
-					AuctionHouse.getInstance().getTransactionManager().addPrePurchase(click.player, auctionedItem.getId());
+					AuctionHouse.getTransactionManager().addPrePurchase(click.player, auctionedItem.getId());
 					return;
 				}
 
-				if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
+				if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
 				handleNonBidItem(auctionedItem, click, false);
 				return;
 			}
@@ -170,7 +171,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					return;
 				}
 
-				if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
+				if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
 				handleNonBidItem(auctionedItem, click, true);
 				return;
 			}
@@ -179,13 +180,13 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		// Auction Items
 		if (click.clickType == ClickType.valueOf(Settings.CLICKS_BID_ITEM_PLACE_BID.getString().toUpperCase())) {
-			if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BIDDING)) return;
+			if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BIDDING)) return;
 			handleBidItem(auctionedItem, click, false);
 			return;
 		}
 
 		if (click.clickType == ClickType.valueOf(Settings.CLICKS_BID_ITEM_BUY_NOW.getString().toUpperCase())) {
-			if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
+			if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
 			handleBidItem(auctionedItem, click, true);
 		}
 	}
@@ -210,7 +211,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		cancelTask();
 		click.manager.showGUI(click.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, buyingQuantity));
-		AuctionHouse.getInstance().getTransactionManager().addPrePurchase(click.player, auctionItem.getId());
+		AuctionHouse.getTransactionManager().addPrePurchase(click.player, auctionItem.getId());
 	}
 
 	//======================================================================================================//

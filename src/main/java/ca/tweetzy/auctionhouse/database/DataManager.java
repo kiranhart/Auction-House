@@ -231,11 +231,12 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void updateItems(Collection<AuctionedItem> items, UpdateCallback callback) {
+
 		this.databaseConnector.connect(connection -> {
 			connection.setAutoCommit(false);
 			SQLException err = null;
 
-			PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET owner = ?, owner_name = ?, highest_bidder = ?, highest_bidder_name = ?, base_price = ?, bid_start_price = ?, bid_increment_price = ?, current_price = ?, expires_at = ?, expired = ?, item = ?, serialize_version = ?, itemstack = ?, priority_listing = ?, priority_expires_at = ? WHERE id = ?");
+			PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET owner = ?, owner_name = ?, highest_bidder = ?, highest_bidder_name = ?, base_price = ?, bid_start_price = ?, bid_increment_price = ?, current_price = ?, expires_at = ?, expired = ?, item = ?, serialize_version = ?, itemstack = ?, listing_priority = ?, priority_expires_at = ? WHERE id = ?");
 			for (AuctionedItem item : items) {
 				try {
 					statement.setString(1, item.getOwner().toString());
@@ -259,7 +260,7 @@ public class DataManager extends DataManagerAbstract {
 						statement.setString(13, null);
 					}
 
-					statement.setBoolean(14, item.isHasListingPriority());
+					statement.setBoolean(14, item.getPriorityExpiresAt() >= System.currentTimeMillis() && item.isHasListingPriority());
 					statement.setLong(15, item.getPriorityExpiresAt());
 
 					statement.setString(16, item.getId().toString());
@@ -345,7 +346,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void insertAuction(AuctionedItem item, Callback<AuctionedItem> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite, allow_partial_buys, server_auction, is_request, request_count, serialize_version, itemstack, priority_listing, priority_expires_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite, allow_partial_buys, server_auction, is_request, request_count, serialize_version, itemstack, listing_priority, priority_expires_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 				final AuctionAPI api = AuctionAPI.getInstance();
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
 
@@ -432,8 +433,10 @@ public class DataManager extends DataManagerAbstract {
 		auctionItem.setRequest(resultSet.getBoolean("is_request"));
 		auctionItem.setRequestAmount(resultSet.getInt("request_count"));
 
-		auctionItem.setHasListingPriority(resultSet.getBoolean("listing_priority"));
-		auctionItem.setPriorityExpiresAt(resultSet.getLong("priority_expires_at"));
+		final long priorityExpiresAt = resultSet.getLong("priority_expires_at");
+
+		auctionItem.setHasListingPriority(priorityExpiresAt >= System.currentTimeMillis() && resultSet.getBoolean("listing_priority"));
+		auctionItem.setPriorityExpiresAt(priorityExpiresAt);
 
 		return auctionItem;
 	}
