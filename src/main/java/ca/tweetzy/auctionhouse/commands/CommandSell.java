@@ -224,7 +224,10 @@ public final class CommandSell extends Command {
 		// NOT USING THE BIDDING SYSTEM
 		if (!isBiddingItem) {
 			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(AuctionHouse.getMinItemPriceManager().getMinPrice(originalItem).getPrice())).sendPrefixedMessage(player);
+				AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice")
+						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getMinItemPriceManager().getMinPrice(originalItem).getPrice()))
+						.sendPrefixedMessage(player);
+
 				return ReturnType.FAIL;
 			}
 
@@ -234,7 +237,10 @@ public final class CommandSell extends Command {
 
 		if (isBiddingItem && startingBid != null) {
 			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(AuctionHouse.getMinItemPriceManager().getMinPrice(originalItem).getPrice())).sendPrefixedMessage(player);
+				AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice")
+						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getMinItemPriceManager().getMinPrice(originalItem).getPrice()))
+						.sendPrefixedMessage(player);
+
 				return ReturnType.FAIL;
 			}
 

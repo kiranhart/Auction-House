@@ -26,6 +26,7 @@ import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.Common;
@@ -33,6 +34,7 @@ import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -80,6 +82,9 @@ public class AuctionedItem {
 	// priority listing
 	private boolean hasListingPriority;
 	private long priorityExpiresAt;
+
+	private String currency = Settings.CURRENCY_DEFAULT_SELECTED.getString();
+	private ItemStack currencyItem;
 
 	public AuctionedItem() {
 	}
@@ -154,7 +159,7 @@ public class AuctionedItem {
 
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HEADER.getStringList()));
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_SELLER.getStringList().stream().map(s -> s.replace("%seller%", this.ownerName)).collect(Collectors.toList())));
-		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_CURRENT_PRICE.getStringList().stream().map(s -> s.replace("%currentprice%", Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : AuctionAPI.getInstance().formatNumber(this.currentPrice))).collect(Collectors.toList())));
+		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_CURRENT_PRICE.getStringList().stream().map(s -> s.replace("%currentprice%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.currentPrice, this.currency, this.currencyItem))).collect(Collectors.toList())));
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HIGHEST_BIDDER.getStringList().stream().map(s -> s.replace("%highestbidder%", this.highestBidder.equals(this.owner) ? AuctionHouse.getInstance().getLocale().getMessage("auction.nobids").getMessage() : this.highestBidderName)).collect(Collectors.toList())));
 
 		if (this.infinite) {
@@ -185,7 +190,7 @@ public class AuctionedItem {
 
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HEADER.getStringList()));
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_REQUESTER.getStringList().stream().map(s -> s.replace("%requester%", this.ownerName)).collect(Collectors.toList())));
-		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_REQUEST_PRICE.getStringList().stream().map(s -> s.replace("%request_price%", Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : AuctionAPI.getInstance().formatNumber(this.basePrice))).collect(Collectors.toList())));
+		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_REQUEST_PRICE.getStringList().stream().map(s -> s.replace("%request_price%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.basePrice, this.currency, this.currencyItem))).collect(Collectors.toList())));
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_REQUEST_COUNT.getStringList().stream().map(s -> s.replace("%request_amount%", String.valueOf(requestAmount))).collect(Collectors.toList())));
 
 		long[] times = AuctionAPI.getInstance().getRemainingTimeValues((this.expiresAt - System.currentTimeMillis()) / 1000);
@@ -226,17 +231,17 @@ public class AuctionedItem {
 		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_SELLER.getStringList().stream().map(s -> s.replace("%seller%", this.ownerName)).collect(Collectors.toList())));
 
 		if (this.basePrice != -1) {
-			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_BUY_NOW.getStringList().stream().filter(s -> this.isBidItem ? s.length() != 0 : s.length() >= 0).map(s -> s.replace("%buynowprice%", Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.basePrice) : AuctionAPI.getInstance().formatNumber(this.basePrice))).collect(Collectors.toList())));
+			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_BUY_NOW.getStringList().stream().filter(s -> this.isBidItem ? s.length() != 0 : s.length() >= 0).map(s -> s.replace("%buynowprice%", getFormattedBasePrice())).collect(Collectors.toList())));
 		}
 
 		if (this.isBidItem) {
-			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_CURRENT_PRICE.getStringList().stream().map(s -> s.replace("%currentprice%", Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.currentPrice) : AuctionAPI.getInstance().formatNumber(this.currentPrice))).collect(Collectors.toList())));
+			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_CURRENT_PRICE.getStringList().stream().map(s -> s.replace("%currentprice%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.currentPrice, this.currency, this.currencyItem))).collect(Collectors.toList())));
 			if (!Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean()) {
-				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_BID_INCREMENT.getStringList().stream().map(s -> s.replace("%bidincrement%", Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.bidIncrementPrice) : AuctionAPI.getInstance().formatNumber(this.bidIncrementPrice))).collect(Collectors.toList())));
+				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_BID_INCREMENT.getStringList().stream().map(s -> s.replace("%bidincrement%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.bidIncrementPrice, this.currency, this.currencyItem))).collect(Collectors.toList())));
 			}
 
 			if (Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean() && Settings.USE_REALISTIC_BIDDING.getBoolean()) {
-				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_BID_INCREMENT.getStringList().stream().map(s -> s.replace("%bidincrement%", Settings.USE_SHORT_NUMBERS_ON_ITEMS.getBoolean() ? AuctionAPI.getInstance().getFriendlyNumber(this.bidIncrementPrice) : AuctionAPI.getInstance().formatNumber(this.bidIncrementPrice))).collect(Collectors.toList())));
+				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_BID_INCREMENT.getStringList().stream().map(s -> s.replace("%bidincrement%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.bidIncrementPrice, this.currency, this.currencyItem))).collect(Collectors.toList())));
 			}
 
 			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HIGHEST_BIDDER.getStringList().stream().map(s -> s.replace("%highestbidder%", this.highestBidder.equals(this.owner) ? AuctionHouse.getInstance().getLocale().getMessage("auction.nobids").getMessage() : this.highestBidderName)).collect(Collectors.toList())));
@@ -306,6 +311,17 @@ public class AuctionedItem {
 		return itemStack.make();
 	}
 
+
+	public boolean playerHasSufficientMoney(OfflinePlayer player, double amount) {
+		if (this.currencyItem != null && this.currencyItem.getType() != CompMaterial.AIR.parseMaterial()) {
+			return AuctionHouse.getCurrencyManager().has(player, this.currencyItem, (int) amount);
+		}
+
+		final String[] split = this.currency.split("/");
+		return AuctionHouse.getCurrencyManager().has(player, split[0], split[1], amount);
+	}
+
+
 	public ItemStack getCleanItem() {
 		ItemStack cleaned = this.item.clone();
 		NBT.modify(cleaned, nbt -> {
@@ -313,6 +329,26 @@ public class AuctionedItem {
 		});
 
 		return cleaned;
+	}
+
+	public boolean hasValidItemCurrency() {
+		return this.currencyItem != null && this.currencyItem.getType() != CompMaterial.AIR.parseMaterial();
+	}
+
+	public String getFormattedCurrentPrice() {
+		return AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.currentPrice, this.currency, this.currencyItem);
+	}
+
+	public String getFormattedBasePrice() {
+		return AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.basePrice, this.currency, this.currencyItem);
+	}
+
+	public String getFormattedStartingPrice() {
+		return AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.bidStartingPrice, this.currency, this.currencyItem);
+	}
+
+	public String getFormattedIncrementPrice() {
+		return AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.bidIncrementPrice, this.currency, this.currencyItem);
 	}
 
 	public boolean containsValidBid() {

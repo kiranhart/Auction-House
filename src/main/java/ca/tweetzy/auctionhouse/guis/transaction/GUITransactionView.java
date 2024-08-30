@@ -87,7 +87,7 @@ public class GUITransactionView extends AuctionBaseGUI {
 						"transaction_id", transaction.getId().toString(),
 						"sale_type", transaction.getAuctionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? AuctionHouse.getInstance().getLocale().getMessage("transaction.sale_type.bid_won").getMessage() : AuctionHouse.getInstance().getLocale().getMessage("transaction.sale_type.immediate_buy").getMessage(),
 						"transaction_date", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()),
-						"final_price", AuctionAPI.getInstance().formatNumber(transaction.getFinalPrice()),
+						"final_price", AuctionHouse.getAPI().getNumberAsCurrency(transaction.getFinalPrice()),
 						"item_name", AuctionAPI.getInstance().getItemName(transaction.getItem())
 				))
 				.make());

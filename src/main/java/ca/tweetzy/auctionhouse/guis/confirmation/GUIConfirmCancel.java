@@ -19,7 +19,6 @@
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -79,7 +78,7 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 				.make(), click -> {
 
 			// Re-select the item to ensure that it's available
-			AuctionedItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getId());
+			AuctionedItem located = AuctionHouse.getAuctionItemManager().getItem(this.auctionItem.getId());
 			if (located == null) {
 				click.manager.showGUI(click.player, new GUIActiveAuctions(this.auctionPlayer));
 				return;
@@ -91,19 +90,23 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 				final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(located.getHighestBidder());
 
 				if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-					AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+					AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(
 							oldBidder.getUniqueId(),
 							located.getCurrentPrice(),
 							auctionItem.getItem(),
 							AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
-							PaymentReason.BID_RETURNED
-
+							PaymentReason.BID_RETURNED,
+							auctionItem.getCurrency(),
+							auctionItem.getCurrencyItem()
 					), null);
 				else
-					AuctionHouse.getCurrencyManager().deposit(oldBidder, located.getCurrentPrice());
+					AuctionHouse.getCurrencyManager().deposit(oldBidder, located.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 				if (oldBidder.isOnline())
-					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(located.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
+							.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+							.processPlaceholder("price", located.getFormattedCurrentPrice())
+							.sendPrefixedMessage(oldBidder.getPlayer());
 
 			}
 

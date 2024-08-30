@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.model.discord;
 
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -121,32 +121,32 @@ public final class DiscordMessageCreator {
 	}
 
 	public DiscordWebhook.EmbedObject applyBidInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_VALUE.getString().replace("%starting_price%", AuctionAPI.getInstance().formatNumber(this.listing.getBidStartingPrice())), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
+		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_VALUE.getString().replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
 		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_BIDDER_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_BIDDER_VALUE.getString().replace("%bidder%", this.bidder.getName()), Settings.DISCORD_MSG_FIELD_AUCTION_BIDDER_INLINE.getBoolean());
 
-		embed.addField(Settings.DISCORD_MSG_FIELD_BID_AMT_NAME.getString(), Settings.DISCORD_MSG_FIELD_BID_AMT_VALUE.getString().replace("%bid_amount%", AuctionAPI.getInstance().formatNumber(this.bidAmount)), Settings.DISCORD_MSG_FIELD_BID_AMT_INLINE.getBoolean());
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_VALUE.getString().replace("%current_price%", AuctionAPI.getInstance().formatNumber(this.listing.getCurrentPrice())), Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_INLINE.getBoolean());
+		embed.addField(Settings.DISCORD_MSG_FIELD_BID_AMT_NAME.getString(), Settings.DISCORD_MSG_FIELD_BID_AMT_VALUE.getString().replace("%bid_amount%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.bidAmount, this.listing.getCurrency(), this.listing.getCurrencyItem())), Settings.DISCORD_MSG_FIELD_BID_AMT_INLINE.getBoolean());
+		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_VALUE.getString().replace("%current_price%", this.listing.getFormattedCurrentPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_INLINE.getBoolean());
 
 		return embed;
 	}
 
 
 	public DiscordWebhook.EmbedObject applyAuctionWonInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_VALUE.getString().replace("%starting_price%", AuctionAPI.getInstance().formatNumber(this.listing.getBidStartingPrice())), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_WON_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_WON_VALUE.getString().replace("%final_price%", AuctionAPI.getInstance().formatNumber(this.listing.getCurrentPrice())), Settings.DISCORD_MSG_FIELD_AUCTION_WON_INLINE.getBoolean());
+		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_VALUE.getString().replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
+		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_WON_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_WON_VALUE.getString().replace("%final_price%", this.listing.getFormattedCurrentPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_WON_INLINE.getBoolean());
 		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_WINNER_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_WINNER_VALUE.getString().replace("%winner%", this.buyer.getName()), Settings.DISCORD_MSG_FIELD_AUCTION_WINNER_INLINE.getBoolean());
 		return embed;
 	}
 
 	public DiscordWebhook.EmbedObject applyBinInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_VALUE.getString().replace("%item_price%", AuctionAPI.getInstance().formatNumber(this.listing.getBasePrice())), Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_INLINE.getBoolean());
+		embed.addField(Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_VALUE.getString().replace("%item_price%", this.listing.getFormattedBasePrice()), Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_INLINE.getBoolean());
 		return embed;
 	}
 
 	public DiscordWebhook.EmbedObject applyAuctionInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_VALUE.getString().replace("%starting_price%", AuctionAPI.getInstance().formatNumber(this.listing.getBidStartingPrice())), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
+		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_VALUE.getString().replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
 		if (this.listing.getBasePrice() != -1)
-			embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_VALUE.getString().replace("%buy_now_price%", AuctionAPI.getInstance().formatNumber(this.listing.getBasePrice())), Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_INLINE.getBoolean());
+			embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_VALUE.getString().replace("%buy_now_price%", this.listing.getFormattedBasePrice()), Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_INLINE.getBoolean());
 		return embed;
 	}
 

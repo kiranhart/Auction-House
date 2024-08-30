@@ -20,6 +20,7 @@ package ca.tweetzy.auctionhouse.api;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
+import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -53,8 +54,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -82,32 +81,6 @@ public class AuctionAPI {
 			instance = new AuctionAPI();
 		}
 		return instance;
-	}
-
-	/**
-	 * @param value a long number to be converted into a easily readable text
-	 * @return a user friendly number to read
-	 */
-	public String getFriendlyNumber(double value) {
-		if (value <= 0) return "0";
-
-		int power;
-		String suffix = " KMBTQPEZY";
-		String formattedNumber = "";
-
-		try {
-			NumberFormat formatter = new DecimalFormat("#,###.#");
-			power = (int) StrictMath.log10(value);
-			value = value / (Math.pow(10, (power / 3) * 3));
-			formattedNumber = formatter.format(value);
-
-			formattedNumber = formattedNumber + suffix.charAt(power / 3);
-
-		} catch (StringIndexOutOfBoundsException e) {
-			return formatNumber(value);
-		}
-
-		return formattedNumber.length() > 4 ? formattedNumber.replaceAll("\\.[0-9]+", "") : formattedNumber;
 	}
 
 	/**
@@ -381,32 +354,6 @@ public class AuctionAPI {
 		Pattern pattern = Pattern.compile("([0-9]){1,10}(s|m|h|d|y){1}", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(sentence);
 		return matcher.matches();
-	}
-
-	/**
-	 * Used to format numbers with decimals and commas
-	 *
-	 * @param number is the number you want to format
-	 * @return the formatted number string
-	 */
-	public String formatNumber(double number) {
-		String formatted = String.format(Settings.CURRENCY_FORMAT.getString(), number);//%,.2f
-		if (Settings.USE_SPACE_SEPARATOR_FOR_NUMBER.getBoolean())
-			formatted = formatted.replace(",", " ");
-
-		// do the zero drop here
-		// this is a bit scuffed, I gotta improve this
-		if (Settings.STRIP_ZEROS_ON_WHOLE_NUMBERS.getBoolean()) {
-			if (Double.parseDouble(formatted.replace(",", "")) % 1 == 0) {
-
-				formatted = formatted.replaceAll("0+$", "");
-				if (formatted.endsWith("."))
-					formatted = formatted.substring(0, formatted.length() - 1);
-			}
-		}
-
-		String preDecimal = Settings.USE_ALTERNATE_CURRENCY_FORMAT.getBoolean() ? replaceLast(formatted.replace(",", "."), ".", ",") : formatted;
-		return Settings.USE_FLAT_NUMBER_FORMAT.getBoolean() ? preDecimal.replace(".", "").replace(",", "") : preDecimal;
 	}
 
 	/**
@@ -756,47 +703,69 @@ public class AuctionAPI {
 		return seconds;
 	}
 
-	public void withdrawBalance(OfflinePlayer player, double amount) {
+	private void handleWithdraw(OfflinePlayer player, double amount, AuctionedItem auctionedItem) {
+		if (auctionedItem.hasValidItemCurrency())
+			AuctionHouse.getCurrencyManager().withdraw(player, auctionedItem.getCurrencyItem(), (int) amount);
+		else {
+			final String[] currSplit = auctionedItem.getCurrency().split("/");
+			AuctionHouse.getCurrencyManager().withdraw(player, currSplit[0], currSplit[1], amount);
+		}
+	}
+
+	public void withdrawBalance(OfflinePlayer player, double amount, AuctionedItem auctionedItem) {
 		if (Settings.PAYMENT_HANDLE_USE_CMD.getBoolean()) {
 			AuctionHouse.newChain().sync(() -> {
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.PAYMENT_HANDLE_WITHDRAW_CMD.getString().replace("%player%", player.getName()).replace("%price%", String.valueOf(amount)));
 			}).execute();
 		} else {
 			if (Settings.FORCE_SYNC_MONEY_ACTIONS.getBoolean())
-				AuctionHouse.newChain().sync(() -> AuctionHouse.getCurrencyManager().withdraw(player, amount)).execute();
-			else
-				AuctionHouse.getCurrencyManager().withdraw(player, amount);
+				AuctionHouse.newChain().sync(() -> handleWithdraw(player, amount, auctionedItem)).execute();
+			else {
+				handleWithdraw(player, amount, auctionedItem);
+			}
 		}
 	}
 
-	public void depositBalance(OfflinePlayer player, double amount, ItemStack item, OfflinePlayer paidFrom) {
+	public void depositBalance(OfflinePlayer player, double amount, ItemStack item, OfflinePlayer paidFrom, AuctionedItem auctionedItem) {
 		if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean()) {
 			if (Settings.MANUAL_PAYMENTS_ONLY_FOR_OFFLINE_USERS.getBoolean()) {
 				if (!player.isOnline()) {
-					AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, item, paidFrom.getName(), PaymentReason.ITEM_SOLD), null);
+					AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, item, paidFrom.getName(), PaymentReason.ITEM_SOLD, auctionedItem.getCurrency(), auctionedItem.getCurrencyItem()), null);
 				} else {
-					initiatePayment(player, amount);
+					initiatePayment(player, amount, auctionedItem);
 				}
 				return;
 			}
 
-			AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, item, paidFrom.getName(), PaymentReason.ITEM_SOLD), null);
+			AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, item, paidFrom.getName(), PaymentReason.ITEM_SOLD, auctionedItem.getCurrency(), auctionedItem.getCurrencyItem()), null);
 			return;
 		}
 
-		initiatePayment(player, amount);
+		initiatePayment(player, amount, auctionedItem);
 	}
 
-	private void initiatePayment(OfflinePlayer player, double amount) {
+	private void initiatePayment(OfflinePlayer player, double amount, AuctionedItem auctionedItem) {
 		if (Settings.PAYMENT_HANDLE_USE_CMD.getBoolean()) {
-			AuctionHouse.newChain().sync(() -> {
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.PAYMENT_HANDLE_DEPOSIT_CMD.getString().replace("%player%", player.getName()).replace("%price%", String.valueOf(amount)));
-			}).execute();
+			AuctionHouse.newChain().sync(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.PAYMENT_HANDLE_DEPOSIT_CMD.getString().replace("%player%", player.getName()).replace("%price%", String.valueOf(amount)))).execute();
 		} else {
 			if (Settings.FORCE_SYNC_MONEY_ACTIONS.getBoolean())
-				AuctionHouse.newChain().sync(() -> AuctionHouse.getCurrencyManager().deposit(player, amount)).execute();
+				AuctionHouse.newChain().sync(() -> handleDeposit(player, amount, auctionedItem)).execute();
+			else {
+				handleDeposit(player, amount, auctionedItem);
+			}
+		}
+	}
+
+	private void handleDeposit(OfflinePlayer player, double amount, AuctionedItem auctionedItem) {
+		if (auctionedItem.hasValidItemCurrency())
+			if (player.isOnline())
+				AuctionHouse.getCurrencyManager().deposit(player, auctionedItem.getCurrencyItem(), (int) amount);
 			else
-				AuctionHouse.getCurrencyManager().deposit(player, amount);
+				AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, auctionedItem.getItem(), AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(), PaymentReason.ITEM_SOLD, auctionedItem.getCurrency(), auctionedItem.getCurrencyItem()), null);
+
+		else {
+			final String[] currSplit = auctionedItem.getCurrency().split("/");
+			AuctionHouse.getCurrencyManager().deposit(player, currSplit[0], currSplit[1], amount);
 		}
 	}
 

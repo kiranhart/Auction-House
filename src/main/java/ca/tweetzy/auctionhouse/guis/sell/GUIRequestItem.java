@@ -106,7 +106,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 		setButton(3, 6, QuickItem
 				.of(Settings.GUI_REQUEST_ITEMS_PRICE_ITEM.getString())
 				.name(Settings.GUI_REQUEST_ITEMS_PRICE_NAME.getString())
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_PRICE_LORE.getStringList(), "request_price", AuctionAPI.getInstance().formatNumber(price)))
+				.lore(this.player, Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_PRICE_LORE.getStringList(), "request_price", AuctionHouse.getAPI().getNumberAsCurrency(price, false)))
 				.make(), click -> {
 
 			click.gui.exit();

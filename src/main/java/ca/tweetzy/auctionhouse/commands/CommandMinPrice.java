@@ -83,7 +83,7 @@ public class CommandMinPrice extends Command {
 					AuctionHouse.getMinItemPriceManager().addItem(inserted);
 					AuctionHouse.getInstance().getLocale().getMessage("general.added min price")
 							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(inserted.getItemStack()))
-							.processPlaceholder("price", AuctionAPI.getInstance().formatNumber(inserted.getPrice()))
+							.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(inserted.getPrice(), false))
 							.sendPrefixedMessage(player);
 				}
 			});

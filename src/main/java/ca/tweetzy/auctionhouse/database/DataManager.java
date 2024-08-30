@@ -346,7 +346,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void insertAuction(AuctionedItem item, Callback<AuctionedItem> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite, allow_partial_buys, server_auction, is_request, request_count, serialize_version, itemstack, listing_priority, priority_expires_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite, allow_partial_buys, server_auction, is_request, request_count, serialize_version, itemstack, listing_priority, priority_expires_at, currency, currency_item) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 				final AuctionAPI api = AuctionAPI.getInstance();
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
 
@@ -363,10 +363,10 @@ public class DataManager extends DataManagerAbstract {
 				statement.setDouble(10, item.getCurrentPrice());
 				statement.setBoolean(11, item.isExpired());
 				statement.setLong(12, item.getExpiresAt());
-				statement.setString(13, item.getItem().getType().name());
-				statement.setString(14, api.getItemName(item.getItem()));
-				statement.setString(15, api.serializeLines(api.getItemLore(item.getItem())));
-				statement.setString(16, api.serializeLines(api.getItemEnchantments(item.getItem())));
+				statement.setString(13, item.getItem().getType().name()); // todo remove
+				statement.setString(14, api.getItemName(item.getItem())); // todo remove
+				statement.setString(15, api.serializeLines(api.getItemLore(item.getItem()))); // todo remove
+				statement.setString(16, api.serializeLines(api.getItemEnchantments(item.getItem()))); // todo remove
 				statement.setString(17, AuctionAPI.encodeItem(item.getItem()));
 				statement.setString(18, item.getListedWorld());
 				statement.setBoolean(19, item.isInfinite());
@@ -385,6 +385,10 @@ public class DataManager extends DataManagerAbstract {
 
 				statement.setBoolean(26, item.isHasListingPriority());
 				statement.setLong(27, item.getPriorityExpiresAt());
+
+//				currency, currency_item, listed_server
+				statement.setString(28, item.getCurrency());
+				statement.setString(29, (item.getCurrencyItem() == null || item.getCurrencyItem() == CompMaterial.AIR.parseItem()) ? null : QuickItem.toString(item.getCurrencyItem()));
 
 				statement.executeUpdate();
 
@@ -437,6 +441,9 @@ public class DataManager extends DataManagerAbstract {
 
 		auctionItem.setHasListingPriority(priorityExpiresAt >= System.currentTimeMillis() && resultSet.getBoolean("listing_priority"));
 		auctionItem.setPriorityExpiresAt(priorityExpiresAt);
+
+		auctionItem.setCurrency(resultSet.getString("currency"));
+		auctionItem.setCurrencyItem(resultSet.getString("currency_item") == null ? null : QuickItem.getItem(resultSet.getString("currency_item")));
 
 		return auctionItem;
 	}
@@ -839,7 +846,7 @@ public class DataManager extends DataManagerAbstract {
 
 	public void insertAuctionPayment(AuctionPayment auctionPayment, Callback<AuctionPayment> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "payments (uuid, payment_for, amount, time, item, from_name, reason) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "payments (uuid, payment_for, amount, time, item, from_name, reason, currency, currency_item) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "payments WHERE uuid = ?");
 
 				fetch.setString(1, auctionPayment.getId().toString());
@@ -850,6 +857,10 @@ public class DataManager extends DataManagerAbstract {
 				statement.setString(5, AuctionAPI.encodeItem(auctionPayment.getItem()));
 				statement.setString(6, auctionPayment.getFromName());
 				statement.setString(7, auctionPayment.getReason().name());
+
+				statement.setString(8, auctionPayment.getCurrency());
+				statement.setString(9, (auctionPayment.getCurrencyItem() == null || auctionPayment.getCurrencyItem() == CompMaterial.AIR.parseItem()) ? null : QuickItem.toString(auctionPayment.getCurrencyItem()));
+
 
 				statement.executeUpdate();
 
@@ -897,7 +908,9 @@ public class DataManager extends DataManagerAbstract {
 				(resultSet.getString("from_name") == null || resultSet.getString("from_name").trim().isEmpty()) ? null : resultSet.getString("from_name"),
 				(resultSet.getString("reason") == null || resultSet.getString("reason").trim().isEmpty()) ? PaymentReason.ITEM_SOLD : PaymentReason.valueOf(resultSet.getString("reason")),
 				resultSet.getDouble("amount"),
-				resultSet.getLong("time")
+				resultSet.getLong("time"),
+				resultSet.getString("currency"),
+				resultSet.getString("currency_item") == null ? null : QuickItem.getItem(resultSet.getString("currency_item"))
 		);
 	}
 

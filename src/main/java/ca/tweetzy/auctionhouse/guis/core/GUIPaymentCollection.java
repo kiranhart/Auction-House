@@ -66,7 +66,7 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 	protected ItemStack makeDisplayItem(AuctionPayment payment) {
 		return QuickItem
 				.of(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_ITEM.getString())
-				.name(Replacer.replaceVariables(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_NAME.getString(), "payment_amount", AuctionAPI.getInstance().formatNumber(payment.getAmount())))
+				.name(Replacer.replaceVariables(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_NAME.getString(), "payment_amount", AuctionHouse.getAPI().getNumberAsCurrency(payment.getAmount(), false)))
 				.lore(this.player, Replacer.replaceVariables(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList(),
 						"item_name", AuctionAPI.getInstance().getItemName(payment.getItem()),
 						"from_name", payment.getFromName(),

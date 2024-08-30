@@ -99,7 +99,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 				} else {
 					if (Settings.BID_MUST_BE_HIGHER_THAN_PREVIOUS.getBoolean()) {
 						endAndReturn(click);
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.bidmusthigherthanprevious").processPlaceholder("current_bid", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(click.player);
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.bidmusthigherthanprevious").processPlaceholder("current_bid", auctionItem.getFormattedCurrentPrice()).sendPrefixedMessage(click.player);
 						return;
 					}
 
@@ -139,23 +139,31 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 				if (!auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
 					if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-						AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+						AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(
 								oldBidder.getUniqueId(),
 								oldBidAmount,
 								auctionItem.getItem(),
 								AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
-								PaymentReason.BID_RETURNED
+								PaymentReason.BID_RETURNED,
+								auctionItem.getCurrency(),
+								auctionItem.getCurrencyItem()
 						), null);
 					else
-						AuctionHouse.getCurrencyManager().deposit(oldBidder, oldBidAmount);
+						AuctionHouse.getCurrencyManager().deposit(oldBidder, oldBidAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(oldBidAmount)).sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
+								.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+								.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(oldBidAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+								.sendPrefixedMessage(oldBidder.getPlayer());
 				}
 
 
-				AuctionHouse.getCurrencyManager().withdraw(click.player, newBiddingAmount);
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(click.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(newBiddingAmount)).sendPrefixedMessage(click.player);
+				AuctionHouse.getCurrencyManager().withdraw(click.player, newBiddingAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem());
+				AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
+						.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(click.player, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+						.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(newBiddingAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+						.sendPrefixedMessage(click.player);
 
 			}
 
@@ -174,7 +182,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 				Bukkit.getOnlinePlayers().forEach(player -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.bid")
 						.processPlaceholder("player", click.player.getName())
 						.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(click.player))
-						.processPlaceholder("amount", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice()))
+						.processPlaceholder("amount", auctionItem.getFormattedCurrentPrice())
 						.processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
 						.sendPrefixedMessage(player));
 			}
@@ -191,7 +199,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 				AuctionHouse.getInstance().getLocale().getMessage("auction.placedbid")
 						.processPlaceholder("player", click.player.getName())
 						.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(click.player))
-						.processPlaceholder("amount", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice()))
+						.processPlaceholder("amount", auctionItem.getFormattedCurrentPrice())
 						.processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
 						.sendPrefixedMessage(owner.getPlayer());
 			}

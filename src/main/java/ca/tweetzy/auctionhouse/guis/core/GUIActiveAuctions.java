@@ -19,7 +19,6 @@
 package ca.tweetzy.auctionhouse.guis.core;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -32,15 +31,12 @@ import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.messages.Titles;
-import io.lumine.mythic.utils.time.Time;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -105,19 +101,23 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 							final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(item.getHighestBidder());
 
 							if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-								AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+								AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(
 										oldBidder.getUniqueId(),
 										item.getCurrentPrice(),
 										item.getItem(),
 										AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
-										PaymentReason.BID_RETURNED
+										PaymentReason.BID_RETURNED,
+										item.getCurrency(),
+										item.getCurrencyItem()
 								), null);
 							else
 								AuctionHouse.getCurrencyManager().deposit(oldBidder, item.getCurrentPrice());
 
 							if (oldBidder.isOnline())
-								AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(item.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
-
+								AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
+										.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, item.getCurrency().split("/")[0], item.getCurrency().split("/")[1]), item.getCurrency(), item.getCurrencyItem()))
+										.processPlaceholder("price", item.getFormattedCurrentPrice())
+										.sendPrefixedMessage(oldBidder.getPlayer());
 						}
 
 						draw();
@@ -152,7 +152,10 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 				}
 
 				AuctionHouse.getEconomy().withdrawPlayer(click.player, Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble());
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(click.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble())).sendPrefixedMessage(click.player);
+				AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
+						.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(click.player, item.getCurrency().split("/")[0], item.getCurrency().split("/")[1]), item.getCurrency(), item.getCurrencyItem()))
+						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble(), false))
+						.sendPrefixedMessage(click.player);
 
 				long newBoostTime = item.getPriorityExpiresAt() + (System.currentTimeMillis() + (1000L * Settings.LISTING_PRIORITY_TIME_PER_BOOST.getInt()));
 

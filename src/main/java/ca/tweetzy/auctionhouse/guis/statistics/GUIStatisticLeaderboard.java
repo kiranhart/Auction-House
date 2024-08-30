@@ -82,7 +82,7 @@ public final class GUIStatisticLeaderboard extends AuctionPagedGUI<Pair<UUID, Do
 				.lore(this.player, Replacer.replaceVariables(Settings.GUI_STATS_LEADERBOARD_ITEMS_PLAYER_LORE.getStringList(),
 						"player_name", targetUser.getName() == null ? "&e&lUsername not found" : targetUser.getName(),
 						"auction_statistic_name", statisticType.getTranslatedType(),
-						"auction_statistic_value", AuctionAPI.getInstance().formatNumber(entry.getSecond())
+						"auction_statistic_value", AuctionHouse.getAPI().getNumberAsCurrency(entry.getSecond())
 				)).make();
 	}
 

@@ -28,6 +28,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.selector.GUICurrencyPicker;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
@@ -56,7 +57,10 @@ public final class GUISellAuction extends AuctionBaseGUI {
 	private final long listingTime;
 	private boolean allowBuyNow;
 
-	public GUISellAuction(@NonNull final AuctionPlayer auctionPlayer, final double binPrice, final double startingBid, final double bidIncrement, final long listingTime, final boolean allowBuyNow) {
+	private String currency;
+	private ItemStack currencyItem;
+
+	public GUISellAuction(@NonNull final AuctionPlayer auctionPlayer, final double binPrice, final double startingBid, final double bidIncrement, final long listingTime, final boolean allowBuyNow, String currency, ItemStack currencyItem) {
 		super(null, auctionPlayer.getPlayer(), Settings.GUI_SELL_AUCTION_TITLE.getString(), 6);
 		this.auctionPlayer = auctionPlayer;
 		this.binPrice = binPrice;
@@ -64,6 +68,8 @@ public final class GUISellAuction extends AuctionBaseGUI {
 		this.bidIncrement = bidIncrement;
 		this.listingTime = listingTime;
 		this.allowBuyNow = allowBuyNow;
+		this.currencyItem = currencyItem;
+		this.currency = currency;
 
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_SELL_AUCTION_BG_ITEM.getString()).make()));
 
@@ -83,6 +89,10 @@ public final class GUISellAuction extends AuctionBaseGUI {
 		draw();
 	}
 
+	public GUISellAuction(@NonNull final AuctionPlayer auctionPlayer, final double binPrice, final double startingBid, final double bidIncrement, final long listingTime, final boolean allowBuyNow) {
+		this(auctionPlayer, binPrice, startingBid, bidIncrement, listingTime, allowBuyNow, null, null);
+	}
+
 	@Override
 	protected void draw() {
 		reset();
@@ -92,6 +102,22 @@ public final class GUISellAuction extends AuctionBaseGUI {
 			click.gui.close();
 			click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, BundleUtil.isBundledItem(this.auctionPlayer.getItemBeingListed()) ? GUISellPlaceItem.ViewMode.BUNDLE_ITEM : GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.BIN));
 		});
+
+		if (Settings.CURRENCY_ALLOW_PICK.getBoolean())
+			setButton(getRows() - 1, 8, QuickItem
+					.of(Settings.GUI_SELL_ITEM_ITEM_CURRENCY_ITEM.getString())
+					.name(Settings.GUI_SELL_ITEM_ITEM_CURRENCY_NAME.getString())
+					.lore(this.player, Settings.GUI_SELL_ITEM_ITEM_CURRENCY_LORE.getStringList())
+					.make(), click -> click.manager.showGUI(click.player, new GUICurrencyPicker(this, click.player, (currency, itemCurrency) -> {
+
+				this.currency = currency.getStoreableName();
+
+				if (itemCurrency != null)
+					this.currencyItem = itemCurrency;
+
+				click.manager.showGUI(click.player, new GUISellAuction(this.auctionPlayer, this.binPrice, this.startingBid, this.bidIncrement, this.listingTime, this.allowBuyNow, this.currency, this.currencyItem));
+			})));
+
 
 		if (Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
 
@@ -134,7 +160,9 @@ public final class GUISellAuction extends AuctionBaseGUI {
 											GUISellAuction.this.startingBid,
 											GUISellAuction.this.bidIncrement,
 											AuctionAPI.toTicks(string),
-											GUISellAuction.this.allowBuyNow
+											GUISellAuction.this.allowBuyNow,
+											GUISellAuction.this.currency,
+											GUISellAuction.this.currencyItem
 									));
 									return true;
 								}
@@ -152,7 +180,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 				setButton(3, 4, QuickItem
 						.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_ITEM.getString())
 						.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_NAME.getString())
-						.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(binPrice)))
+						.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(), "listing_bin_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(binPrice, this.currency, this.currencyItem)))
 						.make(), click -> {
 
 					click.gui.exit();
@@ -190,7 +218,9 @@ public final class GUISellAuction extends AuctionBaseGUI {
 									GUISellAuction.this.startingBid,
 									GUISellAuction.this.bidIncrement,
 									GUISellAuction.this.listingTime,
-									GUISellAuction.this.allowBuyNow
+									GUISellAuction.this.allowBuyNow,
+									GUISellAuction.this.currency,
+									GUISellAuction.this.currencyItem
 							));
 
 							return true;
@@ -201,7 +231,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 		setButton(3, 3, QuickItem
 				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_ITEM.getString())
 				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_NAME.getString())
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(), "listing_start_price", AuctionAPI.getInstance().formatNumber(startingBid)))
+				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(), "listing_start_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(startingBid, this.currency, this.currencyItem)))
 				.make(), click -> {
 
 			click.gui.exit();
@@ -230,7 +260,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 					if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && GUISellAuction.this.allowBuyNow)
 						if (Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && listingAmount >= GUISellAuction.this.binPrice) {
 //							listingAmount = GUISellAuction.this.binPrice / 2 <= 0 ? Settings.MIN_AUCTION_START_PRICE.getDouble() : GUISellAuction.this.binPrice / 2;
-							AuctionHouse.getInstance().getLocale().getMessage("pricing.startingpricetoohigh").processPlaceholder("price", AuctionAPI.getInstance().formatNumber(GUISellAuction.this.binPrice)).sendPrefixedMessage(player);
+							AuctionHouse.getInstance().getLocale().getMessage("pricing.startingpricetoohigh").processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(GUISellAuction.this.binPrice, GUISellAuction.this.currency, GUISellAuction.this.currencyItem)).sendPrefixedMessage(player);
 
 							return false;
 						}
@@ -248,7 +278,9 @@ public final class GUISellAuction extends AuctionBaseGUI {
 							listingAmount,
 							GUISellAuction.this.bidIncrement,
 							GUISellAuction.this.listingTime,
-							GUISellAuction.this.allowBuyNow
+							GUISellAuction.this.allowBuyNow,
+							GUISellAuction.this.currency,
+							GUISellAuction.this.currencyItem
 					));
 
 					return true;
@@ -259,7 +291,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 		setButton(3, 5, QuickItem
 				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getString())
 				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME.getString())
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(), "listing_increment_price", AuctionAPI.getInstance().formatNumber(bidIncrement)))
+				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(), "listing_increment_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(bidIncrement, this.currency, this.currencyItem)))
 				.make(), click -> {
 
 			click.gui.exit();
@@ -297,7 +329,9 @@ public final class GUISellAuction extends AuctionBaseGUI {
 							GUISellAuction.this.startingBid,
 							listingAmount,
 							GUISellAuction.this.listingTime,
-							GUISellAuction.this.allowBuyNow
+							GUISellAuction.this.allowBuyNow,
+							GUISellAuction.this.currency,
+							GUISellAuction.this.currencyItem
 					));
 
 					return true;
@@ -378,7 +412,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 	}
 
 	private AuctionedItem createListingItem() {
-		return new AuctionedItem(
+		AuctionedItem auctionedItem = new AuctionedItem(
 				UUID.randomUUID(),
 				auctionPlayer.getUuid(),
 				auctionPlayer.getUuid(),
@@ -393,5 +427,12 @@ public final class GUISellAuction extends AuctionBaseGUI {
 				true, false,
 				System.currentTimeMillis() + (this.listingTime * 1000L)
 		);
+
+		if (this.currency != null)
+			auctionedItem.setCurrency(this.currency);
+
+		auctionedItem.setCurrencyItem(this.currencyItem);
+
+		return auctionedItem;
 	}
 }

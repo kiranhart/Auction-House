@@ -18,5 +18,22 @@
 
 package ca.tweetzy.auctionhouse.api;
 
+import org.bukkit.inventory.ItemStack;
+
 public interface AuctionHouseAPI {
+
+	/*
+	----------------------------------------------------------------
+			     CURRENCY / NUMBER / DATE RELATED STUFF
+	----------------------------------------------------------------
+	 */
+	String getNumberAsCurrency(final double number, boolean hideSymbol);
+
+	String getNumberAsCurrency(final double number);
+
+	String getAbbreviatedNumber(final double number, boolean hideSymbol);
+
+	String getAbbreviatedNumber(final double number);
+
+	String getFinalizedCurrencyNumber(final double number, final String currency, final ItemStack currencyItem);
 }

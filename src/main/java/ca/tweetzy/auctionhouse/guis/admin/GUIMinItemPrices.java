@@ -41,7 +41,7 @@ import java.util.List;
 public final class GUIMinItemPrices extends AuctionPagedGUI<MinItemPrice> {
 
 	public GUIMinItemPrices(Player player) {
-		super(null, player, Settings.GUI_MIN_ITEM_PRICES_TITLE.getString(), 6, AuctionHouse.getInstance().getMinItemPriceManager().getMinPrices());
+		super(null, player, Settings.GUI_MIN_ITEM_PRICES_TITLE.getString(), 6, AuctionHouse.getMinItemPriceManager().getMinPrices());
 		draw();
 	}
 
@@ -58,14 +58,14 @@ public final class GUIMinItemPrices extends AuctionPagedGUI<MinItemPrice> {
 		return QuickItem
 				.of(minItemPrice.getItemStack().clone())
 				.name(AuctionAPI.getInstance().getItemName(minItemPrice.getItemStack()))
-				.lore(this.player, Replacer.replaceVariables(lore, "price", AuctionAPI.getInstance().formatNumber(minItemPrice.getPrice())))
+				.lore(this.player, Replacer.replaceVariables(lore, "price", AuctionHouse.getAPI().getNumberAsCurrency(minItemPrice.getPrice(), false)))
 				.make();
 	}
 
 	@Override
 	protected void onClick(MinItemPrice minItemPrice, GuiClickEvent event) {
-		AuctionHouse.getInstance().getDataManager().deleteMinItemPrice(Collections.singletonList(minItemPrice.getUuid()));
-		AuctionHouse.getInstance().getMinItemPriceManager().removeItem(minItemPrice);
+		AuctionHouse.getDataManager().deleteMinItemPrice(Collections.singletonList(minItemPrice.getUuid()));
+		AuctionHouse.getMinItemPriceManager().removeItem(minItemPrice);
 		event.manager.showGUI(event.player, new GUIMinItemPrices(event.player));
 	}
 }

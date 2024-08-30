@@ -19,6 +19,92 @@
 package ca.tweetzy.auctionhouse.impl;
 
 import ca.tweetzy.auctionhouse.api.AuctionHouseAPI;
+import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.utils.ItemUtil;
+import org.bukkit.inventory.ItemStack;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public final class AuctionAPI implements AuctionHouseAPI {
+
+	@Override
+	public String getNumberAsCurrency(double number, boolean hideSymbol) {
+
+		final NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale.Builder()
+				.setLanguage(Settings.CURRENCY_FORMAT_LANGUAGE.getString())
+				.setRegion(Settings.CURRENCY_FORMAT_COUNTRY.getString())
+				.build()
+		);
+
+		if (hideSymbol)
+			if (currencyFormatter instanceof DecimalFormat) {
+				DecimalFormat decimalFormat = (DecimalFormat) currencyFormatter;
+				DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
+				symbols.setCurrencySymbol(""); // Set the currency symbol to an empty string
+				decimalFormat.setDecimalFormatSymbols(symbols);
+			}
+
+		return currencyFormatter.format(number);
+	}
+
+	@Override
+	public String getNumberAsCurrency(double number) {
+		return getNumberAsCurrency(number, true);
+	}
+
+	@Override
+	public String getAbbreviatedNumber(double number, boolean hideSymbol) {
+		String[] suffixes = {"", "k", "m", "b", "t", "q", "Q", "s", "S", "o", "n", "d"};
+		int suffixIndex = 0;
+		double tempNumber = number;
+
+		while (tempNumber >= 1000 && suffixIndex < suffixes.length - 1) {
+			tempNumber /= 1000;
+			suffixIndex++;
+		}
+
+		DecimalFormat decimalFormat = new DecimalFormat("#.##");
+		String abbreviatedNumber = decimalFormat.format(tempNumber) + suffixes[suffixIndex];
+
+		if (!hideSymbol) {
+			abbreviatedNumber = getNumberAsCurrency(tempNumber, false) + suffixes[suffixIndex];
+		}
+
+		return abbreviatedNumber;
+	}
+
+	@Override
+	public String getAbbreviatedNumber(double number) {
+		return getAbbreviatedNumber(number, true);
+	}
+
+	@Override
+	public String getFinalizedCurrencyNumber(double number, String currency, ItemStack currencyItem) {
+		final String baseCurrencyFormat = Settings.CURRENCY_ABBREVIATE_NUMBERS.getBoolean() ? getAbbreviatedNumber(number, false) : getNumberAsCurrency(number, false);
+		final String currencyUnformatted = Settings.CURRENCY_ABBREVIATE_NUMBERS.getBoolean() ? getAbbreviatedNumber(number) : getNumberAsCurrency(number);
+
+		if (currency == null)
+			return baseCurrencyFormat;
+
+		// split the currency string
+		final String[] currencyProperties = currency.split("/");
+
+		// basic vault currency, use normal formatting
+		if (currencyProperties[0].equalsIgnoreCase("Vault")) {
+			return baseCurrencyFormat;
+		}
+
+		// using an item currency
+		if (currencyProperties[0].equalsIgnoreCase("AuctionHouse") && currencyProperties[1].equalsIgnoreCase("Item")) {
+			final String currencyItemName = currencyItem != null && currencyItem.getType() != CompMaterial.AIR.parseMaterial() ? ItemUtil.getItemName(currencyItem) : currencyProperties[2];
+			return String.format("%s %s", currencyUnformatted, currencyItemName);
+		}
+
+		// using another currency system with custom name
+		return String.format("%s %s", currencyUnformatted, currencyProperties[2]);
+	}
 }

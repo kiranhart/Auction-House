@@ -23,7 +23,6 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.compatibility.XSound;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.configuration.ConfigSetting;
-import ca.tweetzy.core.hooks.EconomyManager;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 
 import java.util.Arrays;
@@ -42,14 +41,15 @@ public class Settings {
 	static final Config config = AuctionHouse.getInstance().getCoreConfig();
 
 	public static final ConfigSetting LANG = new ConfigSetting(config, "lang", "en_US", "Default language file");
-	public static final ConfigSetting ECONOMY_PLUGIN = new ConfigSetting(config, "economy provider", EconomyManager.getEconomy() == null ? "Vault" : EconomyManager.getEconomy().getName(),
-			"Which economy should auction house use?",
-			"You have the following supported economy plugins installed: \"" + EconomyManager.getManager().getPossiblePlugins().stream().collect(Collectors.joining("\", \"")) + "\"."
-	);
 
+	public static final ConfigSetting CURRENCY_ALLOW_PICK = new ConfigSetting(config, "economy.currency.allow pick", true, "If true, players will be able to select which currency they want to use.");
 	public static final ConfigSetting CURRENCY_DEFAULT_SELECTED = new ConfigSetting(config, "economy.currency.default selection", "Vault/Vault", "The default currency selection, PluginName/CurrencyName -> Ex. Vault/Vault or UltraEconomy/Gems etc");
 	public static final ConfigSetting CURRENCY_VAULT_SYMBOL = new ConfigSetting(config, "economy.currency.vault symbol", "$", "When using default/vault currency, what symbol should be used.");
 	public static final ConfigSetting CURRENCY_BLACKLISTED = new ConfigSetting(config, "economy.currency.black listed", Collections.singletonList("UltraEconomy:Test"), "A list of owning plugins & the currency to be blacklisted. Ex. UltraEconomy:Test");
+	public static final ConfigSetting CURRENCY_FORMAT_LANGUAGE = new ConfigSetting(config, "economy.currency.format.language", "en", "An ISO 639 alpha-2 or alpha-3 language code.");
+	public static final ConfigSetting CURRENCY_FORMAT_COUNTRY = new ConfigSetting(config, "economy.currency.format.country", "US", "An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.");
+	public static final ConfigSetting CURRENCY_ABBREVIATE_NUMBERS = new ConfigSetting(config, "economy.currency.abbreviate numbers", false, "Should numbers be abbreviated?. Example: 123,000 will become 123k ");
+
 
 	public static final ConfigSetting CMD_ALIAS_MAIN = new ConfigSetting(config, "command aliases.main", Arrays.asList("ah", "auctions", "auctionhouses", "ahgui", "auctiongui"), "Command aliases for the main command");
 	public static final ConfigSetting CMD_ALIAS_SUB_ACTIVE = new ConfigSetting(config, "command aliases.subcommands.active", Collections.singletonList("active"), "Command aliases for the active command");
@@ -115,8 +115,6 @@ public class Settings {
 	public static final ConfigSetting MAX_REQUEST_AMOUNT = new ConfigSetting(config, "auction setting.max request amount", 64, "How much of an item should a player be able to ask for in a single request?");
 	public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGES = new ConfigSetting(config, "auction setting.auto refresh auction pages", true, "Should auction pages auto refresh?");
 	public static final ConfigSetting AUTO_REFRESH_ACTIVE_AUCTION_PAGES = new ConfigSetting(config, "auction setting.auto refresh active auction pages", false, "Should the /ah active pages be auto refreshed?");
-	public static final ConfigSetting USE_SHORT_NUMBERS_ON_ITEMS = new ConfigSetting(config, "auction setting.use short numbers", false, "Should numbers be shortened into a prefixed form?");
-	public static final ConfigSetting USE_SHORT_NUMBERS_ON_PLAYER_BALANCE = new ConfigSetting(config, "auction setting.use short numbers on balance", false, "Should numbers be shortened into a prefixed form for the player balance?");
 	public static final ConfigSetting INCREASE_TIME_ON_BID = new ConfigSetting(config, "auction setting.increase time on bid", true, "Should the remaining time be increased when a bid is placed?");
 	public static final ConfigSetting TIME_TO_INCREASE_BY_ON_BID = new ConfigSetting(config, "auction setting.time to increase by on the bid", 20, "How many seconds should be added to the remaining time?");
 	public static final ConfigSetting ALLOW_SALE_OF_DAMAGED_ITEMS = new ConfigSetting(config, "auction setting.allow sale of damaged items", true, "If true, player's can sell items that are damaged (not max durability)");
@@ -124,7 +122,6 @@ public class Settings {
 	public static final ConfigSetting RESTRICT_ALL_TRANSACTIONS_TO_PERM = new ConfigSetting(config, "auction setting.restrict viewing all transactions", false, "If true, player's will need the perm: auctionhouse.transactions.viewall to view all transactions");
 	public static final ConfigSetting BLOCKED_WORLDS = new ConfigSetting(config, "auction setting.blocked worlds", Collections.singletonList("creative"), "A list of worlds that Auction House will be disabled in");
 	public static final ConfigSetting PREVENT_SALE_OF_REPAIRED_ITEMS = new ConfigSetting(config, "auction setting.prevent sale of repaired items", false, "Items repaired before this setting is turned on will still be able to be listed.");
-	public static final ConfigSetting SYNCHRONIZE_ITEM_ADD = new ConfigSetting(config, "auction setting.synchronize item add", false, "If an item is being added to a player's inventory, the process will be ran synchronously");
 	public static final ConfigSetting ITEM_COPY_REQUIRES_GMC = new ConfigSetting(config, "auction setting.admin copy requires creative", false, "If true when using the admin copy option the player must be in creative");
 	public static final ConfigSetting LOG_ADMIN_ACTIONS = new ConfigSetting(config, "auction setting.log admin actions", true, "If true, any admin actions made will be logged");
 	public static final ConfigSetting ROUND_ALL_PRICES = new ConfigSetting(config, "auction setting.round all prices", false, "If true, any decimal numbers will be rounded to the nearest whole number");
@@ -188,18 +185,11 @@ public class Settings {
 
 	public static final ConfigSetting BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START = new ConfigSetting(config, "auction setting.base price must be higher than bid start", true, "Should the base price (buy now price) be higher than the initial bid starting price?");
 	public static final ConfigSetting SYNC_BASE_PRICE_TO_HIGHEST_PRICE = new ConfigSetting(config, "auction setting.sync the base price to the current price", true, "Ex. If the buy now price was 100, and the current price exceeds 100 to say 200, the buy now price will become 200.");
-
-	public static final ConfigSetting CURRENCY_FORMAT = new ConfigSetting(config, "auction setting.currency format", "%,.2f");
-	public static final ConfigSetting STRIP_ZEROS_ON_WHOLE_NUMBERS = new ConfigSetting(config, "auction setting.strip zeros on whole numbers", false, "If the price / amount is a whole number (ex. 40.00) it will drop the .00");
-
 	public static final ConfigSetting ADMIN_OPTION_SHOW_RETURN_ITEM = new ConfigSetting(config, "auction setting.admin option.show return to player", true);
 	public static final ConfigSetting ADMIN_OPTION_SHOW_CLAIM_ITEM = new ConfigSetting(config, "auction setting.admin option.show claim item", true);
 	public static final ConfigSetting ADMIN_OPTION_SHOW_DELETE_ITEM = new ConfigSetting(config, "auction setting.admin option.show delete item", true);
 	public static final ConfigSetting ADMIN_OPTION_SHOW_COPY_ITEM = new ConfigSetting(config, "auction setting.admin option.show copy item", true);
 
-	public static final ConfigSetting USE_ALTERNATE_CURRENCY_FORMAT = new ConfigSetting(config, "auction setting.use alternate currency format", false, "If true, $123,456.78 will become $123.456,78");
-	public static final ConfigSetting USE_FLAT_NUMBER_FORMAT = new ConfigSetting(config, "auction setting.use flat number format", false, "If true, $123,456.78 will become $12345678");
-	public static final ConfigSetting USE_SPACE_SEPARATOR_FOR_NUMBER = new ConfigSetting(config, "auction setting.use space separator for number", false, "If true, $123,456.78 will become $123 456.78");
 	public static final ConfigSetting DATE_FORMAT = new ConfigSetting(config, "auction setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
 	public static final ConfigSetting ALLOW_PLAYERS_TO_ACCEPT_BID = new ConfigSetting(config, "auction setting.allow players to accept bid", true, "If true, players can right click a biddable item inside their active listings menu to accept the current bid");
 	public static final ConfigSetting SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID = new ConfigSetting(config, "auction setting.prevent cancellation of bid on items", false, "If true, players must wait out the duration of the auction listing if there is already a bid on it (makes them commit to selling it)");
@@ -538,6 +528,35 @@ public class Settings {
 	public static final ConfigSetting GUI_REFRESH_BTN_NAME = new ConfigSetting(config, "gui.global items.refresh button.name", "&6&LRefresh Page");
 	public static final ConfigSetting GUI_REFRESH_BTN_LORE = new ConfigSetting(config, "gui.global items.refresh button.lore", Collections.singletonList("&7Click to refresh the page"));
 
+	// currency picker
+	public static final ConfigSetting GUI_CURRENCY_PICKER_TITLE = new ConfigSetting(config, "gui.currency picker.title", "&7Auction House &f- &ePick Currency");
+	public static final ConfigSetting GUI_CURRENCY_PICKER_ITEMS_CUSTOM_NAME = new ConfigSetting(config, "gui.currency picker.items.custom currency.name", "&e&lCustom Currency");
+	public static final ConfigSetting GUI_CURRENCY_PICKER_ITEMS_CUSTOM_LORE = new ConfigSetting(config, "gui.currency picker.items.custom currency.lore",
+			Arrays.asList(
+					"&7If you want to use use a specific item for",
+					"&7the currency, you can set that here.",
+					"",
+					"&e&lLeft Click &7with the item you want to use",
+					"&b&lRight Click &7to open a material picker &eor",
+					"&7as the currency onto this icon."
+			)
+	);
+
+	// material picker
+	public static final ConfigSetting GUI_MATERIAL_PICKER_TITLE = new ConfigSetting(config, "gui.material picker.title", "&7Auction House &f- &ePick an Item");
+	public static final ConfigSetting GUI_MATERIAL_PICKER_ITEMS_MATERIAL_LORE = new ConfigSetting(config, "gui.material picker.items.material.lore", "&7Click to select this item");
+	public static final ConfigSetting GUI_MATERIAL_PICKER_ITEMS_SEARCH_NAME = new ConfigSetting(config, "gui.material picker.items.search.name", "&e&lSearch");
+	public static final ConfigSetting GUI_MATERIAL_PICKER_ITEMS_SEARCH_LORE = new ConfigSetting(config, "gui.material picker.items.search.lore",
+			Collections.singletonList(
+					"&7Click to search for materials"
+			)
+	);
+	public static final ConfigSetting GUI_MATERIAL_PICKER_ITEMS_RESET_NAME = new ConfigSetting(config, "gui.material picker.items.reset.name", "&c&lClear Search");
+	public static final ConfigSetting GUI_MATERIAL_PICKER_ITEMS_RESET_LORE = new ConfigSetting(config, "gui.material picker.items.reset.lore",
+			Collections.singletonList(
+					"&7Click to clear search"
+			)
+	);
 
 	/*  ===============================
 	 *         MAIN AUCTION GUI
@@ -602,7 +621,7 @@ public class Settings {
 			"&7are currently selling on the auction.",
 			"",
 			"&e&l%active_player_auctions% Item(s)",
-			"&e&lBalance &a$%player_balance%"
+			"&e&lBalance &a%player_balance%"
 	));
 
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ENABLED = new ConfigSetting(config, "gui.auction house.items.collection bin.enabled", true);
@@ -665,11 +684,11 @@ public class Settings {
 	public static final ConfigSetting GUI_CONFIRM_QTY_INFO_NAME = new ConfigSetting(config, "gui.confirm buy.qty info.name", "&ePurchase Information");
 	public static final ConfigSetting GUI_CONFIRM_QTY_INFO_LORE = new ConfigSetting(config, "gui.confirm buy.qty info.lore", Arrays.asList(
 			"&7Original Stack Size&f: &e%original_stack_size%",
-			"&7Price for entire stack&f: &a$%original_stack_price%",
-			"&7Price per item&f: &a$%price_per_item%",
+			"&7Price for entire stack&f: &a%original_stack_price%",
+			"&7Price per item&f: &a%price_per_item%",
 			"",
 			"&7Purchase Qty&f: &e%purchase_quantity%",
-			"&7Total&f: &a$%purchase_price%"
+			"&7Total&f: &a%purchase_price%"
 	), "Valid Placeholders", "%original_stack_size%", "%original_stack_price%", "%price_per_item%", "%purchase_quantity%", "%purchase_price%");
 
 	public static final ConfigSetting GUI_CONFIRM_BUY_NO_ITEM = new ConfigSetting(config, "gui.confirm buy.no.item", "RED_STAINED_GLASS_PANE");
@@ -795,7 +814,7 @@ public class Settings {
 	));
 
 	public static final ConfigSetting GUI_PAYMENT_COLLECTION_PAYMENT_ITEM = new ConfigSetting(config, "gui.payment collection.payment.item", "PAPER");
-	public static final ConfigSetting GUI_PAYMENT_COLLECTION_PAYMENT_NAME = new ConfigSetting(config, "gui.payment collection.payment.name", "&a&l$%payment_amount%");
+	public static final ConfigSetting GUI_PAYMENT_COLLECTION_PAYMENT_NAME = new ConfigSetting(config, "gui.payment collection.payment.name", "&a&l%payment_amount%");
 	public static final ConfigSetting GUI_PAYMENT_COLLECTION_PAYMENT_LORE = new ConfigSetting(config, "gui.payment collection.payment.lore", Arrays.asList(
 			"&7Item&f: &e%item_name%",
 			"&7From&f: &e%from_name%",
@@ -1180,6 +1199,14 @@ public class Settings {
 	/*  ===============================
 	 *    ITEM SELL BIN GUI
 	 *  ===============================*/
+
+	public static final ConfigSetting GUI_SELL_ITEM_ITEM_CURRENCY_ITEM = new ConfigSetting(config, "gui.global items.currency.item", XMaterial.GOLD_INGOT.name());
+	public static final ConfigSetting GUI_SELL_ITEM_ITEM_CURRENCY_NAME = new ConfigSetting(config, "gui.global items.currency.name", "&e&lCurrency");
+	public static final ConfigSetting GUI_SELL_ITEM_ITEM_CURRENCY_LORE = new ConfigSetting(config, "gui.global items.currency.lore", Arrays.asList(
+			"",
+			"&7Click to change currency"
+	));
+
 	public static final ConfigSetting GUI_SELL_BIN_TITLE = new ConfigSetting(config, "gui.sell bin item.title", "&7Auction House - &eBin Listing");
 	public static final ConfigSetting GUI_SELL_BIN_BG_ITEM = new ConfigSetting(config, "gui.sell bin item.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
 
@@ -1203,7 +1230,7 @@ public class Settings {
 	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_PRICE_NAME = new ConfigSetting(config, "gui.sell bin item.items.price.name", "&e&lPrice");
 	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE = new ConfigSetting(config, "gui.sell bin item.items.price.lore", Arrays.asList(
 			"",
-			"&7The current price if &F: &a$%listing_bin_price%",
+			"&7The current price if &F: &a%listing_bin_price%",
 			"",
 			"&7Click to edit the listing price"
 	));
@@ -1281,7 +1308,7 @@ public class Settings {
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_NAME = new ConfigSetting(config, "gui.sell auction item.items.bin price.name", "&e&lBuyout Price");
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE = new ConfigSetting(config, "gui.sell auction item.items.bin price.lore", Arrays.asList(
 			"",
-			"&7The current buyout price is&F: &a$%listing_bin_price%",
+			"&7The current buyout price is&F: &a%listing_bin_price%",
 			"",
 			"&7Click to edit the buyout price"
 	));
@@ -1290,7 +1317,7 @@ public class Settings {
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_NAME = new ConfigSetting(config, "gui.sell auction item.items.starting price.name", "&e&lStarting Price");
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE = new ConfigSetting(config, "gui.sell auction item.items.starting price.lore", Arrays.asList(
 			"",
-			"&7The current starting price is&F: &a$%listing_start_price%",
+			"&7The current starting price is&F: &a%listing_start_price%",
 			"",
 			"&7Click to edit the starting price"
 	));
@@ -1299,7 +1326,7 @@ public class Settings {
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME = new ConfigSetting(config, "gui.sell auction item.items.increment price.name", "&e&lIncrement Price");
 	public static final ConfigSetting GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE = new ConfigSetting(config, "gui.sell auction item.items.increment price.lore", Arrays.asList(
 			"",
-			"&7The current increment price is&F: &a$%listing_increment_price%",
+			"&7The current increment price is&F: &a%listing_increment_price%",
 			"",
 			"&7Click to edit the increment price"
 	));
@@ -1365,11 +1392,11 @@ public class Settings {
 
 	public static final ConfigSetting GUI_STATS_SELF_ITEMS_MONEY_EARNED_ITEM = new ConfigSetting(config, "gui.stat view self.items.money earned.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
 	public static final ConfigSetting GUI_STATS_SELF_ITEMS_MONEY_EARNED_NAME = new ConfigSetting(config, "gui.stat view self.items.money earned.name", "&e&LMoney Earned");
-	public static final ConfigSetting GUI_STATS_SELF_ITEMS_MONEY_EARNED_LORE = new ConfigSetting(config, "gui.stat view self.items.money earned.lore", Collections.singletonList("&7You earned &a$%money_earned%"));
+	public static final ConfigSetting GUI_STATS_SELF_ITEMS_MONEY_EARNED_LORE = new ConfigSetting(config, "gui.stat view self.items.money earned.lore", Collections.singletonList("&7You earned &a%money_earned%"));
 
 	public static final ConfigSetting GUI_STATS_SELF_ITEMS_MONEY_SPENT_ITEM = new ConfigSetting(config, "gui.stat view self.items.money spent.item", XMaterial.RED_STAINED_GLASS_PANE.name());
 	public static final ConfigSetting GUI_STATS_SELF_ITEMS_MONEY_SPENT_NAME = new ConfigSetting(config, "gui.stat view self.items.money spent.name", "&e&LMoney Spent");
-	public static final ConfigSetting GUI_STATS_SELF_ITEMS_MONEY_SPENT_LORE = new ConfigSetting(config, "gui.stat view self.items.money spent.lore", Collections.singletonList("&7You spent &c$%money_spent%"));
+	public static final ConfigSetting GUI_STATS_SELF_ITEMS_MONEY_SPENT_LORE = new ConfigSetting(config, "gui.stat view self.items.money spent.lore", Collections.singletonList("&7You spent &c%money_spent%"));
 
 	public static final ConfigSetting GUI_STATS_LEADERBOARD_TITLE = new ConfigSetting(config, "gui.stat view leaderboard.items.title", "&7Auction House - &eStat Leaderboard");
 	public static final ConfigSetting GUI_STATS_LEADERBOARD_BG_ITEM = new ConfigSetting(config, "gui.stat view leaderboard.bg item", XMaterial.BLACK_STAINED_GLASS_PANE.name());
@@ -1413,11 +1440,11 @@ public class Settings {
 
 	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_EARNED_ITEM = new ConfigSetting(config, "gui.stat view other.items.money earned.item", XMaterial.LIME_STAINED_GLASS_PANE.name());
 	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_EARNED_NAME = new ConfigSetting(config, "gui.stat view other.items.money earned.name", "&e&LMoney Earned");
-	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_EARNED_LORE = new ConfigSetting(config, "gui.stat view other.items.money earned.lore", Collections.singletonList("&7They earned &a$%money_earned%"));
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_EARNED_LORE = new ConfigSetting(config, "gui.stat view other.items.money earned.lore", Collections.singletonList("&7They earned &a%money_earned%"));
 
 	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_ITEM = new ConfigSetting(config, "gui.stat view other.items.money spent.item", XMaterial.RED_STAINED_GLASS_PANE.name());
 	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_NAME = new ConfigSetting(config, "gui.stat view other.items.money spent.name", "&e&LMoney Spent");
-	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_LORE = new ConfigSetting(config, "gui.stat view other.items.money spent.lore", Collections.singletonList("&7They spent &c$%money_spent%"));
+	public static final ConfigSetting GUI_STATS_SEARCH_ITEMS_MONEY_SPENT_LORE = new ConfigSetting(config, "gui.stat view other.items.money spent.lore", Collections.singletonList("&7They spent &c%money_spent%"));
 
 
 	/*  ===============================
@@ -1485,7 +1512,7 @@ public class Settings {
 			""
 	));
 	public static final ConfigSetting AUCTION_STACK_DETAILS_REQUEST_PRICE = new ConfigSetting(config, "auction stack.request price lines", Arrays.asList(
-			"&eOffering: &a$%request_price%"
+			"&eOffering: &a%request_price%"
 	));
 
 	public static final ConfigSetting AUCTION_STACK_DETAILS_REQUEST_COUNT = new ConfigSetting(config, "auction stack.request count lines", Arrays.asList(
@@ -1494,16 +1521,16 @@ public class Settings {
 	));
 
 	public static final ConfigSetting AUCTION_STACK_DETAILS_BUY_NOW = new ConfigSetting(config, "auction stack.buy now lines", Arrays.asList(
-			"&eBuy Now: &a$%buynowprice%",
+			"&eBuy Now: &a%buynowprice%",
 			""
 	));
 
 	public static final ConfigSetting AUCTION_STACK_DETAILS_CURRENT_PRICE = new ConfigSetting(config, "auction stack.current price lines", Collections.singletonList(
-			"&eCurrent Price: &a$%currentprice%"
+			"&eCurrent Price: &a%currentprice%"
 	));
 
 	public static final ConfigSetting AUCTION_STACK_DETAILS_BID_INCREMENT = new ConfigSetting(config, "auction stack.bid increment lines", Collections.singletonList(
-			"&eBid Increment: &a$%bidincrement%"
+			"&eBid Increment: &a%bidincrement%"
 	));
 
 	public static final ConfigSetting AUCTION_STACK_DETAILS_HIGHEST_BIDDER = new ConfigSetting(config, "auction stack.highest bidder lines", Collections.singletonList(

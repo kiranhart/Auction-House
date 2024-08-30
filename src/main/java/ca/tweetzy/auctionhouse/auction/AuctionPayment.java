@@ -19,8 +19,8 @@
 package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.entity.Player;
@@ -38,17 +38,29 @@ public final class AuctionPayment {
 	private final String fromName;
 	private final PaymentReason reason;
 
-
 	private final double amount;
 	private final long time;
 
-	public AuctionPayment(UUID to, double amount, ItemStack item, String fromName, PaymentReason reason) {
-		this(UUID.randomUUID(), to, item, fromName, reason, amount, System.currentTimeMillis());
+	private final String currency;
+	private final ItemStack currencyItem;
+
+	public AuctionPayment(UUID to, double amount, ItemStack item, String fromName, PaymentReason reason, String currency, ItemStack currencyItem) {
+		this(UUID.randomUUID(), to, item, fromName, reason, amount, System.currentTimeMillis(), currency, currencyItem);
 	}
 
 
 	public void pay(Player player) {
-		AuctionHouse.getCurrencyManager().deposit(player, this.amount);
-		AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.amount)).sendPrefixedMessage(player);
+		final String[] currSplit = currency.split("/");
+
+		if (currencyItem != null && currencyItem.getType() != CompMaterial.AIR.parseMaterial()) {
+			AuctionHouse.getCurrencyManager().deposit(player, currencyItem, (int) this.amount);
+		} else {
+			AuctionHouse.getCurrencyManager().deposit(player, currSplit[0], currSplit[1], this.amount);
+		}
+
+		AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
+				.processPlaceholder("player_balance", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getCurrencyManager().getBalance(player)))
+				.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.amount, this.currency, this.currencyItem))
+				.sendPrefixedMessage(player);
 	}
 }

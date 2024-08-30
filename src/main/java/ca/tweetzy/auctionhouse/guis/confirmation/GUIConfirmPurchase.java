@@ -139,7 +139,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 										SPECIAL SHIT FOR REQUESTS
 				============================================================================
 				 */
-				if (isRequest) {
+				if (isRequest) { //todo add multi currency support to requests
 					// check if the fulfiller even has the item
 					final int itemCount = AuctionAPI.getInstance().getItemCountInPlayerInventory(this.player, this.auctionItem.getItem());
 					final int amountNeeded = this.auctionItem.getRequestAmount() == 0 ? this.auctionItem.getItem().getAmount() : this.auctionItem.getRequestAmount();
@@ -182,28 +182,31 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 					toGive.setRequestAmount(amountNeeded);
 
-					AuctionHouse.getInstance().getDataManager().insertAuction(toGive, (error, inserted) -> AuctionHouse.getInstance().getAuctionItemManager().addAuctionItem(toGive));
-					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(this.auctionItem);
+					AuctionHouse.getDataManager().insertAuction(toGive, (error, inserted) -> AuctionHouse.getAuctionItemManager().addAuctionItem(toGive));
+					AuctionHouse.getAuctionItemManager().sendToGarbage(this.auctionItem);
 
-					AuctionHouse.getInstance().getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(player -> {
-						AuctionHouse.getInstance().getTransactionManager().removeAllRelatedPlayers(auctionItem.getId());
+					AuctionHouse.getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(player -> {
+						AuctionHouse.getTransactionManager().removeAllRelatedPlayers(auctionItem.getId());
 						player.closeInventory();
 					});
 
-					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(e.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getBasePrice())).sendPrefixedMessage(e.player);
+					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
+							.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(e.player, this.auctionItem.getCurrency().split("/")[0], this.auctionItem.getCurrency().split("/")[1]), this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()))
+							.processPlaceholder("price", this.auctionItem.getFormattedBasePrice())
+							.sendPrefixedMessage(e.player);
+
 					if (requester.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(requester.getPlayer()))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getBasePrice())).sendPrefixedMessage(requester.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
+								.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(requester, this.auctionItem.getCurrency().split("/")[0], this.auctionItem.getCurrency().split("/")[1]), this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()))
+								.processPlaceholder("price", this.auctionItem.getFormattedBasePrice())
+								.sendPrefixedMessage(requester.getPlayer());
 
 					e.gui.close();
 					return;
 				}
 
-
-				//		languageNodes.put("pricing.moneyremove", "&c&l- $%price% &7(%player_balance%)");
-				//		languageNodes.put("pricing.moneyadd", "&a&l+ $%price% &7(%player_balance%)");
-
 				// Check economy
-				if (!AuctionHouse.getCurrencyManager().has(e.player, buyNowPrice + (Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? tax : 0D))) {
+				if (!auctionItem.playerHasSufficientMoney(e.player, buyNowPrice + (Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? tax : 0D))) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
 					SoundManager.getInstance().playSound(e.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString());
 					e.gui.close();
@@ -235,7 +238,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 					} else {
 						transferFunds(e.player, buyNowPrice);
 						if (!located.isInfinite())
-							AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
+							AuctionHouse.getAuctionItemManager().sendToGarbage(located);
 					}
 
 					NBT.modify(toGive, nbt -> {
@@ -248,24 +251,29 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 				} else {
 					transferFunds(e.player, buyNowPrice);
 					if (!located.isInfinite())
-						AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(located);
+						AuctionHouse.getAuctionItemManager().sendToGarbage(located);
 
 					if (Settings.BIDDING_TAKES_MONEY.getBoolean() && !located.getHighestBidder().equals(located.getOwner())) {
 						final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(located.getHighestBidder());
 
 						if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-							AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+							AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(
 									oldBidder.getUniqueId(),
 									auctionItem.getCurrentPrice(),
 									auctionItem.getItem(),
 									AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
-									PaymentReason.BID_RETURNED
+									PaymentReason.BID_RETURNED,
+									auctionItem.getCurrency(),
+									auctionItem.getCurrencyItem()
 							), null);
 						else
-							AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice());
+							AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 						if (oldBidder.isOnline())
-							AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(located.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+							AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
+									.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+									.processPlaceholder("price", located.getFormattedCurrentPrice())
+									.sendPrefixedMessage(oldBidder.getPlayer());
 
 					}
 
@@ -291,12 +299,14 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 							.processPlaceholder("seller_displayname", AuctionAPI.getInstance().getDisplayName(seller))
 							.processPlaceholder("amount", auctionItem.getItem().getAmount())
 							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(auctionItem.getItem()))
-							.processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Math.max(auctionItem.getBasePrice(), auctionItem.getCurrentPrice())))
+							.processPlaceholder("price",
+									auctionItem.getBasePrice() > auctionItem.getCurrentPrice() ? auctionItem.getFormattedBasePrice() : auctionItem.getFormattedCurrentPrice()
+							)
 							.sendPrefixedMessage(player));
 				}
 
-				AuctionHouse.getInstance().getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(player -> {
-					AuctionHouse.getInstance().getTransactionManager().removeAllRelatedPlayers(auctionItem.getId());
+				AuctionHouse.getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(player -> {
+					AuctionHouse.getTransactionManager().removeAllRelatedPlayers(auctionItem.getId());
 					player.closeInventory();
 				});
 
@@ -329,25 +339,37 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 	private void transferFunds(Player from, double amount) {
 		double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * amount : 0D;
 
-		AuctionAPI.getInstance().withdrawBalance(from, Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount) : Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount);
-		AuctionAPI.getInstance().depositBalance(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax) : Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax, auctionItem.getItem(), from);
+		AuctionAPI.getInstance().withdrawBalance(from, Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount) : Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount + tax : amount, auctionItem);
+		AuctionAPI.getInstance().depositBalance(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax) : Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? amount : amount - tax, auctionItem.getItem(), from, auctionItem);
 	}
 
 	private void sendMessages(GuiClickEvent e, AuctionedItem located, boolean overwritePrice, double price, int qtyOverride) {
 		double totalPrice = overwritePrice ? price : located.getBasePrice();
 		double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * totalPrice : 0D;
 
-		AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(e.player))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice)).sendPrefixedMessage(e.player);
-		AuctionHouse.getInstance().getLocale().getMessage("general.bought_item").processPlaceholder("amount", qtyOverride).processPlaceholder("item", AuctionAPI.getInstance().getItemName(located.getItem())).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice)).sendPrefixedMessage(e.player);
+
+		AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
+				.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(e.player, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+				.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+				.sendPrefixedMessage(e.player);
+
+		AuctionHouse.getInstance().getLocale().getMessage("general.bought_item")
+				.processPlaceholder("amount", qtyOverride).processPlaceholder("item", AuctionAPI.getInstance().getItemName(located.getItem()))
+				.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+				.sendPrefixedMessage(e.player);
 
 		if (Bukkit.getOfflinePlayer(located.getOwner()).isOnline()) {
 			AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
 					.processPlaceholder("item", AuctionAPI.getInstance().getItemName(located.getItem()))
 					.processPlaceholder("amount", qtyOverride)
-					.processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice : totalPrice - tax))
+					.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice : totalPrice - tax, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
 					.processPlaceholder("buyer_name", e.player.getName())
 					.sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
-			AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(Bukkit.getOfflinePlayer(located.getOwner())))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice : totalPrice - tax)).sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
+
+			AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
+					.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(Bukkit.getOfflinePlayer(located.getOwner()), auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+					.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice : totalPrice - tax, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+					.sendPrefixedMessage(Bukkit.getOfflinePlayer(located.getOwner()).getPlayer());
 		}
 	}
 
@@ -362,10 +384,10 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 				.name(Settings.GUI_CONFIRM_QTY_INFO_NAME.getString())
 				.lore(this.player, Replacer.replaceVariables(Settings.GUI_CONFIRM_QTY_INFO_LORE.getStringList(),
 						"original_stack_size", maxStackSize,
-						"original_stack_price", AuctionAPI.getInstance().formatNumber(auctionItem.getBasePrice()),
-						"price_per_item", AuctionAPI.getInstance().formatNumber(pricePerItem),
+						"original_stack_price", auctionItem.getFormattedBasePrice(),
+						"price_per_item", AuctionHouse.getAPI().getFinalizedCurrencyNumber(pricePerItem, auctionItem.getCurrency(), auctionItem.getCurrencyItem()),
 						"purchase_quantity", purchaseQuantity,
-						"purchase_price", AuctionAPI.getInstance().formatNumber(pricePerItem * purchaseQuantity)
+						"purchase_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(pricePerItem * purchaseQuantity, auctionItem.getCurrency(), auctionItem.getCurrencyItem())
 				))
 				.make();
 	}

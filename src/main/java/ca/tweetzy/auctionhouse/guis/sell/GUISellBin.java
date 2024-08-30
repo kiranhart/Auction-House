@@ -28,6 +28,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIListingConfirm;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.guis.selector.GUICurrencyPicker;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
@@ -54,12 +55,18 @@ public final class GUISellBin extends AuctionBaseGUI {
 	private final long listingTime;
 	private boolean allowPartialBuy;
 
-	public GUISellBin(@NonNull final AuctionPlayer auctionPlayer, final double listingPrice, final long listingTime, boolean allowPartialBuy) {
+	private String currency;
+	private ItemStack currencyItem;
+
+	public GUISellBin(@NonNull final AuctionPlayer auctionPlayer, final double listingPrice, final long listingTime, boolean allowPartialBuy, String currency, ItemStack currencyItem) {
 		super(null, auctionPlayer.getPlayer(), Settings.GUI_SELL_BIN_TITLE.getString(), 6);
 		this.auctionPlayer = auctionPlayer;
 		this.listingPrice = listingPrice;
 		this.listingTime = listingTime;
 		this.allowPartialBuy = allowPartialBuy;
+		this.currencyItem = currencyItem;
+		this.currency = currency;
+
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_SELL_BIN_BG_ITEM.getString()).make()));
 
 		setOnClose(close -> {
@@ -79,6 +86,10 @@ public final class GUISellBin extends AuctionBaseGUI {
 		draw();
 	}
 
+	public GUISellBin(@NonNull final AuctionPlayer auctionPlayer, final double listingPrice, final long listingTime, boolean allowPartialBuy) {
+		this(auctionPlayer, listingPrice, listingTime, allowPartialBuy, null, null);
+	}
+
 	@Override
 	protected void draw() {
 		reset();
@@ -87,6 +98,21 @@ public final class GUISellBin extends AuctionBaseGUI {
 			click.gui.close();
 			click.manager.showGUI(click.player, new GUISellPlaceItem(this.auctionPlayer, BundleUtil.isBundledItem(this.auctionPlayer.getItemBeingListed()) ? GUISellPlaceItem.ViewMode.BUNDLE_ITEM : GUISellPlaceItem.ViewMode.SINGLE_ITEM, ListingType.BIN));
 		});
+
+		if (Settings.CURRENCY_ALLOW_PICK.getBoolean())
+			setButton(getRows() - 1, 8, QuickItem
+					.of(Settings.GUI_SELL_ITEM_ITEM_CURRENCY_ITEM.getString())
+					.name(Settings.GUI_SELL_ITEM_ITEM_CURRENCY_NAME.getString())
+					.lore(this.player, Settings.GUI_SELL_ITEM_ITEM_CURRENCY_LORE.getStringList())
+					.make(), click -> click.manager.showGUI(click.player, new GUICurrencyPicker(this, click.player, (currency, itemCurrency) -> {
+
+				this.currency = currency.getStoreableName();
+
+				if (itemCurrency != null)
+					this.currencyItem = itemCurrency;
+
+				click.manager.showGUI(click.player, new GUISellBin(this.auctionPlayer, this.listingPrice, this.listingTime, this.allowPartialBuy, this.currency, this.currencyItem));
+			})));
 
 		if (Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
 
@@ -131,10 +157,11 @@ public final class GUISellBin extends AuctionBaseGUI {
 			});
 
 		}
+
 		setButton(3, 4, QuickItem
 				.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_ITEM.getString())
 				.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_NAME.getString())
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE.getStringList(), "listing_bin_price", AuctionAPI.getInstance().formatNumber(listingPrice)))
+				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE.getStringList(), "listing_bin_price", AuctionHouse.getAPI().getNumberAsCurrency(listingPrice)))
 				.make(), click -> {
 
 			click.gui.exit();
@@ -163,7 +190,7 @@ public final class GUISellBin extends AuctionBaseGUI {
 					if (listingAmount < Settings.MIN_AUCTION_PRICE.getDouble()) listingAmount = Settings.MIN_AUCTION_PRICE.getDouble();
 					if (listingAmount > Settings.MAX_AUCTION_PRICE.getDouble()) listingAmount = Settings.MAX_AUCTION_PRICE.getDouble();
 
-					click.manager.showGUI(click.player, new GUISellBin(GUISellBin.this.auctionPlayer, listingAmount, GUISellBin.this.listingTime, GUISellBin.this.allowPartialBuy));
+					click.manager.showGUI(click.player, new GUISellBin(GUISellBin.this.auctionPlayer, listingAmount, GUISellBin.this.listingTime, GUISellBin.this.allowPartialBuy, GUISellBin.this.currency, GUISellBin.this.currencyItem));
 
 					return true;
 				}
@@ -236,6 +263,12 @@ public final class GUISellBin extends AuctionBaseGUI {
 		final AuctionedItem item = new AuctionedItem(UUID.randomUUID(), auctionPlayer.getUuid(), auctionPlayer.getUuid(), auctionPlayer.getPlayer().getName(), auctionPlayer.getPlayer().getName(), MaterialCategorizer.getMaterialCategory(this.auctionPlayer.getItemBeingListed()), this.auctionPlayer.getItemBeingListed(), this.listingPrice, 0, 0, this.listingPrice, false, false, System.currentTimeMillis() + (this.listingTime * 1000L));
 
 		item.setAllowPartialBuy(this.allowPartialBuy);
+
+		if (this.currency != null)
+			item.setCurrency(this.currency);
+
+		item.setCurrencyItem(this.currencyItem);
+
 		return item;
 	}
 }

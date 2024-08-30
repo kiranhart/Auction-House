@@ -3,8 +3,12 @@
 
 ![logo](https://i.imgur.com/ENVi7Jn.png)
 
-**The most feature packed, up to date auction plugin on Spigot. 1.8-1.18 support in a single jar.**
+### Yes the code is pretty messy, working on cleaning it up. Stuff inside the api folder is the new object structures. Impl package is said interfaces, managers, model, and settings.settingsv3 are also the 'new' format. Pretty much structuring this project like my other updated ones (github/tweetzy)
+
+**The most feature packed, up to date auction plugin on Spigot. 1.8\* -1.21 support in a single jar.**
 **Auction House is the ultimate solution when it comes to server auctions. Unlike other auction plugins, auction house provides many features and is GUI based.**
+
+**1.8 - 1.15.0 support is limited, features may or may not work. Use the latest version.**
 
 <!-- Shields -->
 [![Discord](https://img.shields.io/discord/821837624272617473?color=7289DA&label=Discord&logo=discord&logoColor=7289DA)](https://discord.tweetzy.ca)

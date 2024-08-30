@@ -78,7 +78,7 @@ public class LocaleSettings {
 		languageNodes.put("general.something_went_wrong_while_listing", "&cSomething went wrong while listing item.");
 		languageNodes.put("general.toggled listing.on", "&aYou turned on listing messages");
 		languageNodes.put("general.toggled listing.off", "&cYou turned off listing messages");
-		languageNodes.put("general.bought_item", "&aYou bought &fx%amount% %item%&a for &a$%price%");
+		languageNodes.put("general.bought_item", "&aYou bought &fx%amount% %item%&a for &a%price%");
 		languageNodes.put("general.wait_to_list", "&cPlease wait &4%time%&cs before listing another item");
 		languageNodes.put("general.please_enter_at_least_one_number", "&cPlease enter at least 1 valid number!");
 		languageNodes.put("general.cannot cancel item with bid", "&cYou cannot cancel a listing that already has a bid!");
@@ -107,18 +107,18 @@ public class LocaleSettings {
 		languageNodes.put("general.priority boost.boosted", "&aSuccessfully boosted this item to the top of the Auction House");
 		languageNodes.put("general.priority boost.already boosted", "&cThis item already has priority listing");
 
-		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a$%price%");
-		languageNodes.put("pricing.minstartingprice", "&cThe minimum starting bid price must be &a$%price%");
-		languageNodes.put("pricing.minbidincrementprice", "&cThe minimum bid increment must be &a$%price%");
-		languageNodes.put("pricing.maxbaseprice", "&cThe maximum base price is &a$%price%");
-		languageNodes.put("pricing.maxstartingprice", "&cThe maximum starting bid price is &a$%price%");
-		languageNodes.put("pricing.maxbidincrementprice", "&cThe maximum bid increment is &a$%price%");
+		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a%price%");
+		languageNodes.put("pricing.minstartingprice", "&cThe minimum starting bid price must be &a%price%");
+		languageNodes.put("pricing.minbidincrementprice", "&cThe minimum bid increment must be &a%price%");
+		languageNodes.put("pricing.maxbaseprice", "&cThe maximum base price is &a%price%");
+		languageNodes.put("pricing.maxstartingprice", "&cThe maximum starting bid price is &a%price%");
+		languageNodes.put("pricing.maxbidincrementprice", "&cThe maximum bid increment is &a%price%");
 		languageNodes.put("pricing.basepricetoolow", "&cThe buy now price must be higher than the starting bid.");
 		languageNodes.put("pricing.startingpricetoohigh", "&cThe starting bid cannot be higher than buyout. &f(&a%price%&f)");
 		languageNodes.put("pricing.moneyremove", "&c&l- $%price% &7(%player_balance%)");
 		languageNodes.put("pricing.moneyadd", "&a&l+ $%price% &7(%player_balance%)");
 		languageNodes.put("pricing.bidmusthigherthanprevious", "&cYour bid must be higher than &4%current_bid%");
-		languageNodes.put("pricing.minitemprice", "&cThe minimum price for this item must be &a$%price%");
+		languageNodes.put("pricing.minitemprice", "&cThe minimum price for this item must be &a%price%");
 
 
 		languageNodes.put("titles.end all confirm.title", "&eConfirm End All");
@@ -155,6 +155,8 @@ public class LocaleSettings {
 		languageNodes.put("titles.ban length.title", "&eBan Length");
 		languageNodes.put("titles.ban length.subtitle", "&fEnter ban length in chat. (ex. 1 day 12 hours)");
 
+		languageNodes.put("titles.material search.title", "&eSearch for material");
+		languageNodes.put("titles.material search.subtitle", "&fEnter item/material name in chat");
 
 		languageNodes.put("transaction.sale_type.bid_won", "Won Auction");
 		languageNodes.put("transaction.sale_type.immediate_buy", "Bought Immediately");
@@ -219,7 +221,7 @@ public class LocaleSettings {
 		languageNodes.put("auction.broadcast.sold", "&e&fx%amount% &6%item% &esold to %player% for &a%price%");
 		languageNodes.put("auction.broadcast.serverlisting", "&e&fx%amount% &6%item% &ehas appeared on the auction house.");
 
-		languageNodes.put("auction.broadcast.bid", "&e%player% increased the bid to &a$%amount% &eon &6%item%");
+		languageNodes.put("auction.broadcast.bid", "&e%player% increased the bid to &a%amount% &eon &6%item%");
 		languageNodes.put("auction.broadcast.ending", "&eAuction for &6%item% &eis ending in &6%seconds%&es");
 
 		languageNodes.put("auction.bidwon", "&eYou won the bid for&fx%amount% &6%item% &efor &a%price%");
@@ -227,7 +229,7 @@ public class LocaleSettings {
 		languageNodes.put("auction.itemnotavailable", "&cThat item is no longer available :(");
 		languageNodes.put("auction.biditemwithdisabledbuynow", "&CN/A");
 		languageNodes.put("auction.outbid", "&6%player% &ehas out bid you for &6%item%");
-		languageNodes.put("auction.placedbid", "&6%player% &eincreased the bid to &a$%amount% &eon &6%item%");
+		languageNodes.put("auction.placedbid", "&6%player% &eincreased the bid to &a%amount% &eon &6%item%");
 		languageNodes.put("auction.nobids", "&cNo Bids");
 
 		languageNodes.put("auction.tax.cannotpaylistingfee", "&cYou do not have enough money to pay the listing fee &f(&4$%price%&f)");

@@ -19,7 +19,6 @@
 package ca.tweetzy.auctionhouse.guis.admin;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionAdminLog;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -88,11 +87,14 @@ public class GUIAdminItem extends AuctionBaseGUI {
 					final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(this.auctionItem.getHighestBidder());
 
 					if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-						AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), auctionItem.getCurrentPrice(), auctionItem.getItem(), click.player.getName(), PaymentReason.ADMIN_REMOVED), null);
-					else AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice());
+						AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), auctionItem.getCurrentPrice(), auctionItem.getItem(), click.player.getName(), PaymentReason.ADMIN_REMOVED, auctionItem.getCurrency(), auctionItem.getCurrencyItem()), null);
+					else AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice(), this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
+								.processPlaceholder("player_balance", AuctionHouse.getCurrencyManager().getFormattedBalance(oldBidder, this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()))
+								.processPlaceholder("price", this.auctionItem.getFormattedCurrentPrice())
+								.sendPrefixedMessage(oldBidder.getPlayer());
 
 				}
 
@@ -116,15 +118,18 @@ public class GUIAdminItem extends AuctionBaseGUI {
 					final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(this.auctionItem.getHighestBidder());
 
 					if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-						AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), auctionItem.getCurrentPrice(), auctionItem.getItem(), click.player.getName(), PaymentReason.ADMIN_REMOVED), null);
-					else AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice());
+						AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), auctionItem.getCurrentPrice(), auctionItem.getItem(), click.player.getName(), PaymentReason.ADMIN_REMOVED, auctionItem.getCurrency(), auctionItem.getCurrencyItem()), null);
+					else AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
+								.processPlaceholder("player_balance", AuctionHouse.getCurrencyManager().getFormattedBalance(oldBidder, this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()))
+								.processPlaceholder("price", this.auctionItem.getFormattedCurrentPrice())
+								.sendPrefixedMessage(oldBidder.getPlayer());
 
 				}
 
-				AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(this.auctionItem);
+				AuctionHouse.getAuctionItemManager().sendToGarbage(this.auctionItem);
 				click.gui.close();
 			});
 	}
@@ -142,22 +147,27 @@ public class GUIAdminItem extends AuctionBaseGUI {
 					final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(this.auctionItem.getHighestBidder());
 
 					if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-						AuctionHouse.getInstance().getDataManager().insertAuctionPayment(new AuctionPayment(
+						AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(
 								oldBidder.getUniqueId(),
 								auctionItem.getCurrentPrice(),
 								auctionItem.getItem(),
 								click.player.getName(),
-								PaymentReason.ADMIN_REMOVED
+								PaymentReason.ADMIN_REMOVED,
+								auctionItem.getCurrency(),
+								auctionItem.getCurrencyItem()
 						), null);
 					else
-						AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice());
+						AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(this.auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
+								.processPlaceholder("player_balance", AuctionHouse.getCurrencyManager().getFormattedBalance(oldBidder, this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()))
+								.processPlaceholder("price", this.auctionItem.getFormattedCurrentPrice())
+								.sendPrefixedMessage(oldBidder.getPlayer());
 
 				}
 
-				AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(this.auctionItem);
+				AuctionHouse.getAuctionItemManager().sendToGarbage(this.auctionItem);
 				click.gui.close();
 			});
 	}

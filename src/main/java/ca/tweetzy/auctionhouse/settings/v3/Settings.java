@@ -48,6 +48,15 @@ public final class Settings extends SettingTemp {
 
 	/*
 	==============================================================
+						 Multi-Server Options
+	==============================================================
+	 */
+//	public static ConfigEntry MULTI_SERVER_ENABLED = create("settings.multiserver.enabled", false, "Should Auction House run in multi-server mode?");
+//	public static ConfigEntry MULTI_SERVER_IS_MAIN = create("settings.multiserver.main sever", true, "Is this the main server for Auction House?");
+//	public static ConfigEntry MULTI_SERVER_SERVER_NAME = create("settings.multiserver.server name", Bukkit.getServer().getName(), "The name of this server");
+
+	/*
+	==============================================================
 						  Economy Settings
 	==============================================================
 	 */

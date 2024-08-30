@@ -258,10 +258,12 @@ public class CommandAdmin extends Command {
 							auctionedItem.getCurrentPrice(),
 							auctionedItem.getItem(),
 							player.getName(),
-							PaymentReason.BID_RETURNED
+							PaymentReason.BID_RETURNED,
+							auctionedItem.getCurrency(),
+							auctionedItem.getCurrencyItem()
 					), null);
 				else
-					AuctionHouse.getCurrencyManager().deposit(player, auctionedItem.getCurrentPrice());
+					AuctionHouse.getCurrencyManager().deposit(player, auctionedItem.getCurrentPrice(), auctionedItem.getCurrency(), auctionedItem.getCurrencyItem());
 		}
 	}
 
@@ -286,13 +288,18 @@ public class CommandAdmin extends Command {
 								auctionItem.getCurrentPrice(),
 								auctionItem.getItem(),
 								player.getName(),
-								PaymentReason.ADMIN_REMOVED
+								PaymentReason.ADMIN_REMOVED,
+								auctionItem.getCurrency(),
+								auctionItem.getCurrencyItem()
 						), null);
 					else
-						AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice());
+						AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd").processPlaceholder("player_balance", AuctionAPI.getInstance().formatNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder))).processPlaceholder("price", AuctionAPI.getInstance().formatNumber(auctionItem.getCurrentPrice())).sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
+								.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+								.processPlaceholder("price", auctionItem.getFormattedCurrentPrice())
+								.sendPrefixedMessage(oldBidder.getPlayer());
 
 				}
 			}

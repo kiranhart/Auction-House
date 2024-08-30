@@ -18,6 +18,7 @@
 
 package ca.tweetzy.auctionhouse;
 
+import ca.tweetzy.auctionhouse.api.AuctionHouseAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.commands.*;
 import ca.tweetzy.auctionhouse.database.DataManager;
@@ -25,6 +26,7 @@ import ca.tweetzy.auctionhouse.database.migrations.*;
 import ca.tweetzy.auctionhouse.database.migrations.v2.*;
 import ca.tweetzy.auctionhouse.helpers.UpdateChecker;
 import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
+import ca.tweetzy.auctionhouse.impl.AuctionAPI;
 import ca.tweetzy.auctionhouse.listeners.*;
 import ca.tweetzy.auctionhouse.managers.*;
 import ca.tweetzy.auctionhouse.model.manager.BanManager;
@@ -97,6 +99,7 @@ public class AuctionHouse extends TweetyPlugin {
 	private final MinItemPriceManager minItemPriceManager = new MinItemPriceManager();
 	private final PaymentsManager paymentsManager = new PaymentsManager();
 
+	private AuctionHouseAPI API;
 
 	// the default vault economy
 	private Economy economy = null;
@@ -129,6 +132,7 @@ public class AuctionHouse extends TweetyPlugin {
 			return;
 		}
 
+		API = new AuctionAPI();
 		taskChainFactory = BukkitTaskChainFactory.create(this);
 		migrationCoreConfig = new TweetzyYamlConfig(this, "migration-config-dont-touch.yml");
 
@@ -187,7 +191,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new _25_BidHistoryMigration(),
 				new _26_MultiSerAndCurrencyMigration(),
 				new _27_FixMigration25to26Migration(),
-				new _28_PriorityListingMigration()
+				new _28_PriorityListingMigration(),
+				new _29_PaymentMultiCurrencyMigration()
 		);
 
 		dataMigrationManager.runMigrations();
@@ -200,11 +205,6 @@ public class AuctionHouse extends TweetyPlugin {
 		this.banManager.load();
 		this.currencyManager.load();
 		this.paymentsManager.load();
-
-		// warn users if there is a mismatch between new economy and old
-		if (Settings.ECONOMY_PLUGIN.getString().toLowerCase().contains("ultraeconomy") && !Settings.CURRENCY_DEFAULT_SELECTED.getString().toLowerCase().contains("ultraeconomy")) {
-			getLogger().warning("You are seeing this message because there is a miss match between your old economy provider settings and the new one. While the plugin will default to Vault, if you are seeing this message it's likely because you were using UltraEconomy and you haven't set it up back under 'default selection' in the config.yml!");
-		}
 
 		// listeners
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
@@ -347,6 +347,10 @@ public class AuctionHouse extends TweetyPlugin {
 
 	public static AuctionHouse getInstance() {
 		return (AuctionHouse) TweetyPlugin.getInstance();
+	}
+
+	public static AuctionHouseAPI getAPI() {
+		return getInstance().API;
 	}
 
 	public static DataManager getDataManager() {
