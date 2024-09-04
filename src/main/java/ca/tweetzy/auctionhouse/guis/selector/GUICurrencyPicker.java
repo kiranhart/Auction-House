@@ -87,11 +87,7 @@ public final class GUICurrencyPicker extends AuctionPagedGUI<AbstractCurrency> {
 			quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&a" + Settings.CURRENCY_VAULT_SYMBOL.getString() : "&e" + currency.getCurrencyName());
 		}
 
-		quickItem.lore(Replacer.replaceVariables(Arrays.asList(
-				"&7Owning Plugin&f: &e%currency_owning_plugin%",
-				"",
-				"&a&lLeft Click &7to select this currency"
-		), "currency_owning_plugin", currency.getOwningPlugin()));
+		quickItem.lore(Replacer.replaceVariables(Settings.GUI_CURRENCY_PICKER_ITEMS_CURRENCY_LORE .getStringList(), "currency_owning_plugin", currency.getOwningPlugin()));
 
 		return quickItem.make();
 	}

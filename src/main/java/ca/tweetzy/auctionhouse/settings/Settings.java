@@ -49,8 +49,7 @@ public class Settings {
 	public static final ConfigSetting CURRENCY_FORMAT_LANGUAGE = new ConfigSetting(config, "economy.currency.format.language", "en", "An ISO 639 alpha-2 or alpha-3 language code.");
 	public static final ConfigSetting CURRENCY_FORMAT_COUNTRY = new ConfigSetting(config, "economy.currency.format.country", "US", "An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.");
 	public static final ConfigSetting CURRENCY_ABBREVIATE_NUMBERS = new ConfigSetting(config, "economy.currency.abbreviate numbers", false, "Should numbers be abbreviated?. Example: 123,000 will become 123k ");
-
-
+	
 	public static final ConfigSetting CMD_ALIAS_MAIN = new ConfigSetting(config, "command aliases.main", Arrays.asList("ah", "auctions", "auctionhouses", "ahgui", "auctiongui"), "Command aliases for the main command");
 	public static final ConfigSetting CMD_ALIAS_SUB_ACTIVE = new ConfigSetting(config, "command aliases.subcommands.active", Collections.singletonList("active"), "Command aliases for the active command");
 	public static final ConfigSetting CMD_ALIAS_SUB_ADMIN = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("admin"), "Command aliases for the admin command");
@@ -540,6 +539,13 @@ public class Settings {
 					"&b&lRight Click &7to open a material picker &eor",
 					"&7as the currency onto this icon."
 			)
+	);
+
+	public static final ConfigSetting GUI_CURRENCY_PICKER_ITEMS_CURRENCY_LORE = new ConfigSetting(config, "gui.currency picker.items.currency.lore",
+			Collections.singletonList(
+					"&e&lClick &7to select this currency"
+			),
+			"You can use %owning_plugin% to get the plugin name"
 	);
 
 	// material picker
@@ -1503,8 +1509,7 @@ public class Settings {
 	 *  ===============================*/
 	public static final ConfigSetting AUCTION_STACK_DETAILS_HEADER = new ConfigSetting(config, "auction stack.header", Collections.singletonList("&7&m-------------------------"));
 	public static final ConfigSetting AUCTION_STACK_DETAILS_SELLER = new ConfigSetting(config, "auction stack.seller lines", Arrays.asList(
-			"&eSeller&f: &b%seller%",
-			""
+			"&eSeller&f: &b%seller%"
 	));
 
 	public static final ConfigSetting AUCTION_STACK_DETAILS_REQUESTER = new ConfigSetting(config, "auction stack.requester lines", Arrays.asList(
@@ -1521,8 +1526,7 @@ public class Settings {
 	));
 
 	public static final ConfigSetting AUCTION_STACK_DETAILS_BUY_NOW = new ConfigSetting(config, "auction stack.buy now lines", Arrays.asList(
-			"&eBuy Now: &a%buynowprice%",
-			""
+			"&eBuy Now: &a%buynowprice%"
 	));
 
 	public static final ConfigSetting AUCTION_STACK_DETAILS_CURRENT_PRICE = new ConfigSetting(config, "auction stack.current price lines", Collections.singletonList(
@@ -1542,12 +1546,10 @@ public class Settings {
 	));
 
 	public static final ConfigSetting AUCTION_STACK_DETAILS_TIME_LEFT = new ConfigSetting(config, "auction stack.time left lines", Arrays.asList(
-			"",
 			"&eTime Left: &b%remaining_days%&fd &b%remaining_hours%&fh &b%remaining_minutes%&fm &b%remaining_seconds%s"
 	));
 
 	public static final ConfigSetting AUCTION_STACK_DETAILS_INFINITE = new ConfigSetting(config, "auction stack.infinite lines", Arrays.asList(
-			"",
 			"&eTime Left: &bNo Expiration"
 	), "this will be used instead of the time left if the item is infinite");
 
@@ -1582,6 +1584,26 @@ public class Settings {
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_PARTIAL_BUY = new ConfigSetting(config, "auction stack.controls.partial buy", Collections.singletonList(
 			"&eShift Left-Click&f: &bBuy Quantity"
 	), "This will be appended at the end of the lore", "If the auction item allows partial buys, this will be added");
+
+
+	public static final ConfigSetting AUCTION_STACK_INFO_LAYOUT = new ConfigSetting(config, "auction stack.info layout", Arrays.asList(
+			"%original_item_lore%",
+			"%header%",
+			"%seller%",
+			"%highest_bidder%",
+			"",
+			"%buy_now_price%",
+			"%current_price%",
+			"%bid_increment%",
+			"",
+			"%listing_time%",
+			"%listing_priority%",
+			"%controls_header%",
+			"%controls%",
+			"%controls_footer%"
+	), "The info order for the stacks, if a listing doesnt require one of these, Auction House will just ignore it.", "This is mainly used to just change the ordering of listing stack information");
+
+
 
 	/*  ===============================
 	 *         AUCTION SOUNDS

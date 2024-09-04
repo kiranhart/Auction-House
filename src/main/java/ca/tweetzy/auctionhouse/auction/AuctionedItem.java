@@ -31,6 +31,7 @@ import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.Replacer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -42,6 +43,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static ca.tweetzy.auctionhouse.model.MultiVarReplacer.replaceVariable;
 
 /**
  * The current file has been created by Kiran Hart
@@ -222,91 +225,93 @@ public class AuctionedItem {
 		QuickItem itemStack = QuickItem.of(this.item.clone());
 		itemStack.amount(Math.max(this.item.getAmount(), 1));
 
-		List<String> lore = new ArrayList<>();
+		List<String> originalLore = this.item.getItemMeta() != null && this.item.getItemMeta().getLore() != null ? this.item.getItemMeta().getLore() : new ArrayList<>();
+		List<String> BASE_LORE = Settings.AUCTION_STACK_INFO_LAYOUT.getStringList();
+		itemStack.clearLore();
 
 		if (this.serverItem)
 			this.ownerName = AuctionHouse.getInstance().getLocale().getMessage("general.server listing").getMessage();
 
-		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HEADER.getStringList()));
-		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_SELLER.getStringList().stream().map(s -> s.replace("%seller%", this.ownerName)).collect(Collectors.toList())));
+		final List<String> HEADER = Common.colorize(Settings.AUCTION_STACK_DETAILS_HEADER.getStringList());
+		final List<String> CONTROLS_HEADER = Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROL_HEADER.getStringList());
+		final List<String> CONTROLS_FOOTER = Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROL_FOOTER.getStringList());
 
-		if (this.basePrice != -1) {
-			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_BUY_NOW.getStringList().stream().filter(s -> this.isBidItem ? s.length() != 0 : s.length() >= 0).map(s -> s.replace("%buynowprice%", getFormattedBasePrice())).collect(Collectors.toList())));
-		}
+		final List<String> SELLER = Common.colorize(Replacer.replaceVariables(Settings.AUCTION_STACK_DETAILS_SELLER.getStringList(), "seller", this.ownerName));
+		final List<String> BUY_NOW_PRICE = Replacer.replaceVariables(Settings.AUCTION_STACK_DETAILS_BUY_NOW.getStringList(), "buynowprice", getFormattedBasePrice());
+		final List<String> CURRENT_PRICE = Replacer.replaceVariables(Settings.AUCTION_STACK_DETAILS_CURRENT_PRICE.getStringList(), "currentprice", getFormattedCurrentPrice());
+		final List<String> INCREMENT_PRICE = Replacer.replaceVariables(Settings.AUCTION_STACK_DETAILS_BID_INCREMENT.getStringList(), "bidincrement", getFormattedIncrementPrice());
+		final List<String> HIGHEST_BIDDER = Replacer.replaceVariables(Settings.AUCTION_STACK_DETAILS_HIGHEST_BIDDER.getStringList(), "highestbidder", this.highestBidder.equals(this.owner) ? AuctionHouse.getInstance().getLocale().getMessage("auction.nobids").getMessage() : this.highestBidderName);
 
-		if (this.isBidItem) {
-			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_CURRENT_PRICE.getStringList().stream().map(s -> s.replace("%currentprice%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.currentPrice, this.currency, this.currencyItem))).collect(Collectors.toList())));
-			if (!Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean()) {
-				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_BID_INCREMENT.getStringList().stream().map(s -> s.replace("%bidincrement%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.bidIncrementPrice, this.currency, this.currencyItem))).collect(Collectors.toList())));
-			}
-
-			if (Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean() && Settings.USE_REALISTIC_BIDDING.getBoolean()) {
-				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_BID_INCREMENT.getStringList().stream().map(s -> s.replace("%bidincrement%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.bidIncrementPrice, this.currency, this.currencyItem))).collect(Collectors.toList())));
-			}
-
-			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_HIGHEST_BIDDER.getStringList().stream().map(s -> s.replace("%highestbidder%", this.highestBidder.equals(this.owner) ? AuctionHouse.getInstance().getLocale().getMessage("auction.nobids").getMessage() : this.highestBidderName)).collect(Collectors.toList())));
-		}
-
-		if (this.infinite) {
-			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_INFINITE.getStringList()));
-		} else {
+		List<String> LISTING_TIME = Settings.AUCTION_STACK_DETAILS_INFINITE.getStringList();
+		if (!this.isInfinite()) {
 			long[] times = AuctionAPI.getInstance().getRemainingTimeValues((this.expiresAt - System.currentTimeMillis()) / 1000);
-			lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_DETAILS_TIME_LEFT.getStringList().stream().map(s -> s
-					.replace("%remaining_days%", String.valueOf(times[0]))
-					.replace("%remaining_hours%", String.valueOf(times[1]))
-					.replace("%remaining_minutes%", String.valueOf(times[2]))
-					.replace("%remaining_seconds%", String.valueOf(times[3]))
-					.replace("%remaining_total_hours%", String.valueOf(((this.expiresAt - System.currentTimeMillis()) / 1000) / 3600))
-			).collect(Collectors.toList())));
+			LISTING_TIME = Replacer.replaceVariables(Settings.AUCTION_STACK_DETAILS_TIME_LEFT.getStringList(),
+					"remaining_days", String.valueOf(times[0]),
+					"remaining_hours", String.valueOf(times[1]),
+					"remaining_minutes", String.valueOf(times[2]),
+					"remaining_seconds", String.valueOf(times[3]),
+					"remaining_total_hours", String.valueOf(((this.expiresAt - System.currentTimeMillis()) / 1000) / 3600)
+			);
 		}
 
-		if (isListingPriorityActive())
-			lore.addAll(Common.colorize(Settings.AUCTION_STACK_DETAILS_PRIORITY_LISTING.getStringList()));
-
-		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_HEADER.getStringList()));
+		final List<String> LISTING_PRIORITY = Settings.AUCTION_STACK_DETAILS_PRIORITY_LISTING.getStringList();
+		final List<String> CONTROLS = new ArrayList<>();
 
 		if (type == AuctionStackType.MAIN_AUCTION_HOUSE) {
 			if (this.isBidItem) {
 				if (this.basePrice != -1) {
-					lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_ON.getStringList()));
+					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_ON.getStringList()));
 				} else {
-					lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_ON_NO_BUY_NOW.getStringList()));
+					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_ON_NO_BUY_NOW.getStringList()));
 				}
 			} else {
-				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_OFF.getStringList()));
+				CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_OFF.getStringList()));
 				if (this.isAllowPartialBuy()) {
-					lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_PARTIAL_BUY.getStringList()));
+					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_PARTIAL_BUY.getStringList()));
 				}
 			}
 
 			if (BundleUtil.isBundledItem(this.item.clone()) || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && this.item.clone().getType().name().contains("SHULKER_BOX"))) {
-				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_INSPECTION.getStringList()));
+				CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_INSPECTION.getStringList()));
 			}
 		} else {
 			if (type == AuctionStackType.HIGHEST_BID_PREVIEW) {
-				lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_HIGHEST_BIDDER_ITEM.getStringList()));
+				CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_HIGHEST_BIDDER_ITEM.getStringList()));
 			} else {
 				if (type == AuctionStackType.LISTING_PREVIEW) {
-					lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_LISTING_PREVIEW_ITEM.getStringList()));
+					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_LISTING_PREVIEW_ITEM.getStringList()));
 
 				} else {
-					lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_ITEM.getStringList()));
+					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_ITEM.getStringList()));
 
 					if (Settings.ALLOW_PLAYERS_TO_ACCEPT_BID.getBoolean() && this.bidStartingPrice >= 1 || this.bidIncrementPrice >= 1) {
 						if (!this.owner.equals(this.highestBidder)) {
-							lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROLS_ACCEPT_BID.getStringList()));
+							CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_ACCEPT_BID.getStringList()));
 						}
 					}
 
 					if (Settings.LISTING_PRIORITY_ENABLED.getBoolean()) {
-						lore.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_PRIORITY_LISTING.getStringList()));
+						CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_PRIORITY_LISTING.getStringList()));
 					}
 				}
 			}
 		}
 
-		lore.addAll(TextUtils.formatText(Settings.AUCTION_STACK_PURCHASE_CONTROL_FOOTER.getStringList()));
-		itemStack.lore(player, lore);
+		// replace all the variables
+		replaceVariable(BASE_LORE, "%original_item_lore%", originalLore, false);
+		replaceVariable(BASE_LORE, "%header%", HEADER, false);
+		replaceVariable(BASE_LORE, "%seller%", SELLER, false);
+		replaceVariable(BASE_LORE, "%highest_bidder%", HIGHEST_BIDDER, !this.isBidItem);
+		replaceVariable(BASE_LORE, "%buy_now_price%", BUY_NOW_PRICE, this.basePrice == -1);
+		replaceVariable(BASE_LORE, "%current_price%", CURRENT_PRICE, !this.isBidItem);
+		replaceVariable(BASE_LORE, "%bid_increment%", INCREMENT_PRICE, !this.isBidItem || Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean());
+		replaceVariable(BASE_LORE, "%listing_time%", LISTING_TIME, false);
+		replaceVariable(BASE_LORE, "%listing_priority%", LISTING_PRIORITY, !this.hasListingPriority);
+		replaceVariable(BASE_LORE, "%controls_header%", CONTROLS_HEADER, false);
+		replaceVariable(BASE_LORE, "%controls_footer%", CONTROLS_FOOTER, false);
+		replaceVariable(BASE_LORE, "%controls%", CONTROLS, false);
+
+		itemStack.lore(player, BASE_LORE);
 
 		return itemStack.make();
 	}
