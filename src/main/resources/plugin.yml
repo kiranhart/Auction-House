@@ -3,6 +3,6 @@ version: maven-version-number
 api-version: 1.13
 main: ca.tweetzy.auctionhouse.AuctionHouse
 description: Auction House is a premium auction solution for your server.
-website: https://tweetzy.ca/
+website: https://discord.tweetzy.ca/
 authors: [ Kiran Hart ]
-softdepend: [ Vault, PlayerPoints, PlaceholderAPI, MMOItemsHook, UltraEconomy, CMI, Essentials, ChestShop, EcoEnchants ]
+softdepend: [ Vault, PlayerPoints, PlaceholderAPI, MMOItemsHook, UltraEconomy, CMI, Essentials, ChestShop, EcoEnchants, EcoBits, Funds ]
