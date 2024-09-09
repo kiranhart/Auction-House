@@ -813,7 +813,6 @@ public class AuctionAPI {
 			}
 		}
 
-
 		// Check NBT tags
 		for (String nbtTag : Settings.BLOCKED_NBT_TAGS.getStringList()) {
 			if (NBT.get(itemStack, nbt -> (boolean) nbt.hasTag(nbtTag))) {
