@@ -49,7 +49,8 @@ public class Settings {
 	public static final ConfigSetting CURRENCY_FORMAT_LANGUAGE = new ConfigSetting(config, "economy.currency.format.language", "en", "An ISO 639 alpha-2 or alpha-3 language code.");
 	public static final ConfigSetting CURRENCY_FORMAT_COUNTRY = new ConfigSetting(config, "economy.currency.format.country", "US", "An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.");
 	public static final ConfigSetting CURRENCY_ABBREVIATE_NUMBERS = new ConfigSetting(config, "economy.currency.abbreviate numbers", false, "Should numbers be abbreviated?. Example: 123,000 will become 123k ");
-	
+	public static final ConfigSetting CURRENCY_STRIP_ENDING_ZEROES = new ConfigSetting(config, "economy.currency.strip ending zeroes", false, "If the number ends with 00, should it be stripped. EX 123.00 becomes 123");
+
 	public static final ConfigSetting CMD_ALIAS_MAIN = new ConfigSetting(config, "command aliases.main", Arrays.asList("ah", "auctions", "auctionhouses", "ahgui", "auctiongui"), "Command aliases for the main command");
 	public static final ConfigSetting CMD_ALIAS_SUB_ACTIVE = new ConfigSetting(config, "command aliases.subcommands.active", Collections.singletonList("active"), "Command aliases for the active command");
 	public static final ConfigSetting CMD_ALIAS_SUB_ADMIN = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("admin"), "Command aliases for the admin command");

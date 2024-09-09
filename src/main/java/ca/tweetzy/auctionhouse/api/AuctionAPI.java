@@ -25,6 +25,7 @@ import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -793,11 +794,25 @@ public class AuctionAPI {
 				return false;
 			}
 		} else {
-			if (Settings.BLOCKED_ITEMS.getStringList().contains(itemStack.getType().name())) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
-				return false;
+			for (String item : Settings.BLOCKED_ITEMS.getStringList()) {
+				final String[] split = item.split(":");
+
+				if (split.length == 1) {
+					if (split[0].contains(itemStack.getType().name())) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
+						return false;
+					}
+				}
+
+				if (split.length == 2 && NumberUtils.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+					if (split[0].contains(itemStack.getType().name()) && itemStack.getItemMeta() != null && itemStack.getItemMeta().getCustomModelData() == Integer.parseInt(split[1])) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
+						return false;
+					}
+				}
 			}
 		}
+
 
 		// Check NBT tags
 		for (String nbtTag : Settings.BLOCKED_NBT_TAGS.getStringList()) {

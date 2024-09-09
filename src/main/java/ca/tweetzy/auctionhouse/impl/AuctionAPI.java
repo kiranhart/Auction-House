@@ -31,6 +31,19 @@ import java.util.Locale;
 
 public final class AuctionAPI implements AuctionHouseAPI {
 
+	private String replaceLastDecimal(String input) {
+		int lastComma = input.lastIndexOf(",00");
+		int lastDot = input.lastIndexOf(".00");
+
+		int lastIndex = Math.max(lastComma, lastDot);
+
+		if (lastIndex != -1) {
+			return input.substring(0, lastIndex) + input.substring(lastIndex + 3);
+		}
+
+		return input;
+	}
+
 	@Override
 	public String getNumberAsCurrency(double number, boolean hideSymbol) {
 
@@ -48,7 +61,13 @@ public final class AuctionAPI implements AuctionHouseAPI {
 				decimalFormat.setDecimalFormatSymbols(symbols);
 			}
 
-		return currencyFormatter.format(number);
+		String formatted =  currencyFormatter.format(number);
+
+		if (Settings.CURRENCY_STRIP_ENDING_ZEROES.getBoolean()) {
+			formatted = replaceLastDecimal(formatted);
+		}
+
+		return formatted;
 	}
 
 	@Override
