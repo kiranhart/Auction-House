@@ -29,7 +29,7 @@ public final class EcoBitsEconomyLoader extends CurrencyLoader {
 				if (blacklistSplit.length != 2) continue;
 				if (!blacklistSplit[0].equalsIgnoreCase(this.owningPlugin)) continue;
 
-				if (blacklistSplit[1].equalsIgnoreCase(currency.getName()))
+				if (blacklistSplit[1].equalsIgnoreCase(currency.getId()))
 					blackListed = true;
 
 			}
