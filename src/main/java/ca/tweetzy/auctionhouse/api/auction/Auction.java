@@ -63,6 +63,10 @@ public interface Auction extends Identifiable<UUID>, Trackable, Synchronize {
 
 	void setIsBeingBought(boolean isBeingBought);
 
+	boolean isArchived();
+
+	void setArchived(boolean archived);
+
 	default boolean isExpired() {
 		return System.currentTimeMillis() >= getExpirationTime();
 	}

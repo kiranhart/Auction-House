@@ -29,10 +29,7 @@ import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.impl.AuctionAPI;
 import ca.tweetzy.auctionhouse.listeners.*;
 import ca.tweetzy.auctionhouse.managers.*;
-import ca.tweetzy.auctionhouse.model.manager.BanManager;
-import ca.tweetzy.auctionhouse.model.manager.CurrencyManager;
-import ca.tweetzy.auctionhouse.model.manager.ListingManager;
-import ca.tweetzy.auctionhouse.model.manager.PaymentsManager;
+import ca.tweetzy.auctionhouse.model.manager.*;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.settings.v3.Translations;
@@ -89,6 +86,7 @@ public class AuctionHouse extends TweetyPlugin {
 	private final CommandManager commandManager = new CommandManager(this);
 	private final GuiManager guiManager = new GuiManager(this);
 	private final ListingManager listingManager = new ListingManager();
+	private final CategoryManager categoryManager = new CategoryManager();
 
 	private final AuctionPlayerManager auctionPlayerManager = new AuctionPlayerManager();
 	private final AuctionItemManager auctionItemManager = new AuctionItemManager();
@@ -202,6 +200,7 @@ public class AuctionHouse extends TweetyPlugin {
 
 		// gui manager
 		this.guiManager.init();
+//		this.categoryManager.load();
 		this.banManager.load();
 		this.currencyManager.load();
 		this.paymentsManager.load();
@@ -216,7 +215,6 @@ public class AuctionHouse extends TweetyPlugin {
 
 		if (getServer().getPluginManager().isPluginEnabled("CMI"))
 			Bukkit.getServer().getPluginManager().registerEvents(new CMIListener(), this);
-
 
 		this.auctionItemManager.start();
 		this.transactionManager.loadTransactions();
@@ -407,6 +405,10 @@ public class AuctionHouse extends TweetyPlugin {
 
 	public static ListingManager getListingManager() {
 		return getInstance().listingManager;
+	}
+
+	public static CategoryManager getCategoryManager() {
+		return getInstance().categoryManager;
 	}
 
 	public static Economy getEconomy() {

@@ -22,5 +22,6 @@ public enum ListingType {
 
 	BIN,
 	AUCTION,
+	REQUEST,
 	BOTH
 }

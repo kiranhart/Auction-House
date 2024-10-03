@@ -27,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.Currency;
 import java.util.Locale;
 
 public final class AuctionAPI implements AuctionHouseAPI {
@@ -67,6 +68,10 @@ public final class AuctionAPI implements AuctionHouseAPI {
 			formatted = replaceLastDecimal(formatted);
 		}
 
+		if (Settings.CURRENCY_TIGHT_CURRENCY_SYMBOL.getBoolean()) {
+			formatted = formatted.replaceFirst("\\u00A0", "");
+		}
+
 		return formatted;
 	}
 
@@ -103,7 +108,7 @@ public final class AuctionAPI implements AuctionHouseAPI {
 
 	@Override
 	public String getFinalizedCurrencyNumber(double number, String currency, ItemStack currencyItem) {
-		final String baseCurrencyFormat = Settings.CURRENCY_ABBREVIATE_NUMBERS.getBoolean() ? getAbbreviatedNumber(number, false) : getNumberAsCurrency(number, false);
+		final String baseCurrencyFormat = Settings.CURRENCY_ABBREVIATE_NUMBERS.getBoolean() ? getAbbreviatedNumber(number, Settings.CURRENCY_HIDE_VAULT_SYMBOL.getBoolean()) : getNumberAsCurrency(number, Settings.CURRENCY_HIDE_VAULT_SYMBOL.getBoolean());
 		final String currencyUnformatted = Settings.CURRENCY_ABBREVIATE_NUMBERS.getBoolean() ? getAbbreviatedNumber(number) : getNumberAsCurrency(number);
 
 		if (currency == null)

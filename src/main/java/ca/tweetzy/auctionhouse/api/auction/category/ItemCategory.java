@@ -11,6 +11,12 @@ public interface ItemCategory extends Identifiable<String> {
 
 	ItemStack getIcon();
 
+	void setIcon(ItemStack item);
+
+	String getName();
+
+	void setName(String name);
+
 	HashSet<CategoryFieldCondition> getFieldConditions();
 
 	List<CategoryCondition> getConditions();

@@ -47,6 +47,7 @@ public class BinListing extends AuctionItem {
 	private long expiresAt;
 
 	private boolean isBeingBought = false;
+	private boolean isArchived = false;
 
 	public BinListing(
 			@NonNull final ListingType listingType,
@@ -186,6 +187,16 @@ public class BinListing extends AuctionItem {
 	@Override
 	public long getLastUpdated() {
 		return 0;
+	}
+
+	@Override
+	public boolean isArchived() {
+		return this.isArchived;
+	}
+
+	@Override
+	public void setArchived(boolean archived) {
+		this.isArchived = archived;
 	}
 
 	@Override
