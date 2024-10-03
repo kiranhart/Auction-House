@@ -15,7 +15,7 @@ public final class _29_PaymentMultiCurrencyMigration extends DataMigration {
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("ALTER TABLE " + tablePrefix + "payments ADD currency TEXT NOT NULL DEFAULT 'Vault/Vault' ");
+			statement.execute("ALTER TABLE " + tablePrefix + "payments ADD currency VARCHAR(70) NOT NULL DEFAULT ('Vault/Vault') ");
 			statement.execute("ALTER TABLE " + tablePrefix + "payments ADD currency_item TEXT NULL");
 		}
 	}

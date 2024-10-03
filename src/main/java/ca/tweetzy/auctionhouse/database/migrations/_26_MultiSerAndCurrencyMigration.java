@@ -15,7 +15,7 @@ public final class _26_MultiSerAndCurrencyMigration extends DataMigration {
 	@Override
 	public void migrate(Connection connection, String tablePrefix) throws SQLException {
 		try (Statement statement = connection.createStatement()) {
-			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD currency TEXT NOT NULL DEFAULT 'Vault/Vault' ");
+			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD currency TEXT NOT NULL DEFAULT ('Vault/Vault') ");
 			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD currency_item TEXT NULL");
 			statement.execute("ALTER TABLE " + tablePrefix + "auctions ADD listed_server TEXT NULL");
 		}

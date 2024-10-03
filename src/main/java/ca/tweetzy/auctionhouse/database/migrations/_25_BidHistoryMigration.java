@@ -20,7 +20,7 @@ public final class _25_BidHistoryMigration extends DataMigration {
 					"listing_id VARCHAR(36) NOT NULL, " +
 					"bidder_uuid VARCHAR(36) NOT NULL, " +
 					"bidder_name VARCHAR(16) NOT NULL, " +
-					"currency TEXT NOT NULL DEFAULT 'Vault/Vault'," +
+					"currency TEXT NOT NULL DEFAULT ('Vault/Vault')," +
 					"currency_item TEXT NULL," +
 					"amount TEXT NOT NULL, " +
 					"world TEXT NOT NULL, " +
