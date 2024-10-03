@@ -24,7 +24,7 @@ public final class _27_FixMigration25to26Migration extends DataMigration {
 					"listing_id VARCHAR(36) NOT NULL, " +
 					"bidder_uuid VARCHAR(36) NOT NULL, " +
 					"bidder_name VARCHAR(16) NOT NULL, " +
-					"currency VARCHAR(70) NOT NULL DEFAULT ('Vault/Vault)'," +
+					"currency VARCHAR(70) NOT NULL DEFAULT ('Vault/Vault')," +
 					"currency_item TEXT NULL," +
 					"amount DOUBLE NOT NULL, " +
 					"world VARCHAR(126) NOT NULL, " +
