@@ -62,6 +62,8 @@ public final class AuctionAPI implements AuctionHouseAPI {
 				decimalFormat.setDecimalFormatSymbols(symbols);
 			}
 
+		currencyFormatter.setGroupingUsed(Settings.CURRENCY_USE_GROUPING.getBoolean());
+
 		String formatted =  currencyFormatter.format(number);
 
 		if (Settings.CURRENCY_STRIP_ENDING_ZEROES.getBoolean()) {
