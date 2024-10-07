@@ -82,20 +82,6 @@ public class CommandRequest extends Command {
 			return ReturnType.FAIL;
 		}
 
-		if (args.length < 1) {
-			AuctionHouse.getGuiManager().showGUI(player, new GUIRequestItem(auctionPlayer, originalItem, originalItem.getAmount(), 1));
-			return ReturnType.SUCCESS;
-		}
-
-		// check if price is even a number
-		if (!NumberUtils.isDouble(args[0])) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
-			return ReturnType.FAIL;
-		}
-
-		// Check for block items
-		if (!AuctionAPI.getInstance().meetsListingRequirements(player, originalItem)) return ReturnType.FAIL;
-
 		// check if is shulker box and if contains items
 		if (Settings.BLOCK_REQUEST_USING_FILLED_SHULKER.getBoolean() && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
 			if (originalItem.getItemMeta() instanceof BlockStateMeta) {
@@ -114,13 +100,27 @@ public class CommandRequest extends Command {
 					}
 
 					if (containsItems) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.general.request shulker contains items").sendPrefixedMessage(player);
+						AuctionHouse.getInstance().getLocale().getMessage("general.request shulker contains items").sendPrefixedMessage(player);
 						return ReturnType.FAIL;
 					}
 				}
 
 			}
 		}
+
+		if (args.length < 1) {
+			AuctionHouse.getGuiManager().showGUI(player, new GUIRequestItem(auctionPlayer, originalItem, originalItem.getAmount(), 1));
+			return ReturnType.SUCCESS;
+		}
+
+		// check if price is even a number
+		if (!NumberUtils.isDouble(args[0])) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
+			return ReturnType.FAIL;
+		}
+
+		// Check for block items
+		if (!AuctionAPI.getInstance().meetsListingRequirements(player, originalItem)) return ReturnType.FAIL;
 
 		// check if at limit
 		if (auctionPlayer.isAtItemLimit(player)) {
