@@ -115,6 +115,9 @@ public class Settings {
 	public static final ConfigSetting OWNER_CAN_BID_OWN_ITEM = new ConfigSetting(config, "auction setting.purchase.owner can bid on own item", false, "Should the owner of an auction be able to bid on it?", "This probably should be set to false...");
 	public static final ConfigSetting OWNER_CAN_FULFILL_OWN_REQUEST = new ConfigSetting(config, "auction setting.purchase.owner can fulfill own request", false, "Should the owner of a request be able to fulfill it", "This probably should be set to false...");
 	public static final ConfigSetting MAX_REQUEST_AMOUNT = new ConfigSetting(config, "auction setting.max request amount", 64, "How much of an item should a player be able to ask for in a single request?");
+	public static final ConfigSetting BLOCK_REQUEST_USING_FILLED_SHULKER = new ConfigSetting(config, "auction setting.block requests using filled shulkers", true, "If false, players can request make a request using a shulker that contains items");
+
+
 	public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGES = new ConfigSetting(config, "auction setting.auto refresh auction pages", true, "Should auction pages auto refresh?");
 	public static final ConfigSetting AUTO_REFRESH_ACTIVE_AUCTION_PAGES = new ConfigSetting(config, "auction setting.auto refresh active auction pages", false, "Should the /ah active pages be auto refreshed?");
 	public static final ConfigSetting INCREASE_TIME_ON_BID = new ConfigSetting(config, "auction setting.increase time on bid", true, "Should the remaining time be increased when a bid is placed?");

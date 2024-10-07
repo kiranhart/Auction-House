@@ -48,6 +48,8 @@ public class LocaleSettings {
 		languageNodes.put("general.notenoughitems", "&cYou do not have enough of that item!");
 		languageNodes.put("general.cannotbezero", "&cPlease provide a number greater than zero");
 		languageNodes.put("general.highrequestcount", "&cYou cannot request that many items!");
+		languageNodes.put("general.request shulker contains items", "&cPlease make the request using an empty shulker");
+
 		languageNodes.put("general.cantbidonown", "&cYou cannot bid on your own item!");
 		languageNodes.put("general.alreadyhighestbidder", "&cYou are already the highest bidder!");
 		languageNodes.put("general.cantbuyown", "&cYou cannot buy your own item!");

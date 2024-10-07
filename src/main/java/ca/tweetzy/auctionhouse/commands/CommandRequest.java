@@ -35,10 +35,16 @@ import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
+import ca.tweetzy.flight.comp.enums.ServerVersion;
+import net.minecraft.references.Blocks;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Shulker;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.List;
 
@@ -89,6 +95,32 @@ public class CommandRequest extends Command {
 
 		// Check for block items
 		if (!AuctionAPI.getInstance().meetsListingRequirements(player, originalItem)) return ReturnType.FAIL;
+
+		// check if is shulker box and if contains items
+		if (Settings.BLOCK_REQUEST_USING_FILLED_SHULKER.getBoolean() && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
+			if (originalItem.getItemMeta() instanceof BlockStateMeta) {
+				final BlockStateMeta meta = (BlockStateMeta) originalItem.getItemMeta();
+
+				// check if shulker
+				if (meta.getBlockState() instanceof ShulkerBox) {
+					final ShulkerBox shulkerBox = (ShulkerBox) meta.getBlockState();
+
+					boolean containsItems = false;
+					for (ItemStack item : shulkerBox.getInventory().getContents()) {
+						if (item != null && item.getType() != Material.AIR) {
+							containsItems = true;
+							break;
+						}
+					}
+
+					if (containsItems) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.general.request shulker contains items").sendPrefixedMessage(player);
+						return ReturnType.FAIL;
+					}
+				}
+
+			}
+		}
 
 		// check if at limit
 		if (auctionPlayer.isAtItemLimit(player)) {
