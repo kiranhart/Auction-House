@@ -140,12 +140,12 @@ public class CommandRequest extends Command {
 		final double price = Double.parseDouble(args[0]);
 
 		if (price < Settings.MIN_AUCTION_PRICE.getDouble()) {
-			AuctionHouse.getInstance().getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("pricing.request.min price").processPlaceholder("price", Settings.MIN_REQUEST_PRICE.getDouble()).sendPrefixedMessage(player);
 			return ReturnType.FAIL;
 		}
 
 		if (price > Settings.MAX_AUCTION_PRICE.getDouble()) {
-			AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("pricing.request.max price").processPlaceholder("price", Settings.MAX_REQUEST_PRICE.getDouble()).sendPrefixedMessage(player);
 			return ReturnType.FAIL;
 		}
 

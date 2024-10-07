@@ -116,6 +116,8 @@ public class Settings {
 	public static final ConfigSetting OWNER_CAN_FULFILL_OWN_REQUEST = new ConfigSetting(config, "auction setting.purchase.owner can fulfill own request", false, "Should the owner of a request be able to fulfill it", "This probably should be set to false...");
 	public static final ConfigSetting MAX_REQUEST_AMOUNT = new ConfigSetting(config, "auction setting.max request amount", 64, "How much of an item should a player be able to ask for in a single request?");
 	public static final ConfigSetting BLOCK_REQUEST_USING_FILLED_SHULKER = new ConfigSetting(config, "auction setting.block requests using filled shulkers", true, "If false, players can request make a request using a shulker that contains items");
+	public static final ConfigSetting MIN_REQUEST_PRICE = new ConfigSetting(config, "auction setting.pricing.min request price", 1, "The minimum price for a request");
+	public static final ConfigSetting MAX_REQUEST_PRICE = new ConfigSetting(config, "auction setting.pricing.max request price", 1000000000, "The maximum price for a request");
 
 
 	public static final ConfigSetting AUTO_REFRESH_AUCTION_PAGES = new ConfigSetting(config, "auction setting.auto refresh auction pages", true, "Should auction pages auto refresh?");

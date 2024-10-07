@@ -109,6 +109,10 @@ public class LocaleSettings {
 		languageNodes.put("general.priority boost.boosted", "&aSuccessfully boosted this item to the top of the Auction House");
 		languageNodes.put("general.priority boost.already boosted", "&cThis item already has priority listing");
 
+		languageNodes.put("pricing.request.min price", "&cThe minimum request price must be &a%price%");
+		languageNodes.put("pricing.request.max price", "&cThe maximum request price is &a%price%");
+
+
 		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a%price%");
 		languageNodes.put("pricing.minstartingprice", "&cThe minimum starting bid price must be &a%price%");
 		languageNodes.put("pricing.minbidincrementprice", "&cThe minimum bid increment must be &a%price%");
