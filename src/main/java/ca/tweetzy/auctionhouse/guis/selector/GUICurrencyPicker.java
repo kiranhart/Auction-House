@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -87,7 +86,7 @@ public final class GUICurrencyPicker extends AuctionPagedGUI<AbstractCurrency> {
 			quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&a" + Settings.CURRENCY_VAULT_SYMBOL.getString() : "&e" + currency.getCurrencyName());
 		}
 
-		quickItem.lore(Replacer.replaceVariables(Settings.GUI_CURRENCY_PICKER_ITEMS_CURRENCY_LORE .getStringList(), "currency_owning_plugin", currency.getOwningPlugin()));
+		quickItem.lore(Replacer.replaceVariables(Settings.GUI_CURRENCY_PICKER_ITEMS_CURRENCY_LORE.getStringList(), "currency_owning_plugin", currency.getOwningPlugin()));
 
 		return quickItem.make();
 	}

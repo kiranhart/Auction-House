@@ -63,7 +63,7 @@ public class Settings {
 	public static final ConfigSetting CMD_ALIAS_SUB_EXPIRED = new ConfigSetting(config, "command aliases.subcommands.expired", Collections.singletonList("expired"), "Command aliases for the expired command");
 	public static final ConfigSetting CMD_ALIAS_SUB_FILTER = new ConfigSetting(config, "command aliases.subcommands.filter", Collections.singletonList("filter"), "Command aliases for the filter command");
 	public static final ConfigSetting CMD_ALIAS_SUB_MARKCHEST = new ConfigSetting(config, "command aliases.subcommands.markchest", Collections.singletonList("markchest"), "Command aliases for the markchest command");
-	public static final ConfigSetting CMD_ALIAS_SUB_MINPRICE = new ConfigSetting(config, "command aliases.subcommands.minprice", Collections.singletonList("minprices"), "Command aliases for the minprices command");
+	public static final ConfigSetting CMD_ALIAS_SUB_PRICE_LIMIT = new ConfigSetting(config, "command aliases.subcommands.price limit", Collections.singletonList("pricelimit"), "Command aliases for the price limits command, formally min prices");
 	public static final ConfigSetting CMD_ALIAS_SUB_PAYMENTS = new ConfigSetting(config, "command aliases.subcommands.payments", Collections.singletonList("payments"), "Command aliases for the payments command");
 	public static final ConfigSetting CMD_ALIAS_SUB_REQUEST = new ConfigSetting(config, "command aliases.subcommands.request", Collections.singletonList("request"), "Command aliases for the request command");
 	public static final ConfigSetting CMD_ALIAS_SUB_SEARCH = new ConfigSetting(config, "command aliases.subcommands.search", Collections.singletonList("search"), "Command aliases for the search command");
@@ -871,12 +871,18 @@ public class Settings {
 	/*  ===============================
 	 *       MIN ITEM PRICES GUI
 	 *  ===============================*/
-	public static final ConfigSetting GUI_MIN_ITEM_PRICES_TITLE = new ConfigSetting(config, "gui.min item prices.title", "&7&LMinimum Item Prices");
-	public static final ConfigSetting GUI_MIN_ITEM_PRICES_LORE = new ConfigSetting(config, "gui.min item prices.lore", Arrays.asList(
+	public static final ConfigSetting GUI_PRICE_LIMITS_TITLE = new ConfigSetting(config, "gui.price limits.title", "&7Auction House &f- &ePrice Limits");
+	public static final ConfigSetting GUI_PRICE_LIMITS_LORE = new ConfigSetting(config, "gui.price limits.lore", Arrays.asList(
 			"&7&m-------------------------",
-			"&7Minimum Price&f: &a%price%",
+			"&7Minimum Price&f: &a%min_price%",
+			"&7Maximum Price&f: &a%max_price%",
 			"",
-			"&7Click to delete"
+			"&7(&e!&7) &f- &BWhen setting the max price",
+			"&byou can use -1 to disable it.",
+			"",
+			"&7Left-Click to change min price",
+			"&7Right-Click to change max price",
+			"&7Press Drop to delete"
 	));
 
 	/*  ===============================
@@ -1610,7 +1616,6 @@ public class Settings {
 			"%controls%",
 			"%controls_footer%"
 	), "The info order for the stacks, if a listing doesnt require one of these, Auction House will just ignore it.", "This is mainly used to just change the ordering of listing stack information");
-
 
 
 	/*  ===============================

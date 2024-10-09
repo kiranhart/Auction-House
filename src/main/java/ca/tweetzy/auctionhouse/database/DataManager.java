@@ -20,12 +20,14 @@ package ca.tweetzy.auctionhouse.database;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
 import ca.tweetzy.auctionhouse.api.ban.Ban;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.api.statistic.Statistic;
 import ca.tweetzy.auctionhouse.auction.*;
 import ca.tweetzy.auctionhouse.auction.enums.*;
 import ca.tweetzy.auctionhouse.impl.AuctionBan;
+import ca.tweetzy.auctionhouse.impl.AuctionPriceLimit;
 import ca.tweetzy.auctionhouse.impl.AuctionStatistic;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
@@ -590,22 +592,26 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
-	public void insertMinPrice(MinItemPrice item, Callback<MinItemPrice> callback) {
+	//=================================================================================================//
+	// 								     LISTING PRICE LIMITS                                          //
+	//=================================================================================================//
+	public void insertListingPriceLimit(ListingPriceLimit priceLimit, Callback<ListingPriceLimit> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "min_item_prices (id, item, price, serialize_version, itemstack) VALUES(?, ?, ?, ?, ?)")) {
-				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "min_item_prices WHERE id = ?");
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "listing_prices (id, item, min_price, max_price, serialize_version, itemstack) VALUES(?, ?, ?, ?, ?, ?)")) {
+				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "listing_prices WHERE id = ?");
 
-				fetch.setString(1, item.getUuid().toString());
-				statement.setString(1, item.getUuid().toString());
-				statement.setString(2, AuctionAPI.encodeItem(item.getItemStack()));
-				statement.setDouble(3, item.getPrice());
+				fetch.setString(1, priceLimit.getId().toString());
+				statement.setString(1, priceLimit.getId().toString());
+				statement.setString(2, AuctionAPI.encodeItem(priceLimit.getItem()));
+				statement.setDouble(3, priceLimit.getMinPrice());
+				statement.setDouble(4, priceLimit.getMaxPrice());
 
 				try {
-					statement.setInt(4, 1);
-					statement.setString(5, QuickItem.toString(item.getItemStack()));
+					statement.setInt(5, 1);
+					statement.setString(6, QuickItem.toString(priceLimit.getItem()));
 				} catch (NbtApiException e) {
-					statement.setInt(4, 0);
-					statement.setString(5, null);
+					statement.setInt(5, 0);
+					statement.setString(6, null);
 				}
 
 
@@ -614,7 +620,7 @@ public class DataManager extends DataManagerAbstract {
 				if (callback != null) {
 					ResultSet res = fetch.executeQuery();
 					res.next();
-					callback.accept(null, extractMinItemPrice(res));
+					callback.accept(null, extractListingPriceLimit(res));
 				}
 
 			} catch (Exception e) {
@@ -624,20 +630,20 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
-	public void getMinItemPrices(Callback<ArrayList<MinItemPrice>> callback) {
-		ArrayList<MinItemPrice> minItemPrices = new ArrayList<>();
+	public void getListingPriceLimits(Callback<ArrayList<ListingPriceLimit>> callback) {
+		ArrayList<ListingPriceLimit> listingPriceLimits = new ArrayList<>();
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "min_item_prices")) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "listing_prices")) {
 				ResultSet resultSet = statement.executeQuery();
 				while (resultSet.next()) {
 
-					final MinItemPrice minItemPrice = extractMinItemPrice(resultSet);
-					if (minItemPrice == null || minItemPrice.getItemStack() == null || minItemPrice.getItemStack().getType() == CompMaterial.AIR.parseMaterial()) continue;
+					final ListingPriceLimit listingPrice = extractListingPriceLimit(resultSet);
+					if (listingPrice == null || listingPrice.getItem() == null || listingPrice.getItem().getType() == CompMaterial.AIR.parseMaterial()) continue;
 
 					if (resultSet.getInt("serialize_version") == 0) {
-						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "min_item_prices SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
+						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "listing_prices SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
 							try {
-								String possible = QuickItem.toString(minItemPrice.getItemStack());
+								String possible = QuickItem.toString(listingPrice.getItem());
 								updateStatement.setString(1, possible);
 								updateStatement.setString(2, resultSet.getString("id"));
 								updateStatement.executeUpdate();
@@ -646,28 +652,49 @@ public class DataManager extends DataManagerAbstract {
 						}
 					}
 
-					minItemPrices.add(minItemPrice);
+					listingPriceLimits.add(listingPrice);
 				}
 
-				callback.accept(null, minItemPrices);
+				callback.accept(null, listingPriceLimits);
 			} catch (Exception e) {
 				resolveCallback(callback, e);
 			}
 		}));
 	}
 
-	public void deleteMinItemPrice(Collection<UUID> minPrices) {
+	public void deleteListingPriceLimit(@NonNull final UUID uuid, Callback<Boolean> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "min_item_prices WHERE id = ?");
-			for (UUID id : minPrices) {
-				statement.setString(1, id.toString());
-				statement.addBatch();
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "listing_prices WHERE id = ?")) {
+				statement.setString(1, uuid.toString());
+
+				int result = statement.executeUpdate();
+				callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
 			}
-
-			statement.executeBatch();
-
 		}));
 	}
+
+	public void updateListingPriceLimit(@NonNull final ListingPriceLimit listingPriceLimit, Callback<Boolean> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "listing_prices SET min_price = ?, max_price = ? WHERE id = ?")) {
+
+				statement.setDouble(1, listingPriceLimit.getMinPrice());
+				statement.setDouble(2, listingPriceLimit.getMaxPrice());
+				statement.setString(3, listingPriceLimit.getId().toString());
+
+				int result = statement.executeUpdate();
+
+				if (callback != null)
+					callback.accept(null, result > 0);
+
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
 
 	public void insertStatistic(Statistic statistic, Callback<Statistic> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
@@ -944,7 +971,7 @@ public class DataManager extends DataManagerAbstract {
 		);
 	}
 
-	private MinItemPrice extractMinItemPrice(ResultSet resultSet) throws SQLException {
+	private ListingPriceLimit extractListingPriceLimit(ResultSet resultSet) throws SQLException {
 
 		String possibleItem = resultSet.getString("item");
 		if (possibleItem.contains("Head Database"))
@@ -952,10 +979,11 @@ public class DataManager extends DataManagerAbstract {
 
 		ItemStack item = resultSet.getInt("serialize_version") == 1 ? QuickItem.getItem(resultSet.getString("itemstack")) : AuctionAPI.decodeItem(possibleItem);
 
-		return new MinItemPrice(
+		return new AuctionPriceLimit(
 				UUID.fromString(resultSet.getString("id")),
 				item,
-				resultSet.getDouble("price")
+				resultSet.getDouble("min_price"),
+				resultSet.getDouble("max_price")
 		);
 	}
 

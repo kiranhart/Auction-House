@@ -87,6 +87,7 @@ public class AuctionHouse extends TweetyPlugin {
 	private final GuiManager guiManager = new GuiManager(this);
 	private final ListingManager listingManager = new ListingManager();
 	private final CategoryManager categoryManager = new CategoryManager();
+	private final PriceLimitManager priceLimitManager = new PriceLimitManager();
 
 	private final AuctionPlayerManager auctionPlayerManager = new AuctionPlayerManager();
 	private final AuctionItemManager auctionItemManager = new AuctionItemManager();
@@ -94,7 +95,6 @@ public class AuctionHouse extends TweetyPlugin {
 	private final FilterManager filterManager = new FilterManager();
 	private final BanManager banManager = new BanManager();
 	private final AuctionStatisticManager auctionStatisticManager = new AuctionStatisticManager();
-	private final MinItemPriceManager minItemPriceManager = new MinItemPriceManager();
 	private final PaymentsManager paymentsManager = new PaymentsManager();
 
 	private AuctionHouseAPI API;
@@ -115,11 +115,6 @@ public class AuctionHouse extends TweetyPlugin {
 
 	@Getter
 	private UpdateChecker.UpdateStatus status;
-
-	@Override
-	public void onPluginLoad() {
-
-	}
 
 	@Override
 	public void onPluginEnable() {
@@ -190,7 +185,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new _26_MultiSerAndCurrencyMigration(),
 				new _27_FixMigration25to26Migration(),
 				new _28_PriorityListingMigration(),
-				new _29_PaymentMultiCurrencyMigration()
+				new _29_PaymentMultiCurrencyMigration(),
+				new _30_MinMaxItemPriceMigration()
 		);
 
 		dataMigrationManager.runMigrations();
@@ -204,6 +200,7 @@ public class AuctionHouse extends TweetyPlugin {
 		this.banManager.load();
 		this.currencyManager.load();
 		this.paymentsManager.load();
+		this.priceLimitManager.load();
 
 		// listeners
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
@@ -219,7 +216,6 @@ public class AuctionHouse extends TweetyPlugin {
 		this.auctionItemManager.start();
 		this.transactionManager.loadTransactions();
 		this.filterManager.loadItems();
-		this.minItemPriceManager.loadMinPrices();
 		this.auctionStatisticManager.loadStatistics();
 		this.auctionPlayerManager.loadPlayers();
 
@@ -240,7 +236,7 @@ public class AuctionHouse extends TweetyPlugin {
 				new CommandUnban(),
 				new CommandMarkChest(),
 				new CommandUpload(),
-				new CommandMinPrice(),
+				new CommandPriceLimit(),
 				new CommandStats(),
 				new CommandPayments(),
 				new CommandBids(),
@@ -347,6 +343,10 @@ public class AuctionHouse extends TweetyPlugin {
 		return (AuctionHouse) TweetyPlugin.getInstance();
 	}
 
+	@Override
+	public void onPluginLoad() {
+	}
+
 	public static AuctionHouseAPI getAPI() {
 		return getInstance().API;
 	}
@@ -391,8 +391,8 @@ public class AuctionHouse extends TweetyPlugin {
 		return getInstance().auctionStatisticManager;
 	}
 
-	public static MinItemPriceManager getMinItemPriceManager() {
-		return getInstance().minItemPriceManager;
+	public static PriceLimitManager getPriceLimitManager() {
+		return getInstance().priceLimitManager;
 	}
 
 	public static PaymentsManager getPaymentsManager() {

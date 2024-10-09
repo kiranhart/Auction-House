@@ -27,7 +27,6 @@ import org.bukkit.inventory.ItemStack;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.Locale;
 
 public final class AuctionAPI implements AuctionHouseAPI {
@@ -64,7 +63,7 @@ public final class AuctionAPI implements AuctionHouseAPI {
 
 		currencyFormatter.setGroupingUsed(Settings.CURRENCY_USE_GROUPING.getBoolean());
 
-		String formatted =  currencyFormatter.format(number);
+		String formatted = currencyFormatter.format(number);
 
 		if (Settings.CURRENCY_STRIP_ENDING_ZEROES.getBoolean()) {
 			formatted = replaceLastDecimal(formatted);

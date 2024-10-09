@@ -5,7 +5,6 @@ import ca.tweetzy.auctionhouse.api.sync.Identifiable;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
@@ -106,7 +105,7 @@ public interface ItemCategory extends Identifiable<String> {
 			for (CategoryCondition condition : getConditions()) {
 				final CategoryConditionType conditionType = condition.getType();
 				final CategoryStringComparison stringComparison = condition.getComparisonType();
-				final String value  = condition.getValue();
+				final String value = condition.getValue();
 
 				switch (stringComparison) {
 					case STARTS_WITH:

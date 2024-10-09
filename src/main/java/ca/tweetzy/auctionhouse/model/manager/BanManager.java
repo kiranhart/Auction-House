@@ -83,7 +83,7 @@ public final class BanManager extends KeyValueManager<UUID, Ban> {
 
 	@Override
 	public void load() {
-		AuctionHouse.getInstance().getDataManager().getBans((error, results) -> {
+		AuctionHouse.getDataManager().getBans((error, results) -> {
 			if (error == null)
 				results.forEach(ban -> add(ban.getId(), ban));
 		});

@@ -50,7 +50,7 @@ public class PaymentsManager extends KeyValueManager<UUID, AuctionPayment> {
 
 	@Override
 	public void load() {
-		AuctionHouse.getInstance().getDataManager().getAuctionPayments((error, results) -> {
+		AuctionHouse.getDataManager().getAuctionPayments((error, results) -> {
 			if (error == null) {
 				results.forEach(this::add);
 			}

@@ -19,9 +19,9 @@
 package ca.tweetzy.auctionhouse.api;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
-import ca.tweetzy.auctionhouse.auction.MinItemPrice;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
@@ -612,19 +612,40 @@ public class AuctionAPI {
 	public boolean meetsMinItemPrice(boolean isUsingBundle, boolean isBiddingItem, ItemStack original, double basePrice, double bidStartPrice) {
 		boolean valid = true;
 
-		if (!AuctionHouse.getInstance().getMinItemPriceManager().getMinPrices().isEmpty() && !isUsingBundle) {
-			final MinItemPrice foundMinPriceItem = AuctionHouse.getInstance().getMinItemPriceManager().getMinPrice(original);
+		if (!AuctionHouse.getPriceLimitManager().getManagerContent().isEmpty() && !isUsingBundle) {
+			final ListingPriceLimit foundMinPriceItem = AuctionHouse.getPriceLimitManager().getPriceLimit(original);
 			if (foundMinPriceItem != null) {
 
 				if (isBiddingItem) {
-					if (basePrice < foundMinPriceItem.getPrice() || bidStartPrice < foundMinPriceItem.getPrice()) valid = false;
+					if (basePrice < foundMinPriceItem.getMinPrice() || bidStartPrice < foundMinPriceItem.getMinPrice()) valid = false;
 				} else {
-					if (basePrice < foundMinPriceItem.getPrice()) valid = false;
+					if (basePrice < foundMinPriceItem.getMinPrice()) valid = false;
 				}
 			}
 		}
 
 		return valid;
+	}
+
+	public boolean isAtMaxItemPrice(boolean isUsingBundle, boolean isBiddingItem, ItemStack original, double basePrice, double bidStartPrice) {
+		boolean atLimit = false;
+
+		if (!AuctionHouse.getPriceLimitManager().getManagerContent().isEmpty() && !isUsingBundle) {
+			final ListingPriceLimit foundMinPriceItem = AuctionHouse.getPriceLimitManager().getPriceLimit(original);
+			if (foundMinPriceItem != null) {
+				if (foundMinPriceItem.getMaxPrice() == -1) {
+					return false;
+				}
+
+				if (isBiddingItem) {
+					if (basePrice > foundMinPriceItem.getMaxPrice() || bidStartPrice > foundMinPriceItem.getMaxPrice()) atLimit = true;
+				} else {
+					if (basePrice > foundMinPriceItem.getMaxPrice()) atLimit = true;
+				}
+			}
+		}
+
+		return atLimit;
 	}
 
 	public void logException(@Nullable Plugin plugin, @NotNull Throwable th) {

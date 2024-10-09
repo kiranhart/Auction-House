@@ -82,15 +82,25 @@ public final class AuctionCreator {
 			}
 		}
 
-		if (!auctionItem.isRequest())
+		if (!auctionItem.isRequest()) {
 			if (!AuctionAPI.getInstance().meetsMinItemPrice(BundleUtil.isBundledItem(auctionItem.getItem()), auctionItem.isBidItem(), auctionItem.getItem(), auctionItem.getBasePrice(), auctionItem.getBidStartingPrice())) {
 				instance.getLocale().getMessage("pricing.minitemprice")
-						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getMinItemPriceManager().getMinPrice(auctionItem.getItem()).getPrice(), false))
+						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(auctionItem.getItem()).getMinPrice(), false))
 						.sendPrefixedMessage(seller);
 
 				result.accept(auctionItem, MINIMUM_PRICE_NOT_MET);
 				return;
 			}
+
+			if (AuctionAPI.getInstance().isAtMaxItemPrice(BundleUtil.isBundledItem(auctionItem.getItem()), auctionItem.isBidItem(), auctionItem.getItem(), auctionItem.getBasePrice(), auctionItem.getBidStartingPrice())) {
+				instance.getLocale().getMessage("pricing.maxitemprice")
+						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(auctionItem.getItem()).getMaxPrice(), false))
+						.sendPrefixedMessage(seller);
+
+				result.accept(auctionItem, ABOVE_MAXIMUM_PRICE);
+				return;
+			}
+		}
 
 		final ItemStack finalItemToSell = auctionItem.getItem().clone();
 		final double originalBasePrice = auctionItem.getBasePrice();

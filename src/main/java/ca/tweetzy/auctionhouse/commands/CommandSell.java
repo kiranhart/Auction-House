@@ -224,7 +224,15 @@ public final class CommandSell extends Command {
 		if (!isBiddingItem) {
 			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
 				AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice")
-						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getMinItemPriceManager().getMinPrice(originalItem).getPrice()))
+						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMinPrice()))
+						.sendPrefixedMessage(player);
+
+				return ReturnType.FAIL;
+			}
+
+			if (AuctionAPI.getInstance().isAtMaxItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
+				AuctionHouse.getInstance().getLocale().getMessage("pricing.maxitemprice")
+						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMaxPrice()))
 						.sendPrefixedMessage(player);
 
 				return ReturnType.FAIL;
@@ -237,7 +245,15 @@ public final class CommandSell extends Command {
 		if (isBiddingItem && startingBid != null) {
 			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
 				AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice")
-						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getMinItemPriceManager().getMinPrice(originalItem).getPrice()))
+						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMinPrice()))
+						.sendPrefixedMessage(player);
+
+				return ReturnType.FAIL;
+			}
+
+			if (AuctionAPI.getInstance().isAtMaxItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
+				AuctionHouse.getInstance().getLocale().getMessage("pricing.maxitemprice")
+						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMaxPrice()))
 						.sendPrefixedMessage(player);
 
 				return ReturnType.FAIL;

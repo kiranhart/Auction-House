@@ -1,7 +1,10 @@
 package ca.tweetzy.auctionhouse.model.manager;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.auction.category.*;
+import ca.tweetzy.auctionhouse.api.auction.category.CategoryConditionType;
+import ca.tweetzy.auctionhouse.api.auction.category.CategoryFieldCondition;
+import ca.tweetzy.auctionhouse.api.auction.category.CategoryStringComparison;
+import ca.tweetzy.auctionhouse.api.auction.category.ItemCategory;
 import ca.tweetzy.auctionhouse.api.manager.KeyValueManager;
 import ca.tweetzy.auctionhouse.impl.category.AuctionCategoryCondition;
 import ca.tweetzy.auctionhouse.impl.category.AuctionItemCategory;

@@ -99,8 +99,6 @@ public class LocaleSettings {
 		languageNodes.put("general.requires creative", "&cThat action requires you to be in creative mode");
 		languageNodes.put("general.deleted transactions", "&cDeleted a total of &4%deleted_transactions% &ctransactions");
 		languageNodes.put("general.transaction delete begin", "&cBeginning transaction deletion, this may take some time.");
-		languageNodes.put("general.min price already added", "&cThere is already a minimum price set, please delete the existing one first.");
-		languageNodes.put("general.added min price", "&aSuccessfully set minimum price for %item% &ato &2$%price%");
 		languageNodes.put("general.qtybuydisabled", "&4%item_owner%&c is only accepting purchases of the entire stack.");
 		languageNodes.put("general.invalid bid amount", "&cBid either too low or too high");
 		languageNodes.put("general.invalid deletion range", "&cPlease enter a valid deletion range");
@@ -111,6 +109,9 @@ public class LocaleSettings {
 
 		languageNodes.put("pricing.request.min price", "&cThe minimum request price must be &a%price%");
 		languageNodes.put("pricing.request.max price", "&cThe maximum request price is &a%price%");
+
+		languageNodes.put("pricing.limit.added price limit", "&aSuccessfully added a min/max price limit to that item.");
+		languageNodes.put("pricing.limit.updated price limit", "&aSuccessfully updated price limits for this item.");
 
 
 		languageNodes.put("pricing.minbaseprice", "&cThe minimum base price must be &a%price%");
@@ -125,6 +126,7 @@ public class LocaleSettings {
 		languageNodes.put("pricing.moneyadd", "&a&l+ $%price% &7(%player_balance%)");
 		languageNodes.put("pricing.bidmusthigherthanprevious", "&cYour bid must be higher than &4%current_bid%");
 		languageNodes.put("pricing.minitemprice", "&cThe minimum price for this item must be &a%price%");
+		languageNodes.put("pricing.maxitemprice", "&cThe maximum price for this item is &a%price%");
 
 
 		languageNodes.put("titles.end all confirm.title", "&eConfirm End All");
@@ -163,6 +165,12 @@ public class LocaleSettings {
 
 		languageNodes.put("titles.material search.title", "&eSearch for material");
 		languageNodes.put("titles.material search.subtitle", "&fEnter item/material name in chat");
+
+		languageNodes.put("titles.price limit.min.title", "&eAdjust Price Limit");
+		languageNodes.put("titles.price limit.min.subtitle", "&fEnter new min price for this item in chat");
+
+		languageNodes.put("titles.price limit.max.title", "&eAdjust Price Limit");
+		languageNodes.put("titles.price limit.max.subtitle", "&fEnter new max price for this item in chat");
 
 		languageNodes.put("transaction.sale_type.bid_won", "Won Auction");
 		languageNodes.put("transaction.sale_type.immediate_buy", "Bought Immediately");
@@ -273,7 +281,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.syntax.unban", "unban <player>");
 		languageNodes.put("commands.syntax.togglelistinfo", "togglelistinfo");
 		languageNodes.put("commands.syntax.markchest", "markchest");
-		languageNodes.put("commands.syntax.min price", "minprices [add] [price]");
+		languageNodes.put("commands.syntax.price limit", "pricelimit [set <min/max> <price>]");
 		languageNodes.put("commands.syntax.stats", "stats [player]");
 		languageNodes.put("commands.syntax.request", "request <price> [-single]");
 
@@ -293,7 +301,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.description.unban", "Unban a player from the auction house");
 		languageNodes.put("commands.description.togglelistinfo", "Toggle whether auction house should message you when you list an item");
 		languageNodes.put("commands.description.markchest", "Toggles whether a chest is an auction chest");
-		languageNodes.put("commands.description.min price", "Adds a minimum sell price to an item");
+		languageNodes.put("commands.description.price limit", "Adds a minimum sell price to an item");
 		languageNodes.put("commands.description.stats", "View yours or another players stats");
 		languageNodes.put("commands.description.request", "Makes request for item your holding");
 	}
