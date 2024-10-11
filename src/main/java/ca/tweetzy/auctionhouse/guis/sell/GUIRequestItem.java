@@ -138,8 +138,13 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 						return false;
 					}
 
-					if (newPrice > Settings.MAX_AUCTION_PRICE.getDouble()) {
+					if (newPrice > Settings.MAX_REQUEST_PRICE.getDouble()) {
 						AuctionHouse.getInstance().getLocale().getMessage("pricing.request.max price").processPlaceholder("price", Settings.MAX_REQUEST_PRICE.getDouble()).sendPrefixedMessage(player);
+						return false;
+					}
+
+					if (newPrice < Settings.MIN_REQUEST_PRICE.getDouble()) {
+						AuctionHouse.getInstance().getLocale().getMessage("pricing.request.min price").processPlaceholder("price", Settings.MIN_REQUEST_PRICE.getDouble()).sendPrefixedMessage(player);
 						return false;
 					}
 

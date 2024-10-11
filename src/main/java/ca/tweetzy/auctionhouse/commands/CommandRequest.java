@@ -107,7 +107,7 @@ public class CommandRequest extends Command {
 		}
 
 		if (args.length < 1) {
-			AuctionHouse.getGuiManager().showGUI(player, new GUIRequestItem(auctionPlayer, originalItem, originalItem.getAmount(), 1));
+			AuctionHouse.getGuiManager().showGUI(player, new GUIRequestItem(auctionPlayer, originalItem, originalItem.getAmount(), Settings.MIN_REQUEST_PRICE.getDouble()));
 			return ReturnType.SUCCESS;
 		}
 
@@ -137,12 +137,12 @@ public class CommandRequest extends Command {
 		// check min/max prices
 		final double price = Double.parseDouble(args[0]);
 
-		if (price < Settings.MIN_AUCTION_PRICE.getDouble()) {
+		if (price < Settings.MIN_REQUEST_PRICE.getDouble()) {
 			AuctionHouse.getInstance().getLocale().getMessage("pricing.request.min price").processPlaceholder("price", Settings.MIN_REQUEST_PRICE.getDouble()).sendPrefixedMessage(player);
 			return ReturnType.FAIL;
 		}
 
-		if (price > Settings.MAX_AUCTION_PRICE.getDouble()) {
+		if (price > Settings.MAX_REQUEST_PRICE.getDouble()) {
 			AuctionHouse.getInstance().getLocale().getMessage("pricing.request.max price").processPlaceholder("price", Settings.MAX_REQUEST_PRICE.getDouble()).sendPrefixedMessage(player);
 			return ReturnType.FAIL;
 		}
