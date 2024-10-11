@@ -103,6 +103,7 @@ public class Settings {
 	public static final ConfigSetting DEFAULT_FILTER_CATEGORY = new ConfigSetting(config, "auction setting.default filters.auction category", "ALL", "Valid Options: ALL, FOOD, ARMOR, BLOCKS, TOOLS, WEAPONS, POTIONS, SPAWNERS, ENCHANTS, MISC, SEARCH, SELF");
 	public static final ConfigSetting DEFAULT_FILTER_SORT = new ConfigSetting(config, "auction setting.default filters.auction sort", "RECENT", "Valid Options: RECENT, OLDEST, PRICE");
 	public static final ConfigSetting DEFAULT_FILTER_SALE_TYPE = new ConfigSetting(config, "auction setting.default filters.sale type", "BOTH", "Valid Options: USED_BIDDING_SYSTEM, WITHOUT_BIDDING_SYSTEM, BOTH");
+	public static final ConfigSetting ENABLE_FILTER_SYSTEM = new ConfigSetting(config, "auction setting.use filter system", true, "If false, auction house will disable the filter button.");
 
 	public static final ConfigSetting INTERNAL_CREATE_DELAY = new ConfigSetting(config, "auction setting.internal create delay", 2, "How many ticks should auction house wait before actually creating the item.");
 	public static final ConfigSetting MAX_AUCTION_PRICE = new ConfigSetting(config, "auction setting.pricing.max auction price", 1000000000, "The max price for buy only / buy now items");

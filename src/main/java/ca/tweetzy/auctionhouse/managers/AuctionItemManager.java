@@ -71,7 +71,7 @@ public class AuctionItemManager {
 	}
 
 	public void end() {
-		AuctionHouse.getInstance().getDataManager().updateItems(this.items.values(), null);
+		AuctionHouse.getDataManager().updateItems(this.items.values(), null);
 	}
 
 	public void addAuctionItem(@NonNull AuctionedItem auctionedItem) {
@@ -89,9 +89,9 @@ public class AuctionItemManager {
 	public List<AuctionedItem> getValidItems(Player player) {
 		final List<AuctionedItem> itemList = new ArrayList<>();
 
-		for (Map.Entry<UUID, AuctionedItem> entry : AuctionHouse.getInstance().getAuctionItemManager().getItems().entrySet()) {
+		for (Map.Entry<UUID, AuctionedItem> entry : AuctionHouse.getAuctionItemManager().getItems().entrySet()) {
 			AuctionedItem auctionItem = entry.getValue();
-			if (!auctionItem.isExpired() && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
+			if (!auctionItem.isExpired() && !AuctionHouse.getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
 				if (Settings.PER_WORLD_ITEMS.getBoolean()) {
 					if (auctionItem.getListedWorld() == null || player.getWorld().getName().equals(auctionItem.getListedWorld())) {
 						itemList.add(auctionItem);

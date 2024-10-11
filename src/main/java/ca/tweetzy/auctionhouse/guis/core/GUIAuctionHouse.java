@@ -83,7 +83,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			this.items = this.items.stream().filter(item -> checkSearchCriteria(this.searchKeywords, item)).collect(Collectors.toList());
 		}
 
-		if (this.auctionPlayer != null) {
+		if (this.auctionPlayer != null && Settings.ENABLE_FILTER_SYSTEM.getBoolean()) {
 			if (this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.ALL && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SEARCH && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SELF) {
 				this.items = this.items.stream().filter(item -> checkFilterCriteria(item, this.auctionPlayer.getSelectedFilter())).collect(Collectors.toList());
 			} else if (this.auctionPlayer.getSelectedFilter() == AuctionItemCategory.SELF) {
@@ -120,8 +120,10 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 	@Override
 	protected void drawFixed() {
+		if (Settings.ENABLE_FILTER_SYSTEM.getBoolean())
+			drawFilterButton();
+
 		drawFixedButtons();
-		drawFilterButton();
 		drawVariableButtons();
 	}
 
@@ -479,7 +481,8 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 	//======================================================================================================//
 	private void drawFixedButtons() {
-		drawFilterButton();
+		if (Settings.ENABLE_FILTER_SYSTEM.getBoolean())
+			drawFilterButton();
 
 		if (Settings.REPLACE_HOW_TO_SELL_WITH_LIST_BUTTON.getBoolean()) {
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ENABLED.getBoolean()) {
