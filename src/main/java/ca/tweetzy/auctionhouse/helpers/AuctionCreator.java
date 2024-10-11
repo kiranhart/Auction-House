@@ -119,12 +119,12 @@ public final class AuctionCreator {
 
 			AuctionHouse.getCurrencyManager().withdraw(seller, listingFee);
 			AuctionHouse.getInstance().getLocale().getMessage("auction.tax.paidlistingfee")
-					.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(listingFee, false))
+					.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(listingFee, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
 					.sendPrefixedMessage(seller);
 
 			AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
 					.processPlaceholder("player_balance", AuctionHouse.getCurrencyManager().getFormattedBalance(seller, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-					.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(listingFee, false))
+					.processPlaceholder("price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(listingFee, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
 					.sendPrefixedMessage(seller);
 		}
 

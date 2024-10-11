@@ -154,7 +154,10 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 				AuctionHouse.getEconomy().withdrawPlayer(click.player, Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble());
 				AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
 						.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(click.player, item.getCurrency().split("/")[0], item.getCurrency().split("/")[1]), item.getCurrency(), item.getCurrencyItem()))
-						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble(), false))
+						.processPlaceholder("price",
+								AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble(), item.getCurrency(), item.getCurrencyItem())
+
+						)
 						.sendPrefixedMessage(click.player);
 
 				long newBoostTime = item.getPriorityExpiresAt() + (System.currentTimeMillis() + (1000L * Settings.LISTING_PRIORITY_TIME_PER_BOOST.getInt()));

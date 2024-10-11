@@ -122,8 +122,8 @@ public class LocaleSettings {
 		languageNodes.put("pricing.maxbidincrementprice", "&cThe maximum bid increment is &a%price%");
 		languageNodes.put("pricing.basepricetoolow", "&cThe buy now price must be higher than the starting bid.");
 		languageNodes.put("pricing.startingpricetoohigh", "&cThe starting bid cannot be higher than buyout. &f(&a%price%&f)");
-		languageNodes.put("pricing.moneyremove", "&c&l- $%price% &7(%player_balance%)");
-		languageNodes.put("pricing.moneyadd", "&a&l+ $%price% &7(%player_balance%)");
+		languageNodes.put("pricing.moneyremove", "&c&l- %price% &7(%player_balance%)");
+		languageNodes.put("pricing.moneyadd", "&a&l+ %price% &7(%player_balance%)");
 		languageNodes.put("pricing.bidmusthigherthanprevious", "&cYour bid must be higher than &4%current_bid%");
 		languageNodes.put("pricing.minitemprice", "&cThe minimum price for this item must be &a%price%");
 		languageNodes.put("pricing.maxitemprice", "&cThe maximum price for this item is &a%price%");
@@ -246,8 +246,8 @@ public class LocaleSettings {
 		languageNodes.put("auction.placedbid", "&6%player% &eincreased the bid to &a%amount% &eon &6%item%");
 		languageNodes.put("auction.nobids", "&cNo Bids");
 
-		languageNodes.put("auction.tax.cannotpaylistingfee", "&cYou do not have enough money to pay the listing fee &f(&4$%price%&f)");
-		languageNodes.put("auction.tax.paidlistingfee", "&aPaid &2$%price%&a listing fee");
+		languageNodes.put("auction.tax.cannotpaylistingfee", "&cYou do not have enough money to pay the listing fee &f(&4%price%&f)");
+		languageNodes.put("auction.tax.paidlistingfee", "&aPaid &2%price%&a listing fee");
 
 		languageNodes.put("admin action.return", "Returned");
 		languageNodes.put("admin action.claim", "Claimed");
