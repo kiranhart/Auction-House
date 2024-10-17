@@ -53,13 +53,20 @@ public final class AuctionAPI implements AuctionHouseAPI {
 				.build()
 		);
 
-		if (hideSymbol)
-			if (currencyFormatter instanceof DecimalFormat) {
-				DecimalFormat decimalFormat = (DecimalFormat) currencyFormatter;
-				DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
+		if (currencyFormatter instanceof DecimalFormat) {
+			DecimalFormat decimalFormat = (DecimalFormat) currencyFormatter;
+			DecimalFormatSymbols symbols = decimalFormat.getDecimalFormatSymbols();
+
+			if (hideSymbol) {
 				symbols.setCurrencySymbol(""); // Set the currency symbol to an empty string
-				decimalFormat.setDecimalFormatSymbols(symbols);
+			} else {
+				if (Settings.CURRENCY_VAULT_SYMBOL_OVERRIDES.getBoolean())
+					symbols.setCurrencySymbol(Settings.CURRENCY_VAULT_SYMBOL.getString());
 			}
+
+			decimalFormat.setDecimalFormatSymbols(symbols);
+
+		}
 
 		currencyFormatter.setGroupingUsed(Settings.CURRENCY_USE_GROUPING.getBoolean());
 

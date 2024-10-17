@@ -41,10 +41,12 @@ public class Settings {
 	static final Config config = AuctionHouse.getInstance().getCoreConfig();
 
 	public static final ConfigSetting LANG = new ConfigSetting(config, "lang", "en_US", "Default language file");
+	public static final ConfigSetting HIDE_THANKYOU = new ConfigSetting(config, "hide thank you", false, "Hides the purchase thank you message in the console.");
 
 	public static final ConfigSetting CURRENCY_ALLOW_PICK = new ConfigSetting(config, "economy.currency.allow pick", true, "If true, players will be able to select which currency they want to use.");
 	public static final ConfigSetting CURRENCY_DEFAULT_SELECTED = new ConfigSetting(config, "economy.currency.default selection", "Vault/Vault", "The default currency selection, PluginName/CurrencyName -> Ex. Vault/Vault or UltraEconomy/Gems etc");
 	public static final ConfigSetting CURRENCY_VAULT_SYMBOL = new ConfigSetting(config, "economy.currency.vault symbol", "$", "When using default/vault currency, what symbol should be used.");
+	public static final ConfigSetting CURRENCY_VAULT_SYMBOL_OVERRIDES = new ConfigSetting(config, "economy.currency.vault symbol overrides", false, "If true, the vault symbol will override the symbol provided by the country/language combination");
 	public static final ConfigSetting CURRENCY_BLACKLISTED = new ConfigSetting(config, "economy.currency.black listed", Collections.singletonList("UltraEconomy:Test"), "A list of owning plugins & the currency to be blacklisted. Ex. UltraEconomy:Test");
 	public static final ConfigSetting CURRENCY_FORMAT_LANGUAGE = new ConfigSetting(config, "economy.currency.format.language", "en", "An ISO 639 alpha-2 or alpha-3 language code.");
 	public static final ConfigSetting CURRENCY_FORMAT_COUNTRY = new ConfigSetting(config, "economy.currency.format.country", "US", "An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.");

@@ -4,9 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.currency.AbstractCurrency;
 import ca.tweetzy.auctionhouse.api.currency.IconableCurrency;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
-import ca.tweetzy.auctionhouse.impl.currency.FundsCurrency;
 import ca.tweetzy.auctionhouse.impl.currency.ItemCurrency;
-import ca.tweetzy.auctionhouse.impl.currency.UltraEconomyCurrency;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
@@ -76,15 +74,7 @@ public final class GUICurrencyPicker extends AuctionPagedGUI<AbstractCurrency> {
 			quickItem = QuickItem.of(iconableCurrency.getIcon());
 		}
 
-		if (currency instanceof FundsCurrency) {
-			FundsCurrency fundsCurrency = (FundsCurrency) currency;
-			quickItem.name(fundsCurrency.getDisplayName());
-		} else if (currency instanceof UltraEconomyCurrency) {
-			UltraEconomyCurrency ultraEconomyCurrency = (UltraEconomyCurrency) currency;
-			quickItem.name(ultraEconomyCurrency.getDisplayName());
-		} else {
-			quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&a" + Settings.CURRENCY_VAULT_SYMBOL.getString() : "&e" + currency.getCurrencyName());
-		}
+		quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&a" + Settings.CURRENCY_VAULT_SYMBOL.getString() : "&e" + currency.getDisplayName());
 
 		quickItem.lore(Replacer.replaceVariables(Settings.GUI_CURRENCY_PICKER_ITEMS_CURRENCY_LORE.getStringList(), "currency_owning_plugin", currency.getOwningPlugin()));
 
