@@ -48,15 +48,24 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 	private final AuctionPlayer auctionPlayer;
 
 	private Long lastClicked = null;
+	private Gui parent;
 
-	public GUIExpiredItems(Gui parent, AuctionPlayer auctionPlayer) {
+
+
+	public GUIExpiredItems(Gui parent, AuctionPlayer auctionPlayer, Long lastClicked) {
 		super(parent, auctionPlayer.getPlayer(), Settings.GUI_EXPIRED_AUCTIONS_TITLE.getString(), 6, new ArrayList<>(auctionPlayer.getItems(true)));
+		this.parent = parent;
 		this.auctionPlayer = auctionPlayer;
+		this.lastClicked = lastClicked;
 		draw();
 	}
 
+	public GUIExpiredItems(Gui parent, AuctionPlayer auctionPlayer) {
+		this(parent, auctionPlayer, null);
+	}
+
 	public GUIExpiredItems(AuctionPlayer auctionPlayer, Long lastClicked) {
-		this(null, auctionPlayer);
+		this(null, auctionPlayer, lastClicked);
 		this.lastClicked = lastClicked;
 	}
 
@@ -76,7 +85,7 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 
 	@Override
 	protected void onClick(AuctionedItem auctionedItem, GuiClickEvent click) {
-		if (AuctionHouse.getInstance().getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.ITEM_COLLECTION)) return;
+		if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.ITEM_COLLECTION)) return;
 
 		if (!Settings.ALLOW_INDIVIDUAL_ITEM_CLAIM.getBoolean()) return;
 
@@ -112,13 +121,18 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 			PlayerUtils.giveItem(click.player, item);
 		}
 
-		AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionedItem);
-		click.manager.showGUI(click.player, new GUIExpiredItems(this.auctionPlayer, this.lastClicked));
+		AuctionHouse.getAuctionItemManager().sendToGarbage(auctionedItem);
+		click.manager.showGUI(click.player, new GUIExpiredItems(this.parent, this.auctionPlayer, this.lastClicked));
 	}
 
 	@Override
 	protected void drawFixed() {
-		applyBackExit();
+		setButton(getBackExitButtonSlot(), this.parent == null ? getExitButton() : getBackButton(), click -> {
+			if (this.parent == null)
+				click.gui.close();
+			else
+				click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
+		});
 
 		if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean()) {
 			setButton(5, 2, QuickItem

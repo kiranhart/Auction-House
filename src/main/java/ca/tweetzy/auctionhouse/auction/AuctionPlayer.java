@@ -122,9 +122,9 @@ public class AuctionPlayer {
 
 		final List<AuctionedItem> items = new ArrayList<>();
 		final AuctionHouse instance = AuctionHouse.getInstance();
-		for (Map.Entry<UUID, AuctionedItem> entry : instance.getAuctionItemManager().getItems().entrySet()) {
+		for (Map.Entry<UUID, AuctionedItem> entry : AuctionHouse.getAuctionItemManager().getItems().entrySet()) {
 			final AuctionedItem auctionItem = entry.getValue();
-			if (auctionItem.getOwner().equals(this.uuid) && !instance.getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
+			if (auctionItem.getOwner().equals(this.uuid) && !AuctionHouse.getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
 				items.add(auctionItem);
 			}
 		}
@@ -136,10 +136,9 @@ public class AuctionPlayer {
 			this.player = Bukkit.getPlayer(this.uuid);
 
 		final List<AuctionedItem> items = new ArrayList<>();
-		final AuctionHouse instance = AuctionHouse.getInstance();
-		for (Map.Entry<UUID, AuctionedItem> entry : instance.getAuctionItemManager().getItems().entrySet()) {
+		for (Map.Entry<UUID, AuctionedItem> entry : AuctionHouse.getAuctionItemManager().getItems().entrySet()) {
 			final AuctionedItem auctionItem = entry.getValue();
-			if (auctionItem.getOwner().equals(this.uuid) && auctionItem.isExpired() == getExpired && !instance.getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
+			if (auctionItem.getOwner().equals(this.uuid) && auctionItem.isExpired() == getExpired && !AuctionHouse.getAuctionItemManager().getGarbageBin().containsKey(auctionItem.getId())) {
 				items.add(auctionItem);
 			}
 		}

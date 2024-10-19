@@ -82,7 +82,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 		switch (click.clickType) {
 			case LEFT:
 				if (item.isRequest()) {
-					AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(item);
+					AuctionHouse.getAuctionItemManager().sendToGarbage(item);
 					cancelTask();
 					click.manager.showGUI(click.player, new GUIActiveAuctions(this.auctionPlayer));
 					return;
@@ -176,7 +176,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 		} else {
 			setButton(getBackExitButtonSlot(), getBackButton(), click -> {
 				cancelTask();
-				click.manager.showGUI(click.player, this.parent);
+				click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
 			});
 		}
 

@@ -81,6 +81,7 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	protected void prePopulate() {
 	}
 
+
 	protected void drawFixed() {
 	}
 
