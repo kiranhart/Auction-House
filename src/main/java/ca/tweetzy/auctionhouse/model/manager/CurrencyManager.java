@@ -25,6 +25,10 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 		return getManagerContent().stream().filter(currency -> currency.getOwningPlugin().equals(owningPlugin) && currency.getCurrencyName().equals(currencyName)).findFirst().orElse(null);
 	}
 
+	public AbstractCurrency locateCurrency(@NonNull final String currencyName) {
+		return getManagerContent().stream().filter(currency -> currency.getCurrencyName().equalsIgnoreCase(currencyName)).findFirst().orElse(null);
+	}
+
 	public boolean has(@NonNull final OfflinePlayer offlinePlayer, @NonNull final String owningPlugin, @NonNull final String currencyName, final double amount) {
 		if (owningPlugin.equalsIgnoreCase("vault") || currencyName.equalsIgnoreCase("vault"))
 			return AuctionHouse.getEconomy().has(offlinePlayer, amount);
