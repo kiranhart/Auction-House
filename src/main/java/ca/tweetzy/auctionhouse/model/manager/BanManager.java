@@ -3,10 +3,12 @@ package ca.tweetzy.auctionhouse.model.manager;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.ban.Ban;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
+import ca.tweetzy.auctionhouse.api.event.AuctionPlayerBanEvent;
 import ca.tweetzy.auctionhouse.api.manager.KeyValueManager;
 import ca.tweetzy.auctionhouse.api.sync.SynchronizeResult;
 import ca.tweetzy.auctionhouse.impl.AuctionBan;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -61,9 +63,18 @@ public final class BanManager extends KeyValueManager<UUID, Ban> {
 	public void registerBan(@NonNull final Ban ban, final Consumer<Boolean> created) {
 		if (this.managerContent.containsKey(ban.getId())) return;
 
+		final AuctionPlayerBanEvent banPlayerEvent = new AuctionPlayerBanEvent(ban);
+		if (banPlayerEvent.isCancelled()) {
+			created.accept(false);
+			return;
+		}
+
 		ban.store(storedBan -> {
 			if (storedBan != null) {
 				add(storedBan.getId(), storedBan);
+				// call event
+				AuctionHouse.newChain().sync(() -> Bukkit.getPluginManager().callEvent(banPlayerEvent)).execute();
+
 				if (created != null)
 					created.accept(true);
 			} else {
