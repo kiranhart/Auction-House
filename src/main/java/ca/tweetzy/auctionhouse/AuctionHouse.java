@@ -46,6 +46,7 @@ import ca.tweetzy.flight.command.CommandManager;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.config.tweetzy.TweetzyYamlConfig;
 import ca.tweetzy.flight.database.*;
+import ca.tweetzy.flight.utils.Common;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
@@ -192,7 +193,11 @@ public class AuctionHouse extends TweetyPlugin {
 		dataMigrationManager.runMigrations();
 
 		// setup Vault Economy
-		setupEconomy();
+		if (!setupEconomy() ) {
+			Bukkit.getServer().getConsoleSender().sendMessage(Common.colorize("&7[&eAuctionHouse&7] &f- &cCould not setup vault, please make sure you have an economy plugin."));
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 
 		// gui manager
 		this.guiManager.init();
@@ -469,17 +474,15 @@ public class AuctionHouse extends TweetyPlugin {
 	}
 
 	// helpers
-	private void setupEconomy() {
+	private boolean setupEconomy() {
 		if (getServer().getPluginManager().getPlugin("Vault") == null) {
-			return;
+			return false;
 		}
-
-		final RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-
+		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
 		if (rsp == null) {
-			return;
+			return false;
 		}
-
 		this.economy = rsp.getProvider();
+		return this.economy != null;
 	}
 }
