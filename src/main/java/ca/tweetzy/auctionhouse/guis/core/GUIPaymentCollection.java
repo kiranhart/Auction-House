@@ -47,7 +47,7 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 	private Long lastClicked = null;
 
 	public GUIPaymentCollection(Gui parent, AuctionPlayer auctionPlayer) {
-		super(parent, auctionPlayer.getPlayer(), Settings.GUI_PAYMENT_COLLECTION_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getInstance().getPaymentsManager().getPaymentsByPlayer(auctionPlayer.getPlayer())));
+		super(parent, auctionPlayer.getPlayer(), Settings.GUI_PAYMENT_COLLECTION_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getPaymentsManager().getPaymentsByPlayer(auctionPlayer.getPlayer())));
 		this.auctionPlayer = auctionPlayer;
 		draw();
 	}

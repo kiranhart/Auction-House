@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public final class GUIBans extends AuctionPagedGUI<Ban> {
 
 	public GUIBans(@NonNull Player player) {
-		super(null, player, Settings.GUI_BANS_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getInstance().getBanManager().getManagerContent().values()));
+		super(null, player, Settings.GUI_BANS_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getBanManager().getManagerContent().values()));
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_BANS_BG_ITEM.getString()).make()));
 		draw();
 	}

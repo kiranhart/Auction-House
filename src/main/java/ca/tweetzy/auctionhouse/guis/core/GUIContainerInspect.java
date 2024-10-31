@@ -73,7 +73,7 @@ public class GUIContainerInspect extends AuctionPagedGUI<ItemStack> {
 			this.items = Arrays.asList(skulkerBox.getInventory().getContents());
 		}
 
-		setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(close.player.getUniqueId()))));
+		setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouse(AuctionHouse.getAuctionPlayerManager().getPlayer(close.player.getUniqueId()))));
 		draw();
 	}
 
@@ -86,7 +86,7 @@ public class GUIContainerInspect extends AuctionPagedGUI<ItemStack> {
 
 		// Overwrite the default close, since they are accessing the inspection from the purchase screen
 		setOnClose(close -> {
-			AuctionHouse.getInstance().getTransactionManager().addPrePurchase(close.player, auctionItem.getId());
+			AuctionHouse.getTransactionManager().addPrePurchase(close.player, auctionItem.getId());
 			close.manager.showGUI(close.player, new GUIConfirmPurchase(this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));
 		});
 	}
@@ -95,10 +95,10 @@ public class GUIContainerInspect extends AuctionPagedGUI<ItemStack> {
 	protected void drawFixed() {
 		setButton(5, 0, getBackButton(), e -> {
 			if (fromPurchaseGUI) {
-				AuctionHouse.getInstance().getTransactionManager().addPrePurchase(e.player, auctionItem.getId());
+				AuctionHouse.getTransactionManager().addPrePurchase(e.player, auctionItem.getId());
 				e.manager.showGUI(e.player, new GUIConfirmPurchase(this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));
 			} else {
-				e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(e.player.getUniqueId())));
+				e.manager.showGUI(e.player, new GUIAuctionHouse(AuctionHouse.getAuctionPlayerManager().getPlayer(e.player.getUniqueId())));
 			}
 		});
 	}

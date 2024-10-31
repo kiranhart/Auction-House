@@ -43,7 +43,7 @@ public class GUIActiveBids extends AuctionPagedGUI<AuctionedItem> {
 	private final AuctionPlayer auctionPlayer;
 
 	public GUIActiveBids(AuctionPlayer auctionPlayer) {
-		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ACTIVE_BIDS_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getInstance().getAuctionItemManager().getHighestBidItems(auctionPlayer.getPlayer())));
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ACTIVE_BIDS_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getAuctionItemManager().getHighestBidItems(auctionPlayer.getPlayer())));
 		this.auctionPlayer = auctionPlayer;
 		draw();
 	}

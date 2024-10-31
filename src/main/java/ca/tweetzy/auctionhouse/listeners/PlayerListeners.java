@@ -68,14 +68,14 @@ public class PlayerListeners implements Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		final Player player = event.getEntity();
-		final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
+		final AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
 		if (auctionPlayer != null) {
 			// task id cancel
 			Bukkit.getServer().getScheduler().cancelTask(auctionPlayer.getAssignedTaskId());
 
 			if (auctionPlayer.getItemBeingListed() != null && player.getLocation().getWorld() != null) {
-				if (!AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
+				if (!AuctionHouse.getAuctionPlayerManager().isInSellProcess(player)) {
 
 					if (!player.hasMetadata("AuctionHouseConfirmListing"))
 						player.getLocation().getWorld().dropItemNaturally(player.getLocation(), auctionPlayer.getItemBeingListed());
@@ -84,14 +84,14 @@ public class PlayerListeners implements Listener {
 			}
 		}
 
-		AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
+		AuctionHouse.getAuctionPlayerManager().processSell(player);
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
 		final Player player = event.getPlayer();
-		AuctionHouse.getInstance().getAuctionPlayerManager().addPlayer(player);
+		AuctionHouse.getAuctionPlayerManager().addPlayer(player);
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -108,7 +108,7 @@ public class PlayerListeners implements Listener {
 				final UUID auctionItemId = NBT.get(item, nbt -> (UUID) nbt.getUUID("AuctionDupeTracking"));
 				if (auctionItemId == null) continue;
 
-				if (AuctionHouse.getInstance().getAuctionItemManager().getItem(auctionItemId) != null) {
+				if (AuctionHouse.getAuctionItemManager().getItem(auctionItemId) != null) {
 					player.getInventory().remove(item);
 					Bukkit.getServer().getConsoleSender().sendMessage(Common.colorize("&8[&eAuctionHouse&8] &CRemoving duped item from " + player.getName() + "'s inventory!"));
 				}
@@ -125,13 +125,12 @@ public class PlayerListeners implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		final Player player = e.getPlayer();
-		final AuctionHouse instance = AuctionHouse.getInstance();
 
-		AuctionHouse.getInstance().getAuctionPlayerManager().processSell(player);
+		AuctionHouse.getAuctionPlayerManager().processSell(player);
 
-		if (instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()) != null && instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed() != null) {
+		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) != null && AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed() != null) {
 
-			final ItemStack toGiveRaw = instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed();
+			final ItemStack toGiveRaw = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed();
 
 			if (BundleUtil.isBundledItem(toGiveRaw)) {
 				PlayerUtils.giveItem(player, BundleUtil.extractBundleItems(toGiveRaw));
@@ -139,13 +138,13 @@ public class PlayerListeners implements Listener {
 				PlayerUtils.giveItem(player, toGiveRaw);
 			}
 
-			instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setItemBeingListed(null);
-			instance.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setPlayer(null);
+			AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setItemBeingListed(null);
+			AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setPlayer(null);
 		}
 
 
-		instance.getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
-		instance.getLogger().info("Removing sell holding instance for user: " + player.getName());
+		AuctionHouse.getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
+		AuctionHouse.getInstance().getLogger().info("Removing sell holding instance for user: " + player.getName());
 	}
 
 	@EventHandler

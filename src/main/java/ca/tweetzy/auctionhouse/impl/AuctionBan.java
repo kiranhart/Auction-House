@@ -85,7 +85,7 @@ public final class AuctionBan implements Ban {
 
 	@Override
 	public void store(Consumer<Ban> stored) {
-		AuctionHouse.getInstance().getDataManager().insertBan(this, (ex, result) -> {
+		AuctionHouse.getDataManager().insertBan(this, (ex, result) -> {
 			if (ex == null)
 				stored.accept(result);
 		});
@@ -93,9 +93,9 @@ public final class AuctionBan implements Ban {
 
 	@Override
 	public void unStore(@Nullable Consumer<SynchronizeResult> status) {
-		AuctionHouse.getInstance().getDataManager().deleteBan(this, (error, updateStatus) -> {
+		AuctionHouse.getDataManager().deleteBan(this, (error, updateStatus) -> {
 			if (updateStatus) {
-				AuctionHouse.getInstance().getBanManager().remove(getId());
+				AuctionHouse.getBanManager().remove(getId());
 			}
 
 			if (status != null)

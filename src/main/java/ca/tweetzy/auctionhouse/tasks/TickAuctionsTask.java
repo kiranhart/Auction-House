@@ -28,7 +28,9 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.nbtapi.NBT;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -97,7 +99,6 @@ public class TickAuctionsTask extends BukkitRunnable {
 			}
 
 			// end the scuffed deletion
-
 			if (auctionItem.isInfinite()) continue;
 
 			long timeRemaining = (auctionItem.getExpiresAt() - System.currentTimeMillis()) / 1000;
@@ -134,7 +135,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 				double finalPrice = auctionItem.getCurrentPrice();
 				double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_AUCTION_WON_PERCENTAGE.getDouble() / 100) * auctionItem.getCurrentPrice() : 0D;
 
-				if (!Settings.BIDDING_TAKES_MONEY.getBoolean())
+				if (!Settings.BIDDING_TAKES_MONEY.getBoolean()) {
 					if (!AuctionHouse.getCurrencyManager().has(auctionWinner, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice)) {
 						if (auctionItem.isServerItem())
 							AuctionHouse.getAuctionItemManager().sendToGarbage(auctionItem);
@@ -142,6 +143,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 							auctionItem.setExpired(true);
 						continue;
 					}
+				}
 
 
 				AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionWinner, auctionItem, AuctionSaleType.USED_BIDDING_SYSTEM, tax);
@@ -189,16 +191,16 @@ public class TickAuctionsTask extends BukkitRunnable {
 					});
 
 					// handle full inventory
-					if (auctionWinner.getPlayer().getInventory().firstEmpty() == -1) {
-						if (Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean()) {
-							AuctionHouse.newChain().sync(() -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack)).execute();
-							continue;
-						}
-					} else {
-						AuctionHouse.newChain().sync(() -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack)).execute();
+					if (auctionWinner.getPlayer().getInventory().firstEmpty() != -1) {
+						Bukkit.getServer().getScheduler().runTaskLater(AuctionHouse.getInstance(), () -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack), 0);
 						AuctionHouse.getAuctionItemManager().sendToGarbage(auctionItem);
+					} else {
+						auctionItem.setOwner(auctionWinner.getUniqueId());
+						auctionItem.setHighestBidder(auctionWinner.getUniqueId());
+						auctionItem.setExpired(true);
 						continue;
 					}
+
 				}
 
 				auctionItem.setOwner(auctionWinner.getUniqueId());
@@ -208,4 +210,12 @@ public class TickAuctionsTask extends BukkitRunnable {
 		}
 	}
 
+	public boolean hasEmptyInventorySlot(Player player) {
+		for (ItemStack item : player.getInventory().getContents()) {
+			if (item == null || item.getType() == Material.AIR) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

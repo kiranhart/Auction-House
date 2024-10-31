@@ -147,7 +147,7 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 				.lore(this.player, Settings.GUI_EXPIRED_AUCTIONS_LORE.getStringList())
 				.make(), e -> {
 
-			if (AuctionHouse.getInstance().getBanManager().isStillBanned(e.player, BanType.EVERYTHING, BanType.ITEM_COLLECTION)) return;
+			if (AuctionHouse.getBanManager().isStillBanned(e.player, BanType.EVERYTHING, BanType.ITEM_COLLECTION)) return;
 
 
 			if (this.lastClicked == null) {

@@ -53,7 +53,7 @@ public final class GUIStatisticLeaderboard extends AuctionPagedGUI<Pair<UUID, Do
 
 	@Override
 	protected void prePopulate() {
-		AuctionHouse.getInstance().getAuctionStatisticManager().getStatisticMap(this.statisticType)
+		AuctionHouse.getAuctionStatisticManager().getStatisticMap(this.statisticType)
 				.entrySet()
 				.stream()
 				.sorted(Map.Entry.<UUID, Double>comparingByValue().reversed())

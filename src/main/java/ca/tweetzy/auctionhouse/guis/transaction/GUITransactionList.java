@@ -64,7 +64,7 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 
 	public GUITransactionList(Player player, boolean showAll) {
 		super(null, player, showAll ? Settings.GUI_TRANSACTIONS_TITLE_ALL.getString() : Settings.GUI_TRANSACTIONS_TITLE.getString(), 6, new ArrayList<>());
-		this.auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId());
+		this.auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 		this.showAll = showAll;
 		setAcceptsItems(false);
 		draw();
@@ -72,7 +72,7 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 
 	@Override
 	protected void prePopulate() {
-		this.items = this.showAll ? new ArrayList<>(AuctionHouse.getInstance().getTransactionManager().getTransactions().values()) : AuctionHouse.getInstance().getTransactionManager().getTransactions().values().stream().filter(transaction -> transaction.getSeller().equals(player.getUniqueId()) || transaction.getBuyer().equals(player.getUniqueId())).collect(Collectors.toList());
+		this.items = this.showAll ? new ArrayList<>(AuctionHouse.getTransactionManager().getTransactions().values()) : AuctionHouse.getTransactionManager().getTransactions().values().stream().filter(transaction -> transaction.getSeller().equals(player.getUniqueId()) || transaction.getBuyer().equals(player.getUniqueId())).collect(Collectors.toList());
 
 
 		if (this.searchUUID != null)
@@ -185,8 +185,8 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 	@Override
 	protected void onClick(Transaction transaction, GuiClickEvent click) {
 		if (click.clickType == ClickType.DROP && (player.isOp() || player.hasPermission("auctionhouse.admin"))) {
-			AuctionHouse.getInstance().getDataManager().deleteTransactions(Collections.singleton(transaction.getId()));
-			AuctionHouse.getInstance().getTransactionManager().removeTransaction(transaction.getId());
+			AuctionHouse.getDataManager().deleteTransactions(Collections.singleton(transaction.getId()));
+			AuctionHouse.getTransactionManager().removeTransaction(transaction.getId());
 			click.manager.showGUI(click.player, new GUITransactionList(this.player, this.showAll));
 		}
 
