@@ -8,14 +8,14 @@
 
     <name>AuctionHouse</name>
     <description>The ultimate auction solution for your server</description>
-    <version>2.127.0</version>
+    <version>2.129.0</version>
     <packaging>jar</packaging>
     <properties>
         <author>Kiran Hart</author>
         <jarName>${project.name}</jarName>
         <main.class>${project.groupId}.${project.artifactId}.${project.name}</main.class>
         <java.version>8</java.version>
-        <flight.version>3.27.1</flight.version>
+        <flight.version>3.28.0</flight.version>
         <flight.path>ca.tweetzy</flight.path>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
