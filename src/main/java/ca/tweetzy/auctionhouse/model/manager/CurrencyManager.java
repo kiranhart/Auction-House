@@ -3,6 +3,7 @@ package ca.tweetzy.auctionhouse.model.manager;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.currency.AbstractCurrency;
 import ca.tweetzy.auctionhouse.api.manager.ListManager;
+import ca.tweetzy.auctionhouse.impl.currency.AllCurrency;
 import ca.tweetzy.auctionhouse.impl.currency.ItemCurrency;
 import ca.tweetzy.auctionhouse.impl.currency.VaultCurrency;
 import ca.tweetzy.auctionhouse.model.currency.EcoBitsEconomyLoader;
@@ -14,6 +15,7 @@ import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.units.qual.A;
 
 public final class CurrencyManager extends ListManager<AbstractCurrency> {
 
@@ -27,6 +29,15 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 
 	public AbstractCurrency locateCurrency(@NonNull final String currencyName) {
 		return getManagerContent().stream().filter(currency -> currency.getCurrencyName().equalsIgnoreCase(currencyName)).findFirst().orElse(null);
+	}
+
+	public AbstractCurrency getDefaultCurrency() {
+		final String[] CURRENCY_DEFAULT = Settings.CURRENCY_DEFAULT_SELECTED.getString().split("/");
+		return locateCurrency(CURRENCY_DEFAULT[0], CURRENCY_DEFAULT[1]);
+	}
+
+	public AbstractCurrency getAllCurrency() {
+		return locateCurrency("AuctionHouse", "AllCurrencies");
 	}
 
 	public boolean has(@NonNull final OfflinePlayer offlinePlayer, @NonNull final String owningPlugin, @NonNull final String currencyName, final double amount) {
@@ -114,9 +125,22 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 		return AuctionHouse.getAPI().getFinalizedCurrencyNumber(getBalance(offlinePlayer, currency.split("/")[0], currency.split("/")[1]), currency, currencyItem);
 	}
 
+	public AbstractCurrency getNext(@NonNull final AbstractCurrency current) {
+		int currentIndex = getManagerContent().indexOf(current);
+		if (currentIndex == -1) {
+			return locateCurrency("Vault");
+		}
+
+		int next = (currentIndex + 1) % getManagerContent().size();
+		return managerContent.get(next);
+	}
+
 	@Override
 	public void load() {
 		clear();
+
+		// used to filter for all items, not actually a valid currency to be used
+		add(new AllCurrency());
 
 		// add vault by default
 		add(new VaultCurrency());

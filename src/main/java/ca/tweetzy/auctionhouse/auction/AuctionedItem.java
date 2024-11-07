@@ -20,9 +20,11 @@ package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.currency.AbstractCurrency;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
+import ca.tweetzy.auctionhouse.impl.currency.ItemCurrency;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.TextUtils;
@@ -362,5 +364,13 @@ public class AuctionedItem {
 
 	public boolean isListingPriorityActive() {
 		return this.hasListingPriority && this.priorityExpiresAt > System.currentTimeMillis();
+	}
+
+	public boolean currencyMatches(AbstractCurrency currencyToCheck) {
+		final String[] split = this.currency.split("/");
+		if (split[0].equalsIgnoreCase("AuctionHouse") && split[1].equalsIgnoreCase("Item") && currencyToCheck instanceof ItemCurrency)
+			return true;
+
+		return split[0].equalsIgnoreCase(currencyToCheck.getOwningPlugin()) && split[1].equalsIgnoreCase(currencyToCheck.getCurrencyName());
 	}
 }

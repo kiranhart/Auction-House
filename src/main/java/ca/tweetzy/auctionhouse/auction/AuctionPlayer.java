@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.auction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.currency.AbstractCurrency;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
@@ -59,7 +60,6 @@ public class AuctionPlayer {
 	private AuctionSortType transactionSortType;
 	private TransactionViewFilter transactionViewFilter;
 
-
 	private boolean showListingInfo;
 	private long lastListedItem;
 
@@ -67,6 +67,7 @@ public class AuctionPlayer {
 	private int assignedTaskId;
 
 	private long endAllRequestTime;
+	private AbstractCurrency selectedCurrencyFilter;
 
 	public AuctionPlayer(UUID uuid) {
 		this(
@@ -84,7 +85,8 @@ public class AuctionPlayer {
 				-1,
 				null,
 				-1,
-				-1
+				-1,
+				AuctionHouse.getCurrencyManager().getAllCurrency()
 		);
 	}
 

@@ -345,6 +345,18 @@ public class Settings {
 			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
 	);
 
+	public static final ConfigSetting CLICKS_FILTER_CURRENCY = new ConfigSetting(config, "auction setting.clicks.filter.listing currency", "SHIFT_LEFT",
+			"Valid Click Types",
+			"LEFT",
+			"RIGHT",
+			"SHIFT_LEFT",
+			"SHIFT_RIGHT",
+			"MIDDLE",
+			"DROP",
+			"",
+			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+	);
+
 	public static final ConfigSetting CLICKS_FILTER_SORT_SALE_TYPE = new ConfigSetting(config, "auction setting.clicks.filter.sort sale type", "RIGHT",
 			"Valid Click Types",
 			"LEFT",
@@ -660,10 +672,12 @@ public class Settings {
 			"&eItem Category&f: &7%filter_category%",
 			"&eAuction Type&f: &7%filter_auction_type%",
 			"&eSort Order&f: &7%filter_sort_order%",
+			"&eCurrency&f: &7%filter_currency%",
 			"",
 			"&7Left-Click to change item category",
 			"&7Right-Click to change change auction type",
 			"&7Shift Right-Click to change sort order",
+			"&7Shift Left-Click to change currency",
 			"&7Press Drop to reset filters"
 	));
 

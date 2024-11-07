@@ -215,6 +215,9 @@ public class LocaleSettings {
 		languageNodes.put("auction_filter.sort_order.price", "Price");
 		languageNodes.put("auction_filter.sort_order.oldest", "Oldest");
 
+		languageNodes.put("auction_filter.currency.all currencies", "All Currencies");
+		languageNodes.put("auction_filter.currency.item currency", "Item Currency");
+
 		languageNodes.put("transaction_filter.buy_type.sold", "Sold");
 		languageNodes.put("transaction_filter.buy_type.bought", "Bought");
 		languageNodes.put("transaction_filter.buy_type.all", "All");

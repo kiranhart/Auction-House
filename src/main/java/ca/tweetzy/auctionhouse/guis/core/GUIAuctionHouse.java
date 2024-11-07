@@ -107,6 +107,11 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			} else if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.OLDEST) {
 				this.items = this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt)).collect(Collectors.toList());
 			}
+
+			// currency
+			if (this.auctionPlayer.getSelectedCurrencyFilter() != AuctionHouse.getCurrencyManager().getAllCurrency()) {
+				this.items = this.items.stream().filter(item -> item.currencyMatches(this.auctionPlayer.getSelectedCurrencyFilter())).collect(Collectors.toList());
+			}
 		}
 
 		this.items.sort(Comparator.comparing(AuctionedItem::isInfinite).reversed());
@@ -652,6 +657,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(),
 							"filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(),
 							"filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(),
+							"filter_currency", auctionPlayer.getSelectedCurrencyFilter().getDisplayName(),
 							"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
 					.make(), e -> {
 
@@ -681,6 +687,11 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase())) {
 					this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
 					updatePlayerFilter(this.auctionPlayer);
+					draw();
+				}
+
+				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CURRENCY.getString().toUpperCase())) {
+					this.auctionPlayer.setSelectedCurrencyFilter(AuctionHouse.getCurrencyManager().getNext(this.auctionPlayer.getSelectedCurrencyFilter()));
 					draw();
 				}
 			});

@@ -967,7 +967,8 @@ public class DataManager extends DataManagerAbstract {
 				resultSet.getLong("last_listed_item"),
 				null,
 				-1,
-				-1
+				-1,
+				AuctionHouse.getCurrencyManager().getAllCurrency()
 		);
 	}
 
