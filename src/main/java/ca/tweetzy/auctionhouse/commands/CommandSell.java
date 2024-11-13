@@ -426,8 +426,9 @@ public final class CommandSell extends Command {
 						AuctionHouse.getAuctionPlayerManager().processSell(player);
 
 						if (listingResult != ListingResult.SUCCESS) {
-//							PlayerUtils.giveItem(player, auction.getCleanItem());
+							PlayerUtils.giveItem(player, auction.getCleanItem());
 							auctionPlayer.setItemBeingListed(null);
+							AuctionHouse.newChain().sync(player::closeInventory).execute();
 							return;
 						}
 

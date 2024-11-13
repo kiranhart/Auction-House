@@ -59,7 +59,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 		});
 
 		setOnClose(close -> {
-			final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(close.player.getUniqueId());
+			final AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(close.player.getUniqueId());
 
 			if (!this.resulted.contains(close.player.getUniqueId())) {
 				if (auctionPlayer.getItemBeingListed() != null) {
@@ -73,7 +73,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 			}
 
 			close.player.removeMetadata("AuctionHouseConfirmListing", AuctionHouse.getInstance());
-			AuctionHouse.getInstance().getAuctionPlayerManager().processSell(close.player);
+			AuctionHouse.getAuctionPlayerManager().processSell(close.player);
 		});
 		draw();
 	}

@@ -140,13 +140,29 @@ public enum AuctionItemCategory {
 		return getType();
 	}
 
+//	public AuctionItemCategory next() {
+//		int currentIndex = this.ordinal();
+//		int nextIndex = currentIndex + 1;
+//		while (!values()[nextIndex %= values().length].isEnabled()) {
+//			nextIndex++;
+//		}
+//
+//		return values()[nextIndex];
+//	}
+
 	public AuctionItemCategory next() {
 		int currentIndex = this.ordinal();
-		int nextIndex = currentIndex + 1;
-		while (!values()[nextIndex %= values().length].isEnabled()) {
-			nextIndex++;
+		int nextIndex = currentIndex;
+		int totalCategories = values().length;
+
+		for (int i = 1; i <= totalCategories; i++) {
+			nextIndex = (currentIndex + i) % totalCategories;
+			if (values()[nextIndex].isEnabled()) {
+				return values()[nextIndex];
+			}
 		}
 
-		return values()[nextIndex];
+		// If no enabled categories are found, return the current category
+		return this;
 	}
 }

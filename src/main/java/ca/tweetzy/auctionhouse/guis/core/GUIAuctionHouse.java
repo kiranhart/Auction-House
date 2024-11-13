@@ -665,7 +665,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					this.auctionPlayer.setSelectedFilter(this.auctionPlayer.getSelectedFilter().next());
 					updatePlayerFilter(this.auctionPlayer);
 					draw();
-
+					return;
 				}
 
 				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_RESET.getString().toUpperCase())) {
@@ -688,11 +688,13 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
 					updatePlayerFilter(this.auctionPlayer);
 					draw();
+					return;
 				}
 
 				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CURRENCY.getString().toUpperCase())) {
 					this.auctionPlayer.setSelectedCurrencyFilter(AuctionHouse.getCurrencyManager().getNext(this.auctionPlayer.getSelectedCurrencyFilter()));
 					draw();
+					return;
 				}
 			});
 		}
