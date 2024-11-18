@@ -152,6 +152,7 @@ public class AuctionPlayer {
 		this.auctionSortType = Enum.valueOf(AuctionSortType.class, Settings.DEFAULT_FILTER_SORT.getString());
 		this.selectedSaleType = Enum.valueOf(AuctionSaleType.class, Settings.DEFAULT_FILTER_SALE_TYPE.getString());
 		this.currentSearchPhrase = "";
+		this.selectedCurrencyFilter = AuctionHouse.getCurrencyManager().getAllCurrency();
 	}
 
 	public void resetTransactionFilter() {

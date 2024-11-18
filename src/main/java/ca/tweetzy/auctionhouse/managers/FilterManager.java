@@ -61,10 +61,10 @@ public class FilterManager {
 	}
 
 	public void loadItems() {
-		AuctionHouse.getInstance().getDataManager().getFilterWhitelist(all -> all.forEach(this::addFilterItem));
+		AuctionHouse.getDataManager().getFilterWhitelist(all -> all.forEach(this::addFilterItem));
 	}
 
 	public void saveFilterWhitelist(boolean async) {
-		AuctionHouse.getInstance().getDataManager().saveFilterWhitelist(getFilterWhitelist(), async);
+		AuctionHouse.getDataManager().saveFilterWhitelist(getFilterWhitelist(), async);
 	}
 }

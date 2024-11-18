@@ -610,11 +610,23 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					QuickItem
 							.of(AuctionAPI.getInstance().getPlayerHead(this.auctionPlayer.getPlayer().getName()))
 							.name(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
-							.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
+							.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(),
+									"filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(),
+									"filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(),
+									"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType(),
+									"filter_currency", auctionPlayer.getSelectedCurrencyFilter().getDisplayName()
+							))
 							.make() : QuickItem
 					.of(materialToBeUsed)
-					.name(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
-					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType())).make();
+					.name(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(),
+							"filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(),
+							"filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(),
+							"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
+					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(),
+							"filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(),
+							"filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(),
+							"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType(),
+							"filter_currency", auctionPlayer.getSelectedCurrencyFilter().getDisplayName())).make();
 
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED.getBoolean()) {
 				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getInt(), item, e -> {
