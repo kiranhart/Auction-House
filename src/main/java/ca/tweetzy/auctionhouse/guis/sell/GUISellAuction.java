@@ -31,12 +31,14 @@ import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.selector.GUICurrencyPicker;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
+import ca.tweetzy.auctionhouse.helpers.TimeConverter;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import lombok.NonNull;
@@ -121,7 +123,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 
 		if (Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
 
-			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime);
+			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime/1000);
 
 			setButton(3, 1, QuickItem
 					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM.getString())
@@ -135,10 +137,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 
 				click.gui.exit();
 				new TitleInput(
-						click.player,
-						AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage(),
-						AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage(),
-						AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage()
+						click.player, Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage())
 				) {
 
 					@Override
@@ -149,24 +148,24 @@ public final class GUISellAuction extends AuctionBaseGUI {
 					@Override
 					public boolean onResult(String string) {
 						string = ChatColor.stripColor(string);
+						long time = 0;
+						try {
+							time = TimeConverter.convertHumanReadableTime(string);
+						} catch (IllegalArgumentException e) {
+						}
 
-						String[] parts = ChatColor.stripColor(string).split(" ");
-						if (parts.length == 2) {
-							if (NumberUtils.isInt(parts[0]) && Arrays.asList("second", "minute", "hour", "day", "week", "month", "year").contains(parts[1].toLowerCase())) {
-								if (AuctionAPI.toTicks(string) <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt()) {
-									click.manager.showGUI(click.player, new GUISellAuction(
-											GUISellAuction.this.auctionPlayer,
-											GUISellAuction.this.binPrice,
-											GUISellAuction.this.startingBid,
-											GUISellAuction.this.bidIncrement,
-											AuctionAPI.toTicks(string),
-											GUISellAuction.this.allowBuyNow,
-											GUISellAuction.this.currency,
-											GUISellAuction.this.currencyItem
-									));
-									return true;
-								}
-							}
+						if ((time/1000) <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt()) {
+							click.manager.showGUI(click.player, new GUISellAuction(
+									GUISellAuction.this.auctionPlayer,
+									GUISellAuction.this.binPrice,
+									GUISellAuction.this.startingBid,
+									GUISellAuction.this.bidIncrement,
+									time,
+									GUISellAuction.this.allowBuyNow,
+									GUISellAuction.this.currency,
+									GUISellAuction.this.currencyItem
+							));
+							return true;
 						}
 
 						return false;
@@ -288,56 +287,58 @@ public final class GUISellAuction extends AuctionBaseGUI {
 			};
 		});
 
-		setButton(3, 5, QuickItem
-				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getString())
-				.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME.getString())
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(), "listing_increment_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(bidIncrement, this.currency, this.currencyItem)))
-				.make(), click -> {
+		if (!Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean()) {
+			setButton(3, 5, QuickItem
+					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getString())
+					.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_NAME.getString())
+					.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(), "listing_increment_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(bidIncrement, this.currency, this.currencyItem)))
+					.make(), click -> {
 
-			click.gui.exit();
-			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.subtitle").getMessage()) {
+				click.gui.exit();
+				new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.subtitle").getMessage()) {
 
-				@Override
-				public void onExit(Player player) {
-					click.manager.showGUI(player, GUISellAuction.this);
-				}
-
-				@Override
-				public boolean onResult(String string) {
-					string = ChatColor.stripColor(string);
-
-					if (!NumberUtils.isDouble(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
-						return false;
+					@Override
+					public void onExit(Player player) {
+						click.manager.showGUI(player, GUISellAuction.this);
 					}
 
-					double listingAmount = Double.parseDouble(string);
-					if (Double.isNaN(listingAmount)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
-						return false;
+					@Override
+					public boolean onResult(String string) {
+						string = ChatColor.stripColor(string);
+
+						if (!NumberUtils.isDouble(string)) {
+							AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+							return false;
+						}
+
+						double listingAmount = Double.parseDouble(string);
+						if (Double.isNaN(listingAmount)) {
+							AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+							return false;
+						}
+
+						if (listingAmount < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble())
+							listingAmount = Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble();
+
+						if (listingAmount > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble())
+							listingAmount = Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble();
+
+						click.manager.showGUI(click.player, new GUISellAuction(
+								GUISellAuction.this.auctionPlayer,
+								GUISellAuction.this.binPrice,
+								GUISellAuction.this.startingBid,
+								listingAmount,
+								GUISellAuction.this.listingTime,
+								GUISellAuction.this.allowBuyNow,
+								GUISellAuction.this.currency,
+								GUISellAuction.this.currencyItem
+						));
+
+						return true;
 					}
-
-					if (listingAmount < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble())
-						listingAmount = Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble();
-
-					if (listingAmount > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble())
-						listingAmount = Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble();
-
-					click.manager.showGUI(click.player, new GUISellAuction(
-							GUISellAuction.this.auctionPlayer,
-							GUISellAuction.this.binPrice,
-							GUISellAuction.this.startingBid,
-							listingAmount,
-							GUISellAuction.this.listingTime,
-							GUISellAuction.this.allowBuyNow,
-							GUISellAuction.this.currency,
-							GUISellAuction.this.currencyItem
-					));
-
-					return true;
-				}
-			};
-		});
+				};
+			});
+		}
 
 		drawAuctionItem();
 		drawBuyoutToggle();
@@ -425,7 +426,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 				this.bidIncrement,
 				this.startingBid,
 				true, false,
-				System.currentTimeMillis() + (this.listingTime * 1000L)
+				System.currentTimeMillis() + this.listingTime
 		);
 
 		if (this.currency != null)

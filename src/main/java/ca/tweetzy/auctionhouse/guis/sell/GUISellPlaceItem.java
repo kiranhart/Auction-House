@@ -110,7 +110,7 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 			click.gui.exit();
 
 			if (this.listingType == ListingType.BIN)
-				click.manager.showGUI(click.player, new GUISellBin(this.auctionPlayer, Settings.MIN_AUCTION_PRICE.getDouble(), this.auctionPlayer.getAllowedSellTime(AuctionSaleType.WITHOUT_BIDDING_SYSTEM), false));
+				click.manager.showGUI(click.player, new GUISellBin(this.auctionPlayer, Settings.MIN_AUCTION_PRICE.getDouble(), this.auctionPlayer.getAllowedSellTime(AuctionSaleType.WITHOUT_BIDDING_SYSTEM) * 1000L, false));
 			else {
 				boolean buyOutOnByDefault = Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean();
 				if (Settings.BUY_NOW_DISABLED_BY_DEFAULT_IN_SELL_MENU.getBoolean()) {
@@ -122,7 +122,7 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 						Settings.MIN_AUCTION_PRICE.getDouble(),
 						Settings.MIN_AUCTION_START_PRICE.getDouble(),
 						Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble(),
-						this.auctionPlayer.getAllowedSellTime(AuctionSaleType.USED_BIDDING_SYSTEM),
+						this.auctionPlayer.getAllowedSellTime(AuctionSaleType.USED_BIDDING_SYSTEM) * 1000L,
 						buyOutOnByDefault
 				));
 			}

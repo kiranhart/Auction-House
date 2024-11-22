@@ -31,12 +31,14 @@ import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.selector.GUICurrencyPicker;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
+import ca.tweetzy.auctionhouse.helpers.TimeConverter;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import lombok.NonNull;
@@ -116,7 +118,7 @@ public final class GUISellBin extends AuctionBaseGUI {
 
 		if (Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
 
-			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime);
+			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime/1000);
 
 			setButton(3, 1, QuickItem
 					.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_ITEM.getString())
@@ -129,7 +131,7 @@ public final class GUISellBin extends AuctionBaseGUI {
 					)).make(), click -> {
 
 				click.gui.exit();
-				new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage()) {
+				new TitleInput(click.player, Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage())) {
 
 
 					@Override
@@ -141,14 +143,15 @@ public final class GUISellBin extends AuctionBaseGUI {
 					public boolean onResult(String string) {
 						string = ChatColor.stripColor(string);
 
-						String[] parts = ChatColor.stripColor(string).split(" ");
-						if (parts.length == 2) {
-							if (NumberUtils.isInt(parts[0]) && Arrays.asList("second", "minute", "hour", "day", "week", "month", "year").contains(parts[1].toLowerCase())) {
-								if (AuctionAPI.toTicks(string) <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt()) {
-									click.manager.showGUI(click.player, new GUISellBin(GUISellBin.this.auctionPlayer, GUISellBin.this.listingPrice, AuctionAPI.toTicks(string), GUISellBin.this.allowPartialBuy));
-									return true;
-								}
-							}
+						long time = 0;
+						try {
+							time = TimeConverter.convertHumanReadableTime(string);
+						} catch (IllegalArgumentException e) {
+						}
+
+						if ((time/1000) <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt()) {
+							click.manager.showGUI(click.player, new GUISellBin(GUISellBin.this.auctionPlayer, GUISellBin.this.listingPrice, time, GUISellBin.this.allowPartialBuy));
+							return true;
 						}
 
 						return false;
@@ -260,7 +263,7 @@ public final class GUISellBin extends AuctionBaseGUI {
 	}
 
 	private AuctionedItem createListingItem() {
-		final AuctionedItem item = new AuctionedItem(UUID.randomUUID(), auctionPlayer.getUuid(), auctionPlayer.getUuid(), auctionPlayer.getPlayer().getName(), auctionPlayer.getPlayer().getName(), MaterialCategorizer.getMaterialCategory(this.auctionPlayer.getItemBeingListed()), this.auctionPlayer.getItemBeingListed(), this.listingPrice, 0, 0, this.listingPrice, false, false, System.currentTimeMillis() + (this.listingTime * 1000L));
+		final AuctionedItem item = new AuctionedItem(UUID.randomUUID(), auctionPlayer.getUuid(), auctionPlayer.getUuid(), auctionPlayer.getPlayer().getName(), auctionPlayer.getPlayer().getName(), MaterialCategorizer.getMaterialCategory(this.auctionPlayer.getItemBeingListed()), this.auctionPlayer.getItemBeingListed(), this.listingPrice, 0, 0, this.listingPrice, false, false, System.currentTimeMillis() + this.listingTime);
 
 		item.setAllowPartialBuy(this.allowPartialBuy);
 

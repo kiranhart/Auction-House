@@ -74,6 +74,14 @@ public class Settings {
 	public static final ConfigSetting CMD_ALIAS_SUB_TOGGLELISTINFO = new ConfigSetting(config, "command aliases.subcommands.togglelistinfo", Collections.singletonList("togglelistinfo"), "Command aliases for the toggle list info command");
 	public static final ConfigSetting CMD_ALIAS_SUB_TRANSACTIONS = new ConfigSetting(config, "command aliases.subcommands.transactions", Collections.singletonList("transactions"), "Command aliases for the transactions command");
 	public static final ConfigSetting CMD_ALIAS_SUB_UNBAN = new ConfigSetting(config, "command aliases.subcommands.unban", Collections.singletonList("unban"), "Command aliases for the unban command");
+	
+	public static final ConfigSetting TIME_ALIAS_YEAR = new ConfigSetting(config, "time aliases.year", Arrays.asList("y", "year", "years"), "Time aliases for year, Must be in lowercase.");
+	public static final ConfigSetting TIME_ALIAS_MONTH = new ConfigSetting(config, "time aliases.month", Arrays.asList("mo", "month", "months"), "Time aliases for month, Must be in lowercase.");
+	public static final ConfigSetting TIME_ALIAS_WEEK = new ConfigSetting(config, "time aliases.week", Arrays.asList("w", "week", "weeks"), "Time aliases for week, Must be in lowercase.");
+	public static final ConfigSetting TIME_ALIAS_DAY = new ConfigSetting(config, "time aliases.day", Arrays.asList("d", "day", "days"), "Time aliases for day, Must be in lowercase.");
+	public static final ConfigSetting TIME_ALIAS_HOUR = new ConfigSetting(config, "time aliases.hour", Arrays.asList("h", "hour", "hours"), "Time aliases for hour, Must be in lowercase.");
+	public static final ConfigSetting TIME_ALIAS_MINUTE = new ConfigSetting(config, "time aliases.minute", Arrays.asList("min", "minute", "minutes"), "Time aliases for minute, Must be in lowercase.");
+	public static final ConfigSetting TIME_ALIAS_SECOND = new ConfigSetting(config, "time aliases.second", Arrays.asList("s", "second", "seconds"), "Time aliases for second, Must be in lowercase.");
 
 	public static final ConfigSetting ALLOW_USAGE_OF_IN_GAME_EDITOR = new ConfigSetting(config, "Allow Usage Of This Menu In Game", true, "Once you set this to true, you will no longer be able to access it unless you enable it within the actual config.yml");
 	public static final ConfigSetting UPDATE_CHECKER = new ConfigSetting(config, "update checker", true, "If true, auction house will check for updates periodically");

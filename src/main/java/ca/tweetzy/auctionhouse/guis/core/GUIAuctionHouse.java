@@ -292,7 +292,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 					double newBiddingAmount = 0;
 					if (Settings.USE_REALISTIC_BIDDING.getBoolean()) {
-						if (value > auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice()) {
+						if (value >= auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice()) {
 							newBiddingAmount = value;
 						} else {
 							if (Settings.BID_MUST_BE_HIGHER_THAN_PREVIOUS.getBoolean()) {

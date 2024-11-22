@@ -1,63 +1,71 @@
 package ca.tweetzy.auctionhouse.helpers;
 
+import ca.tweetzy.auctionhouse.settings.Settings;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TimeConverter {
 
-	private static final Pattern TIME_PATTERN = Pattern.compile("(\\d+)\\s*(years?|months?|weeks?|days?|hours?|minutes?|seconds?)");
+	private static Pattern TIME_PATTERN;
+
+	static {
+		updateTimePattern();
+	}
+
+	public static void updateTimePattern() {
+		List<String> allTimeUnits = new ArrayList<>();
+		allTimeUnits.addAll(Settings.TIME_ALIAS_YEAR.getStringList());
+		allTimeUnits.addAll(Settings.TIME_ALIAS_MONTH.getStringList());
+		allTimeUnits.addAll(Settings.TIME_ALIAS_WEEK.getStringList());
+		allTimeUnits.addAll(Settings.TIME_ALIAS_DAY.getStringList());
+		allTimeUnits.addAll(Settings.TIME_ALIAS_HOUR.getStringList());
+		allTimeUnits.addAll(Settings.TIME_ALIAS_MINUTE.getStringList());
+		allTimeUnits.addAll(Settings.TIME_ALIAS_SECOND.getStringList());
+
+		String timeUnitsRegex = String.join("|", allTimeUnits);
+		TIME_PATTERN = Pattern.compile("(\\d+)\\s*(" + timeUnitsRegex + "s?)(?:\\s|$)");
+	}
 
 	public static long convertHumanReadableTime(String time) {
-		Matcher matcher = TIME_PATTERN.matcher(time);
+		Matcher matcher = TIME_PATTERN.matcher(time.toLowerCase());
 		long totalMilliseconds = 0;
 
 		while (matcher.find()) {
-			String group = matcher.group();
-			String[] parts = group.split(" ");
-			int amount = Integer.parseInt(parts[0]);
-			String unit = parts[1].toLowerCase();
+			int amount = Integer.parseInt(matcher.group(1));
+			String unit = matcher.group(2).toLowerCase();
 
-			switch (unit) {
-				case "y":
-				case "year":
-				case "years":
-					totalMilliseconds += amount * 365 * 24 * 60 * 60 * 1000;
-					break;
-				case "m":
-				case "month":
-				case "months":
-					totalMilliseconds += amount * 30 * 24 * 60 * 60 * 1000;
-					break;
-				case "w":
-				case "week":
-				case "weeks":
-					totalMilliseconds += amount * 7 * 24 * 60 * 60 * 1000;
-					break;
-				case "d":
-				case "day":
-				case "days":
-					totalMilliseconds += amount * 24 * 60 * 60 * 1000;
-					break;
-				case "h":
-				case "hour":
-				case "hours":
-					totalMilliseconds += amount * 60 * 60 * 1000;
-					break;
-				case "min":
-				case "minute":
-				case "minutes":
-					totalMilliseconds += amount * 60 * 1000;
-					break;
-				case "s":
-				case "second":
-				case "seconds":
-					totalMilliseconds += amount * 1000;
-					break;
-				default:
-					throw new IllegalArgumentException("Invalid unit: " + unit);
+			// Remove trailing 's' if present
+			if (unit.endsWith("s") && unit.length() > 1) {
+				unit = unit.substring(0, unit.length() - 1);
 			}
-		}
 
+			long multiplier = getMultiplierForUnit(unit);
+			totalMilliseconds += amount * multiplier;
+		}
 		return totalMilliseconds;
+	}
+
+	private static long getMultiplierForUnit(String unit) {
+		// Check for more specific aliases first
+		if (Settings.TIME_ALIAS_MINUTE.getStringList().contains(unit)) {
+			return 60 * 1000L;
+		} else if (Settings.TIME_ALIAS_MONTH.getStringList().contains(unit)) {
+			return 30 * 24 * 60 * 60 * 1000L;
+		} else if (Settings.TIME_ALIAS_YEAR.getStringList().contains(unit)) {
+			return 365 * 24 * 60 * 60 * 1000L;
+		} else if (Settings.TIME_ALIAS_WEEK.getStringList().contains(unit)) {
+			return 7 * 24 * 60 * 60 * 1000L;
+		} else if (Settings.TIME_ALIAS_DAY.getStringList().contains(unit)) {
+			return 24 * 60 * 60 * 1000L;
+		} else if (Settings.TIME_ALIAS_HOUR.getStringList().contains(unit)) {
+			return 60 * 60 * 1000L;
+		} else if (Settings.TIME_ALIAS_SECOND.getStringList().contains(unit)) {
+			return 1000L;
+		} else {
+			return 0L;
+		}
 	}
 }
