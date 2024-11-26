@@ -55,6 +55,7 @@ public class Settings {
 	public static final ConfigSetting CURRENCY_STRIP_ENDING_ZEROES = new ConfigSetting(config, "economy.currency.strip ending zeroes", false, "If the number ends with 00, should it be stripped. EX 123.00 becomes 123");
 	public static final ConfigSetting CURRENCY_TIGHT_CURRENCY_SYMBOL = new ConfigSetting(config, "economy.currency.tight currency symbol", false, "If true, the space between the currency symbol and number will be removed");
 	public static final ConfigSetting CURRENCY_USE_GROUPING = new ConfigSetting(config, "economy.currency.use grouping", true, "If false, number grouping will be disabled. Ex. 123,456.78 becomes 123456.78");
+	public static final ConfigSetting CURRENCY_REMOVE_SPACE_FROM_CUSTOM = new ConfigSetting(config, "economy.currency.hide space between in currency", false, "If true, if the currency has a custom display name is will go from 123 currency to 123currency/symbol");
 
 	public static final ConfigSetting CMD_ALIAS_MAIN = new ConfigSetting(config, "command aliases.main", Arrays.asList("ah", "auctions", "auctionhouses", "ahgui", "auctiongui"), "Command aliases for the main command");
 	public static final ConfigSetting CMD_ALIAS_SUB_ACTIVE = new ConfigSetting(config, "command aliases.subcommands.active", Collections.singletonList("active"), "Command aliases for the active command");

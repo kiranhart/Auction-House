@@ -22,6 +22,7 @@ import ca.tweetzy.auctionhouse.api.AuctionHouseAPI;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.ItemUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
@@ -77,7 +78,9 @@ public final class AuctionAPI implements AuctionHouseAPI {
 		}
 
 		if (Settings.CURRENCY_TIGHT_CURRENCY_SYMBOL.getBoolean()) {
-			formatted = formatted.replaceFirst("\\u00A0", "");
+//			formatted = formatted.replaceFirst("\\u00A0", "");
+
+			formatted = formatted.replaceAll("[\\s\\u00A0]", "");
 		}
 
 		return formatted;
@@ -137,6 +140,6 @@ public final class AuctionAPI implements AuctionHouseAPI {
 		}
 
 		// using another currency system with custom name
-		return String.format("%s %s", currencyUnformatted, currencyProperties[2]);
+		return String.format(Settings.CURRENCY_REMOVE_SPACE_FROM_CUSTOM.getBoolean() ? "%s%s" : "%s %s", currencyUnformatted, currencyProperties[2]);
 	}
 }
