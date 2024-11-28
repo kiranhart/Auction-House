@@ -111,7 +111,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 			newBiddingAmount = Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(newBiddingAmount) : newBiddingAmount;
 
-			if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getCurrencyManager().has(click.player, newBiddingAmount)) {
+			if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !auctionItem.playerHasSufficientMoney(click.player, newBiddingAmount)) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(click.player);
 				return;
 			}
@@ -128,7 +128,7 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 			if (Settings.BIDDING_TAKES_MONEY.getBoolean()) {
 				final double oldBidAmount = auctionItem.getCurrentPrice();
 
-				if (!AuctionHouse.getCurrencyManager().has(click.player, newBiddingAmount)) {
+				if (!auctionItem.playerHasSufficientMoney(click.player, newBiddingAmount)) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(click.player);
 					return;
 				}

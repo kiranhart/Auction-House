@@ -725,6 +725,15 @@ public class AuctionAPI {
 		return seconds;
 	}
 
+	public boolean hasBalance(OfflinePlayer player, double amount, AuctionedItem auctionedItem) {
+		if (auctionedItem.hasValidItemCurrency()) {
+			return AuctionHouse.getCurrencyManager().has(player, auctionedItem.getCurrencyItem(), (int) amount);
+		}
+
+		final String[] currSplit = auctionedItem.getCurrency().split("/");
+		return AuctionHouse.getCurrencyManager().has(player, currSplit[0], currSplit[1], amount);
+	}
+
 	private void handleWithdraw(OfflinePlayer player, double amount, AuctionedItem auctionedItem) {
 		if (auctionedItem.hasValidItemCurrency())
 			AuctionHouse.getCurrencyManager().withdraw(player, auctionedItem.getCurrencyItem(), (int) amount);

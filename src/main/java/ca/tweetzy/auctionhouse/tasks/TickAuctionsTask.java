@@ -136,7 +136,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 				double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_AUCTION_WON_PERCENTAGE.getDouble() / 100) * auctionItem.getCurrentPrice() : 0D;
 
 				if (!Settings.BIDDING_TAKES_MONEY.getBoolean()) {
-					if (!AuctionHouse.getCurrencyManager().has(auctionWinner, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice)) {
+					if (!auctionItem.playerHasSufficientMoney(auctionWinner, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice)) {
 						if (auctionItem.isServerItem())
 							AuctionHouse.getAuctionItemManager().sendToGarbage(auctionItem);
 						else
