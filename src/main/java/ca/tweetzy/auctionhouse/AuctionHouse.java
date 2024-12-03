@@ -134,6 +134,7 @@ public class AuctionHouse extends TweetyPlugin {
 		Settings.setup();
 		setLocale(Settings.LANG.getString());
 		LocaleSettings.setup();
+		Common.setPrefix(Common.colorize(getLocale().getMessage("general.prefix").getMessage()));
 
 		initializeBStats();
 
@@ -225,6 +226,7 @@ public class AuctionHouse extends TweetyPlugin {
 		this.auctionPlayerManager.loadPlayers();
 
 		// commands
+
 		this.commandManager.registerCommandDynamically(new CommandAuctionHouse()).addSubCommands(
 				new CommandSell(),
 				new CommandActive(),

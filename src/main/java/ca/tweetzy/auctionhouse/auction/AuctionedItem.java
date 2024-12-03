@@ -88,7 +88,7 @@ public class AuctionedItem {
 	private boolean hasListingPriority;
 	private long priorityExpiresAt;
 
-	private String currency = Settings.CURRENCY_DEFAULT_SELECTED.getString();
+	private String currency = AuctionHouse.getCurrencyManager().getDefaultCurrency().getStoreableName();
 	private ItemStack currencyItem;
 
 	public AuctionedItem() {

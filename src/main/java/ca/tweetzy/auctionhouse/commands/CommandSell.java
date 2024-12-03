@@ -159,7 +159,7 @@ public final class CommandSell extends Command {
 		boolean isStackPrice = false;
 		boolean partialBuy = false;
 		boolean serverAuction = false;
-		String currency = null;
+		String currency = AuctionHouse.getCurrencyManager().getDefaultCurrency().getStoreableName();
 
 		List<String> timeSets = Arrays.asList(
 				"second",
