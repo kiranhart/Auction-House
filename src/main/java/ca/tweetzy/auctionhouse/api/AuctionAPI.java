@@ -23,9 +23,11 @@ import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
+import ca.tweetzy.auctionhouse.guis.core.GUIContainerInspect;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -37,6 +39,7 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -44,10 +47,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.*;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -815,6 +815,8 @@ public class AuctionAPI {
 		return player.getName();
 	}
 
+
+
 	public boolean meetsListingRequirements(Player player, ItemStack itemStack) {
 		boolean meets = true;
 
@@ -868,6 +870,68 @@ public class AuctionAPI {
 					if (match(s, line)) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.blockedlore").sendPrefixedMessage(player);
 						meets = false;
+					}
+				}
+			}
+		}
+
+		// special case for shulker
+		if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && (itemStack.getItemMeta() instanceof BlockStateMeta)) {
+			BlockStateMeta meta = (BlockStateMeta) itemStack.getItemMeta();
+			if (meta.getBlockState() instanceof ShulkerBox) {
+				ShulkerBox skulkerBox = (ShulkerBox) meta.getBlockState();
+
+				for (ItemStack shulkerContent : skulkerBox.getInventory().getContents()) {
+					if (shulkerContent == null || shulkerContent.getType() == CompMaterial.AIR.parseMaterial() || shulkerContent.getAmount() == 0) continue;
+
+					for (String item : Settings.BLOCKED_ITEMS.getStringList()) {
+						final String[] split = item.split(":");
+
+						if (split.length == 1) {
+							if (split[0].contains(shulkerContent.getType().name())) {
+								AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", shulkerContent.getType().name()).sendPrefixedMessage(player);
+								return false;
+							}
+						}
+
+						if (split.length == 2 && NumberUtils.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+							if (split[0].contains(shulkerContent.getType().name()) && shulkerContent.getItemMeta() != null && shulkerContent.getItemMeta().getCustomModelData() == Integer.parseInt(split[1])) {
+								AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", shulkerContent.getType().name()).sendPrefixedMessage(player);
+								return false;
+							}
+						}
+					}
+
+					// Check NBT tags
+					for (String nbtTag : Settings.BLOCKED_NBT_TAGS.getStringList()) {
+						if (NBT.get(itemStack, nbt -> (boolean) nbt.hasTag(nbtTag))) {
+							AuctionHouse.getInstance().getLocale().getMessage("general.blockednbttag").processPlaceholder("nbttag", nbtTag).sendPrefixedMessage(player);
+							return false;
+						}
+					}
+
+					String itemNameShulker = ChatColor.stripColor(getItemName(shulkerContent).toLowerCase());
+					List<String> itemLoreShulker = getItemLore(shulkerContent).stream().map(line -> ChatColor.stripColor(line.toLowerCase())).collect(Collectors.toList());
+
+					// Check for blocked names and lore
+					for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
+						if (match(s, itemNameShulker)) {
+							AuctionHouse.getInstance().getLocale().getMessage("general.blockedname").sendPrefixedMessage(player);
+							meets = false;
+							break;
+						}
+					}
+
+					if (!itemLore.isEmpty() && meets) {
+						for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
+							for (String line : itemLoreShulker) {
+								if (match(s, line)) {
+									AuctionHouse.getInstance().getLocale().getMessage("general.blockedlore").sendPrefixedMessage(player);
+									meets = false;
+									break;
+								}
+							}
+						}
 					}
 				}
 			}
