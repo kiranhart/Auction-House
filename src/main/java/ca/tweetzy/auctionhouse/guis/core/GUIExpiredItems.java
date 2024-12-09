@@ -118,7 +118,14 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 				nbt.removeKey("AuctionDupeTracking");
 			});
 
-			PlayerUtils.giveItem(click.player, item);
+			if (auctionedItem.isRequest()) {
+				item.setAmount(1);
+				for (int i = 0; i < auctionedItem.getRequestAmount(); i++) {
+					PlayerUtils.giveItem(click.player, item);
+				}
+			} else {
+				PlayerUtils.giveItem(click.player, item);
+			}
 		}
 
 		AuctionHouse.getAuctionItemManager().sendToGarbage(auctionedItem);
@@ -180,10 +187,17 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 						nbt.removeKey("AuctionDupeTracking");
 					});
 
-					PlayerUtils.giveItem(e.player, item);
+					if (auctionItem.isRequest()) {
+						item.setAmount(1);
+						for (int i = 0; i < auctionItem.getRequestAmount(); i++) {
+							PlayerUtils.giveItem(e.player, item);
+						}
+					} else {
+						PlayerUtils.giveItem(e.player, item);
+					}
 				}
 
-				AuctionHouse.getInstance().getAuctionItemManager().sendToGarbage(auctionItem);
+				AuctionHouse.getAuctionItemManager().sendToGarbage(auctionItem);
 			}
 
 			e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer, this.lastClicked));

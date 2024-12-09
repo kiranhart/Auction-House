@@ -180,9 +180,15 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 							false, true, System.currentTimeMillis()
 					);
 
+//					final int maxStack = this.auctionItem.getItem().getMaxStackSize();
+
+
 					toGive.setRequestAmount(amountNeeded);
+					toGive.setRequest(true);
 
 					AuctionHouse.getDataManager().insertAuction(toGive, (error, inserted) -> AuctionHouse.getAuctionItemManager().addAuctionItem(toGive));
+
+
 					AuctionHouse.getAuctionItemManager().sendToGarbage(this.auctionItem);
 
 					AuctionHouse.getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(player -> {
