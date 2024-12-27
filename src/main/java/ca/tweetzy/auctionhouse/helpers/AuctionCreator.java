@@ -24,17 +24,27 @@ import ca.tweetzy.auctionhouse.api.auction.ListingResult;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.core.utils.TextUtils;
+import com.google.gson.JsonObject;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.ItemTag;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Item;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -243,9 +253,7 @@ public final class AuctionCreator {
 			//====================================================================================
 			// ANOTHER VERY SHIT BROADCAST THAT IS IN FACT BROKEN
 			if (Settings.BROADCAST_AUCTION_LIST.getBoolean() && !auctionItem.isRequest()) {
-
 				final String prefix = AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage();
-
 				String msgToAll = AuctionHouse.getInstance().getLocale().getMessage(auctionItem.isServerItem() ? "auction.broadcast.serverlisting" : auctionItem.isBidItem() ? "auction.broadcast.withbid" : "auction.broadcast.nobid")
 						.processPlaceholder("amount", finalItemToSell.getAmount())
 						.processPlaceholder("player", auctionItem.isServerItem() ? SERVER_LISTING_NAME : seller.getName())
@@ -266,4 +274,21 @@ public final class AuctionCreator {
 			result.accept(auctionItem, SUCCESS);
 		});
 	}
+
+	private String getSimplifiedItemJson(ItemStack item) {
+		JsonObject itemJson = new JsonObject();
+		itemJson.addProperty("id", item.getType().getKey().toString());
+		itemJson.addProperty("Count", item.getAmount());
+
+		if (item.hasItemMeta()) {
+			ItemMeta meta = item.getItemMeta();
+			if (meta.hasDisplayName()) {
+				itemJson.addProperty("tag", "{display:{Name:'" +
+						ChatColor.stripColor(meta.getDisplayName()) + "'}}");
+			}
+		}
+
+		return itemJson.toString();
+	}
+
 }

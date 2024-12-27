@@ -19,6 +19,8 @@
 package ca.tweetzy.auctionhouse.listeners;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.api.auction.RequestTransaction;
+import ca.tweetzy.auctionhouse.api.event.AuctionRequestCompleteEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
@@ -92,6 +94,18 @@ public class AuctionListeners implements Listener {
 			}).execute();
 
 		}
+	}
+
+	@EventHandler
+	public void onAuctionRequestComplete(AuctionRequestCompleteEvent event) {
+		if (!Settings.RECORD_TRANSACTIONS.getBoolean()) return;
+
+		final AuctionedItem originalListing = event.getOriginalListing();
+		final RequestTransaction completedRequest = event.getRequestTransaction();
+
+		completedRequest.store(stored -> {
+
+		});
 	}
 
 	@EventHandler

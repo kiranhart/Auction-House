@@ -69,11 +69,17 @@ public final class GUITransactionType extends AuctionBaseGUI {
 			e.manager.showGUI(e.player, new GUITransactionList(e.player, true));
 		});
 
-		setButton(15, QuickItem
+		setButton(13, QuickItem
 				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_ITEM.getString())
 				.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_NAME.getString())
 				.lore(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_LORE.getStringList())
 				.make(), e -> e.manager.showGUI(e.player, new GUITransactionList(e.player, false)));
+
+		setButton(15, QuickItem
+				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_REQUEST_TRANSACTIONS_ITEM.getString())
+				.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_REQUEST_TRANSACTIONS_NAME.getString())
+				.lore(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_REQUEST_TRANSACTIONS_LORE.getStringList())
+				.make(), e -> e.manager.showGUI(e.player, new GUIRequestTransactionList(e.player, false)));
 
 		if (player.isOp() || player.hasPermission("auctionhouse.admin")) {
 

@@ -89,6 +89,7 @@ public class AuctionHouse extends TweetyPlugin {
 	private final ListingManager listingManager = new ListingManager();
 	private final CategoryManager categoryManager = new CategoryManager();
 	private final PriceLimitManager priceLimitManager = new PriceLimitManager();
+	private final RequestsManager requestsManager = new RequestsManager();
 
 	private final AuctionPlayerManager auctionPlayerManager = new AuctionPlayerManager();
 	private final AuctionItemManager auctionItemManager = new AuctionItemManager();
@@ -188,7 +189,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new _27_FixMigration25to26Migration(),
 				new _28_PriorityListingMigration(),
 				new _29_PaymentMultiCurrencyMigration(),
-				new _30_MinMaxItemPriceMigration()
+				new _30_MinMaxItemPriceMigration(),
+				new _31_RequestTransactionMigration()
 		);
 
 		dataMigrationManager.runMigrations();
@@ -207,6 +209,7 @@ public class AuctionHouse extends TweetyPlugin {
 		this.currencyManager.load();
 		this.paymentsManager.load();
 		this.priceLimitManager.load();
+		this.requestsManager.load();
 
 		// listeners
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
@@ -379,6 +382,11 @@ public class AuctionHouse extends TweetyPlugin {
 	public static AuctionPlayerManager getAuctionPlayerManager() {
 		return getInstance().auctionPlayerManager;
 	}
+
+	public static RequestsManager getRequestsManager() {
+		return getInstance().requestsManager;
+	}
+
 
 	public static AuctionItemManager getAuctionItemManager() {
 		return getInstance().auctionItemManager;

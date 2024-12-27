@@ -18,6 +18,7 @@
 
 package ca.tweetzy.auctionhouse.transaction;
 
+import ca.tweetzy.auctionhouse.api.auction.TransactionWrapper;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import lombok.Getter;
 import lombok.NonNull;
@@ -35,7 +36,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class Transaction {
+public class Transaction extends TransactionWrapper {
 
 	private final UUID id;
 	private final UUID seller;

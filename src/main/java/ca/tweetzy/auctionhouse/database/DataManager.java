@@ -21,6 +21,7 @@ package ca.tweetzy.auctionhouse.database;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
+import ca.tweetzy.auctionhouse.api.auction.RequestTransaction;
 import ca.tweetzy.auctionhouse.api.ban.Ban;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.api.statistic.Statistic;
@@ -29,6 +30,7 @@ import ca.tweetzy.auctionhouse.auction.enums.*;
 import ca.tweetzy.auctionhouse.impl.AuctionBan;
 import ca.tweetzy.auctionhouse.impl.AuctionPriceLimit;
 import ca.tweetzy.auctionhouse.impl.AuctionStatistic;
+import ca.tweetzy.auctionhouse.impl.CompletedRequest;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
@@ -564,6 +566,63 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+	public void insertCompletedRequest(RequestTransaction requestTransaction, Callback<RequestTransaction> callback) {
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "completed_requests (id, item, amount, price, requester_uuid, requester_name, fulfiller_uuid, fulfiller_name, time_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "completed_requests WHERE id = ?");
+
+				fetch.setString(1, requestTransaction.getId().toString());
+				statement.setString(1, requestTransaction.getId().toString());
+				statement.setString(2, QuickItem.toString(requestTransaction.getRequestedItem()));
+				statement.setInt(3, requestTransaction.getAmountRequested());
+				statement.setDouble(4, requestTransaction.getPaymentTotal());
+				statement.setString(5, requestTransaction.getRequesterUUID().toString());
+				statement.setString(6, requestTransaction.getRequesterName());
+				statement.setString(7, requestTransaction.getFulfillerUUID().toString());
+				statement.setString(8, requestTransaction.getFulfillerName());
+				statement.setLong(9, requestTransaction.getTimeCreated());
+
+				statement.executeUpdate();
+
+				if (callback != null) {
+					ResultSet res = fetch.executeQuery();
+					res.next();
+
+					final RequestTransaction inserted = extractCompletedRequest(res);
+					if (inserted != null)
+						callback.accept(null, inserted);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+	public void getCompletedRequests(Callback<ArrayList<RequestTransaction>> callback) {
+		ArrayList<RequestTransaction> transactions = new ArrayList<>();
+		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "completed_requests")) {
+				ResultSet resultSet = statement.executeQuery();
+				while (resultSet.next()) {
+					final RequestTransaction transaction = extractCompletedRequest(resultSet);
+
+					if (transaction == null) {
+						continue;
+					}
+
+					transactions.add(transaction);
+				}
+
+				callback.accept(null, transactions);
+			} catch (Exception e) {
+				resolveCallback(callback, e);
+			}
+		}));
+	}
+
+
 	public void insertLog(AuctionAdminLog adminLog) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "admin_logs(admin, admin_name, target, target_name, item, item_id, action, time, serialize_version, itemstack) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
@@ -1012,6 +1071,21 @@ public class DataManager extends DataManagerAbstract {
 				item,
 				AuctionSaleType.valueOf(resultSet.getString("auction_sale_type")),
 				resultSet.getDouble("final_price")
+		);
+	}
+
+	public RequestTransaction extractCompletedRequest(ResultSet resultSet) throws SQLException {
+		//id, item, amount, price, requester_uuid, requester_name, fulfiller_uuid, fulfiller_name, time_created
+		return new CompletedRequest(
+				UUID.fromString(resultSet.getString("id")),
+				QuickItem.getItem(resultSet.getString("item")),
+				resultSet.getInt("amount"),
+				resultSet.getDouble("price"),
+				UUID.fromString(resultSet.getString("requester_uuid")),
+				resultSet.getString("requester_name"),
+				UUID.fromString(resultSet.getString("fulfiller_uuid")),
+				resultSet.getString("fulfiller_name"),
+				resultSet.getLong("time_created")
 		);
 	}
 

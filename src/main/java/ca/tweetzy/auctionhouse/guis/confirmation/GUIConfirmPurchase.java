@@ -20,6 +20,7 @@ package ca.tweetzy.auctionhouse.guis.confirmation;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.api.event.AuctionRequestCompleteEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -31,6 +32,7 @@ import ca.tweetzy.auctionhouse.exception.ItemNotFoundException;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.core.GUIContainerInspect;
+import ca.tweetzy.auctionhouse.impl.CompletedRequest;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
@@ -206,6 +208,9 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 								.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(requester, this.auctionItem.getCurrency().split("/")[0], this.auctionItem.getCurrency().split("/")[1]), this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()))
 								.processPlaceholder("price", this.auctionItem.getFormattedBasePrice())
 								.sendPrefixedMessage(requester.getPlayer());
+
+					final AuctionRequestCompleteEvent requestCompleteEvent = new AuctionRequestCompleteEvent(this.auctionItem, new CompletedRequest(this.auctionItem, e.player, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? buyNowPrice : buyNowPrice - tax));
+					Bukkit.getServer().getPluginManager().callEvent(requestCompleteEvent);
 
 					e.gui.close();
 					return;

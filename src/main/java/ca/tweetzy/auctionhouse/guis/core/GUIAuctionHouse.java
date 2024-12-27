@@ -152,6 +152,18 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		// Bin Listings
 		if (!auctionedItem.isBidItem()) {
+
+			if (click.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_QTY_PURCHASE.getString().toUpperCase())) {
+				if (!auctionedItem.isAllowPartialBuy()) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.qtybuydisabled").processPlaceholder("item_owner", auctionedItem.getOwnerName()).sendPrefixedMessage(click.player);
+					return;
+				}
+
+				if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
+				handleNonBidItem(auctionedItem, click, true);
+				return;
+			}
+
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_PURCHASE.getString().toUpperCase())) {
 				// special case for request
 				if (auctionedItem.isRequest()) {
@@ -173,16 +185,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				return;
 			}
 
-			if (click.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_QTY_PURCHASE.getString().toUpperCase())) {
-				if (!auctionedItem.isAllowPartialBuy()) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.qtybuydisabled").processPlaceholder("item_owner", auctionedItem.getOwnerName()).sendPrefixedMessage(click.player);
-					return;
-				}
 
-				if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
-				handleNonBidItem(auctionedItem, click, true);
-				return;
-			}
 			return;
 		}
 
