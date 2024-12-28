@@ -97,6 +97,10 @@ public class Settings {
 	public static final ConfigSetting LISTING_PRIORITY_TIME_ALLOW_MULTI_BOOST = new ConfigSetting(config, "auction setting.listing priority.allow multiple boost", false, "If true players can boost an item multiple times before it runs out. (ex. if they have a boost active they can extend by paying before it expires)");
 	public static final ConfigSetting LISTING_PRIORITY_TIME_COST_PER_BOOST = new ConfigSetting(config, "auction setting.listing priority.cost per boost", 1000, "How much should it cost the player to boost their item each time");
 
+	// Timed Usage
+	public static final ConfigSetting TIMED_USAGE = new ConfigSetting(config, "auction setting.access hours.use access hours", false, "If true, the auction house will be only accessible");
+
+
 	public static final ConfigSetting SHOW_LISTING_ERROR_IN_CONSOLE = new ConfigSetting(config, "auction setting.show listing error in console", false, "If true, an exception will be thrown and shown in the console if something goes wrong during item listing");
 	public static final ConfigSetting STORE_PAYMENTS_FOR_MANUAL_COLLECTION = new ConfigSetting(config, "auction setting.store payments for manual collection", false, "If true, auction house will store the payments to be manually collected rather than automatically given to the player");
 	public static final ConfigSetting MANUAL_PAYMENTS_ONLY_FOR_OFFLINE_USERS = new ConfigSetting(config, "auction setting.use stored payments for offline only", false, "If true, the usage of the manual payment collection will only be done if the user is offline");

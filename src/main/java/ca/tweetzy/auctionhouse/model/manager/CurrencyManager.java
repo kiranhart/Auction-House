@@ -6,6 +6,7 @@ import ca.tweetzy.auctionhouse.api.manager.ListManager;
 import ca.tweetzy.auctionhouse.impl.currency.AllCurrency;
 import ca.tweetzy.auctionhouse.impl.currency.ItemCurrency;
 import ca.tweetzy.auctionhouse.impl.currency.VaultCurrency;
+import ca.tweetzy.auctionhouse.model.currency.CoinEngineEconomyLoader;
 import ca.tweetzy.auctionhouse.model.currency.EcoBitsEconomyLoader;
 import ca.tweetzy.auctionhouse.model.currency.FundsEconomyLoader;
 import ca.tweetzy.auctionhouse.model.currency.UltraEconomyLoader;
@@ -154,5 +155,8 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 
 		if (Bukkit.getServer().getPluginManager().isPluginEnabled("EcoBits"))
 			new EcoBitsEconomyLoader().getCurrencies().forEach(this::add);
+
+		if (Bukkit.getServer().getPluginManager().isPluginEnabled("CoinsEngine"))
+			new CoinEngineEconomyLoader().getCurrencies().forEach(this::add);
 	}
 }

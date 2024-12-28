@@ -5,4 +5,4 @@ main: ca.tweetzy.auctionhouse.AuctionHouse
 description: Auction House is a premium auction solution for your server.
 website: https://discord.tweetzy.ca/
 authors: [ Kiran Hart ]
-softdepend: [ Vault, PlayerPoints, PlaceholderAPI, MMOItemsHook, UltraEconomy, CMI, Essentials, ChestShop, EcoEnchants, EcoBits, Funds ]
+softdepend: [ Vault, PlayerPoints, PlaceholderAPI, MMOItemsHook, UltraEconomy, CMI, Essentials, ChestShop, EcoEnchants, EcoBits, Funds, CoinsEngine ]
