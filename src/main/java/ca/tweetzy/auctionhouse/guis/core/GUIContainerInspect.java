@@ -34,6 +34,8 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * The current file has been created by Kiran Hart
@@ -114,6 +116,6 @@ public class GUIContainerInspect extends AuctionPagedGUI<ItemStack> {
 
 	@Override
 	protected List<Integer> fillSlots() {
-		return Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 46, 47, 48, 50, 51, 52, 53);
+		return IntStream.rangeClosed(0, 44).boxed().collect(Collectors.toList());
 	}
 }
