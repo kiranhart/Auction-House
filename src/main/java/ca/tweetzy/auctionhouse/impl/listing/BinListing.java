@@ -22,7 +22,9 @@ import ca.tweetzy.auctionhouse.api.auction.ListingDisplayMode;
 import ca.tweetzy.auctionhouse.api.auction.ListingType;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.ItemUtil;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -46,6 +48,14 @@ public class BinListing extends AuctionItem {
 	private final long listedAt;
 	private long expiresAt;
 
+	@Getter
+	@Setter
+	private boolean allowPartialBuy = false;
+
+	private boolean isPriorityListing = false;
+	private long priorityExpiration = -1L;
+
+	private boolean isInfinite = false;
 	private boolean isBeingBought = false;
 	private boolean isArchived = false;
 
@@ -177,6 +187,36 @@ public class BinListing extends AuctionItem {
 	@Override
 	public void setIsBeingBought(boolean isBeingBought) {
 		this.isBeingBought = isBeingBought;
+	}
+
+	@Override
+	public boolean isInfinite() {
+		return this.isInfinite;
+	}
+
+	@Override
+	public void setIsInfinite(boolean infinite) {
+		this.isInfinite = infinite;
+	}
+
+	@Override
+	public boolean isPriorityListing() {
+		return this.isPriorityListing;
+	}
+
+	@Override
+	public void setPriorityListing(boolean isPriority) {
+		this.isPriorityListing = isPriority;
+	}
+
+	@Override
+	public long getPriorityExpiration() {
+		return this.priorityExpiration;
+	}
+
+	@Override
+	public void setPriorityExpiration(long expiresAt) {
+		this.priorityExpiration = expiresAt;
 	}
 
 	@Override

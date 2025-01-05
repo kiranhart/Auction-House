@@ -30,6 +30,7 @@ public class ListingBuilder {
 
 	// Auction-specific fields
 	private double startingBid;
+	private double bidIncrement;
 	private UUID highestBidderUUID;
 	private String highestBidderName;
 	private List<Bid> bids;
@@ -136,6 +137,12 @@ public class ListingBuilder {
 		return this;
 	}
 
+	public ListingBuilder setBiddingIncrement(double bidIncrement) {
+		this.bidIncrement = bidIncrement;
+		this.isAuction = true;
+		return this;
+	}
+
 	public ListingBuilder setHighestBidder(UUID highestBidderUUID, String highestBidderName) {
 		this.highestBidderUUID = highestBidderUUID;
 		this.highestBidderName = highestBidderName;
@@ -151,7 +158,7 @@ public class ListingBuilder {
 		if (!isAuction) {
 			throw new IllegalStateException("This builder is not configured for an auction listing.");
 		}
-		return new AuctionListing(uuid, ownerUUID, ownerName, item, currency, currencyItem, startingBid, binPrice, listedWorld, listedServer, highestBidderUUID, highestBidderName, bids, listedAt, expiresAt);
+		return new AuctionListing(uuid, ownerUUID, ownerName, item, currency, currencyItem, startingBid, bidIncrement, binPrice, listedWorld, listedServer, highestBidderUUID, highestBidderName, bids, listedAt, expiresAt);
 	}
 
 	public BinListing buildBinListing() {

@@ -24,5 +24,7 @@ public interface Biddable {
 
 	double getStartingPrice();
 
+	double getBidIncrement();
+
 	List<Bid> getBids();
 }

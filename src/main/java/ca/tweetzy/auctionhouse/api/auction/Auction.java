@@ -63,6 +63,18 @@ public interface Auction extends Identifiable<UUID>, Trackable, Synchronize {
 
 	void setIsBeingBought(boolean isBeingBought);
 
+	boolean isInfinite();
+
+	void setIsInfinite(boolean infinite);
+
+	boolean isPriorityListing();
+
+	void setPriorityListing(boolean isPriority);
+
+	long getPriorityExpiration();
+
+	void setPriorityExpiration(long expiresAt);
+
 	boolean isArchived();
 
 	void setArchived(boolean archived);
@@ -78,4 +90,5 @@ public interface Auction extends Identifiable<UUID>, Trackable, Synchronize {
 	default List<String> getDisplayLore(@NonNull final ListingDisplayMode displayMode) {
 		return new ArrayList<>();
 	}
+
 }

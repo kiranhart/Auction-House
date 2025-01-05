@@ -21,7 +21,9 @@ package ca.tweetzy.auctionhouse.impl.listing;
 import ca.tweetzy.auctionhouse.api.auction.Bid;
 import ca.tweetzy.auctionhouse.api.auction.Biddable;
 import ca.tweetzy.auctionhouse.api.auction.ListingType;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -31,8 +33,11 @@ import java.util.UUID;
 public final class AuctionListing extends BinListing implements Biddable {
 
 	private final double startingBid;
+	private final double bidIncrement;
 
+	@Getter @Setter
 	private UUID highestBidderUUID;
+	@Getter @Setter
 	private String highestBidderName;
 
 	private final List<Bid> bids;
@@ -45,6 +50,7 @@ public final class AuctionListing extends BinListing implements Biddable {
 			@NonNull String currency,
 			@NonNull ItemStack currencyItem,
 			double startingBid,
+			double bidIncrement,
 			double binPrice,
 			@NonNull String listedWorld,
 			@NonNull String listedServer,
@@ -56,6 +62,7 @@ public final class AuctionListing extends BinListing implements Biddable {
 	) {
 		super(ListingType.AUCTION, uuid, ownerUUID, ownerName, item, currency, currencyItem, binPrice, listedWorld, listedServer, listedAt, expiresAt);
 		this.startingBid = startingBid;
+		this.bidIncrement = bidIncrement;
 		this.highestBidderName = highestBidderName;
 		this.highestBidderUUID = highestBidderUUID;
 		this.bids = bids;
@@ -65,11 +72,13 @@ public final class AuctionListing extends BinListing implements Biddable {
 			@NonNull Player player,
 			@NonNull ItemStack item,
 			double startingBid,
+			double bidIncrement,
 			final double binPrice,
 			@NonNull List<Bid> bids
 	) {
 		super(ListingType.AUCTION, player, item, binPrice);
 		this.startingBid = startingBid;
+		this.bidIncrement = bidIncrement;
 		this.bids = bids;
 	}
 
@@ -79,23 +88,13 @@ public final class AuctionListing extends BinListing implements Biddable {
 	}
 
 	@Override
+	public double getBidIncrement() {
+		return this.bidIncrement;
+	}
+
+	@Override
 	public List<Bid> getBids() {
 		return this.bids;
 	}
 
-	public UUID getHighestBidderUUID() {
-		return this.highestBidderUUID;
-	}
-
-	public void setHighestBidderUUID(@NonNull final UUID highestBidderUUID) {
-		this.highestBidderUUID = highestBidderUUID;
-	}
-
-	public String getHighestBidderName() {
-		return this.highestBidderName;
-	}
-
-	public void setHighestBidderName(@NonNull String highestBidderName) {
-		this.highestBidderName = highestBidderName;
-	}
 }

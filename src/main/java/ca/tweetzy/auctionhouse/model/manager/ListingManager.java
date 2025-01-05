@@ -4,6 +4,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.auction.Auction;
 import ca.tweetzy.auctionhouse.api.manager.KeyValueManager;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.impl.listing.AuctionItem;
 import ca.tweetzy.auctionhouse.model.discord.DiscordMessageCreator;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.collection.expiringmap.ExpiringMap;
@@ -11,12 +12,13 @@ import ca.tweetzy.flight.collection.expiringmap.ExpiringMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public final class ListingManager extends KeyValueManager<UUID, Auction> {
+public final class ListingManager extends KeyValueManager<UUID, AuctionItem> {
 
 	private final ExpiringMap<UUID, DiscordMessageCreator> PENDING_DISCORD_WEBHOOKS = ExpiringMap.builder().variableExpiration().build();
 
 	public ListingManager() {
 		super("Listing");
+
 		this.PENDING_DISCORD_WEBHOOKS.addAsyncExpirationListener((id, hookCreator) -> {
 			final AuctionedItem item = AuctionHouse.getAuctionItemManager().getItem(id);
 			if (item == null || item.isExpired()) return;
