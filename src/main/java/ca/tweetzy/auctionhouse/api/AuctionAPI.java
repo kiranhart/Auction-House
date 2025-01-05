@@ -617,7 +617,7 @@ public class AuctionAPI {
 			if (foundMinPriceItem != null) {
 
 				if (isBiddingItem) {
-					if (basePrice < foundMinPriceItem.getMinPrice() || bidStartPrice < foundMinPriceItem.getMinPrice()) valid = false;
+					if ( bidStartPrice < foundMinPriceItem.getMinPrice()) valid = false;
 				} else {
 					if (basePrice < foundMinPriceItem.getMinPrice()) valid = false;
 				}

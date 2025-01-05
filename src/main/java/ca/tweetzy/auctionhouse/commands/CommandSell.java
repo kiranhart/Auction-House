@@ -46,6 +46,7 @@ import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.nbtapi.NBT;
+import ca.tweetzy.flight.utils.Common;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.AbstractArrow;
@@ -251,15 +252,14 @@ public final class CommandSell extends Command {
 		}
 
 		if (isBiddingItem && startingBid != null) {
-			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
+			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, true, originalItem, buyNowPrice, startingBid)) {
 				AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice")
 						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMinPrice()))
 						.sendPrefixedMessage(player);
-
 				return ReturnType.FAIL;
 			}
 
-			if (AuctionAPI.getInstance().isAtMaxItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
+			if (AuctionAPI.getInstance().isAtMaxItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, startingBid)) {
 				AuctionHouse.getInstance().getLocale().getMessage("pricing.maxitemprice")
 						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMaxPrice()))
 						.sendPrefixedMessage(player);
