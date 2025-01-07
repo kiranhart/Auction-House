@@ -197,7 +197,7 @@ public class AuctionHouse extends TweetyPlugin {
 		dataMigrationManager.runMigrations();
 
 		// setup Vault Economy
-		if (!setupEconomy() ) {
+		if (!setupEconomy()) {
 			Bukkit.getServer().getConsoleSender().sendMessage(Common.colorize("&7[&eAuctionHouse&7] &f- &cCould not setup vault, please make sure you have an economy plugin."));
 			getServer().getPluginManager().disablePlugin(this);
 			return;

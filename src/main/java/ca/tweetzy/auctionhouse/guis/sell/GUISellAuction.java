@@ -46,7 +46,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 public final class GUISellAuction extends AuctionBaseGUI {
@@ -123,7 +122,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 
 		if (Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
 
-			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime/1000);
+			final long[] times = AuctionAPI.getInstance().getRemainingTimeValues(this.listingTime / 1000);
 
 			setButton(3, 1, QuickItem
 					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM.getString())
@@ -154,7 +153,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 						} catch (IllegalArgumentException e) {
 						}
 
-						if ((time/1000) <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt()) {
+						if ((time / 1000) <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt()) {
 							click.manager.showGUI(click.player, new GUISellAuction(
 									GUISellAuction.this.auctionPlayer,
 									GUISellAuction.this.binPrice,

@@ -51,7 +51,6 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 	private Gui parent;
 
 
-
 	public GUIExpiredItems(Gui parent, AuctionPlayer auctionPlayer, Long lastClicked) {
 		super(parent, auctionPlayer.getPlayer(), Settings.GUI_EXPIRED_AUCTIONS_TITLE.getString(), 6, new ArrayList<>(auctionPlayer.getItems(true)));
 		this.parent = parent;

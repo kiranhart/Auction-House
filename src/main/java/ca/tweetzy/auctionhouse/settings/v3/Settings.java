@@ -20,7 +20,6 @@ package ca.tweetzy.auctionhouse.settings.v3;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionUsageMode;
-import ca.tweetzy.core.configuration.ConfigSetting;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.config.ConfigEntry;
 
@@ -97,32 +96,32 @@ public final class Settings extends SettingTemp {
 	 */
 
 	// ================ LISTING PRIORITY ================
-	public static ConfigEntry LISTING_PRIORITY_ENABLED = create(  "settings.listing.listing priority.enabled", true, "If true, players will be able to pay to prioritize listings");
-	public static ConfigEntry LISTING_PRIORITY_TIME_PER_BOOST = create(  "settings.listing.listing priority.time per boost", 60 * 30, "How many seconds should the priority last for each time they pay", "By default users will be able to stack boosts");
-	public static ConfigEntry LISTING_PRIORITY_TIME_ALLOW_MULTI_BOOST = create( "settings.listing.listing priority.allow multiple boost", false, "If true players can boost an item multiple times before it runs out. (ex. if they have a boost active they can extend by paying before it expires)");
-	public static ConfigEntry LISTING_PRIORITY_TIME_COST_PER_BOOST = create( "settings.listing.listing priority.cost per boost", 1000, "How much should it cost the player to boost their item each time");
+	public static ConfigEntry LISTING_PRIORITY_ENABLED = create("settings.listing.listing priority.enabled", true, "If true, players will be able to pay to prioritize listings");
+	public static ConfigEntry LISTING_PRIORITY_TIME_PER_BOOST = create("settings.listing.listing priority.time per boost", 60 * 30, "How many seconds should the priority last for each time they pay", "By default users will be able to stack boosts");
+	public static ConfigEntry LISTING_PRIORITY_TIME_ALLOW_MULTI_BOOST = create("settings.listing.listing priority.allow multiple boost", false, "If true players can boost an item multiple times before it runs out. (ex. if they have a boost active they can extend by paying before it expires)");
+	public static ConfigEntry LISTING_PRIORITY_TIME_COST_PER_BOOST = create("settings.listing.listing priority.cost per boost", 1000, "How much should it cost the player to boost their item each time");
 
 	/*
 	==============================================================
 						PAYMENTS & PRICING
 	==============================================================
 	 */
-	public static ConfigEntry MANUAL_PAYMENTS_ONLY_FOR_OFFLINE_USERS = create( "settings.listing.use stored payments for offline only", false, "If true, the usage of the manual payment collection will only be done if the user is offline");
-	public static ConfigEntry STORE_PAYMENTS_FOR_MANUAL_COLLECTION = create( "settings.listing.store payments for manual collection", false, "If true, auction house will store the payments to be manually collected rather than automatically given to the player");
-	public static ConfigEntry PLAYER_NEEDS_TOTAL_PRICE_TO_BID = create(  "settings.listing.bidder must have funds in account", false, "Should the player who is placing a bid on an item have the money in their account to cover the cost?");
+	public static ConfigEntry MANUAL_PAYMENTS_ONLY_FOR_OFFLINE_USERS = create("settings.listing.use stored payments for offline only", false, "If true, the usage of the manual payment collection will only be done if the user is offline");
+	public static ConfigEntry STORE_PAYMENTS_FOR_MANUAL_COLLECTION = create("settings.listing.store payments for manual collection", false, "If true, auction house will store the payments to be manually collected rather than automatically given to the player");
+	public static ConfigEntry PLAYER_NEEDS_TOTAL_PRICE_TO_BID = create("settings.listing.bidder must have funds in account", false, "Should the player who is placing a bid on an item have the money in their account to cover the cost?");
 
 	/*
 	==============================================================
 							 TAX
 	==============================================================
 	 */
-	public static ConfigEntry TAX_ENABLED = create( "settings.tax system.enabled", false, "Should auction house use it's tax system?");
-	public static ConfigEntry TAX_CHARGE_LISTING_FEE = create(  "settings.tax system.charge listing fee", true, "Should auction house charge players to list an item?");
-	public static ConfigEntry TAX_LISTING_FEE = create( "settings.tax system.listing fee", 5.0, "How much should it cost to list a new item?");
-	public static ConfigEntry TAX_LISTING_FEE_PERCENTAGE = create(  "settings.tax system.listing fee is percentage", true, "Should the listing fee be based on a percentage instead?");
-	public static ConfigEntry TAX_CHARGE_SALES_TAX_TO_BUYER = create(  "settings.tax system.charge sale tax to buyer", false, "Should auction house tax the buyer instead of the seller?");
-	public static ConfigEntry TAX_SALES_TAX_BUY_NOW_PERCENTAGE = create(  "settings.tax system.buy now sales tax", 15.0, "Tax % that should be charged on items that are bought immediately");
-	public static ConfigEntry TAX_SALES_TAX_AUCTION_WON_PERCENTAGE = create(  "settings.tax system.auction won sales tax", 10.0, "Tax % that should be charged on items that are won through the auction");
+	public static ConfigEntry TAX_ENABLED = create("settings.tax system.enabled", false, "Should auction house use it's tax system?");
+	public static ConfigEntry TAX_CHARGE_LISTING_FEE = create("settings.tax system.charge listing fee", true, "Should auction house charge players to list an item?");
+	public static ConfigEntry TAX_LISTING_FEE = create("settings.tax system.listing fee", 5.0, "How much should it cost to list a new item?");
+	public static ConfigEntry TAX_LISTING_FEE_PERCENTAGE = create("settings.tax system.listing fee is percentage", true, "Should the listing fee be based on a percentage instead?");
+	public static ConfigEntry TAX_CHARGE_SALES_TAX_TO_BUYER = create("settings.tax system.charge sale tax to buyer", false, "Should auction house tax the buyer instead of the seller?");
+	public static ConfigEntry TAX_SALES_TAX_BUY_NOW_PERCENTAGE = create("settings.tax system.buy now sales tax", 15.0, "Tax % that should be charged on items that are bought immediately");
+	public static ConfigEntry TAX_SALES_TAX_AUCTION_WON_PERCENTAGE = create("settings.tax system.auction won sales tax", 10.0, "Tax % that should be charged on items that are won through the auction");
 
 
 //	public static final ConfigSetting SHOW_LISTING_ERROR_IN_CONSOLE = new ConfigSetting(config, "auction setting.show listing error in console", false, "If true, an exception will be thrown and shown in the console if something goes wrong during item listing");

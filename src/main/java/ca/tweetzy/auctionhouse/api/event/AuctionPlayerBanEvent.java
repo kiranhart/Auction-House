@@ -12,7 +12,8 @@ public final class AuctionPlayerBanEvent extends Event implements Cancellable {
 
 	private static final HandlerList handlers = new HandlerList();
 
-	@Setter @Getter
+	@Setter
+	@Getter
 	private boolean cancelled;
 
 	@Getter

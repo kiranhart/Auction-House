@@ -20,7 +20,6 @@ package ca.tweetzy.auctionhouse.managers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Iterator;

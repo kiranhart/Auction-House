@@ -35,9 +35,11 @@ public final class AuctionListing extends BinListing implements Biddable {
 	private final double startingBid;
 	private final double bidIncrement;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private UUID highestBidderUUID;
-	@Getter @Setter
+	@Getter
+	@Setter
 	private String highestBidderName;
 
 	private final List<Bid> bids;

@@ -74,7 +74,7 @@ public class Settings {
 	public static final ConfigSetting CMD_ALIAS_SUB_TOGGLELISTINFO = new ConfigSetting(config, "command aliases.subcommands.togglelistinfo", Collections.singletonList("togglelistinfo"), "Command aliases for the toggle list info command");
 	public static final ConfigSetting CMD_ALIAS_SUB_TRANSACTIONS = new ConfigSetting(config, "command aliases.subcommands.transactions", Collections.singletonList("transactions"), "Command aliases for the transactions command");
 	public static final ConfigSetting CMD_ALIAS_SUB_UNBAN = new ConfigSetting(config, "command aliases.subcommands.unban", Collections.singletonList("unban"), "Command aliases for the unban command");
-	
+
 	public static final ConfigSetting TIME_ALIAS_YEAR = new ConfigSetting(config, "time aliases.year", Arrays.asList("y", "year", "years"), "Time aliases for year, Must be in lowercase.");
 	public static final ConfigSetting TIME_ALIAS_MONTH = new ConfigSetting(config, "time aliases.month", Arrays.asList("mo", "month", "months"), "Time aliases for month, Must be in lowercase.");
 	public static final ConfigSetting TIME_ALIAS_WEEK = new ConfigSetting(config, "time aliases.week", Arrays.asList("w", "week", "weeks"), "Time aliases for week, Must be in lowercase.");

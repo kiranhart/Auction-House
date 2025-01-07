@@ -1,7 +1,6 @@
 package ca.tweetzy.auctionhouse.model.manager;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.auction.Auction;
 import ca.tweetzy.auctionhouse.api.manager.KeyValueManager;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.impl.listing.AuctionItem;

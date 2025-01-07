@@ -24,7 +24,6 @@ import ca.tweetzy.auctionhouse.api.auction.ListingResult;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
@@ -34,12 +33,6 @@ import ca.tweetzy.core.utils.TextUtils;
 import com.google.gson.JsonObject;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.ItemTag;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Item;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -134,7 +127,7 @@ public final class AuctionCreator {
 
 			AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
 					.processPlaceholder("player_balance", AuctionHouse.getCurrencyManager().getFormattedBalance(seller, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-					.processPlaceholder("price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(listingFee, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
+					.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(listingFee, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
 					.sendPrefixedMessage(seller);
 		}
 

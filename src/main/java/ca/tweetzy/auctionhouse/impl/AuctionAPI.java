@@ -22,7 +22,6 @@ import ca.tweetzy.auctionhouse.api.AuctionHouseAPI;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.ItemUtil;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;

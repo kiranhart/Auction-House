@@ -23,7 +23,6 @@ import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
-import ca.tweetzy.auctionhouse.guis.core.GUIContainerInspect;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.NumberUtils;
@@ -617,7 +616,7 @@ public class AuctionAPI {
 			if (foundMinPriceItem != null) {
 
 				if (isBiddingItem) {
-					if ( bidStartPrice < foundMinPriceItem.getMinPrice()) valid = false;
+					if (bidStartPrice < foundMinPriceItem.getMinPrice()) valid = false;
 				} else {
 					if (basePrice < foundMinPriceItem.getMinPrice()) valid = false;
 				}
@@ -814,7 +813,6 @@ public class AuctionAPI {
 
 		return player.getName();
 	}
-
 
 
 	public boolean meetsListingRequirements(Player player, ItemStack itemStack) {

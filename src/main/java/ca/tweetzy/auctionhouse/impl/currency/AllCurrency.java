@@ -3,7 +3,6 @@ package ca.tweetzy.auctionhouse.impl.currency;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.currency.AbstractCurrency;
 import ca.tweetzy.flight.utils.Common;
-import ca.tweetzy.flight.utils.PlayerUtil;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 

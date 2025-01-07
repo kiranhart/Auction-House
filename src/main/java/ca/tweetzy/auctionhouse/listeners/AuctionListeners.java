@@ -20,11 +20,11 @@ package ca.tweetzy.auctionhouse.listeners;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.auction.RequestTransaction;
+import ca.tweetzy.auctionhouse.api.event.AuctionAdminEvent;
 import ca.tweetzy.auctionhouse.api.event.AuctionRequestCompleteEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
-import ca.tweetzy.auctionhouse.api.event.AuctionAdminEvent;
 import ca.tweetzy.auctionhouse.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.events.AuctionStartEvent;

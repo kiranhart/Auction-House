@@ -19,33 +19,22 @@
 package ca.tweetzy.auctionhouse.guis.transaction;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.RequestTransaction;
-import ca.tweetzy.auctionhouse.api.auction.TransactionWrapper;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
-import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.auctionhouse.transaction.Transaction;
-import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import ca.tweetzy.flight.utils.TimeUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**

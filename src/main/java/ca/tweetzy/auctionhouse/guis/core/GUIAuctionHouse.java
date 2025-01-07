@@ -25,7 +25,6 @@ import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
-import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
