@@ -88,7 +88,7 @@ public class LocaleSettings {
 
 		languageNodes.put("general.nothing to confirm", "&cYou have nothing to confirm");
 		languageNodes.put("general.confirm time limit reached", "&cYou didn't confirm in time, request it again.");
-		languageNodes.put("general.confirmed cancellation", "&aConfirmed, all your items will be sent to colleciton.");
+		languageNodes.put("general.confirmed cancellation", "&aConfirmed, all your items will be sent to collection.");
 
 
 		languageNodes.put("general.cannot list repaired item", "&cCannot list a repaired item!");
