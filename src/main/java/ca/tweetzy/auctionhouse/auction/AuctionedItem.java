@@ -260,21 +260,26 @@ public class AuctionedItem {
 		final List<String> CONTROLS = new ArrayList<>();
 
 		if (type == AuctionStackType.MAIN_AUCTION_HOUSE) {
-			if (this.isBidItem) {
-				if (this.basePrice != -1) {
-					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_ON.getStringList()));
+			if (AuctionHouse.getAPI().isAuctionHouseOpen()) {
+				if (this.isBidItem) {
+					if (this.basePrice != -1) {
+						CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_ON.getStringList()));
+					} else {
+						CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_ON_NO_BUY_NOW.getStringList()));
+					}
 				} else {
-					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_ON_NO_BUY_NOW.getStringList()));
+					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_OFF.getStringList()));
+					if (this.isAllowPartialBuy()) {
+						CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_PARTIAL_BUY.getStringList()));
+					}
+				}
+
+				if (BundleUtil.isBundledItem(this.item.clone()) || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && this.item.clone().getType().name().contains("SHULKER_BOX"))) {
+					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_INSPECTION.getStringList()));
 				}
 			} else {
-				CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_OFF.getStringList()));
-				if (this.isAllowPartialBuy()) {
-					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_PARTIAL_BUY.getStringList()));
-				}
-			}
-
-			if (BundleUtil.isBundledItem(this.item.clone()) || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && this.item.clone().getType().name().contains("SHULKER_BOX"))) {
-				CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_INSPECTION.getStringList()));
+				final String[] timesToOpen = AuctionHouse.getAPI().getTimeUntilNextRange(Settings.TIMED_USAGE_RANGE.getStringList());
+				CONTROLS.addAll(Replacer.replaceVariables(Settings.AUCTION_STACK_AUCTION_CLOSED.getStringList(), "hours", timesToOpen[0], "minutes", timesToOpen[1], "seconds", timesToOpen[2]));
 			}
 		} else {
 			if (type == AuctionStackType.HIGHEST_BID_PREVIEW) {

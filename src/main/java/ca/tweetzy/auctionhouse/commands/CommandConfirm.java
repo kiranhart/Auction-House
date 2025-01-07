@@ -49,6 +49,7 @@ public class CommandConfirm extends Command {
 	protected ReturnType execute(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
 
+		if (CommandMiddleware.handleAccessHours(player) == ReturnType.FAIL) return ReturnType.FAIL;
 		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {

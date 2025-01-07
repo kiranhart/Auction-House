@@ -55,4 +55,13 @@ public final class CommandMiddleware {
 
 		return ReturnType.SUCCESS;
 	}
+
+	public ReturnType handleAccessHours(@NonNull final Player player) {
+		if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.auction house closed").sendPrefixedMessage(player);
+			return ReturnType.FAIL;
+		}
+
+		return ReturnType.SUCCESS;
+	}
 }

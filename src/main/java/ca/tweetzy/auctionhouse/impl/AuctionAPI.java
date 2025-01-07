@@ -22,12 +22,19 @@ import ca.tweetzy.auctionhouse.api.AuctionHouseAPI;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.ItemUtil;
-import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Locale;
 
 public final class AuctionAPI implements AuctionHouseAPI {
@@ -141,5 +148,84 @@ public final class AuctionAPI implements AuctionHouseAPI {
 
 		// using another currency system with custom name
 		return String.format(Settings.CURRENCY_REMOVE_SPACE_FROM_CUSTOM.getBoolean() ? "%s%s" : "%s %s", currencyUnformatted, currencyProperties[2]);
+	}
+
+	@Override
+	public String getCurrentMilitaryTime() {
+		final Instant now = Instant.now();
+		final ZoneId zoneId = ZoneId.of(Settings.TIMEZONE.getString());
+		final ZonedDateTime zonedDateTime = now.atZone(zoneId);
+
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+		return zonedDateTime.format(formatter);
+	}
+
+	@Override
+	public boolean isCurrentTimeInRange(List<String> timeRanges) {
+		final String currentTime = getCurrentMilitaryTime();
+		final LocalTime now = LocalTime.parse(currentTime);
+
+		for (String range : timeRanges) {
+			final String[] times = range.split("-");
+			final LocalTime start = LocalTime.parse(times[0]);
+			final LocalTime end = LocalTime.parse(times[1]);
+
+			if (isTimeInRange(now, start, end)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isAuctionHouseOpen() {
+		if (!Settings.TIMED_USAGE_ENABLED.getBoolean()) return true;
+
+		return isCurrentTimeInRange(Settings.TIMED_USAGE_RANGE.getStringList());
+	}
+
+	private boolean isTimeInRange(LocalTime time, LocalTime start, LocalTime end) {
+		if (start.isBefore(end)) {
+			return !time.isBefore(start) && !time.isAfter(end);
+		} else {
+			return !time.isBefore(start) || !time.isAfter(end);
+		}
+	}
+
+	@Override
+	public String[] getTimeUntilNextRange(List<String> timeRanges) {
+		LocalTime currentTime = LocalTime.parse(getCurrentMilitaryTime());
+
+		if (isCurrentTimeInRange(timeRanges)) {
+			return new String[]{"Open"};
+		}
+
+		LocalTime nextStart = null;
+		for (String range : timeRanges) {
+			LocalTime start = LocalTime.parse(range.split("-")[0]);
+			if (start.isAfter(currentTime) && (nextStart == null || start.isBefore(nextStart))) {
+				nextStart = start;
+			}
+		}
+
+		if (nextStart == null) {
+			nextStart = LocalTime.parse(timeRanges.get(0).split("-")[0]);
+		}
+
+		long secondsUntilNext = currentTime.until(nextStart, ChronoUnit.SECONDS);
+		if (secondsUntilNext < 0) {
+			secondsUntilNext += 24 * 60 * 60; // Add 24 hours if next start is tomorrow
+		}
+
+		long hours = secondsUntilNext / 3600;
+		long minutes = (secondsUntilNext % 3600) / 60;
+		long seconds = secondsUntilNext % 60;
+
+		String[] times = new String[3];
+		times[0] = String.valueOf(hours);
+		times[1] = String.valueOf(minutes);
+		times[2] = String.valueOf(seconds);
+
+		return times;
 	}
 }

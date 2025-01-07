@@ -141,7 +141,8 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 										SPECIAL SHIT FOR REQUESTS
 				============================================================================
 				 */
-				if (isRequest) { //todo add multi currency support to requests
+				if (isRequest) {
+					//todo add multi currency support to requests
 					// check if the fulfiller even has the item
 					final int itemCount = AuctionAPI.getInstance().getItemCountInPlayerInventory(this.player, this.auctionItem.getItem());
 					final int amountNeeded = this.auctionItem.getRequestAmount() == 0 ? this.auctionItem.getItem().getAmount() : this.auctionItem.getRequestAmount();

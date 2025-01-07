@@ -90,6 +90,7 @@ public class AuctionHouse extends TweetyPlugin {
 	private final CategoryManager categoryManager = new CategoryManager();
 	private final PriceLimitManager priceLimitManager = new PriceLimitManager();
 	private final RequestsManager requestsManager = new RequestsManager();
+	private final CartManager cartManager = new CartManager();
 
 	private final AuctionPlayerManager auctionPlayerManager = new AuctionPlayerManager();
 	private final AuctionItemManager auctionItemManager = new AuctionItemManager();
@@ -210,6 +211,7 @@ public class AuctionHouse extends TweetyPlugin {
 		this.paymentsManager.load();
 		this.priceLimitManager.load();
 		this.requestsManager.load();
+		this.cartManager.load();
 
 		// listeners
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);

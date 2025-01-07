@@ -25,6 +25,7 @@ import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
@@ -135,18 +136,23 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 	@Override
 	protected void onClick(AuctionedItem auctionedItem, GuiClickEvent click) {
 
-		// bundle and shulker inspection
-		if (click.clickType == ClickType.valueOf(Settings.CLICKS_INSPECT_CONTAINER.getString().toUpperCase())) {
-			handleContainerInspect(click);
-			return;
-		}
-
 		// Item administration
 		if (click.clickType == ClickType.valueOf(Settings.CLICKS_REMOVE_ITEM.getString().toUpperCase())) {
 			if (click.player.isOp() || click.player.hasPermission("auctionhouse.admin")) {
 				cancelTask();
 				click.manager.showGUI(click.player, new GUIAdminItem(this.auctionPlayer, auctionedItem));
 			}
+			return;
+		}
+
+		if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.auction house closed").sendPrefixedMessage(player);
+			return;
+		}
+
+		// bundle and shulker inspection
+		if (click.clickType == ClickType.valueOf(Settings.CLICKS_INSPECT_CONTAINER.getString().toUpperCase())) {
+			handleContainerInspect(click);
 			return;
 		}
 
@@ -427,9 +433,9 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		// option for only whitelisted shit
 		if (Settings.FILTER_ONLY_USES_WHITELIST.getBoolean()) {
 			if (!Settings.FILTER_WHITELIST_USES_DURABILITY.getBoolean())
-				return AuctionHouse.getInstance().getFilterManager().getFilterWhitelist(category).stream().anyMatch(item -> item != null && item.isSimilar(auctionItem.getItem()));
+				return AuctionHouse.getFilterManager().getFilterWhitelist(category).stream().anyMatch(item -> item != null && item.isSimilar(auctionItem.getItem()));
 			else
-				return AuctionHouse.getInstance().getFilterManager().getFilterWhitelist(category).stream().anyMatch(item -> item != null && item.getType() == auctionItem.getItem().getType() && item.getDurability() == auctionItem.getItem().getDurability());
+				return AuctionHouse.getFilterManager().getFilterWhitelist(category).stream().anyMatch(item -> item != null && item.getType() == auctionItem.getItem().getType() && item.getDurability() == auctionItem.getItem().getDurability());
 		}
 
 		return auctionItem.getCategory() == category || AuctionHouse.getInstance().getFilterManager().getFilterWhitelist(category).stream().anyMatch(item -> item != null && item.isSimilar(auctionItem.getItem()));
@@ -455,6 +461,11 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString())
 					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString())
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), "active_player_auctions", auctionPlayer.getItems(false).size(), "player_balance", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getCurrencyManager().getBalance(auctionPlayer.getPlayer())))).make(), e -> {
+
+				if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.auction house closed").sendPrefixedMessage(player);
+					return;
+				}
 
 				cancelTask();
 				e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
@@ -499,6 +510,11 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_NAME.getString())
 						.lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_LORE.getStringList())
 						.make(), e -> {
+
+					if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
+						AuctionHouse.getInstance().getLocale().getMessage("general.auction house closed").sendPrefixedMessage(player);
+						return;
+					}
 
 					if (AuctionHouse.getBanManager().isStillBanned(e.player, BanType.EVERYTHING, BanType.SELL)) return;
 

@@ -62,6 +62,7 @@ public class CommandRequest extends Command {
 	protected ReturnType execute(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
 
+		if (CommandMiddleware.handleAccessHours(player) == ReturnType.FAIL) return ReturnType.FAIL;
 		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 		if (AuctionHouse.getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.REQUESTS)) return ReturnType.FAIL;
 

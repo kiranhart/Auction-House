@@ -49,6 +49,7 @@ public class CommandSearch extends Command {
 		if (args.length <= 0) return ReturnType.INVALID_SYNTAX;
 		final Player player = (Player) sender;
 
+		if (CommandMiddleware.handleAccessHours(player) == ReturnType.FAIL) return ReturnType.FAIL;
 		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
 		final StringBuilder builder = new StringBuilder();

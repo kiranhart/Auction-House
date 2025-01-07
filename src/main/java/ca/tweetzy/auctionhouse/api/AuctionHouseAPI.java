@@ -20,6 +20,8 @@ package ca.tweetzy.auctionhouse.api;
 
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public interface AuctionHouseAPI {
 
 	/*
@@ -36,4 +38,12 @@ public interface AuctionHouseAPI {
 	String getAbbreviatedNumber(final double number);
 
 	String getFinalizedCurrencyNumber(final double number, final String currency, final ItemStack currencyItem);
+
+	String getCurrentMilitaryTime();
+
+	boolean isCurrentTimeInRange(List<String> timeRanges);
+
+	String[] getTimeUntilNextRange(List<String> timeRanges);
+
+	boolean isAuctionHouseOpen();
 }

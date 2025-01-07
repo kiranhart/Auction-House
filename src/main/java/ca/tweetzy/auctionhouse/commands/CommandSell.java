@@ -73,6 +73,7 @@ public final class CommandSell extends Command {
 	protected ReturnType execute(CommandSender sender, String... args) {
 		Player player = (Player) sender;
 
+		if (CommandMiddleware.handleAccessHours(player) == ReturnType.FAIL) return ReturnType.FAIL;
 		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 		if (AuctionHouse.getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.SELL)) return ReturnType.FAIL;
 

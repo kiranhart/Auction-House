@@ -86,6 +86,9 @@ public class Settings {
 	public static final ConfigSetting ALLOW_USAGE_OF_IN_GAME_EDITOR = new ConfigSetting(config, "Allow Usage Of This Menu In Game", true, "Once you set this to true, you will no longer be able to access it unless you enable it within the actual config.yml");
 	public static final ConfigSetting UPDATE_CHECKER = new ConfigSetting(config, "update checker", true, "If true, auction house will check for updates periodically");
 
+	public static final ConfigSetting DATE_FORMAT = new ConfigSetting(config, "auction setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
+	public static final ConfigSetting TIMEZONE = new ConfigSetting(config, "auction setting.timezone", "America/Toronto", "Ensure this is correct as features like the access hours will use this timezone. https://timezonedb.com/time-zones");
+
 
 	/*  ===============================
 	 *          BASIC SETTINGS
@@ -98,7 +101,10 @@ public class Settings {
 	public static final ConfigSetting LISTING_PRIORITY_TIME_COST_PER_BOOST = new ConfigSetting(config, "auction setting.listing priority.cost per boost", 1000, "How much should it cost the player to boost their item each time");
 
 	// Timed Usage
-	public static final ConfigSetting TIMED_USAGE = new ConfigSetting(config, "auction setting.access hours.use access hours", false, "If true, the auction house will be only accessible");
+	public static final ConfigSetting TIMED_USAGE_ENABLED = new ConfigSetting(config, "auction setting.access hours.use access hours", false, "If true, the auction house will be only accessible");
+	public static final ConfigSetting TIMED_USAGE_RANGE = new ConfigSetting(config, "auction setting.access hours.access hours", Collections.singletonList(
+			"00:00:00-23:59:59"
+	), "The hours in 24hr format which the auction house can be used.", "The times use the specified timezone ");
 
 
 	public static final ConfigSetting SHOW_LISTING_ERROR_IN_CONSOLE = new ConfigSetting(config, "auction setting.show listing error in console", false, "If true, an exception will be thrown and shown in the console if something goes wrong during item listing");
@@ -212,7 +218,6 @@ public class Settings {
 	public static final ConfigSetting ADMIN_OPTION_SHOW_DELETE_ITEM = new ConfigSetting(config, "auction setting.admin option.show delete item", true);
 	public static final ConfigSetting ADMIN_OPTION_SHOW_COPY_ITEM = new ConfigSetting(config, "auction setting.admin option.show copy item", true);
 
-	public static final ConfigSetting DATE_FORMAT = new ConfigSetting(config, "auction setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
 	public static final ConfigSetting ALLOW_PLAYERS_TO_ACCEPT_BID = new ConfigSetting(config, "auction setting.allow players to accept bid", true, "If true, players can right click a biddable item inside their active listings menu to accept the current bid");
 	public static final ConfigSetting SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID = new ConfigSetting(config, "auction setting.prevent cancellation of bid on items", false, "If true, players must wait out the duration of the auction listing if there is already a bid on it (makes them commit to selling it)");
 	public static final ConfigSetting PER_WORLD_ITEMS = new ConfigSetting(config, "auction setting.per world items", false, "If true, items can only be seen in the world they were listed in, same goes for bidding/buying/collecting");
@@ -1670,6 +1675,11 @@ public class Settings {
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_PARTIAL_BUY = new ConfigSetting(config, "auction stack.controls.partial buy", Collections.singletonList(
 			"&eShift Left-Click&f: &bBuy Quantity"
 	), "This will be appended at the end of the lore", "If the auction item allows partial buys, this will be added");
+
+	public static final ConfigSetting AUCTION_STACK_AUCTION_CLOSED = new ConfigSetting(config, "auction stack.controls.auction house closed", Arrays.asList(
+			"&cAuction House is Closed",
+			"&eReopens in: &b%hours%&fh &b%minutes%&fm &b%seconds%&fs"
+	), "This will be appended at the end of the lore if access hours is enabled and not in range");
 
 
 	public static final ConfigSetting AUCTION_STACK_INFO_LAYOUT = new ConfigSetting(config, "auction stack.info layout", Arrays.asList(
