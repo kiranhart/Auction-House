@@ -269,6 +269,11 @@ public class AuctionedItem {
 					}
 				} else {
 					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_BID_OFF.getStringList()));
+
+					if (Settings.CART_SYSTEM_ENABLED.getBoolean()) {
+						CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_ADD_TO_CART.getStringList()));
+					}
+
 					if (this.isAllowPartialBuy()) {
 						CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_PARTIAL_BUY.getStringList()));
 					}
@@ -287,7 +292,8 @@ public class AuctionedItem {
 			} else {
 				if (type == AuctionStackType.LISTING_PREVIEW) {
 					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_LISTING_PREVIEW_ITEM.getStringList()));
-
+				} else if (type == AuctionStackType.CART) {
+					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_LISTING_CART.getStringList()));
 				} else {
 					CONTROLS.addAll(Common.colorize(Settings.AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_ITEM.getStringList()));
 

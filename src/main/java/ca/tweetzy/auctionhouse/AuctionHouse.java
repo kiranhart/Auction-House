@@ -236,6 +236,7 @@ public class AuctionHouse extends TweetyPlugin {
 				new CommandSell(),
 				new CommandActive(),
 				new CommandExpired(),
+				new CommandCart(),
 				new CommandTransactions(),
 				new CommandSearch(),
 				new CommandSettings(),
@@ -389,6 +390,9 @@ public class AuctionHouse extends TweetyPlugin {
 		return getInstance().requestsManager;
 	}
 
+	public static CartManager getCartManager() {
+		return getInstance().cartManager;
+	}
 
 	public static AuctionItemManager getAuctionItemManager() {
 		return getInstance().auctionItemManager;

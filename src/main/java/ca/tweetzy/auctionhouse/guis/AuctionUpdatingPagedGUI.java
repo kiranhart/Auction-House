@@ -75,7 +75,9 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	}
 
 	protected void applyClose() {
-		setOnClose(close -> cancelTask());
+		setOnClose(close -> {
+			cancelTask();
+		});
 	}
 
 	protected void prePopulate() {

@@ -91,6 +91,8 @@ public class LocaleSettings {
 		languageNodes.put("general.confirm time limit reached", "&cYou didn't confirm in time, request it again.");
 		languageNodes.put("general.confirmed cancellation", "&aConfirmed, all your items will be sent to collection.");
 
+		languageNodes.put("general.cart.item already in cart", "&cThat item is already in your cart");
+		languageNodes.put("general.cart.item added to cart", "&aAdded that item to your cart.");
 
 		languageNodes.put("general.cannot list repaired item", "&cCannot list a repaired item!");
 		languageNodes.put("general.marked chest", "&aYou marked that chest as an Auction chest");
@@ -270,6 +272,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.sell.args.suggestion three", "10 -b");
 
 		languageNodes.put("commands.syntax.active", "active");
+		languageNodes.put("commands.syntax.cart", "cart");
 		languageNodes.put("commands.syntax.auctionhouse", "/ah");
 		languageNodes.put("commands.syntax.convert", "convert");
 		languageNodes.put("commands.syntax.confirm", "confirm");
@@ -290,6 +293,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.syntax.request", "request <price> [-single]");
 
 		languageNodes.put("commands.description.active", "View all your auction listings");
+		languageNodes.put("commands.description.cart", "Used to view your cart");
 		languageNodes.put("commands.description.auctionhouse", "Main command for the plugin, it opens the auction window.");
 		languageNodes.put("commands.description.confirm", "Used to confirm an action");
 		languageNodes.put("commands.description.convert", "Used to make an attempted conversion from < 2.0.0+");

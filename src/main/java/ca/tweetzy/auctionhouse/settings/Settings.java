@@ -58,6 +58,7 @@ public class Settings {
 
 	public static final ConfigSetting CMD_ALIAS_MAIN = new ConfigSetting(config, "command aliases.main", Arrays.asList("ah", "auctions", "auctionhouses", "ahgui", "auctiongui"), "Command aliases for the main command");
 	public static final ConfigSetting CMD_ALIAS_SUB_ACTIVE = new ConfigSetting(config, "command aliases.subcommands.active", Collections.singletonList("active"), "Command aliases for the active command");
+	public static final ConfigSetting CMD_ALIAS_SUB_CART = new ConfigSetting(config, "command aliases.subcommands.cart", Collections.singletonList("cart"), "Command aliases for the cart command");
 	public static final ConfigSetting CMD_ALIAS_SUB_ADMIN = new ConfigSetting(config, "command aliases.subcommands.admin", Collections.singletonList("admin"), "Command aliases for the admin command");
 	public static final ConfigSetting CMD_ALIAS_SUB_BAN = new ConfigSetting(config, "command aliases.subcommands.ban", Collections.singletonList("ban"), "Command aliases for the ban command");
 	public static final ConfigSetting CMD_ALIAS_SUB_BIDS = new ConfigSetting(config, "command aliases.subcommands.bids", Collections.singletonList("bids"), "Command aliases for the bids command");
@@ -88,6 +89,8 @@ public class Settings {
 
 	public static final ConfigSetting DATE_FORMAT = new ConfigSetting(config, "auction setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
 	public static final ConfigSetting TIMEZONE = new ConfigSetting(config, "auction setting.timezone", "America/Toronto", "Ensure this is correct as features like the access hours will use this timezone. https://timezonedb.com/time-zones");
+
+	public static final ConfigSetting CART_SYSTEM_ENABLED = new ConfigSetting(config, "auction setting.cart system.enabled", true, "Should auction house allow the cart system?");
 
 
 	/*  ===============================
@@ -285,6 +288,17 @@ public class Settings {
 	));
 
 	public static final ConfigSetting CLICKS_NON_BID_ITEM_PURCHASE = new ConfigSetting(config, "auction setting.clicks.non bid item purchase", "LEFT",
+			"Valid Click Types",
+			"LEFT",
+			"RIGHT",
+			"SHIFT_LEFT",
+			"SHIFT_RIGHT",
+			"MIDDLE",
+			"",
+			"&cIf you overlap click types (ex. LEFT for both inspect and buy) things will go crazy."
+	);
+
+	public static final ConfigSetting CLICKS_NON_BID_ITEM_ADD_TO_CART = new ConfigSetting(config, "auction setting.clicks.non bid item add to cart", "RIGHT",
 			"Valid Click Types",
 			"LEFT",
 			"RIGHT",
@@ -603,6 +617,20 @@ public class Settings {
 					"&7Click to clear search"
 			)
 	);
+
+	/*  ===============================
+	 *        CART GUI
+	 *  ===============================*/
+	public static final ConfigSetting GUI_CART_TITLE = new ConfigSetting(config, "gui.cart.title", "&7Auction House &f- &EYour Cart");
+	public static final ConfigSetting GUI_CART_ROWS = new ConfigSetting(config, "gui.cart.rows", 6);
+	public static final ConfigSetting GUI_CART_FILL_SLOTS = new ConfigSetting(config, "gui.cart.fill slots", IntStream.rangeClosed(0, 44).boxed().collect(Collectors.toList()));
+	public static final ConfigSetting GUI_CART_ITEMS_CHECKOUT_ITEM = new ConfigSetting(config, "gui.cart.items.checkout.item", CompMaterial.LIME_STAINED_GLASS_PANE.name());
+	public static final ConfigSetting GUI_CART_ITEMS_CHECKOUT_SLOT = new ConfigSetting(config, "gui.cart.items.checkout.slot", 49);
+	public static final ConfigSetting GUI_CART_ITEMS_CHECKOUT_NAME = new ConfigSetting(config, "gui.cart.items.checkout.name", "&e&lCheckout");
+	public static final ConfigSetting GUI_CART_ITEMS_CHECKOUT_LORE = new ConfigSetting(config, "gui.cart.items.checkout.lore", Arrays.asList(
+			"&7Used to checkout this cart",
+			"&eClick to checkout"
+	));
 
 	/*  ===============================
 	 *         MAIN AUCTION GUI
@@ -1653,6 +1681,7 @@ public class Settings {
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_ITEM = new ConfigSetting(config, "auction stack.controls.cancel item", Collections.singletonList("&eLeft-Click to cancel this listing"));
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_CANCEL_REQUEST = new ConfigSetting(config, "auction stack.controls.cancel request", Collections.singletonList("&eLeft-Click to cancel this request"));
 	public static final ConfigSetting AUCTION_STACK_LISTING_PREVIEW_ITEM = new ConfigSetting(config, "auction stack.controls.preview item", Collections.singletonList("&ePreviewing Listing"));
+	public static final ConfigSetting AUCTION_STACK_LISTING_CART = new ConfigSetting(config, "auction stack.controls.cart", Collections.singletonList("&eClick to remove from cart"));
 	public static final ConfigSetting AUCTION_STACK_HIGHEST_BIDDER_ITEM = new ConfigSetting(config, "auction stack.controls.highest bidder", Collections.singletonList("&eCurrently Winning!"));
 
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_BID_ON = new ConfigSetting(config, "auction stack.controls.using bid", Arrays.asList(
@@ -1671,6 +1700,11 @@ public class Settings {
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_BID_OFF = new ConfigSetting(config, "auction stack.controls.not using bid", Collections.singletonList(
 			"&eLeft-Click&f: &bBuy Now"
 	), "This will be appended at the end of the lore", "If the auction item is not using a bid, this will show");
+
+
+	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_ADD_TO_CART = new ConfigSetting(config, "auction stack.controls.add to cart", Collections.singletonList(
+			"&eRight-Click&f: &bAdd to cart"
+	), "This will be appended at the end of the lore", "If the auction item is not using a bid and the cart system is enabled");
 
 	public static final ConfigSetting AUCTION_STACK_PURCHASE_CONTROLS_PARTIAL_BUY = new ConfigSetting(config, "auction stack.controls.partial buy", Collections.singletonList(
 			"&eShift Left-Click&f: &bBuy Quantity"

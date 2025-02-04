@@ -56,12 +56,6 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		if (!Bukkit.getOfflinePlayer(auctionPlayer.getUuid()).isOnline()) return;
 
 		setOnOpen(open -> {
-			// Player is banned from the auction house, close it
-//			if (AuctionHouse.getInstance().getAuctionBanManager().checkAndHandleBan(open.player)) {
-//				open.gui.exit();
-//				return;TODO CHECK BAN
-//			}
-
 			// start auto refresh if enabled
 			if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) startTask();
 
@@ -166,6 +160,24 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 				if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
 				handleNonBidItem(auctionedItem, click, true);
+				return;
+			}
+
+			if (click.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_ADD_TO_CART.getString().toUpperCase())) {
+				// special case for request
+				if (auctionedItem.isRequest()) {
+					return;
+				}
+
+				if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
+				// add to cart
+				if (AuctionHouse.getCartManager().isItemInCart(click.player.getUniqueId(), auctionedItem)) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.cart.item already in cart").sendPrefixedMessage(click.player);
+					return;
+				}
+
+				AuctionHouse.getCartManager().addToCart(click.player.getUniqueId(), auctionedItem);
+				AuctionHouse.getInstance().getLocale().getMessage("general.cart.item added to cart").sendPrefixedMessage(click.player);
 				return;
 			}
 
