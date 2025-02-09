@@ -160,6 +160,7 @@ public class Settings {
 	public static final ConfigSetting DISABLE_CLEANUP_MSG = new ConfigSetting(config, "auction setting.disable clean up message", false, "If true, auction house will not log the clean up process to the console");
 
 	public static final ConfigSetting DISABLE_PROFILE_UPDATE_MSG = new ConfigSetting(config, "auction setting.disable profile update message", false, "If true, auction house will not log the player profile updates to the console");
+//	public static final ConfigSetting DISABLE_PLAYER_REF_UPDATE_MSG = new ConfigSetting(config, "auction setting.disable player reference update message", false, "If true, auction house will not log the player reference updates to the console");
 
 	public static final ConfigSetting TICK_UPDATE_TIME = new ConfigSetting(config, "auction setting.tick auctions every", 1, "How many seconds should pass before the plugin updates all the times on items?");
 
@@ -197,6 +198,7 @@ public class Settings {
 	public static final ConfigSetting ASK_FOR_BID_CONFIRMATION = new ConfigSetting(config, "auction setting.ask for bid confirmation", true, "Should Auction House open the confirmation menu for the user to confirm", "whether they actually meant to place a bid or not?");
 	public static final ConfigSetting ASK_FOR_LISTING_CONFIRMATION = new ConfigSetting(config, "auction setting.ask for listing confirmation", false, "Should Auction House ask the user to confirm the listing?");
 	public static final ConfigSetting REPLACE_HOW_TO_SELL_WITH_LIST_BUTTON = new ConfigSetting(config, "auction setting.replace how to sell with list button", false, "This will replace the \"How to Sell\" button with a List Item button");
+	public static final ConfigSetting REPLACE_GUIDE_WITH_CART_BUTTON = new ConfigSetting(config, "auction setting.replace guide with cart button", false, "This will replace the \"Guide\" button with the Cart button. This will only work if the cart system is enabled");
 	public static final ConfigSetting ALLOW_USAGE_OF_SELL_GUI = new ConfigSetting(config, "auction setting.allow usage of sell gui", true, "Should the sell menu be enabled?");
 	public static final ConfigSetting FORCE_AUCTION_USAGE = new ConfigSetting(config, "auction setting.force auction usage", false, "If enabled, all items sold on the auction house must be an auction (biddable) items");
 	public static final ConfigSetting ALLOW_INDIVIDUAL_ITEM_CLAIM = new ConfigSetting(config, "auction setting.allow individual item claim", true, "If enabled, you will be able to click individual items from the expiration menu to claim them back. Otherwise you will have to use the claim all button");
@@ -678,6 +680,15 @@ public class Settings {
 			"&7To list an item on the auction house, just hold",
 			"&7the item in your hand and type the following command.",
 			"&e/ah sell <buyNowPrice> [startPrice] [bidIncrement]"
+	));
+
+	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_CART_SLOT = new ConfigSetting(config, "gui.auction house.items.cart.slot", 53, "Valid Slots: 45 - 53");
+	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_CART_ITEM = new ConfigSetting(config, "gui.auction house.items.cart.item", CompMaterial.CHEST_MINECART.name());
+	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_CART_NAME = new ConfigSetting(config, "gui.auction house.items.cart.name", "&e&lCart");
+	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_CART_LORE = new ConfigSetting(config, "gui.auction house.items.cart.lore", Arrays.asList(
+			"&7Click to view your cart",
+			"",
+			"&eTotal Items&f: &a%cart_item_count%"
 	));
 
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ENABLED = new ConfigSetting(config, "gui.auction house.items.list new item.enabled", true);

@@ -2,6 +2,7 @@ package ca.tweetzy.auctionhouse.guis.core;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.auction.Cart;
+import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
@@ -57,6 +58,13 @@ public final class GUICart extends AuctionUpdatingPagedGUI<AuctionedItem> {
 				.name(Settings.GUI_CART_ITEMS_CHECKOUT_NAME.getString())
 				.lore(Settings.GUI_CART_ITEMS_CHECKOUT_LORE.getStringList())
 				.make(), click -> {
+
+			if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.auction house closed").sendPrefixedMessage(player);
+				return;
+			}
+
+			if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
 
 			AuctionHouse.getCartManager().checkout(click.player);
 			draw();

@@ -64,7 +64,7 @@ public class AuctionPlayerManager {
 
 		if (found == null) {
 			found = new AuctionPlayer(player);
-			AuctionHouse.getInstance().getDataManager().insertAuctionPlayer(found, (error, created) -> {
+			AuctionHouse.getDataManager().insertAuctionPlayer(found, (error, created) -> {
 				if (error == null && created != null) {
 					AuctionHouse.getInstance().getLogger().info("Creating profile for player: " + player.getName());
 					addPlayer(created);

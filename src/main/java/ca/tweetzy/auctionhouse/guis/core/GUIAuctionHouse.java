@@ -163,7 +163,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				return;
 			}
 
-			if (click.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_ADD_TO_CART.getString().toUpperCase())) {
+			if (click.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_ADD_TO_CART.getString().toUpperCase()) && Settings.CART_SYSTEM_ENABLED.getBoolean()) {
 				// special case for request
 				if (auctionedItem.isRequest()) {
 					return;
@@ -507,6 +507,25 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				}
 			});
 		}
+
+		if (Settings.REPLACE_GUIDE_WITH_CART_BUTTON.getBoolean()) {
+			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_SLOT.getInt(), QuickItem
+					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_ITEM.getString())
+					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_NAME.getString())
+					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_LORE.getStringList(), "cart_item_count", AuctionHouse.getCartManager().getPlayerCart(this.player).getItemCount()))
+					.make(), e -> {
+
+				cancelTask();
+				AuctionHouse.getGuiManager().showGUI(player, new GUICart(this, this.auctionPlayer));
+			});
+		} else {
+			if (Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ENABLED.getBoolean()) {
+				setItem(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT.getInt(), QuickItem
+						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM.getString())
+						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString()).lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList())
+						.make());
+			}
+		}
 	}
 
 	//======================================================================================================//
@@ -574,13 +593,6 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 						.lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList())
 						.make());
 			}
-		}
-
-		if (Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ENABLED.getBoolean()) {
-			setItem(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT.getInt(), QuickItem
-					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM.getString())
-					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString()).lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList())
-					.make());
 		}
 
 		if (Settings.GUI_REFRESH_BTN_ENABLED.getBoolean()) {

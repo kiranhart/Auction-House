@@ -144,6 +144,8 @@ public class PlayerListeners implements Listener {
 
 
 		AuctionHouse.getAuctionPlayerManager().getSellHolding().remove(player.getUniqueId());
+
+
 		AuctionHouse.getInstance().getLogger().info("Removing sell holding instance for user: " + player.getName());
 	}
 
