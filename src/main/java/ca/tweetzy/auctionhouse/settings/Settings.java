@@ -90,7 +90,7 @@ public class Settings {
 	public static final ConfigSetting DATE_FORMAT = new ConfigSetting(config, "auction setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
 	public static final ConfigSetting TIMEZONE = new ConfigSetting(config, "auction setting.timezone", "America/Toronto", "Ensure this is correct as features like the access hours will use this timezone. https://timezonedb.com/time-zones");
 
-	public static final ConfigSetting CART_SYSTEM_ENABLED = new ConfigSetting(config, "auction setting.cart system.enabled", true, "Should auction house allow the cart system?");
+	public static final ConfigSetting CART_SYSTEM_ENABLED = new ConfigSetting(config, "auction setting.cart system.enabled", false, "Should auction house allow the cart system?");
 
 
 	/*  ===============================
