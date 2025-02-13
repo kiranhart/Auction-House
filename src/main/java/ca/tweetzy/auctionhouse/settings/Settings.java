@@ -128,6 +128,14 @@ public class Settings {
 	public static final ConfigSetting DEFAULT_FILTER_SALE_TYPE = new ConfigSetting(config, "auction setting.default filters.sale type", "BOTH", "Valid Options: USED_BIDDING_SYSTEM, WITHOUT_BIDDING_SYSTEM, BOTH");
 	public static final ConfigSetting ENABLE_FILTER_SYSTEM = new ConfigSetting(config, "auction setting.use filter system", true, "If false, auction house will disable the filter button.");
 
+	public static final ConfigSetting FILTER_CLICKS_SORT_PRICE_RECENT_ENABLED = new ConfigSetting(config, "auction setting.default filters.enabled clicks.sort by price or recent", true, "If false, the click action for this filter option will not work.");
+	public static final ConfigSetting FILTER_CLICKS_RESET_ENABLED = new ConfigSetting(config, "auction setting.default filters.enabled clicks.reset", true, "If false, the click action for this filter option will not work.");
+	public static final ConfigSetting FILTER_CLICKS_LISTING_CURRENCY_ENABLED = new ConfigSetting(config, "auction setting.default filters.enabled clicks.listing currency", true, "If false, the click action for this filter option will not work.");
+	public static final ConfigSetting FILTER_CLICKS_SALE_TYPE_ENABLED = new ConfigSetting(config, "auction setting.default filters.enabled clicks.sort sale type", true, "If false, the click action for this filter option will not work.");
+	public static final ConfigSetting FILTER_CLICKS_CHANGE_CATEGORY_ENABLED = new ConfigSetting(config, "auction setting.default filters.enabled clicks.change category", true, "If false, the click action for this filter option will not work.");
+	public static final ConfigSetting FILTER_CLICKS_TRANSACTION_BUY_TYPE_ENABLED = new ConfigSetting(config, "auction setting.default filters.enabled clicks.transaction buy type", true, "If false, the click action for this filter option will not work.");
+	public static final ConfigSetting FILTER_DONT_REMEMBER = new ConfigSetting(config, "auction setting.default filters.do not save filter setting", false, "If true if you close the auction house your filter options will reset back to default");
+
 	public static final ConfigSetting INTERNAL_CREATE_DELAY = new ConfigSetting(config, "auction setting.internal create delay", 2, "How many ticks should auction house wait before actually creating the item.");
 	public static final ConfigSetting MAX_AUCTION_PRICE = new ConfigSetting(config, "auction setting.pricing.max auction price", 1000000000, "The max price for buy only / buy now items");
 	public static final ConfigSetting MAX_AUCTION_START_PRICE = new ConfigSetting(config, "auction setting.pricing.max auction start price", 1000000000, "The max price starting a bidding auction");

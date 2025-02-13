@@ -130,20 +130,20 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 						"filter_buy_type", auctionPlayer.getTransactionViewFilter().getTranslatedType()
 				)).make(), click -> {
 
-			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase())) {
+			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase()) && Settings.FILTER_CLICKS_CHANGE_CATEGORY_ENABLED.getBoolean()) {
 				this.auctionPlayer.setSelectedTransactionFilter(this.auctionPlayer.getSelectedTransactionFilter().next());
 				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
 			}
 
 
-			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_RESET.getString().toUpperCase())) {
+			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_RESET.getString().toUpperCase()) && Settings.FILTER_CLICKS_RESET_ENABLED.getBoolean()) {
 				this.auctionPlayer.resetTransactionFilter();
 				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
 				return;
 			}
 
 
-			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_SALE_TYPE.getString().toUpperCase())) {
+			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_SALE_TYPE.getString().toUpperCase()) && Settings.FILTER_CLICKS_SALE_TYPE_ENABLED.getBoolean()) {
 				if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
 					this.auctionPlayer.setSelectedTransactionSaleType(this.auctionPlayer.getSelectedTransactionSaleType().next());
 					click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
@@ -151,13 +151,13 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 				return;
 			}
 
-			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_TRANSACTION_BUY_TYPE.getString().toUpperCase())) {
+			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_TRANSACTION_BUY_TYPE.getString().toUpperCase()) && Settings.FILTER_CLICKS_TRANSACTION_BUY_TYPE_ENABLED.getBoolean()) {
 				this.auctionPlayer.setTransactionViewFilter(this.auctionPlayer.getTransactionViewFilter().next());
 				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
 				return;
 			}
 
-			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase())) {
+			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase())&& Settings.FILTER_CLICKS_SORT_PRICE_RECENT_ENABLED.getBoolean()) {
 				this.auctionPlayer.setTransactionSortType(this.auctionPlayer.getTransactionSortType().next());
 				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
 			}

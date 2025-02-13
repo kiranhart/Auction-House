@@ -672,20 +672,20 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED.getBoolean()) {
 				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getInt(), item, e -> {
-					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase())) {
+					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase()) && Settings.FILTER_CLICKS_CHANGE_CATEGORY_ENABLED.getBoolean()) {
 						cancelTask();
 						e.manager.showGUI(e.player, new GUIFilterSelection(this.auctionPlayer));
 						return;
 					}
 
-					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_RESET.getString().toUpperCase())) {
+					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_RESET.getString().toUpperCase()) && Settings.FILTER_CLICKS_RESET_ENABLED.getBoolean()) {
 						this.auctionPlayer.resetFilter();
 						updatePlayerFilter(this.auctionPlayer);
 						draw();
 						return;
 					}
 
-					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_SALE_TYPE.getString().toUpperCase())) {
+					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_SALE_TYPE.getString().toUpperCase()) && Settings.FILTER_CLICKS_SALE_TYPE_ENABLED.getBoolean()) {
 						if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
 							this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
 							updatePlayerFilter(this.auctionPlayer);
@@ -694,7 +694,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 						return;
 					}
 
-					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase())) {
+					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase()) && Settings.FILTER_CLICKS_SORT_PRICE_RECENT_ENABLED.getBoolean()) {
 						this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
 						updatePlayerFilter(this.auctionPlayer);
 						draw();
@@ -715,21 +715,21 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 							"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
 					.make(), e -> {
 
-				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase())) {
+				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase()) && Settings.FILTER_CLICKS_CHANGE_CATEGORY_ENABLED.getBoolean()) {
 					this.auctionPlayer.setSelectedFilter(this.auctionPlayer.getSelectedFilter().next());
 					updatePlayerFilter(this.auctionPlayer);
 					draw();
 					return;
 				}
 
-				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_RESET.getString().toUpperCase())) {
+				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_RESET.getString().toUpperCase()) && Settings.FILTER_CLICKS_RESET_ENABLED.getBoolean()) {
 					this.auctionPlayer.resetFilter();
 					updatePlayerFilter(this.auctionPlayer);
 					draw();
 					return;
 				}
 
-				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_SALE_TYPE.getString().toUpperCase())) {
+				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_SALE_TYPE.getString().toUpperCase()) && Settings.FILTER_CLICKS_SALE_TYPE_ENABLED.getBoolean()) {
 					if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
 						this.auctionPlayer.setSelectedSaleType(this.auctionPlayer.getSelectedSaleType().next());
 						updatePlayerFilter(this.auctionPlayer);
@@ -738,14 +738,14 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					return;
 				}
 
-				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase())) {
+				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase()) && Settings.FILTER_CLICKS_SORT_PRICE_RECENT_ENABLED.getBoolean()) {
 					this.auctionPlayer.setAuctionSortType(this.auctionPlayer.getAuctionSortType().next());
 					updatePlayerFilter(this.auctionPlayer);
 					draw();
 					return;
 				}
 
-				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CURRENCY.getString().toUpperCase())) {
+				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CURRENCY.getString().toUpperCase()) && Settings.FILTER_CLICKS_LISTING_CURRENCY_ENABLED.getBoolean()) {
 					this.auctionPlayer.setSelectedCurrencyFilter(AuctionHouse.getCurrencyManager().getNext(this.auctionPlayer.getSelectedCurrencyFilter()));
 					draw();
 					return;
