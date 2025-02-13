@@ -26,11 +26,17 @@ import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.gui.Gui;
+import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.QuickItem;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -82,9 +88,11 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 		return auctionedItem.getItem();
 	}
 
+
 	@Override
 	protected void onClick(AuctionedItem auctionedItem, GuiClickEvent click) {
 		if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.ITEM_COLLECTION)) return;
+		if (click.event.getClickedInventory().getType() == InventoryType.PLAYER)return;
 
 		if (!Settings.ALLOW_INDIVIDUAL_ITEM_CLAIM.getBoolean()) return;
 
