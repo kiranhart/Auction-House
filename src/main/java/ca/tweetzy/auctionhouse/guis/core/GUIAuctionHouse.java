@@ -35,6 +35,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
@@ -53,12 +54,14 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		this.auctionPlayer = auctionPlayer;
 		this.searchKeywords = searchKeywords;
 
+		if (Settings.FILTER_DONT_REMEMBER.getBoolean())
+			this.auctionPlayer.resetFilter();
+
 		if (!Bukkit.getOfflinePlayer(auctionPlayer.getUuid()).isOnline()) return;
 
 		setOnOpen(open -> {
 			// start auto refresh if enabled
 			if (Settings.AUTO_REFRESH_AUCTION_PAGES.getBoolean()) startTask();
-
 		});
 
 		applyClose();
@@ -658,6 +661,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 									"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType(),
 									"filter_currency", auctionPlayer.getSelectedCurrencyFilter().getDisplayName()
 							))
+							.hideTags(true)
 							.make() : QuickItem
 					.of(materialToBeUsed)
 					.name(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(),
@@ -668,7 +672,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 							"filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(),
 							"filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(),
 							"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType(),
-							"filter_currency", auctionPlayer.getSelectedCurrencyFilter().getDisplayName())).make();
+							"filter_currency", auctionPlayer.getSelectedCurrencyFilter().getDisplayName())).hideTags(true).make();
 
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED.getBoolean()) {
 				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getInt(), item, e -> {
@@ -713,6 +717,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 							"filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(),
 							"filter_currency", auctionPlayer.getSelectedCurrencyFilter().getDisplayName(),
 							"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
+					.hideTags(true)
 					.make(), e -> {
 
 				if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase()) && Settings.FILTER_CLICKS_CHANGE_CATEGORY_ENABLED.getBoolean()) {
