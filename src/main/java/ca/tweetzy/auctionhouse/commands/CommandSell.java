@@ -161,6 +161,8 @@ public final class CommandSell extends Command {
 		boolean serverAuction = false;
 		String currency = AuctionHouse.getCurrencyManager().getDefaultCurrency().getStoreableName();
 
+		boolean singleItemFromStack = false;
+
 		List<String> timeSets = Arrays.asList(
 				"second",
 				"minute",
@@ -190,23 +192,27 @@ public final class CommandSell extends Command {
 				}
 			}
 
-			if (args[i].equalsIgnoreCase("-b") || args[i].equalsIgnoreCase("-bundle"))
+			if (Settings.CMD_FLAG_ALIAS_SELL_BUNDLE.getStringList().contains(args[i]))
 				isBundle = true;
 
-			if (args[i].equalsIgnoreCase("-p") || args[i].equalsIgnoreCase("-partialbuy"))
+			if (Settings.CMD_FLAG_ALIAS_SELL_PARTIAL_BUY.getStringList().contains(args[i]))
 				partialBuy = true;
 
-			if (player.hasPermission("auctionhouse.cmdflag.stack") && args[i].equalsIgnoreCase("-s") || args[i].equalsIgnoreCase("-stack"))
+
+			if (Settings.CMD_FLAG_ALIAS_SELL_SINGLE.getStringList().contains(args[i]))
+				singleItemFromStack = true;
+
+			if (player.hasPermission("auctionhouse.cmdflag.stack") && Settings.CMD_FLAG_ALIAS_SELL_STACK_PRICE.getStringList().contains(args[i]))
 				isStackPrice = true;
 
-			if ((args[i].equalsIgnoreCase("-i") || args[i].equalsIgnoreCase("-infinite")) && (player.hasPermission("auctionhouse.admin") || player.isOp()))
+			if ((Settings.CMD_FLAG_ALIAS_SELL_INFINITE.getStringList().contains(args[i])) && (player.hasPermission("auctionhouse.admin") || player.isOp()))
 				isInfinite = true;
 
 			// check if the listing should be a server auction
-			if (args[i].equalsIgnoreCase("-server") && (player.hasPermission("auctionhouse.admin") || player.isOp()))
+			if (Settings.CMD_FLAG_ALIAS_SELL_SERVER.getStringList().contains(args[i]) && (player.hasPermission("auctionhouse.admin") || player.isOp()))
 				serverAuction = true;
 
-			if (args[i].toLowerCase().startsWith("-t") && Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
+			if (Settings.CMD_FLAG_ALIAS_SELL_TIME.getStringList().contains(args[i]) && Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
 				if (i + 2 < args.length) {
 					int customTime = (int) AuctionAPI.toTicks(args[i + 1] + " " + args[i + 2]);
 
@@ -301,7 +307,7 @@ public final class CommandSell extends Command {
 			}
 		}
 
-		if (Settings.SMART_MIN_BUY_PRICE.getBoolean() && itemToSell.getAmount() > 1) {
+		if (Settings.SMART_MIN_BUY_PRICE.getBoolean() && !singleItemFromStack && itemToSell.getAmount() > 1) {
 			buyNowPrice = isStackPrice ? buyNowPrice : buyNowPrice * itemToSell.getAmount();
 		}
 
@@ -360,12 +366,24 @@ public final class CommandSell extends Command {
 		auctionedItem.setHighestBidderName(player.getName());
 
 		// SCUFFED SHIT
+		//=====================================================================
+
+		final ItemStack finalizedItemToSell = itemToSell.clone();
+
+		if (singleItemFromStack && finalizedItemToSell.getAmount() > 1) {
+			finalizedItemToSell.setAmount(1);
+		}
+
 		if (!auctionedItem.isRequest())
-			NBT.modify(itemToSell, nbt -> {
+			NBT.modify(finalizedItemToSell, nbt -> {
 				nbt.setUUID("AuctionDupeTracking", auctionedItem.getId());
 			});
 
-		auctionedItem.setItem(itemToSell);
+		auctionedItem.setItem(finalizedItemToSell);
+
+		//=====================================================================
+
+
 		auctionedItem.setCategory(MaterialCategorizer.getMaterialCategory(itemToSell));
 		auctionedItem.setExpiresAt(System.currentTimeMillis() + 1000L * allowedTime);
 		auctionedItem.setBidItem(isBiddingItem);
@@ -399,7 +417,13 @@ public final class CommandSell extends Command {
 		AuctionHouse.getAuctionPlayerManager().addToSellProcess(player);
 
 		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {
-			player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+
+			if (singleItemFromStack && itemToSell.getAmount() > 1) {
+				player.getInventory().getItemInHand().setAmount(player.getInventory().getItemInHand().getAmount() - 1);
+			} else {
+				player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+			}
+
 			auctionPlayer.setItemBeingListed(auctionedItem.getItem());
 
 			AuctionHouse.getGuiManager().showGUI(player, new GUIListingConfirm(player, auctionedItem, result -> {
@@ -450,7 +474,11 @@ public final class CommandSell extends Command {
 				return ReturnType.FAIL;
 			}
 
-			player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+			if (singleItemFromStack && itemToSell.getAmount() > 1) {
+				player.getInventory().getItemInHand().setAmount(player.getInventory().getItemInHand().getAmount() - 1);
+			} else {
+				player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+			}
 
 			AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
 				AuctionHouse.getAuctionPlayerManager().processSell(player);

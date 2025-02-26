@@ -76,6 +76,15 @@ public class Settings {
 	public static final ConfigSetting CMD_ALIAS_SUB_TRANSACTIONS = new ConfigSetting(config, "command aliases.subcommands.transactions", Collections.singletonList("transactions"), "Command aliases for the transactions command");
 	public static final ConfigSetting CMD_ALIAS_SUB_UNBAN = new ConfigSetting(config, "command aliases.subcommands.unban", Collections.singletonList("unban"), "Command aliases for the unban command");
 
+
+	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_BUNDLE = new ConfigSetting(config, "command flags.sell command.bundle", Arrays.asList("-b", "-bundle"), "Aliases for the bundle command flag in the sell command");
+	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_PARTIAL_BUY = new ConfigSetting(config, "command flags.sell command.partial buy", Arrays.asList("-p", "-partialbuy"), "Aliases for the partial buy command flag in the sell command");
+	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_STACK_PRICE = new ConfigSetting(config, "command flags.sell command.stack price", Arrays.asList("-s", "-stack"), "Aliases for the stack price flag in the sell command");
+	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_INFINITE = new ConfigSetting(config, "command flags.sell command.infinite", Arrays.asList("-i", "-infinite"), "Aliases for the infinite flag in the sell command");
+	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_SERVER = new ConfigSetting(config, "command flags.sell command.server", Arrays.asList("-server"), "Aliases for the server flag in the sell command");
+	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_TIME = new ConfigSetting(config, "command flags.sell command.time", Arrays.asList("-t"), "Aliases for the time flag in the sell command");
+	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_SINGLE = new ConfigSetting(config, "command flags.sell command.single", Arrays.asList("-one"), "Aliases for the single item flag in the sell command");
+
 	public static final ConfigSetting TIME_ALIAS_YEAR = new ConfigSetting(config, "time aliases.year", Arrays.asList("y", "year", "years"), "Time aliases for year, Must be in lowercase.");
 	public static final ConfigSetting TIME_ALIAS_MONTH = new ConfigSetting(config, "time aliases.month", Arrays.asList("mo", "month", "months"), "Time aliases for month, Must be in lowercase.");
 	public static final ConfigSetting TIME_ALIAS_WEEK = new ConfigSetting(config, "time aliases.week", Arrays.asList("w", "week", "weeks"), "Time aliases for week, Must be in lowercase.");
