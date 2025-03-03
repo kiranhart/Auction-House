@@ -40,6 +40,9 @@ public final class CommandMiddleware {
 		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAIL;
 
 		final AuctionHouse instance = AuctionHouse.getInstance();
+		// check cooldown
+		if (AuctionHouse.getCooldownManager().isInCooldown(player)) return ReturnType.FAIL;
+
 		if (Settings.BLOCKED_WORLDS.getStringList().contains(player.getWorld().getName())) {
 			instance.getLocale().getMessage("general.disabled in world").sendPrefixedMessage(player);
 			return ReturnType.FAIL;

@@ -91,6 +91,7 @@ public class AuctionHouse extends TweetyPlugin {
 	private final PriceLimitManager priceLimitManager = new PriceLimitManager();
 	private final RequestsManager requestsManager = new RequestsManager();
 	private final CartManager cartManager = new CartManager();
+	private CooldownManager cooldownManager;
 
 	private final AuctionPlayerManager auctionPlayerManager = new AuctionPlayerManager();
 	private final AuctionItemManager auctionItemManager = new AuctionItemManager();
@@ -212,6 +213,7 @@ public class AuctionHouse extends TweetyPlugin {
 		this.priceLimitManager.load();
 		this.requestsManager.load();
 		this.cartManager.load();
+		this.cooldownManager = new CooldownManager(this);
 
 		// listeners
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
@@ -221,7 +223,7 @@ public class AuctionHouse extends TweetyPlugin {
 		if (getServer().getPluginManager().isPluginEnabled("ChestShop"))
 			Bukkit.getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
 
-		if (getServer().getPluginManager().isPluginEnabled("CMI"))
+		if (getServer().getPluginManager().isPluginEnabled("CMI") && Settings.PREVENT_SALE_OF_REPAIRED_ITEMS.getBoolean())
 			Bukkit.getServer().getPluginManager().registerEvents(new CMIListener(), this);
 
 		this.auctionItemManager.start();
@@ -376,6 +378,10 @@ public class AuctionHouse extends TweetyPlugin {
 
 	public static GuiManager getGuiManager() {
 		return getInstance().guiManager;
+	}
+
+	public static CooldownManager getCooldownManager() {
+		return getInstance().cooldownManager;
 	}
 
 	public static CommandManager getCommandManager() {

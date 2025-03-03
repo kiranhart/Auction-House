@@ -50,6 +50,7 @@ public class LocaleSettings {
 		languageNodes.put("general.highrequestcount", "&cYou cannot request that many items!");
 		languageNodes.put("general.request shulker contains items", "&cPlease make the request using an empty shulker");
 		languageNodes.put("general.auction house closed", "&cThe Auction House is currently closed.");
+		languageNodes.put("general.cooldown.command", "&cPlease wait &4%time% &cto do that again.");
 
 		languageNodes.put("general.cantbidonown", "&cYou cannot bid on your own item!");
 		languageNodes.put("general.alreadyhighestbidder", "&cYou are already the highest bidder!");
