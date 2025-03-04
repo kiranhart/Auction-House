@@ -89,7 +89,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 		setOnOpen(open -> AuctionHouse.getInstance().getLogger().info("Added " + open.player.getName() + " to confirmation pre purchase"));
 
 		setOnClose(close -> {
-			AuctionHouse.getInstance().getTransactionManager().getPrePurchaseHolding().remove(close.player);
+			AuctionHouse.getTransactionManager().getPrePurchaseHolding().remove(close.player);
 			close.manager.showGUI(close.player, new GUIAuctionHouse(this.auctionPlayer));
 			AuctionHouse.getInstance().getLogger().info("Removed " + close.player.getName() + " from confirmation pre purchase");
 		});
@@ -109,7 +109,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 		setAction(this.buyingSpecificQuantity ? 1 : 0, 4, ClickType.LEFT, e -> {
 			if (deserializeItem.getItemMeta() instanceof BlockStateMeta) {
 				if (((BlockStateMeta) deserializeItem.getItemMeta()).getBlockState() instanceof ShulkerBox) {
-					AuctionHouse.getInstance().getTransactionManager().getPrePurchaseHolding().remove(e.player);
+					AuctionHouse.getTransactionManager().getPrePurchaseHolding().remove(e.player);
 					e.manager.showGUI(e.player, new GUIContainerInspect(e.clickedItem, this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));
 				}
 			}
@@ -123,9 +123,9 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 			// Re-select the item to ensure that it's available
 			try {
 				// if the item is in the garbage then just don't continue
-				if (AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(this.auctionItem.getId()))
+				if (AuctionHouse.getAuctionItemManager().getGarbageBin().containsKey(this.auctionItem.getId()))
 					return;
-				AuctionedItem located = AuctionHouse.getInstance().getAuctionItemManager().getItem(this.auctionItem.getId());
+				AuctionedItem located = AuctionHouse.getAuctionItemManager().getItem(this.auctionItem.getId());
 
 				if (located == null || located.isExpired()) {
 					AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(e.player);
@@ -225,14 +225,14 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 					return;
 				}
 
-				AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), e.player, this.auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM, tax, false);
-				Bukkit.getServer().getPluginManager().callEvent(auctionEndEvent);
-				if (auctionEndEvent.isCancelled()) return;
-
 				if (!Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean() && e.player.getInventory().firstEmpty() == -1) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.noroom").sendPrefixedMessage(e.player);
 					return;
 				}
+
+				AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(this.auctionItem.getOwner()), e.player, this.auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM, tax, false);
+				Bukkit.getServer().getPluginManager().callEvent(auctionEndEvent);
+				if (auctionEndEvent.isCancelled()) return;
 
 				if (this.buyingSpecificQuantity) {
 					// the original item stack
