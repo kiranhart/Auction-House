@@ -35,7 +35,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
@@ -43,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
@@ -469,9 +469,26 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 	}
 
 	//======================================================================================================//
+	private List<Integer> getButtonSlots(String string) {
+		final List<Integer> slots = new ArrayList<>();
+
+		try {
+			int slot = Integer.parseInt(string);
+			slots.add(slot);
+		} catch (NumberFormatException e) {
+			// multi-slot probs
+			if (string.contains("-")) {
+				final String[] slotSplit = string.split("-");
+				slots.addAll(IntStream.rangeClosed(Integer.parseInt(slotSplit[0]), Integer.parseInt(slotSplit[1])).boxed().collect(Collectors.toList()));
+			}
+		}
+
+		return slots;
+	}
+
 	private void drawVariableButtons() {
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_SLOT.getInt(), QuickItem
+			getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString())
 					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString())
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), "active_player_auctions", auctionPlayer.getItems(false).size(), "player_balance", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getCurrencyManager().getBalance(auctionPlayer.getPlayer())))).make(), e -> {
@@ -483,19 +500,23 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 				cancelTask();
 				e.manager.showGUI(e.player, new GUIActiveAuctions(this.auctionPlayer));
-			});
+			}));
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT.getInt(), QuickItem.of(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString()).name(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString()).lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), "expired_player_auctions", auctionPlayer.getItems(true).size())).make(), e -> {
+			getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
+					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString())
+					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString())
+					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), "expired_player_auctions", auctionPlayer.getItems(true).size())).make(), e -> {
 
 				cancelTask();
 				e.manager.showGUI(e.player, new GUIExpiredItems(this, this.auctionPlayer));
-			});
+			}));
+
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_SLOT.getInt(), QuickItem.of(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString())
+			getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString())
 					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString())
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList(),
 							"total_items_bought", AuctionHouse.getTransactionManager().getTotalItemsBought(auctionPlayer.getPlayer().getUniqueId()),
@@ -508,11 +529,11 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				} else {
 					e.manager.showGUI(e.player, new GUITransactionType(e.player));
 				}
-			});
+			}));
 		}
 
 		if (Settings.REPLACE_GUIDE_WITH_CART_BUTTON.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_SLOT.getInt(), QuickItem
+			getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_ITEM.getString())
 					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_NAME.getString())
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_LORE.getStringList(), "cart_item_count", AuctionHouse.getCartManager().getPlayerCart(this.player).getItemCount()))
@@ -520,13 +541,14 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 				cancelTask();
 				AuctionHouse.getGuiManager().showGUI(player, new GUICart(this, this.auctionPlayer));
-			});
+			}));
+
 		} else {
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ENABLED.getBoolean()) {
-				setItem(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT.getInt(), QuickItem
+				getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT.getString()).forEach(slot -> setItem(slot, QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM.getString())
 						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString()).lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList())
-						.make());
+						.make()));
 			}
 		}
 	}
@@ -538,7 +560,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		if (Settings.REPLACE_HOW_TO_SELL_WITH_LIST_BUTTON.getBoolean()) {
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ENABLED.getBoolean()) {
-				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_SLOT.getInt(), QuickItem
+				getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ITEM.getString())
 						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_NAME.getString())
 						.lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_LORE.getStringList())
@@ -586,20 +608,21 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 						}));
 					}
 
-				});
+				}));
+
 			}
 		} else {
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ENABLED.getBoolean()) {
-				setItem(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_SLOT.getInt(), QuickItem
+				getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_SLOT.getString()).forEach(slot -> setItem(slot, QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ITEM.getString())
 						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_NAME.getString())
 						.lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList())
-						.make());
+						.make()));
 			}
 		}
 
 		if (Settings.GUI_REFRESH_BTN_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_REFRESH_BTN_SLOT.getInt(), getRefreshButton(), ClickType.LEFT, e -> {
+			getButtonSlots(Settings.GUI_REFRESH_BTN_SLOT.getString()).forEach(slot -> setButton(slot, getRefreshButton(), ClickType.LEFT, e -> {
 				if (Settings.USE_REFRESH_COOL_DOWN.getBoolean()) {
 					if (AuctionHouse.getAuctionPlayerManager().getCooldowns().containsKey(this.auctionPlayer.getPlayer().getUniqueId())) {
 						if (AuctionHouse.getAuctionPlayerManager().getCooldowns().get(this.auctionPlayer.getPlayer().getUniqueId()) > System.currentTimeMillis()) {
@@ -610,7 +633,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				}
 				cancelTask();
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
-			});
+			}));
 		}
 	}
 
@@ -675,7 +698,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 							"filter_currency", auctionPlayer.getSelectedCurrencyFilter().getDisplayName())).hideTags(true).make();
 
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED.getBoolean()) {
-				setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getInt(), item, e -> {
+				getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getString()).forEach(slot -> setButton(slot, item, e -> {
 					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase()) && Settings.FILTER_CLICKS_CHANGE_CATEGORY_ENABLED.getBoolean()) {
 						cancelTask();
 						e.manager.showGUI(e.player, new GUIFilterSelection(this.auctionPlayer));
@@ -703,13 +726,14 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 						updatePlayerFilter(this.auctionPlayer);
 						draw();
 					}
-				});
+				}));
+
 			}
 			return;
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ENABLED.getBoolean()) {
-			setButton(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT.getInt(), QuickItem
+			getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(this.auctionPlayer.getSelectedFilter().getFilterIcon())
 					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME.getString())
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(),
@@ -755,7 +779,8 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					draw();
 					return;
 				}
-			});
+			}));
+
 		}
 	}
 
