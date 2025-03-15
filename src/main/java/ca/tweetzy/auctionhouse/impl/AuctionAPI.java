@@ -227,4 +227,5 @@ public final class AuctionAPI implements AuctionHouseAPI {
 
 		return times;
 	}
+
 }

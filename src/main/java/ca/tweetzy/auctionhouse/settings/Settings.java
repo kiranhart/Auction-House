@@ -98,6 +98,7 @@ public class Settings {
 
 	public static final ConfigSetting DATE_FORMAT = new ConfigSetting(config, "auction setting.date format", "MMM dd, yyyy hh:mm aa", "You can learn more about date formats by googling SimpleDateFormat patterns or visiting this link", "https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
 	public static final ConfigSetting TIMEZONE = new ConfigSetting(config, "auction setting.timezone", "America/Toronto", "Ensure this is correct as features like the access hours will use this timezone. https://timezonedb.com/time-zones");
+	public static final ConfigSetting PACKET_NAMESPACE_KEYS = new ConfigSetting(config, "auction setting.packet.namespaced keys", Arrays.asList("ecoitems", "ecoarmor"), "Namespaced keys of plugins using packet lore");
 
 	public static final ConfigSetting CART_SYSTEM_ENABLED = new ConfigSetting(config, "auction setting.cart system.enabled", false, "Should auction house allow the cart system?");
 
@@ -728,7 +729,7 @@ public class Settings {
 	));
 
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ENABLED = new ConfigSetting(config, "gui.auction house.items.collection bin.enabled", true);
-	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT = new ConfigSetting(config, "gui.auction house.items.collection bind.slot", 46, "Valid Slots: 45 - 53");
+	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT = new ConfigSetting(config, "gui.auction house.items.collection bin.slot", 46, "Valid Slots: 45 - 53");
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM = new ConfigSetting(config, "gui.auction house.items.collection bin.item", "ENDER_CHEST");
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME = new ConfigSetting(config, "gui.auction house.items.collection bin.name", "&e&lCollection Bin");
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE = new ConfigSetting(config, "gui.auction house.items.collection bin.lore", Arrays.asList(

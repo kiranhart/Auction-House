@@ -253,7 +253,12 @@ public class DataManager extends DataManagerAbstract {
 					statement.setDouble(8, item.getCurrentPrice());
 					statement.setLong(9, item.getExpiresAt());
 					statement.setBoolean(10, item.isExpired());
-					statement.setString(11, AuctionAPI.encodeItem(item.getItem()));
+
+					try {
+						statement.setString(11, AuctionAPI.encodeItem(item.getItem()));
+					} catch (IllegalStateException ignored) {
+						statement.setString(11, "");
+					}
 
 					try {
 						statement.setInt(12, 1);
@@ -371,7 +376,13 @@ public class DataManager extends DataManagerAbstract {
 				statement.setString(14, api.getItemName(item.getItem())); // todo remove
 				statement.setString(15, api.serializeLines(api.getItemLore(item.getItem()))); // todo remove
 				statement.setString(16, api.serializeLines(api.getItemEnchantments(item.getItem()))); // todo remove
-				statement.setString(17, AuctionAPI.encodeItem(item.getItem()));
+
+				try {
+					statement.setString(17, AuctionAPI.encodeItem(item.getItem()));
+				} catch (IllegalStateException ignored) {
+					statement.setString(17, "");
+				}
+
 				statement.setString(18, item.getListedWorld());
 				statement.setBoolean(19, item.isInfinite());
 				statement.setBoolean(20, item.isAllowPartialBuy());
@@ -536,7 +547,13 @@ public class DataManager extends DataManagerAbstract {
 				statement.setString(4, transaction.getBuyer().toString());
 				statement.setString(5, transaction.getBuyerName());
 				statement.setLong(6, transaction.getTransactionTime());
-				statement.setString(7, AuctionAPI.encodeItem(transaction.getItem()));
+
+				try {
+					statement.setString(7, AuctionAPI.encodeItem(transaction.getItem()));
+				} catch (IllegalStateException ignored) {
+					statement.setString(7, "");
+				}
+
 				statement.setString(8, transaction.getAuctionSaleType().name());
 				statement.setDouble(9, transaction.getFinalPrice());
 
@@ -631,7 +648,13 @@ public class DataManager extends DataManagerAbstract {
 				statement.setString(2, adminLog.getAdminName());
 				statement.setString(3, adminLog.getTarget().toString());
 				statement.setString(4, adminLog.getTargetName());
-				statement.setString(5, AuctionAPI.encodeItem(adminLog.getItem()));
+
+				try {
+					statement.setString(5, AuctionAPI.encodeItem(adminLog.getItem()));
+				} catch (IllegalStateException ignored) {
+					statement.setString(5, "");
+				}
+
 				statement.setString(6, adminLog.getItemId().toString());
 				statement.setString(7, adminLog.getAdminAction().name());
 				statement.setLong(8, adminLog.getTime());
@@ -661,7 +684,14 @@ public class DataManager extends DataManagerAbstract {
 
 				fetch.setString(1, priceLimit.getId().toString());
 				statement.setString(1, priceLimit.getId().toString());
-				statement.setString(2, AuctionAPI.encodeItem(priceLimit.getItem()));
+
+				try {
+					statement.setString(5, AuctionAPI.encodeItem(priceLimit.getItem()));
+
+				} catch (IllegalStateException ignored) {
+					statement.setString(5, "");
+				}
+
 				statement.setDouble(3, priceLimit.getMinPrice());
 				statement.setDouble(4, priceLimit.getMaxPrice());
 

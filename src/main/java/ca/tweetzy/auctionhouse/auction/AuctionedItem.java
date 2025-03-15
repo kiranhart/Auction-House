@@ -37,9 +37,11 @@ import ca.tweetzy.flight.utils.Replacer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -224,12 +226,11 @@ public class AuctionedItem {
 	}
 
 	public ItemStack getDisplayStack(Player player, AuctionStackType type) {
-		QuickItem itemStack = QuickItem.of(this.item.clone());
-		itemStack.amount(Math.max(this.item.getAmount(), 1));
+		ItemStack itemStack = this.item.clone();
+		itemStack.setAmount(Math.max(this.item.getAmount(), 1));
 
 		List<String> originalLore = this.item.getItemMeta() != null && this.item.getItemMeta().getLore() != null ? this.item.getItemMeta().getLore() : new ArrayList<>();
 		List<String> BASE_LORE = Settings.AUCTION_STACK_INFO_LAYOUT.getStringList();
-		itemStack.clearLore();
 
 		if (this.serverItem)
 			this.ownerName = AuctionHouse.getInstance().getLocale().getMessage("general.server listing").getMessage();
@@ -310,8 +311,10 @@ public class AuctionedItem {
 			}
 		}
 
+
 		// replace all the variables
-		replaceVariable(BASE_LORE, "%original_item_lore%", originalLore, false);
+//		replaceVariable(BASE_LORE, "%original_item_lore%", hasPacketLore ? new ArrayList<>() : originalLore, false);
+		replaceVariable(BASE_LORE, "%original_item_lore%", new ArrayList<>(), true);
 		replaceVariable(BASE_LORE, "%header%", HEADER, false);
 		replaceVariable(BASE_LORE, "%seller%", SELLER, false);
 		replaceVariable(BASE_LORE, "%highest_bidder%", HIGHEST_BIDDER, !this.isBidItem);
@@ -324,11 +327,20 @@ public class AuctionedItem {
 		replaceVariable(BASE_LORE, "%controls_footer%", CONTROLS_FOOTER, false);
 		replaceVariable(BASE_LORE, "%controls%", CONTROLS, false);
 
-		itemStack.lore(player, BASE_LORE);
+//		itemStack.lore(player, BASE_LORE);
+		ItemMeta meta = this.item.hasItemMeta() ? itemStack.getItemMeta() : Bukkit.getItemFactory().getItemMeta(this.item.getType());
+		List<String> lore = new ArrayList<>();
 
-		return itemStack.make();
+		if (meta != null && meta.getLore() != null)
+			lore = meta.getLore();
+
+		lore.addAll(Common.colorize(BASE_LORE));
+		meta.setLore(lore);
+
+		itemStack.setItemMeta(meta);
+
+		return itemStack;
 	}
-
 
 	public boolean playerHasSufficientMoney(OfflinePlayer player, double amount) {
 		if (this.currencyItem != null && this.currencyItem.getType() != CompMaterial.AIR.parseMaterial()) {

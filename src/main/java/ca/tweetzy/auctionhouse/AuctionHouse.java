@@ -257,6 +257,7 @@ public class AuctionHouse extends TweetyPlugin {
 				new CommandBids(),
 				new CommandConfirm(),
 				new CommandRequest()
+
 		);
 
 		// Placeholder API
