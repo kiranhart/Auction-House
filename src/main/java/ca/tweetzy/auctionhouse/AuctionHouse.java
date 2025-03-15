@@ -333,9 +333,11 @@ public class AuctionHouse extends TweetyPlugin {
 
 			this.auctionItemManager.end();
 			this.filterManager.saveFilterWhitelist(false);
+
+
+			shutdownDataManager(this.dataManager, 3, 15);
 		}
 
-		shutdownDataManager(this.dataManager);
 		getServer().getScheduler().cancelTasks(this);
 		// send out remaining webhooks
 //		this.listingManager.sendPendingDiscordWebhooks();

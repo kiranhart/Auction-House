@@ -507,13 +507,12 @@ public class Settings {
 	public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_VALUE = new ConfigSetting(config, "discord.field.item.value", "%item_name%");
 	public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_INLINE = new ConfigSetting(config, "discord.field.item.inline", true);
 
+	public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_LORE_NAME = new ConfigSetting(config, "discord.field.item lore.name", "Lore");
+
+
 	public static final ConfigSetting DISCORD_MSG_FIELD_BIN_LISTING_PRICE_NAME = new ConfigSetting(config, "discord.field.bin listing price.name", "Price");
 	public static final ConfigSetting DISCORD_MSG_FIELD_BIN_LISTING_PRICE_VALUE = new ConfigSetting(config, "discord.field.bin listing price.value", "%item_price%");
 	public static final ConfigSetting DISCORD_MSG_FIELD_BIN_LISTING_PRICE_INLINE = new ConfigSetting(config, "discord.field.bin listing price.inline", true);
-
-	public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_AMOUNT_NAME = new ConfigSetting(config, "discord.field.item amount.name", "Quantity");
-	public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_AMOUNT_VALUE = new ConfigSetting(config, "discord.field.item amount.value", "%item_amount%");
-	public static final ConfigSetting DISCORD_MSG_FIELD_ITEM_AMOUNT_INLINE = new ConfigSetting(config, "discord.field.item amount.inline", true);
 
 	public static final ConfigSetting DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_NAME = new ConfigSetting(config, "discord.field.auction buyout price.name", "Buy Now Price");
 	public static final ConfigSetting DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_VALUE = new ConfigSetting(config, "discord.field.auction buyout price.value", "%buy_now_price%");

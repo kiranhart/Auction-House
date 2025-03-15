@@ -28,6 +28,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import java.util.List;
 
 import java.awt.*;
 
@@ -91,6 +92,23 @@ public final class DiscordMessageCreator {
 
 		embed.addField(Settings.DISCORD_MSG_FIELD_SELLER_NAME.getString(), Settings.DISCORD_MSG_FIELD_SELLER_VALUE.getString().replace("%seller%", this.listing.isServerItem() ? AuctionCreator.SERVER_LISTING_NAME : this.seller.getName()), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
 		embed.addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", "x" + this.listing.getItem().getAmount() + " " + ChatColor.stripColor(Settings.FORCE_MATERIAL_NAMES_FOR_DISCORD.getBoolean() ? ChatUtil.capitalize(this.listing.getItem().getType()) : ItemUtil.getItemName(this.listing.getItem()))), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean());
+
+		if (this.listing.getItem().getItemMeta() != null && this.listing.getItem().getItemMeta().getLore() != null) {
+			final List<String> lore = this.listing.getItem().getItemMeta().getLore();
+
+			boolean isFirst = true;
+
+			for (String s : lore) {
+				embed.addField(
+						isFirst ? Settings.DISCORD_MSG_FIELD_ITEM_LORE_NAME.getString() : "",
+						ChatColor.stripColor(s),
+						false
+				);
+				if (isFirst)
+					isFirst = false;
+			}
+
+		}
 
 		switch (this.messageType) {
 			case NEW_AUCTION_LISTING:
