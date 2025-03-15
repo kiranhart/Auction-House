@@ -106,6 +106,12 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 			return String.valueOf(AuctionHouse.getAuctionItemManager().getItems().size());
 		}
 
+		// max sell stuff
+		if (params.equalsIgnoreCase("max_sellable_items")) {
+			AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
+			return String.valueOf(auctionPlayer.getSellLimit());
+		}
+
 		// cool statistic stuff
 		final String[] paramSplit = params.split("_");
 

@@ -26,6 +26,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -167,11 +168,7 @@ public class AuctionPlayer {
 		if (player == null)
 			return Integer.MAX_VALUE;
 
-		if (player.hasPermission("auctionhouse.maxsell.*")) return Integer.MAX_VALUE;
-		for (int i = 1001; i > 0; i--) {
-			if (player.hasPermission("auctionhouse.maxsell." + i)) return i;
-		}
-		return 0;
+		return PlayerUtil.getNumberPermission(player, "auctionhouse.maxsell", 1000);
 	}
 
 	public boolean isAtItemLimit(Player target) {
