@@ -33,6 +33,7 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.QuickItem;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -103,6 +104,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 			List<ItemStack> validItems = new ArrayList<>();
 
 			boolean containsBundle = false;
+			int totalBundleShulkers = 0;
 
 			for (int i = 0; i < 44; i++) {
 				final ItemStack item = getItem(i);
@@ -120,9 +122,17 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 				if (firstItem == null)
 					firstItem = item;
 
+				if (item.getType().name().contains("SHULKER_BOX") ||item.getType().name().contains("BUNDLE") )
+					totalBundleShulkers++;
+
 				validItems.add(item);
 			}
 
+			// check if item contains too many bundle/shulker
+			if (totalBundleShulkers > Settings.MAX_SHULKER_IN_BUNDLE.getInt()) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.shulker bundle limit").sendPrefixedMessage(e.player);
+				return;
+			}
 			// are they even allowed to sell more items
 			if (auctionPlayer.isAtItemLimit(e.player)) {
 				return;

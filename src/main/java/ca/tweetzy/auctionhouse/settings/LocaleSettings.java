@@ -74,6 +74,7 @@ public class LocaleSettings {
 		languageNodes.put("general.endedallauctions", "&cYou force ended all active auctions");
 		languageNodes.put("general.relisteditems", "&aYou relisted all expired items!");
 		languageNodes.put("general.cannotsellbundleditem", "&cYou cannot sell a bundled item as a bundle.");
+		languageNodes.put("general.shulker bundle limit", "&cYou have too many bundles/shulkers in the bundle.");
 		languageNodes.put("general.entersearchphrase", "&aEnter a search phrase into chat");
 		languageNodes.put("general.filteritemaddedalready", "&cThat item already exists within that category's filter whitelist.");
 		languageNodes.put("general.addeditemtofilterwhitelist", "&aAdded &2%item_name%&a to the &2%filter_category%&a's whitelist");

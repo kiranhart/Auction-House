@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
+import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.gui.events.GuiClickEvent;
@@ -104,6 +105,20 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 
 			if (items.isEmpty())
 				return;
+
+			int totalBundleShulkers = 0;
+
+			for (ItemStack item : items) {
+				if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
+				if (item.getType().name().contains("SHULKER_BOX") ||item.getType().name().contains("BUNDLE") )
+					totalBundleShulkers++;
+			}
+
+			// check if item contains too many bundle/shulker
+			if (totalBundleShulkers > Settings.MAX_SHULKER_IN_BUNDLE.getInt()) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.shulker bundle limit").sendPrefixedMessage(player);
+				return;
+			}
 
 			final ItemStack toList = items.size() > 1 ? AuctionAPI.getInstance().createBundledItem(items.stream().findFirst().orElse(null), items.toArray(new ItemStack[0])) : items.stream().findFirst().orElse(null);
 			if (toList == null) return;
