@@ -39,6 +39,7 @@ public class LocaleSettings {
 
 	static {
 		languageNodes.put("general.prefix", "&8[&eAuctionHouse&8]");
+		languageNodes.put("general.plugin name", "&eAuctionHouse");
 		languageNodes.put("general.server listing", "&eAuctionHouse");
 		languageNodes.put("general.notanumber", "&cThe entry &4%value% &cis not a valid number!");
 		languageNodes.put("general.locked", "&cThe Auction House is currently locked!");

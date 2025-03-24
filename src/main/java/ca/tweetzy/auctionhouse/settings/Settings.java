@@ -76,6 +76,21 @@ public class Settings {
 	public static final ConfigSetting CMD_ALIAS_SUB_TRANSACTIONS = new ConfigSetting(config, "command aliases.subcommands.transactions", Collections.singletonList("transactions"), "Command aliases for the transactions command");
 	public static final ConfigSetting CMD_ALIAS_SUB_UNBAN = new ConfigSetting(config, "command aliases.subcommands.unban", Collections.singletonList("unban"), "Command aliases for the unban command");
 
+	public static final ConfigSetting CMD_ERROR_DESC = new ConfigSetting(config, "command info.error information", Arrays.asList(
+			"&8&m-----------------------------------------------------",
+			"<center>%pl_name%",
+			"<center>&cSeems like you entered that command incorrectly.",
+			"",
+			"<center>&6<> &f- &7Required arguments",
+			"<center>&8[] &f- &7Optional arguments",
+			"",
+			"<center>&aHere is the correct usage&F:",
+			"<center>&f/&eah %syntax%",
+			"",
+			"&8&m-----------------------------------------------------"
+	), "The msg that is shown when the command syntax is wrong");
+
+
 
 	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_BUNDLE = new ConfigSetting(config, "command flags.sell command.bundle", Arrays.asList("-b", "-bundle"), "Aliases for the bundle command flag in the sell command");
 	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_PARTIAL_BUY = new ConfigSetting(config, "command flags.sell command.partial buy", Arrays.asList("-p", "-partialbuy"), "Aliases for the partial buy command flag in the sell command");

@@ -521,7 +521,7 @@ public final class CommandSell extends Command {
 			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion one").getMessage().split(" "));
 		if (args.length == 2)
 			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion two").getMessage().split(" "));
-		if (args.length == 3)
+		if (args.length == 3 && Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && !Settings.FORCE_AUCTION_USAGE.getBoolean())
 			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion three").getMessage().split(" "));
 		return null;
 	}

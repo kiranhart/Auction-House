@@ -480,6 +480,11 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			if (string.contains("-")) {
 				final String[] slotSplit = string.split("-");
 				slots.addAll(IntStream.rangeClosed(Integer.parseInt(slotSplit[0]), Integer.parseInt(slotSplit[1])).boxed().collect(Collectors.toList()));
+			} else if (string.contains(",")) {
+				final String[] slotSplit = string.split(",");
+				for (String s : slotSplit) {
+					slots.add(Integer.parseInt(s));
+				}
 			}
 		}
 

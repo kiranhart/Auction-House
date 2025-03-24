@@ -137,13 +137,14 @@ public class AuctionHouse extends TweetyPlugin {
 		Settings.setup();
 		setLocale(Settings.LANG.getString());
 		LocaleSettings.setup();
-		Common.setPrefix(Common.colorize(getLocale().getMessage("general.prefix").getMessage()));
 
 		initializeBStats();
 
 		// settings / locales v3
 		Translations.init();
 		ca.tweetzy.auctionhouse.settings.v3.Settings.init();
+		Common.setPrefix(Common.colorize(getLocale().getMessage("general.prefix").getMessage()));
+		Common.setPluginName(Common.colorize(getLocale().getMessage("general.plugin name").getMessage()));
 
 		// Setup the database if enabled
 		this.databaseConnector = Settings.DATABASE_USE.getBoolean() ? new MySQLConnector(
@@ -233,6 +234,7 @@ public class AuctionHouse extends TweetyPlugin {
 		this.auctionPlayerManager.loadPlayers();
 
 		// commands
+		this.commandManager.setSyntaxErrorMessages(Settings.CMD_ERROR_DESC.getStringList());
 
 		this.commandManager.registerCommandDynamically(new CommandAuctionHouse()).addSubCommands(
 				new CommandSell(),
