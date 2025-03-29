@@ -23,9 +23,9 @@ import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
+import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import lombok.NonNull;
@@ -44,6 +44,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import  ca.tweetzy.auctionhouse.helpers.SlotHelper;
+
 public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 	private final AuctionPlayer auctionPlayer;
@@ -53,6 +55,32 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		super(null, Bukkit.getPlayer(auctionPlayer.getUuid()), Settings.GUI_AUCTION_HOUSE_TITLE.getString(), Settings.GUI_AUCTION_HOUSE_ROWS.getInt(), 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
 		this.auctionPlayer = auctionPlayer;
 		this.searchKeywords = searchKeywords;
+		setSlotClickDelay(getPreviousButtonSlot(), Settings.MAIN_AH_NAVIGATION_COOLDOWN.getLong());
+		setSlotClickDelay(getNextButtonSlot(), Settings.MAIN_AH_NAVIGATION_COOLDOWN.getLong());
+
+		if (Settings.USE_SEPARATE_FILTER_MENU.getBoolean() && Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED.getBoolean()) {
+			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getString()).forEach(slot -> setSlotClickDelay(slot, Settings.MAIN_AH_FILTER_COOLDOWN.getLong()));
+		}
+
+		if (!Settings.USE_SEPARATE_FILTER_MENU.getBoolean() && Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ENABLED.getBoolean()) {
+			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT.getString()).forEach(slot -> setSlotClickDelay(slot, Settings.MAIN_AH_FILTER_COOLDOWN.getLong()));
+		}
+
+		setClickDelayAction((lastClicked, delay, click) -> {
+			if (click.slot == getPreviousButtonSlot() || click.slot == getNextButtonSlot()) {
+				AuctionHouse.getInstance().getLocale()
+						.getMessage("general.cooldown.navigate page")
+						.processPlaceholder("time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked))
+						.sendPrefixedMessage(player);
+				return;
+			}
+
+			AuctionHouse.getInstance().getLocale()
+					.getMessage("general.cooldown.filter")
+					.processPlaceholder("time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked))
+					.sendPrefixedMessage(player);
+
+		});
 
 		if (Settings.FILTER_DONT_REMEMBER.getBoolean())
 			this.auctionPlayer.resetFilter();
@@ -469,31 +497,10 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 	}
 
 	//======================================================================================================//
-	private List<Integer> getButtonSlots(String string) {
-		final List<Integer> slots = new ArrayList<>();
-
-		try {
-			int slot = Integer.parseInt(string);
-			slots.add(slot);
-		} catch (NumberFormatException e) {
-			// multi-slot probs
-			if (string.contains("-")) {
-				final String[] slotSplit = string.split("-");
-				slots.addAll(IntStream.rangeClosed(Integer.parseInt(slotSplit[0]), Integer.parseInt(slotSplit[1])).boxed().collect(Collectors.toList()));
-			} else if (string.contains(",")) {
-				final String[] slotSplit = string.split(",");
-				for (String s : slotSplit) {
-					slots.add(Integer.parseInt(s));
-				}
-			}
-		}
-
-		return slots;
-	}
 
 	private void drawVariableButtons() {
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ENABLED.getBoolean()) {
-			getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
+			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString())
 					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString())
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), "active_player_auctions", auctionPlayer.getItems(false).size(), "player_balance", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getCurrencyManager().getBalance(auctionPlayer.getPlayer())))).make(), e -> {
@@ -509,7 +516,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ENABLED.getBoolean()) {
-			getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
+			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString())
 					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString())
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), "expired_player_auctions", auctionPlayer.getItems(true).size())).make(), e -> {
@@ -521,7 +528,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ENABLED.getBoolean()) {
-			getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString())
+			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString())
 					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString())
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList(),
 							"total_items_bought", AuctionHouse.getTransactionManager().getTotalItemsBought(auctionPlayer.getPlayer().getUniqueId()),
@@ -538,7 +545,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		if (Settings.REPLACE_GUIDE_WITH_CART_BUTTON.getBoolean()) {
-			getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
+			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_ITEM.getString())
 					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_NAME.getString())
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_LORE.getStringList(), "cart_item_count", AuctionHouse.getCartManager().getPlayerCart(this.player).getItemCount()))
@@ -550,7 +557,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		} else {
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ENABLED.getBoolean()) {
-				getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT.getString()).forEach(slot -> setItem(slot, QuickItem
+				SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT.getString()).forEach(slot -> setItem(slot, QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM.getString())
 						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString()).lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList())
 						.make()));
@@ -565,7 +572,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		if (Settings.REPLACE_HOW_TO_SELL_WITH_LIST_BUTTON.getBoolean()) {
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ENABLED.getBoolean()) {
-				getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
+				SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ITEM.getString())
 						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_NAME.getString())
 						.lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_LORE.getStringList())
@@ -618,7 +625,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			}
 		} else {
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ENABLED.getBoolean()) {
-				getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_SLOT.getString()).forEach(slot -> setItem(slot, QuickItem
+				SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_SLOT.getString()).forEach(slot -> setItem(slot, QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ITEM.getString())
 						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_NAME.getString())
 						.lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList())
@@ -627,7 +634,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		if (Settings.GUI_REFRESH_BTN_ENABLED.getBoolean()) {
-			getButtonSlots(Settings.GUI_REFRESH_BTN_SLOT.getString()).forEach(slot -> setButton(slot, getRefreshButton(), ClickType.LEFT, e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_REFRESH_BTN_SLOT.getString()).forEach(slot -> setButton(slot, getRefreshButton(), ClickType.LEFT, e -> {
 				if (Settings.USE_REFRESH_COOL_DOWN.getBoolean()) {
 					if (AuctionHouse.getAuctionPlayerManager().getCooldowns().containsKey(this.auctionPlayer.getPlayer().getUniqueId())) {
 						if (AuctionHouse.getAuctionPlayerManager().getCooldowns().get(this.auctionPlayer.getPlayer().getUniqueId()) > System.currentTimeMillis()) {
@@ -703,7 +710,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 							"filter_currency", auctionPlayer.getSelectedCurrencyFilter().getDisplayName())).hideTags(true).make();
 
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED.getBoolean()) {
-				getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getString()).forEach(slot -> setButton(slot, item, e -> {
+				SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getString()).forEach(slot -> setButton(slot, item, e -> {
 					if (e.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase()) && Settings.FILTER_CLICKS_CHANGE_CATEGORY_ENABLED.getBoolean()) {
 						cancelTask();
 						e.manager.showGUI(e.player, new GUIFilterSelection(this.auctionPlayer));
@@ -738,7 +745,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ENABLED.getBoolean()) {
-			getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
+			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(this.auctionPlayer.getSelectedFilter().getFilterIcon())
 					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME.getString())
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(),

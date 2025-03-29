@@ -39,13 +39,13 @@ import ca.tweetzy.core.TweetyCore;
 import ca.tweetzy.core.TweetyPlugin;
 import ca.tweetzy.core.compatibility.ServerProject;
 import ca.tweetzy.core.configuration.Config;
-import ca.tweetzy.core.gui.GuiManager;
 import ca.tweetzy.core.utils.Metrics;
 import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.command.CommandManager;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.config.tweetzy.TweetzyYamlConfig;
 import ca.tweetzy.flight.database.*;
+import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.utils.Common;
 import co.aikar.taskchain.BukkitTaskChainFactory;
 import co.aikar.taskchain.TaskChain;
@@ -85,7 +85,6 @@ public class AuctionHouse extends TweetyPlugin {
 
 	private final CurrencyManager currencyManager = new CurrencyManager();
 	private final CommandManager commandManager = new CommandManager(this);
-	private final GuiManager guiManager = new GuiManager(this);
 	private final ListingManager listingManager = new ListingManager();
 	private final CategoryManager categoryManager = new CategoryManager();
 	private final PriceLimitManager priceLimitManager = new PriceLimitManager();
@@ -93,6 +92,7 @@ public class AuctionHouse extends TweetyPlugin {
 	private final CartManager cartManager = new CartManager();
 	private CooldownManager cooldownManager;
 
+	private final GuiManager guiManager = new GuiManager(this);
 	private final AuctionPlayerManager auctionPlayerManager = new AuctionPlayerManager();
 	private final AuctionItemManager auctionItemManager = new AuctionItemManager();
 	private final TransactionManager transactionManager = new TransactionManager();

@@ -19,9 +19,9 @@
 package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.gui.BaseGUI;
-import ca.tweetzy.core.gui.Gui;
 import ca.tweetzy.flight.comp.enums.CompSound;
+import ca.tweetzy.flight.gui.Gui;
+import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.hooks.PlaceholderAPIHook;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
@@ -57,7 +57,7 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 
 	private void applyDefaults() {
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILLER.getString()).make()));
-		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF).parseSound());
+		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF));
 	}
 
 	@Override

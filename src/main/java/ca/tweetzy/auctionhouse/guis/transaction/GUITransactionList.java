@@ -26,11 +26,12 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.helpers.SlotHelper;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
-import ca.tweetzy.core.gui.events.GuiClickEvent;
+import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import org.bukkit.Bukkit;
@@ -66,8 +67,33 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 		super(null, player, showAll ? Settings.GUI_TRANSACTIONS_TITLE_ALL.getString() : Settings.GUI_TRANSACTIONS_TITLE.getString(), 6, new ArrayList<>());
 		this.auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 		this.showAll = showAll;
-		setAcceptsItems(false);
+		applyDelay();
 		draw();
+	}
+
+	private void applyDelay() {
+		setSlotClickDelay(getPreviousButtonSlot(), Settings.TRANSACTION_NAVIGATION_COOLDOWN.getLong());
+		setSlotClickDelay(getNextButtonSlot(), Settings.TRANSACTION_NAVIGATION_COOLDOWN.getLong());
+
+		SlotHelper.getButtonSlots(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_SLOT.getString()).forEach(slot -> {
+			setSlotClickDelay(slot, Settings.TRANSACTION_FILTER_COOLDOWN.getLong());
+		});
+
+		setClickDelayAction((lastClicked, delay, click) -> {
+			if (click.slot == getPreviousButtonSlot() || click.slot == getNextButtonSlot()) {
+				AuctionHouse.getInstance().getLocale()
+						.getMessage("general.cooldown.navigate page")
+						.processPlaceholder("time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked))
+						.sendPrefixedMessage(player);
+				return;
+			}
+
+			AuctionHouse.getInstance().getLocale()
+					.getMessage("general.cooldown.filter")
+					.processPlaceholder("time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked))
+					.sendPrefixedMessage(player);
+
+		});
 	}
 
 	@Override
@@ -132,13 +158,13 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_CATEGORY.getString().toUpperCase()) && Settings.FILTER_CLICKS_CHANGE_CATEGORY_ENABLED.getBoolean()) {
 				this.auctionPlayer.setSelectedTransactionFilter(this.auctionPlayer.getSelectedTransactionFilter().next());
-				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
+				draw();
 			}
 
 
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_RESET.getString().toUpperCase()) && Settings.FILTER_CLICKS_RESET_ENABLED.getBoolean()) {
 				this.auctionPlayer.resetTransactionFilter();
-				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
+				draw();
 				return;
 			}
 
@@ -146,20 +172,20 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_SALE_TYPE.getString().toUpperCase()) && Settings.FILTER_CLICKS_SALE_TYPE_ENABLED.getBoolean()) {
 				if (Settings.ALLOW_USAGE_OF_BID_SYSTEM.getBoolean()) {
 					this.auctionPlayer.setSelectedTransactionSaleType(this.auctionPlayer.getSelectedTransactionSaleType().next());
-					click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
+					draw();
 				}
 				return;
 			}
 
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_TRANSACTION_BUY_TYPE.getString().toUpperCase()) && Settings.FILTER_CLICKS_TRANSACTION_BUY_TYPE_ENABLED.getBoolean()) {
 				this.auctionPlayer.setTransactionViewFilter(this.auctionPlayer.getTransactionViewFilter().next());
-				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
+				draw();
 				return;
 			}
 
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase())&& Settings.FILTER_CLICKS_SORT_PRICE_RECENT_ENABLED.getBoolean()) {
 				this.auctionPlayer.setTransactionSortType(this.auctionPlayer.getTransactionSortType().next());
-				click.manager.showGUI(click.player, new GUITransactionList(click.player, this.showAll));
+				draw();
 			}
 		});
 	}

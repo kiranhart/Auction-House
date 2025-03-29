@@ -228,7 +228,13 @@ public class Settings {
 	public static final ConfigSetting ALLOW_PURCHASE_OF_SPECIFIC_QUANTITIES = new ConfigSetting(config, "auction setting.allow purchase of specific quantities", false, "When a buy now item is right-clicked should it open a", "special gui to specify the quantity of items to buy from the stack?");
 	public static final ConfigSetting USE_REFRESH_COOL_DOWN = new ConfigSetting(config, "auction setting.use refresh cool down", true, "Should the refresh cooldown be enabled?");
 	public static final ConfigSetting REFRESH_COOL_DOWN = new ConfigSetting(config, "auction setting.refresh cool down", 2, "How many seconds should pass before the player can refresh the auction house again?");
+	public static final ConfigSetting MAIN_AH_FILTER_COOLDOWN = new ConfigSetting(config, "auction setting.auction house filter cooldown", 1500, "How many milliseconds should pass before they can change the filter again? use -1 to disable");
+	public static final ConfigSetting MAIN_AH_NAVIGATION_COOLDOWN = new ConfigSetting(config, "auction setting.auction house page navigation cooldown", 500, "How many milliseconds should pass before they can navigate to another page? use -1 to disable");
+	public static final ConfigSetting TRANSACTION_FILTER_COOLDOWN = new ConfigSetting(config, "auction setting.transaction filter cooldown", 1500, "How many milliseconds should pass before they can change the filter again? use -1 to disable");
+	public static final ConfigSetting TRANSACTION_NAVIGATION_COOLDOWN = new ConfigSetting(config, "auction setting.transaction page navigation cooldown", 500, "How many milliseconds should pass before they can navigate to another page? use -1 to disable");
+
 	public static final ConfigSetting CMD_COOLDOWN = new ConfigSetting(config, "auction setting.command cool down", 0, "How many seconds should pass between using commands");
+
 	public static final ConfigSetting ALLOW_PURCHASE_IF_INVENTORY_FULL = new ConfigSetting(config, "auction setting.allow purchase with full inventory", true, "Should auction house allow players to buy items even if their", "inventory is full, if true, items will be dropped on the floor if there is no room.");
 	public static final ConfigSetting ASK_FOR_BID_CONFIRMATION = new ConfigSetting(config, "auction setting.ask for bid confirmation", true, "Should Auction House open the confirmation menu for the user to confirm", "whether they actually meant to place a bid or not?");
 	public static final ConfigSetting ASK_FOR_LISTING_CONFIRMATION = new ConfigSetting(config, "auction setting.ask for listing confirmation", false, "Should Auction House ask the user to confirm the listing?");

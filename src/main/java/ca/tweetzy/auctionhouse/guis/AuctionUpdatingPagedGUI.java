@@ -20,10 +20,10 @@ package ca.tweetzy.auctionhouse.guis;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.gui.BaseGUI;
-import ca.tweetzy.core.gui.Gui;
-import ca.tweetzy.core.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.comp.enums.CompSound;
+import ca.tweetzy.flight.gui.Gui;
+import ca.tweetzy.flight.gui.events.GuiClickEvent;
+import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.hooks.PlaceholderAPIHook;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
@@ -104,7 +104,9 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 
 				setPrevPage(getPreviousButtonSlot(), getPreviousButton());
 				setNextPage(getNextButtonSlot(), getNextButton());
-				setOnPage(e -> draw());
+				setOnPage(e -> {
+					draw();
+				});
 
 				for (int i = 0; i < this.rows * 9; i++) {
 					if (this.fillSlots().contains(i) && this.fillSlots().indexOf(i) < data.size()) {
@@ -166,7 +168,7 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 
 	private void applyDefaults() {
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILLER.getString()).make()));
-		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF).parseSound());
+		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF));
 	}
 
 	@Override

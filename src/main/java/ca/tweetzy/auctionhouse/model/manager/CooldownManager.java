@@ -36,13 +36,13 @@ public final class CooldownManager {
 	}
 
 	// TODO MOVE INTO FLIGHT
-	private String formatTime(long milliseconds) {
-		long seconds = milliseconds / 1000;
-		long days = seconds / 86400;
+	public String formatTime(long milliseconds) {
+		double seconds = (double) milliseconds / 1000;
+		long days = (long) (seconds / 86400);
 		seconds %= 86400;
-		long hours = seconds / 3600;
+		long hours = (long) (seconds / 3600);
 		seconds %= 3600;
-		long minutes = seconds / 60;
+		long minutes = (long) (seconds / 60);
 		seconds %= 60;
 
 		StringBuilder result = new StringBuilder();
@@ -56,7 +56,9 @@ public final class CooldownManager {
 			result.append(minutes).append("m ");
 		}
 		if (seconds > 0 || result.length() == 0) {
-			result.append(seconds).append("s");
+			// Format seconds to one decimal place
+			String secondsStr = String.format("%.1f", seconds);
+			result.append(secondsStr).append("s");
 		}
 
 		return result.toString().trim();

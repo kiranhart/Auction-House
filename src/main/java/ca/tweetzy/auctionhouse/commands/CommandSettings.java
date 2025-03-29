@@ -20,8 +20,8 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.guis.settings.PluginConfigGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.configuration.editor.PluginConfigGui;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
@@ -49,7 +49,7 @@ public class CommandSettings extends Command {
 		Player player = (Player) sender;
 		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAIL;
 
-		AuctionHouse.getGuiManager().showGUI(player, new PluginConfigGui(AuctionHouse.getInstance(), AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage()));
+		AuctionHouse.getGuiManager().showGUI(player, new PluginConfigGUI(player));
 		return ReturnType.SUCCESS;
 	}
 
