@@ -681,6 +681,7 @@ public class Settings {
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ROWS = new ConfigSetting(config, "gui.auction house.rows", 6);
 	public static final ConfigSetting GUI_AUCTION_HOUSE_FILL_SLOTS = new ConfigSetting(config, "gui.auction house.fill slots", IntStream.rangeClosed(0, 44).boxed().collect(Collectors.toList()));
 
+
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_GUIDE_ENABLED = new ConfigSetting(config, "gui.auction house.items.guide.enabled", true);
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT = new ConfigSetting(config, "gui.auction house.items.guide.slot", 53, "Valid Slots: 45 - 53");
 	public static final ConfigSetting GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM = new ConfigSetting(config, "gui.auction house.items.guide.item", "BOOK");
@@ -1794,7 +1795,7 @@ public class Settings {
 
 	public static void setup() {
 		config.load();
-		config.setAutoremove(true).setAutosave(true);
+		config.setAutoremove(false).setAutosave(true);
 		config.saveChanges();
 	}
 }

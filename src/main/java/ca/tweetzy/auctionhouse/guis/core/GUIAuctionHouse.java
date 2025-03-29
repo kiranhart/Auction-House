@@ -20,6 +20,7 @@ import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
+import ca.tweetzy.auctionhouse.helpers.SlotHelper;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -33,6 +34,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -42,9 +44,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import  ca.tweetzy.auctionhouse.helpers.SlotHelper;
 
 public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
@@ -155,6 +154,38 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		drawFixedButtons();
 		drawVariableButtons();
+
+		// generate the custom buttons
+		final ConfigurationSection customItemSection = AuctionHouse.getInstance().getCoreConfig().getConfigurationSection("gui.auction house.custom items");
+		if (customItemSection != null) {
+			customItemSection.getKeys(false).forEach(customItemEntry -> {
+				final ConfigurationSection customEntry = AuctionHouse.getInstance().getCoreConfig().getConfigurationSection("gui.auction house.custom items." + customItemEntry);
+				SlotHelper.getButtonSlots(customEntry.getString("slot")).forEach(slot -> {
+					setButton(slot, QuickItem
+							.of(customEntry.getString("item"))
+							.name(customEntry.getString("name"))
+							.lore(this.player, customEntry.getStringList("lore"))
+							.make(), click -> {
+
+						final List<String> commands = customEntry.getStringList("commands");
+
+						commands.forEach(cmd -> {
+							boolean isConsoleCommand = cmd.startsWith("[console]");
+
+							final String finalCommand = cmd
+									.replace("[player]", "").replace("[console] ", "")
+									.replace("[player] ", "").replace("[console]", "");
+
+							if (isConsoleCommand)
+								Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), finalCommand.replace("%player%", click.player.getName()));
+							else
+								click.player.performCommand(finalCommand.replace("%player%", click.player.getName()));
+						});
+					});
+				});
+
+			});
+		}
 	}
 
 	@Override
