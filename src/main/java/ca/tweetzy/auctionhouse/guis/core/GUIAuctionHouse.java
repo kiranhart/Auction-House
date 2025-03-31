@@ -659,7 +659,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_SLOT.getString()).forEach(slot -> setItem(slot, QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ITEM.getString())
 						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_NAME.getString())
-						.lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList())
+						.lore(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList())
 						.make()));
 			}
 		}

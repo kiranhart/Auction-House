@@ -87,7 +87,7 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 	@Override
 	protected void onClick(AuctionedItem auctionedItem, GuiClickEvent click) {
 		if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.ITEM_COLLECTION)) return;
-		if (click.event.getClickedInventory().getType() == InventoryType.PLAYER)return;
+		if (click.event.getClickedInventory().getType() == InventoryType.PLAYER) return;
 
 		if (!Settings.ALLOW_INDIVIDUAL_ITEM_CLAIM.getBoolean()) return;
 

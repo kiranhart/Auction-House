@@ -91,7 +91,6 @@ public class Settings {
 	), "The msg that is shown when the command syntax is wrong");
 
 
-
 	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_BUNDLE = new ConfigSetting(config, "command flags.sell command.bundle", Arrays.asList("-b", "-bundle"), "Aliases for the bundle command flag in the sell command");
 	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_PARTIAL_BUY = new ConfigSetting(config, "command flags.sell command.partial buy", Arrays.asList("-p", "-partialbuy"), "Aliases for the partial buy command flag in the sell command");
 	public static final ConfigSetting CMD_FLAG_ALIAS_SELL_STACK_PRICE = new ConfigSetting(config, "command flags.sell command.stack price", Arrays.asList("-s", "-stack"), "Aliases for the stack price flag in the sell command");

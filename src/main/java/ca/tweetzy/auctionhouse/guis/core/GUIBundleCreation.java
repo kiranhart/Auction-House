@@ -33,7 +33,6 @@ import ca.tweetzy.core.compatibility.XMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.QuickItem;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -122,7 +121,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 				if (firstItem == null)
 					firstItem = item;
 
-				if (item.getType().name().contains("SHULKER_BOX") ||item.getType().name().contains("BUNDLE") )
+				if (item.getType().name().contains("SHULKER_BOX") || item.getType().name().contains("BUNDLE"))
 					totalBundleShulkers++;
 
 				validItems.add(item);

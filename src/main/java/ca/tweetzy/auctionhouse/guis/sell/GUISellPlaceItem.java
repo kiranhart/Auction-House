@@ -24,20 +24,17 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
-import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.QuickItem;
-import com.google.gson.Gson;
 import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public final class GUISellPlaceItem extends AuctionBaseGUI {
 
@@ -110,7 +107,7 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 
 			for (ItemStack item : items) {
 				if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
-				if (item.getType().name().contains("SHULKER_BOX") ||item.getType().name().contains("BUNDLE") )
+				if (item.getType().name().contains("SHULKER_BOX") || item.getType().name().contains("BUNDLE"))
 					totalBundleShulkers++;
 			}
 

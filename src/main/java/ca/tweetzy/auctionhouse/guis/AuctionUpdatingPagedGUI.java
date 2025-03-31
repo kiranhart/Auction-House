@@ -162,7 +162,7 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		return QuickItem
 				.of(Settings.GUI_REFRESH_BTN_ITEM.getString())
 				.name(Settings.GUI_REFRESH_BTN_NAME.getString())
-				.lore(this.player, Settings.GUI_REFRESH_BTN_LORE.getStringList())
+				.lore(Settings.GUI_REFRESH_BTN_LORE.getStringList())
 				.make();
 	}
 

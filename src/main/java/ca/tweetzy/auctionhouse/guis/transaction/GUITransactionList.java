@@ -183,7 +183,7 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 				return;
 			}
 
-			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase())&& Settings.FILTER_CLICKS_SORT_PRICE_RECENT_ENABLED.getBoolean()) {
+			if (click.clickType == ClickType.valueOf(Settings.CLICKS_FILTER_SORT_PRICE_OR_RECENT.getString().toUpperCase()) && Settings.FILTER_CLICKS_SORT_PRICE_RECENT_ENABLED.getBoolean()) {
 				this.auctionPlayer.setTransactionSortType(this.auctionPlayer.getTransactionSortType().next());
 				draw();
 			}

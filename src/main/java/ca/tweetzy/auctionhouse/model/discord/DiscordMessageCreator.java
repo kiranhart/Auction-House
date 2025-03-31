@@ -28,9 +28,9 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import java.util.List;
 
 import java.awt.*;
+import java.util.List;
 
 public final class DiscordMessageCreator {
 
