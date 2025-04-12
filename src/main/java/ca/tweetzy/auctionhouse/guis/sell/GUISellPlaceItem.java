@@ -25,7 +25,7 @@ import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -76,7 +76,7 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 
 	private void handleBlockedItemClick(GuiClickEvent click) {
 		final ItemStack clicked = click.clickedItem;
-		if (clicked == null || clicked.getType() == XMaterial.AIR.parseMaterial()) return;
+		if (clicked == null || clicked.getType() == CompMaterial.AIR.get()) return;
 
 		if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, clicked)) {
 			click.event.setCancelled(true);
@@ -106,7 +106,7 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 			int totalBundleShulkers = 0;
 
 			for (ItemStack item : items) {
-				if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
+				if (item == null || item.getType() == CompMaterial.AIR.get()) continue;
 				if (item.getType().name().contains("SHULKER_BOX") || item.getType().name().contains("BUNDLE"))
 					totalBundleShulkers++;
 			}

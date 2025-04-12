@@ -22,7 +22,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.core.GUICart;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
@@ -52,7 +52,7 @@ public class CommandCart extends Command {
 		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 		AuctionHouse.getGuiManager().showGUI(player, new GUICart(null, AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId())));

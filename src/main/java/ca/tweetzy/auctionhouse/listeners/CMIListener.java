@@ -18,7 +18,7 @@
 
 package ca.tweetzy.auctionhouse.listeners;
 
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.nbtapi.NBT;
 import com.Zrips.CMI.events.CMIAnvilItemRepairEvent;
 import org.bukkit.event.EventHandler;
@@ -36,7 +36,7 @@ public final class CMIListener implements Listener {
 	@EventHandler
 	public void onCMIRepair(CMIAnvilItemRepairEvent event) {
 		ItemStack stack = event.getItemTo();
-		if (stack == null || stack.getType() == XMaterial.AIR.parseMaterial() || stack.getAmount() == 0) return;
+		if (stack == null || stack.getType() == CompMaterial.AIR.get() || stack.getAmount() == 0) return;
 
 		NBT.modify(stack, nbt -> {
 			nbt.setBoolean("AuctionHouseRepaired", true);

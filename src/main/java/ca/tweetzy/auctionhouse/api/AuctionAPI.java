@@ -24,8 +24,8 @@ import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
@@ -234,7 +234,7 @@ public class AuctionAPI {
 	 * @return the player skull
 	 */
 	public ItemStack getPlayerHead(String name) {
-		ItemStack stack = XMaterial.PLAYER_HEAD.parseItem();
+		ItemStack stack = CompMaterial.PLAYER_HEAD.parseItem();
 		SkullMeta meta = (SkullMeta) stack.getItemMeta();
 		meta.setOwner(name);
 		stack.setItemMeta(meta);
@@ -281,7 +281,7 @@ public class AuctionAPI {
 		Objects.requireNonNull(stack, "Item Stack cannot be null when getting enchantments");
 
 		// actual enchantment books
-		if (stack.getType() == XMaterial.ENCHANTED_BOOK.parseMaterial() && stack.getItemMeta() instanceof EnchantmentStorageMeta) {
+		if (stack.getType() == CompMaterial.ENCHANTED_BOOK.get() && stack.getItemMeta() instanceof EnchantmentStorageMeta) {
 			final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) stack.getItemMeta();
 			meta.getStoredEnchants().forEach((enchant, level) -> enchantments.add(enchantmentName(enchant.getName())));
 			return enchantments;
@@ -424,9 +424,9 @@ public class AuctionAPI {
 	 */
 	public int getItemCountInPlayerInventory(Player player, ItemStack stack) {
 		int total = 0;
-		if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
+		if (stack.getType() == CompMaterial.PLAYER_HEAD.get()) {
 			for (ItemStack item : player.getInventory().getContents()) {
-				if (item == null || item.getType() != XMaterial.PLAYER_HEAD.parseMaterial()) continue;
+				if (item == null || item.getType() != CompMaterial.PLAYER_HEAD.get()) continue;
 				if (getHeadTexture(item).equals(getHeadTexture(stack))) {
 					final String invItemTexture = getHeadTexture(item);
 					final String orgItemTexture = getHeadTexture(stack);
@@ -465,7 +465,7 @@ public class AuctionAPI {
 		for (int i = 0; i < player.getInventory().getSize(); i++) {
 			ItemStack item = player.getInventory().getItem(i);
 			if (item == null) continue;
-			if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial() && item.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
+			if (stack.getType() == CompMaterial.PLAYER_HEAD.get() && item.getType() == CompMaterial.PLAYER_HEAD.get()) {
 //				NBT.get(item, nbt -> nbt.getCompoundList("textures").get(0).getString("Value"));
 
 				if (!getHeadTexture(item).equals(getHeadTexture(stack))) continue;
@@ -491,7 +491,7 @@ public class AuctionAPI {
 		for (int j = 0; j < player.getInventory().getSize(); j++) {
 			ItemStack item = player.getInventory().getItem(j);
 			if (item == null) continue;
-			if (stack.getType() == XMaterial.PLAYER_HEAD.parseMaterial() && item.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
+			if (stack.getType() == CompMaterial.PLAYER_HEAD.get() && item.getType() == CompMaterial.PLAYER_HEAD.get()) {
 
 				// is actual player head???
 				SkullMeta invItemMeta = (SkullMeta) item.getItemMeta();
@@ -834,7 +834,7 @@ public class AuctionAPI {
 					}
 				}
 
-				if (split.length == 2 && NumberUtils.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+				if (split.length == 2 && MathUtil.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
 					if (split[0].contains(itemStack.getType().name()) && itemStack.getItemMeta() != null && itemStack.getItemMeta().getCustomModelData() == Integer.parseInt(split[1])) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
 						return false;
@@ -880,7 +880,7 @@ public class AuctionAPI {
 				ShulkerBox skulkerBox = (ShulkerBox) meta.getBlockState();
 
 				for (ItemStack shulkerContent : skulkerBox.getInventory().getContents()) {
-					if (shulkerContent == null || shulkerContent.getType() == CompMaterial.AIR.parseMaterial() || shulkerContent.getAmount() == 0) continue;
+					if (shulkerContent == null || shulkerContent.getType() == CompMaterial.AIR.get() || shulkerContent.getAmount() == 0) continue;
 
 					for (String item : Settings.BLOCKED_ITEMS.getStringList()) {
 						final String[] split = item.split(":");
@@ -892,7 +892,7 @@ public class AuctionAPI {
 							}
 						}
 
-						if (split.length == 2 && NumberUtils.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+						if (split.length == 2 && MathUtil.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
 							if (split[0].contains(shulkerContent.getType().name()) && shulkerContent.getItemMeta() != null && shulkerContent.getItemMeta().getCustomModelData() == Integer.parseInt(split[1])) {
 								AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", shulkerContent.getType().name()).sendPrefixedMessage(player);
 								return false;

@@ -19,7 +19,7 @@
 package ca.tweetzy.auctionhouse.model;
 
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -36,10 +36,10 @@ public class MaterialCategorizer {
 	}
 
 	public static AuctionItemCategory getMaterialCategory(Material material) {
-		if (material == XMaterial.SPAWNER.parseMaterial()) return AuctionItemCategory.SPAWNERS;
+		if (material == CompMaterial.SPAWNER.get()) return AuctionItemCategory.SPAWNERS;
 		if (material.isEdible() || material == Material.CAKE) return AuctionItemCategory.FOOD;
 		if (material.isBlock()) return AuctionItemCategory.BLOCKS;
-		if (material == XMaterial.ENCHANTED_BOOK.parseMaterial()) return AuctionItemCategory.ENCHANTS;
+		if (material == CompMaterial.ENCHANTED_BOOK.get()) return AuctionItemCategory.ENCHANTS;
 
 		final String materialName = material.name();
 		// Armor filter
@@ -55,26 +55,26 @@ public class MaterialCategorizer {
 			return AuctionItemCategory.TOOLS;
 
 		// Potions
-		if (material == XMaterial.BREWING_STAND.parseMaterial()
-				|| material == XMaterial.CAULDRON.parseMaterial()
-				|| material == XMaterial.BLAZE_POWDER.parseMaterial()
-				|| material == XMaterial.POTION.parseMaterial()
-				|| material == XMaterial.NETHER_WART.parseMaterial()
-				|| material == XMaterial.REDSTONE.parseMaterial()
-				|| material == XMaterial.GLOWSTONE_DUST.parseMaterial()
-				|| material == XMaterial.FERMENTED_SPIDER_EYE.parseMaterial()
-				|| material == XMaterial.GUNPOWDER.parseMaterial()
+		if (material == CompMaterial.BREWING_STAND.get()
+				|| material == CompMaterial.CAULDRON.get()
+				|| material == CompMaterial.BLAZE_POWDER.get()
+				|| material == CompMaterial.POTION.get()
+				|| material == CompMaterial.NETHER_WART.get()
+				|| material == CompMaterial.REDSTONE.get()
+				|| material == CompMaterial.GLOWSTONE_DUST.get()
+				|| material == CompMaterial.FERMENTED_SPIDER_EYE.get()
+				|| material == CompMaterial.GUNPOWDER.get()
 				|| material.name().contains("DRAGONS_BREATH") || material.name().contains("DRAGON_BREATH")
-				|| material == XMaterial.GLISTERING_MELON_SLICE.parseMaterial()
-				|| material == XMaterial.MAGMA_CREAM.parseMaterial()
-				|| material == XMaterial.GHAST_TEAR.parseMaterial()
-				|| material == XMaterial.SUGAR.parseMaterial()
-				|| material == XMaterial.GOLDEN_CARROT.parseMaterial()
-				|| material == XMaterial.PUFFERFISH.parseMaterial()
-				|| material == XMaterial.RABBIT_FOOT.parseMaterial()
-				|| material == XMaterial.PHANTOM_MEMBRANE.parseMaterial()
-				|| material == XMaterial.SPIDER_EYE.parseMaterial()
-				|| material == XMaterial.SPLASH_POTION.parseMaterial())
+				|| material == CompMaterial.GLISTERING_MELON_SLICE.get()
+				|| material == CompMaterial.MAGMA_CREAM.get()
+				|| material == CompMaterial.GHAST_TEAR.get()
+				|| material == CompMaterial.SUGAR.get()
+				|| material == CompMaterial.GOLDEN_CARROT.get()
+				|| material == CompMaterial.PUFFERFISH.get()
+				|| material == CompMaterial.RABBIT_FOOT.get()
+				|| material == CompMaterial.PHANTOM_MEMBRANE.get()
+				|| material == CompMaterial.SPIDER_EYE.get()
+				|| material == CompMaterial.SPLASH_POTION.get())
 			return AuctionItemCategory.POTIONS;
 
 		return AuctionItemCategory.MISC;

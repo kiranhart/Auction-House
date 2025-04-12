@@ -25,7 +25,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.entity.Player;
@@ -103,7 +103,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 			setAllowClose(true);
 			final AuctionPlayer auctionPlayer = AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(click.player.getUniqueId());
 			this.result.accept(false);
-			auctionPlayer.setItemBeingListed(XMaterial.AIR.parseItem());
+			auctionPlayer.setItemBeingListed(CompMaterial.AIR.parseItem());
 		});
 	}
 

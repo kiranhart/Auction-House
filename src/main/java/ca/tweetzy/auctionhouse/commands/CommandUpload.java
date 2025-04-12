@@ -20,7 +20,7 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.database.DataManager;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
@@ -55,7 +55,7 @@ public final class CommandUpload extends Command {
 					"&f4. &4You made a backup of your &cauctionhouse.db &4file."
 			);
 
-			TextUtils.formatText(warning).forEach(sender::sendMessage);
+			Common.colorize(warning).forEach(sender::sendMessage);
 			return ReturnType.FAIL;
 		}
 

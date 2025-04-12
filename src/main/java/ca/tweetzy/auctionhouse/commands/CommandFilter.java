@@ -25,7 +25,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.guis.filter.GUIFilterWhitelist;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
@@ -72,7 +72,7 @@ public class CommandFilter extends Command {
 			if (isValid && AuctionItemCategory.valueOf(args[1].toUpperCase()).isWhitelistAllowed()) {
 
 				ItemStack held = PlayerHelper.getHeldItem(player);
-				if (held.getType() == XMaterial.AIR.parseMaterial()) {
+				if (held.getType() == CompMaterial.AIR.get()) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.filter air").sendPrefixedMessage(player);
 					return ReturnType.FAIL;
 				}

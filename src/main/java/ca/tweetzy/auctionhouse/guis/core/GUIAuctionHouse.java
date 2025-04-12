@@ -24,7 +24,7 @@ import ca.tweetzy.auctionhouse.helpers.SlotHelper;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -355,7 +355,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				public boolean onResult(String string) {
 					string = ChatColor.stripColor(string);
 
-					if (!NumberUtils.isDouble(string)) {
+					if (!MathUtil.isDouble(string)) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
 						return false;
 					}

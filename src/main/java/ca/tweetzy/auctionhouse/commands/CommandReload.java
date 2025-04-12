@@ -20,7 +20,7 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
@@ -45,7 +45,7 @@ public class CommandReload extends Command {
 		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAIL;
 		final AuctionHouse instance = AuctionHouse.getInstance();
 		instance.reloadConfig();
-		instance.getLocale().newMessage(TextUtils.formatText("&aReloaded files")).sendPrefixedMessage(sender);
+		instance.getLocale().newMessage(Common.colorize("&aReloaded files")).sendPrefixedMessage(sender);
 		return ReturnType.SUCCESS;
 	}
 

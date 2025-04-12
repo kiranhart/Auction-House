@@ -28,7 +28,7 @@ import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import lombok.NonNull;
@@ -75,7 +75,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 				public boolean onResult(String string) {
 					string = ChatColor.stripColor(string);
 
-					if (!NumberUtils.isInt(string)) {
+					if (!MathUtil.isInt(string)) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
 						return false;
 					}
@@ -121,7 +121,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 				public boolean onResult(String string) {
 					string = ChatColor.stripColor(string);
 
-					if (!NumberUtils.isDouble(string)) {
+					if (!MathUtil.isDouble(string)) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
 						return false;
 					}

@@ -23,7 +23,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.statistics.GUIStatisticView;
 import ca.tweetzy.auctionhouse.guis.statistics.GUIStatisticViewSelect;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
@@ -53,7 +53,7 @@ public class CommandStats extends Command {
 		AuctionPlayer user = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
 		if (user == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 			AuctionPlayer newAHPlayer = new AuctionPlayer(player);
 			user = newAHPlayer;
 			AuctionHouse.getAuctionPlayerManager().addPlayer(newAHPlayer);

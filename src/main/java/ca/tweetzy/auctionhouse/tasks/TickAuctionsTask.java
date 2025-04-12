@@ -25,7 +25,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.nbtapi.NBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -86,13 +86,13 @@ public class TickAuctionsTask extends BukkitRunnable {
 				if (Settings.GARBAGE_DELETION_TIMED_MODE.getBoolean() && clock % Settings.GARBAGE_DELETION_TIMED_DELAY.getInt() == 0) {
 					AuctionHouse.getDataManager().deleteItemsAsync(AuctionHouse.getAuctionItemManager().getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
 					if (!Settings.DISABLE_CLEANUP_MSG.getBoolean())
-						AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aCleaned a total of &e" + AuctionHouse.getAuctionItemManager().getDeletedItems().size() + "&a items.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+						AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&aCleaned a total of &e" + AuctionHouse.getAuctionItemManager().getDeletedItems().size() + "&a items.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 					AuctionHouse.getAuctionItemManager().getDeletedItems().clear();
 				} else {
 					if (AuctionHouse.getAuctionItemManager().getDeletedItems().size() >= Settings.GARBAGE_DELETION_MAX_ITEMS.getInt()) {
 						AuctionHouse.getDataManager().deleteItemsAsync(AuctionHouse.getAuctionItemManager().getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
 						if (!Settings.DISABLE_CLEANUP_MSG.getBoolean())
-							AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&aCleaned a total of &e" + AuctionHouse.getAuctionItemManager().getDeletedItems().size() + "&a items.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+							AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&aCleaned a total of &e" + AuctionHouse.getAuctionItemManager().getDeletedItems().size() + "&a items.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 						AuctionHouse.getAuctionItemManager().getDeletedItems().clear();
 					}
 				}

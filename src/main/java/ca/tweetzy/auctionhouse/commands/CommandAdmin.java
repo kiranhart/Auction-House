@@ -34,12 +34,13 @@ import ca.tweetzy.auctionhouse.guis.sell.GUISellListingType;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
+import ca.tweetzy.flight.utils.Common;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -171,7 +172,7 @@ public class CommandAdmin extends Command {
 
 				ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 
-				if (itemToSell.getType() == XMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
+				if (itemToSell.getType() == CompMaterial.AIR.get() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
 					return ReturnType.FAIL;
 				} else {
@@ -209,7 +210,7 @@ public class CommandAdmin extends Command {
 				if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
 				if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-					AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+					AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 					AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 				}
 

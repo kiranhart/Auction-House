@@ -52,7 +52,7 @@ public final class AuctionPayment {
 	public void pay(Player player) {
 		final String[] currSplit = currency.split("/");
 
-		if (currencyItem != null && currencyItem.getType() != CompMaterial.AIR.parseMaterial()) {
+		if (currencyItem != null && currencyItem.getType() != CompMaterial.AIR.get()) {
 			AuctionHouse.getCurrencyManager().deposit(player, currencyItem, (int) this.amount);
 		} else {
 			AuctionHouse.getCurrencyManager().deposit(player, currSplit[0], currSplit[1], this.amount);

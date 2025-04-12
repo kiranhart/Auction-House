@@ -38,10 +38,10 @@ import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.helpers.Validate;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
@@ -77,7 +77,7 @@ public final class CommandSell extends Command {
 
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
@@ -100,7 +100,7 @@ public final class CommandSell extends Command {
 				return ReturnType.INVALID_SYNTAX;
 			}
 
-			if (itemToSell.getType() == XMaterial.AIR.parseMaterial() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
+			if (itemToSell.getType() == CompMaterial.AIR.get() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
 				return ReturnType.FAIL;
 			} else {
@@ -130,7 +130,7 @@ public final class CommandSell extends Command {
 			return ReturnType.SUCCESS;
 		}
 
-		if (itemToSell.getType() == XMaterial.AIR.parseMaterial()) {
+		if (itemToSell.getType() == CompMaterial.AIR.get()) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
 			return ReturnType.FAIL;
 		}
@@ -174,7 +174,7 @@ public final class CommandSell extends Command {
 
 		for (int i = 0; i < args.length; i++) {
 
-			if (NumberUtils.isDouble(args[i]) && !Double.isNaN(Double.parseDouble(args[i]))) {
+			if (MathUtil.isDouble(args[i]) && !Double.isNaN(Double.parseDouble(args[i]))) {
 				boolean hasTimeValue = false;
 
 				if (i + 1 < args.length) {
@@ -421,7 +421,7 @@ public final class CommandSell extends Command {
 			if (singleItemFromStack && itemToSell.getAmount() > 1) {
 				player.getInventory().getItemInHand().setAmount(player.getInventory().getItemInHand().getAmount() - 1);
 			} else {
-				player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+				player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
 			}
 
 			auctionPlayer.setItemBeingListed(auctionedItem.getItem());
@@ -477,7 +477,7 @@ public final class CommandSell extends Command {
 			if (singleItemFromStack && itemToSell.getAmount() > 1) {
 				player.getInventory().getItemInHand().setAmount(player.getInventory().getItemInHand().getAmount() - 1);
 			} else {
-				player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+				player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
 			}
 
 			AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {

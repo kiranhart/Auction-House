@@ -19,7 +19,8 @@
 package ca.tweetzy.auctionhouse.helpers;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.nbtapi.iface.ReadableItemNBT;
 import lombok.NonNull;
@@ -35,9 +36,9 @@ import java.util.function.Function;
 public final class BundleUtil {
 
 	public boolean isBundledItem(@NonNull final ItemStack itemStack) {
-		if (itemStack == null || itemStack.getType() == XMaterial.AIR.parseMaterial() || itemStack.getAmount() == 0) return false;
+		if (itemStack == null || itemStack.getType() == CompMaterial.AIR.get() || itemStack.getAmount() == 0) return false;
 		final boolean hasBundleTag = NBT.get(itemStack, nbt -> (boolean) nbt.hasTag("AuctionBundleItem"));
-		return itemStack.getType() != XMaterial.AIR.parseMaterial() && hasBundleTag;
+		return itemStack.getType() != CompMaterial.AIR.get() && hasBundleTag;
 	}
 
 

@@ -25,7 +25,7 @@ import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
-import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -108,7 +108,7 @@ public final class GUITransactionType extends AuctionBaseGUI {
 							return false;
 						}
 
-						if (!NumberUtils.isInt(parts[0]) && Arrays.asList("second", "minute", "hour", "day", "week", "month", "year").contains(parts[1].toLowerCase())) {
+						if (!MathUtil.isInt(parts[0]) && Arrays.asList("second", "minute", "hour", "day", "week", "month", "year").contains(parts[1].toLowerCase())) {
 							instance.getLocale().getMessage("prompts.enter deletion range").sendPrefixedMessage(player);
 							return false;
 						}

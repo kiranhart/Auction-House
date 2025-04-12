@@ -29,7 +29,7 @@ import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -81,7 +81,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 		setOnClose(close -> {
 			for (int i = 0; i < 45; i++) {
 				final ItemStack item = getItem(i);
-				if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
+				if (item == null || item.getType() == CompMaterial.AIR.get()) continue;
 				PlayerUtils.giveItem(auctionPlayer.getPlayer(), item);
 			}
 		});
@@ -107,7 +107,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 
 			for (int i = 0; i < 44; i++) {
 				final ItemStack item = getItem(i);
-				if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
+				if (item == null || item.getType() == CompMaterial.AIR.get()) continue;
 
 				boolean meetsListingRequirements = AuctionAPI.getInstance().meetsListingRequirements(player, item);
 

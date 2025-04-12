@@ -37,10 +37,10 @@ import ca.tweetzy.auctionhouse.tasks.AutoSaveTask;
 import ca.tweetzy.auctionhouse.tasks.TickAuctionsTask;
 import ca.tweetzy.core.TweetyCore;
 import ca.tweetzy.core.TweetyPlugin;
-import ca.tweetzy.core.compatibility.ServerProject;
 import ca.tweetzy.core.configuration.Config;
 import ca.tweetzy.core.utils.Metrics;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.comp.enums.ServerProject;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.CommandManager;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.config.tweetzy.TweetzyYamlConfig;
@@ -286,12 +286,8 @@ public class AuctionHouse extends TweetyPlugin {
 
 		getServer().getScheduler().runTaskLater(this, () -> {
 			if (!ServerProject.isServer(ServerProject.SPIGOT, ServerProject.PAPER)) {
-				getLogger().severe("You're running Auction House on a non-supported Jar");
-				getLogger().severe("You will not receive any support while using a non-supported jar, support jars: Spigot or Paper");
-			}
-
-			if (!ServerProject.isServer(ServerProject.PAPER, ServerProject.SPIGOT)) {
 				getLogger().warning("You're running Auction House on a non supported server jar, although small, there's a chance somethings will not work or just entirely break.");
+
 			}
 
 			final String uIDPartOne = "%%__US";
@@ -301,12 +297,12 @@ public class AuctionHouse extends TweetyPlugin {
 				getLogger().severe("Could not detect user ID, are you running a cracked / self-compiled copy of auction house?");
 			} else {
 				if (!Settings.HIDE_THANKYOU.getBoolean()) {
-					getConsole().sendMessage(TextUtils.formatText("&e&m--------------------------------------------------------"));
-					getConsole().sendMessage(TextUtils.formatText(""));
-					getConsole().sendMessage(TextUtils.formatText("&aThank you for purchasing Auction House, it means a lot"));
-					getConsole().sendMessage(TextUtils.formatText("&7 - Kiran Hart"));
-					getConsole().sendMessage(TextUtils.formatText(""));
-					getConsole().sendMessage(TextUtils.formatText("&e&m--------------------------------------------------------"));
+					getConsole().sendMessage(Common.colorize("&e&m--------------------------------------------------------"));
+					getConsole().sendMessage(Common.colorize(""));
+					getConsole().sendMessage(Common.colorize("&aThank you for purchasing Auction House, it means a lot"));
+					getConsole().sendMessage(Common.colorize("&7 - Kiran Hart"));
+					getConsole().sendMessage(Common.colorize(""));
+					getConsole().sendMessage(Common.colorize("&e&m--------------------------------------------------------"));
 				}
 			}
 		}, 1L);

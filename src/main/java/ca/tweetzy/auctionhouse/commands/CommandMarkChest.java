@@ -20,7 +20,7 @@ package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
@@ -54,7 +54,7 @@ public final class CommandMarkChest extends Command {
 //		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
 		final Block targetBlock = player.getTargetBlock(null, 10);
-		if (targetBlock.getType() != XMaterial.CHEST.parseMaterial()) return ReturnType.FAIL;
+		if (targetBlock.getType() != CompMaterial.CHEST.get()) return ReturnType.FAIL;
 
 		final Chest chest = (Chest) targetBlock.getState();
 		final AuctionHouse instance = AuctionHouse.getInstance();

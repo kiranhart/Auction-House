@@ -25,7 +25,7 @@ import ca.tweetzy.auctionhouse.api.sync.SynchronizeResult;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
@@ -84,7 +84,7 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 				public boolean onResult(String string) {
 					string = ChatColor.stripColor(string);
 
-					if (!NumberUtils.isDouble(string)) {
+					if (!MathUtil.isDouble(string)) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
 						return false;
 					}
@@ -119,7 +119,7 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 				public boolean onResult(String string) {
 					string = ChatColor.stripColor(string);
 
-					if (!NumberUtils.isDouble(string)) {
+					if (!MathUtil.isDouble(string)) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
 						return false;
 					}

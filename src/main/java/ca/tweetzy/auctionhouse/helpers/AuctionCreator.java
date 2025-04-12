@@ -29,7 +29,7 @@ import ca.tweetzy.auctionhouse.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.Common;
 import com.google.gson.JsonObject;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
@@ -179,7 +179,7 @@ public final class AuctionCreator {
 
 		if (seller != null && !auctionItem.isServerItem()) {
 			if (AuctionHouse.getAuctionPlayerManager().getPlayer(seller.getUniqueId()) == null) {
-				AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + seller.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+				AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + seller.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 				AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(seller));
 			}
 
@@ -258,7 +258,7 @@ public final class AuctionCreator {
 
 				Bukkit.getOnlinePlayers().forEach(p -> {
 					if (seller != null && p.getUniqueId().equals(seller.getUniqueId())) return;
-					p.sendMessage(TextUtils.formatText((prefix.length() == 0 ? "" : prefix + " ") + msgToAll));
+					p.sendMessage(Common.colorize((prefix.length() == 0 ? "" : prefix + " ") + msgToAll));
 				});
 			}
 			//====================================================================================

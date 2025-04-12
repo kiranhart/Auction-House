@@ -19,7 +19,7 @@
 package ca.tweetzy.auctionhouse.helpers;
 
 import ca.tweetzy.core.TweetyPlugin;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.Common;
 import org.bukkit.command.CommandSender;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -105,19 +105,19 @@ public class UpdateChecker {
 		for (CommandSender sender : to) {
 			switch (status) {
 				case UP_TO_DATE:
-					plugin.getLocale().newMessage(TextUtils.formatText("&aIs running the latest version!")).sendPrefixedMessage(sender);
+					plugin.getLocale().newMessage(Common.colorize("&aIs running the latest version!")).sendPrefixedMessage(sender);
 					break;
 				case UPDATE_AVAILABLE:
-					plugin.getLocale().newMessage(TextUtils.formatText("&dA new update is available for Auction House")).sendPrefixedMessage(sender);
+					plugin.getLocale().newMessage(Common.colorize("&dA new update is available for Auction House")).sendPrefixedMessage(sender);
 					break;
 				case UNRELEASED_VERSION:
-					plugin.getLocale().newMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", plugin.getDescription().getVersion()))).sendPrefixedMessage(sender);
+					plugin.getLocale().newMessage(Common.colorize(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", plugin.getDescription().getVersion()))).sendPrefixedMessage(sender);
 					break;
 				case UNKNOWN:
-					plugin.getLocale().newMessage(TextUtils.formatText("&cUnknown version is in use")).sendPrefixedMessage(sender);
+					plugin.getLocale().newMessage(Common.colorize("&cUnknown version is in use")).sendPrefixedMessage(sender);
 					break;
 				case ERROR:
-					plugin.getLocale().newMessage(TextUtils.formatText("&cAn error has occurred while trying to get the latest version")).sendPrefixedMessage(sender);
+					plugin.getLocale().newMessage(Common.colorize("&cAn error has occurred while trying to get the latest version")).sendPrefixedMessage(sender);
 					break;
 			}
 		}

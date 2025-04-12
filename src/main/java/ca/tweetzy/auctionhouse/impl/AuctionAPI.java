@@ -141,7 +141,7 @@ public final class AuctionAPI implements AuctionHouseAPI {
 
 		// using an item currency
 		if (currencyProperties[0].equalsIgnoreCase("AuctionHouse") && currencyProperties[1].equalsIgnoreCase("Item")) {
-			final String currencyItemName = currencyItem != null && currencyItem.getType() != CompMaterial.AIR.parseMaterial() ? ItemUtil.getItemName(currencyItem) : currencyProperties[2];
+			final String currencyItemName = currencyItem != null && currencyItem.getType() != CompMaterial.AIR.get() ? ItemUtil.getItemName(currencyItem) : currencyProperties[2];
 			return String.format("%s %s", currencyUnformatted, currencyItemName);
 		}
 

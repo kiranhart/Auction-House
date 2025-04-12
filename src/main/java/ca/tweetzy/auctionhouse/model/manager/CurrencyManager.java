@@ -72,7 +72,7 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 	}
 
 	public boolean deposit(@NonNull final OfflinePlayer offlinePlayer, double amount, @NonNull final String currency, ItemStack currencyItem) {
-		if (currencyItem != null && currencyItem.getType() != CompMaterial.AIR.parseMaterial())
+		if (currencyItem != null && currencyItem.getType() != CompMaterial.AIR.get())
 			return deposit(offlinePlayer, currencyItem, (int) amount);
 
 		final String[] currSplit = currency.split("/");
@@ -80,7 +80,7 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 	}
 
 	public boolean withdraw(@NonNull final OfflinePlayer offlinePlayer, double amount, @NonNull final String currency, ItemStack currencyItem) {
-		if (currencyItem != null && currencyItem.getType() != CompMaterial.AIR.parseMaterial())
+		if (currencyItem != null && currencyItem.getType() != CompMaterial.AIR.get())
 			return withdraw(offlinePlayer, currencyItem, (int) amount);
 
 		final String[] currSplit = currency.split("/");

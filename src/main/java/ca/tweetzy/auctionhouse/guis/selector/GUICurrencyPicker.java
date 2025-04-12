@@ -53,7 +53,7 @@ public final class GUICurrencyPicker extends AuctionPagedGUI<AbstractCurrency> {
 
 			if (click.clickType == ClickType.LEFT) {
 				final ItemStack cursor = click.cursor;
-				if (cursor != null && cursor.getType() != CompMaterial.AIR.parseMaterial()) {
+				if (cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
 
 					final ItemStack currency = cursor.clone();
 					currency.setAmount(1);

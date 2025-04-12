@@ -323,7 +323,7 @@ public class DataManager extends DataManagerAbstract {
 				while (resultSet.next()) {
 					AuctionedItem item = extractAuctionedItem(resultSet);
 
-					if (item == null || item.getItem().getType() == CompMaterial.AIR.parseMaterial()) {
+					if (item == null || item.getItem().getType() == CompMaterial.AIR.get()) {
 						continue;
 					}
 
@@ -476,7 +476,7 @@ public class DataManager extends DataManagerAbstract {
 				while (resultSet.next()) {
 
 					final AuctionAdminLog log = extractAdminLog(resultSet);
-					if (log == null || log.getItem() == null || log.getItem().getType() == CompMaterial.AIR.parseMaterial()) continue;
+					if (log == null || log.getItem() == null || log.getItem().getType() == CompMaterial.AIR.get()) continue;
 
 					if (resultSet.getInt("serialize_version") == 0) {
 						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "admin_logs SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
@@ -508,7 +508,7 @@ public class DataManager extends DataManagerAbstract {
 				while (resultSet.next()) {
 					final Transaction transaction = extractTransaction(resultSet);
 
-					if (transaction == null || transaction.getItem().getType() == CompMaterial.AIR.parseMaterial()) {
+					if (transaction == null || transaction.getItem().getType() == CompMaterial.AIR.get()) {
 						continue;
 					}
 
@@ -727,7 +727,7 @@ public class DataManager extends DataManagerAbstract {
 				while (resultSet.next()) {
 
 					final ListingPriceLimit listingPrice = extractListingPriceLimit(resultSet);
-					if (listingPrice == null || listingPrice.getItem() == null || listingPrice.getItem().getType() == CompMaterial.AIR.parseMaterial()) continue;
+					if (listingPrice == null || listingPrice.getItem() == null || listingPrice.getItem().getType() == CompMaterial.AIR.get()) continue;
 
 					if (resultSet.getInt("serialize_version") == 0) {
 						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "listing_prices SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
@@ -935,7 +935,7 @@ public class DataManager extends DataManagerAbstract {
 				while (resultSet.next()) {
 
 					final AuctionPayment payment = extractAuctionPayment(resultSet);
-					if (payment == null || payment.getItem() == null || payment.getItem().getType() == CompMaterial.AIR.parseMaterial()) continue;
+					if (payment == null || payment.getItem() == null || payment.getItem().getType() == CompMaterial.AIR.get()) continue;
 
 					if (resultSet.getInt("serialize_version") == 0) {
 						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "payments SET serialize_version = 1, itemstack = ? WHERE uuid = ? AND time = ?")) {

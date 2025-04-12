@@ -19,7 +19,7 @@
 package ca.tweetzy.auctionhouse.helpers;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.nbtapi.NBT;
 import lombok.experimental.UtilityClass;
 import org.bukkit.inventory.ItemStack;
@@ -31,7 +31,7 @@ public final class Validate {
 
 
 	public boolean hasDTKey(ItemStack stack) {
-		if (stack == null || stack.getType() == XMaterial.AIR.parseMaterial() || stack.getAmount() == 0) return false;
+		if (stack == null || stack.getType() == CompMaterial.AIR.get() || stack.getAmount() == 0) return false;
 
 		final UUID uuid = NBT.get(stack, nbt -> (UUID) nbt.getUUID("AuctionDupeTracking"));
 		return uuid != null && AuctionHouse.getInstance().getAuctionItemManager().getItem(uuid) != null;

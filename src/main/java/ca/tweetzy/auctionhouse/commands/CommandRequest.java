@@ -29,9 +29,9 @@ import ca.tweetzy.auctionhouse.guis.sell.GUIRequestItem;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XMaterial;
-import ca.tweetzy.core.utils.NumberUtils;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
+import ca.tweetzy.flight.utils.MathUtil;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
@@ -67,7 +67,7 @@ public class CommandRequest extends Command {
 		if (AuctionHouse.getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.REQUESTS)) return ReturnType.FAIL;
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(TextUtils.formatText("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
@@ -76,7 +76,7 @@ public class CommandRequest extends Command {
 		// grab held item & check valid
 		final ItemStack originalItem = PlayerHelper.getHeldItem(player).clone();
 
-		if (originalItem.getType() == XMaterial.AIR.parseMaterial()) {
+		if (originalItem.getType() == CompMaterial.AIR.get()) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
 			return ReturnType.FAIL;
 		}
@@ -113,7 +113,7 @@ public class CommandRequest extends Command {
 		}
 
 		// check if price is even a number
-		if (!NumberUtils.isDouble(args[0])) {
+		if (!MathUtil.isDouble(args[0])) {
 			AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
 			return ReturnType.FAIL;
 		}

@@ -26,9 +26,8 @@ import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.helpers.UpdateChecker;
 import ca.tweetzy.auctionhouse.helpers.Validate;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.compatibility.XMaterial;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.core.utils.TextUtils;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.Common;
@@ -80,7 +79,7 @@ public class PlayerListeners implements Listener {
 					if (!player.hasMetadata("AuctionHouseConfirmListing"))
 						player.getLocation().getWorld().dropItemNaturally(player.getLocation(), auctionPlayer.getItemBeingListed());
 				}
-				auctionPlayer.setItemBeingListed(XMaterial.AIR.parseItem());
+				auctionPlayer.setItemBeingListed(CompMaterial.AIR.parseItem());
 			}
 		}
 
@@ -103,7 +102,7 @@ public class PlayerListeners implements Listener {
 		// DUPE TRACKING
 		AuctionHouse.newChain().async(() -> {
 			for (ItemStack item : player.getInventory().getStorageContents()) {
-				if (item == null || item.getType() == XMaterial.AIR.parseMaterial() || item.getAmount() == 0) continue;
+				if (item == null || item.getType() == CompMaterial.AIR.get() || item.getAmount() == 0) continue;
 
 				final UUID auctionItemId = NBT.get(item, nbt -> (UUID) nbt.getUUID("AuctionDupeTracking"));
 				if (auctionItemId == null) continue;
@@ -117,7 +116,7 @@ public class PlayerListeners implements Listener {
 
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
 			if (Settings.UPDATE_CHECKER.getBoolean() && instance.getStatus() == UpdateChecker.UpdateStatus.UNRELEASED_VERSION && player.isOp()) {
-				instance.getLocale().newMessage(TextUtils.formatText(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", instance.getDescription().getVersion()))).sendPrefixedMessage(player);
+				instance.getLocale().newMessage(Common.colorize(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", instance.getDescription().getVersion()))).sendPrefixedMessage(player);
 			}
 		}, 20);
 	}
@@ -154,9 +153,9 @@ public class PlayerListeners implements Listener {
 		final CraftingInventory inventory = event.getInventory();
 		final ItemStack[] craftingItems = inventory.getMatrix();
 		for (ItemStack item : craftingItems) {
-			if (item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
+			if (item == null || item.getType() == CompMaterial.AIR.get()) continue;
 			if (BundleUtil.isBundledItem(item)) {
-				inventory.setResult(XMaterial.AIR.parseItem());
+				inventory.setResult(CompMaterial.AIR.parseItem());
 			}
 		}
 	}
@@ -168,7 +167,7 @@ public class PlayerListeners implements Listener {
 		final Player player = e.getPlayer();
 		final Block block = e.getClickedBlock();
 
-		if (block == null || block.getType() != XMaterial.CHEST.parseMaterial()) return;
+		if (block == null || block.getType() != CompMaterial.CHEST.get()) return;
 		final Chest chest = (Chest) block.getState();
 
 		final AuctionHouse instance = AuctionHouse.getInstance();
@@ -193,7 +192,7 @@ public class PlayerListeners implements Listener {
 		final ItemStack heldItem = PlayerHelper.getHeldItem(player);
 
 		if (heldItem == null || (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)) return;
-		if (heldItem.getType() == XMaterial.AIR.parseMaterial()) return;
+		if (heldItem.getType() == CompMaterial.AIR.get()) return;
 		if (!BundleUtil.isBundledItem(heldItem)) return;
 		e.setCancelled(true);
 
@@ -203,9 +202,9 @@ public class PlayerListeners implements Listener {
 			heldItem.setAmount(heldItem.getAmount() - 1);
 		} else {
 			if (ServerVersion.isServerVersionAbove(ServerVersion.V1_8)) {
-				player.getInventory().setItemInMainHand(XMaterial.AIR.parseItem());
+				player.getInventory().setItemInMainHand(CompMaterial.AIR.parseItem());
 			} else {
-				player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+				player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
 			}
 		}
 
@@ -215,7 +214,7 @@ public class PlayerListeners implements Listener {
 	@EventHandler
 	public void onInventoryClick(PrepareAnvilEvent event) {
 		ItemStack stack = event.getResult();
-		if (stack == null || stack.getType() == XMaterial.AIR.parseMaterial() || stack.getAmount() == 0) return;
+		if (stack == null || stack.getType() == CompMaterial.AIR.get() || stack.getAmount() == 0) return;
 
 		NBT.modify(stack, nbt -> {
 			nbt.setBoolean("AuctionHouseRepaired", true);
@@ -270,9 +269,9 @@ public class PlayerListeners implements Listener {
 
 	private void clearHand(Player player) {
 		if (ServerVersion.isServerVersionAbove(ServerVersion.V1_8)) {
-			player.getInventory().setItemInMainHand(XMaterial.AIR.parseItem());
+			player.getInventory().setItemInMainHand(CompMaterial.AIR.parseItem());
 		} else {
-			player.getInventory().setItemInHand(XMaterial.AIR.parseItem());
+			player.getInventory().setItemInHand(CompMaterial.AIR.parseItem());
 		}
 	}
 }

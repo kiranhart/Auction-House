@@ -30,7 +30,8 @@ import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.flight.utils.MathUtil;
+import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -98,7 +99,7 @@ public class GUIBid extends AuctionBaseGUI {
 				public boolean onResult(String string) {
 					string = ChatColor.stripColor(string);
 
-					if (!NumberUtils.isDouble(string)) {
+					if (!MathUtil.isDouble(string)) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
 						return false;
 					}

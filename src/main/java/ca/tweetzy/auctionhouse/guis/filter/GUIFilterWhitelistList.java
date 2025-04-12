@@ -23,7 +23,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.TextUtils;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.gui.helper.InventoryBorder;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -45,7 +45,7 @@ public class GUIFilterWhitelistList extends AuctionPagedGUI<AuctionFilterItem> {
 	final AuctionItemCategory filerCategory;
 
 	public GUIFilterWhitelistList(Player player, AuctionItemCategory filerCategory) {
-		super(new GUIFilterWhitelist(player), player, TextUtils.formatText(Settings.GUI_FILTER_WHITELIST_LIST_TITLE.getString().replace("%filter_category%", filerCategory.getTranslatedType())), 6, new ArrayList<>(AuctionHouse.getInstance().getFilterManager().getFilterWhitelist()));
+		super(new GUIFilterWhitelist(player), player, Common.colorize(Settings.GUI_FILTER_WHITELIST_LIST_TITLE.getString().replace("%filter_category%", filerCategory.getTranslatedType())), 6, new ArrayList<>(AuctionHouse.getInstance().getFilterManager().getFilterWhitelist()));
 		this.filerCategory = filerCategory;
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILTER_WHITELIST_LIST_BG_ITEM.getString()).make()));
 		setUseLockedCells(true);

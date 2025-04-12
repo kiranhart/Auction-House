@@ -25,6 +25,7 @@ import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.impl.AuctionPriceLimit;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.NumberUtils;
+import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.ReturnType;
@@ -50,6 +51,12 @@ public class CommandPriceLimit extends Command {
 		super(AllowedExecutor.PLAYER, Settings.CMD_ALIAS_SUB_PRICE_LIMIT.getStringList().toArray(new String[0]));
 	}
 
+	private boolean isNumeric(String s) {
+		if (s == null || s.equals(""))
+			return false;
+		return s.matches("[-+]?\\d*\\.?\\d+");
+	}
+
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
 		final Player player = (Player) sender;
@@ -64,14 +71,14 @@ public class CommandPriceLimit extends Command {
 
 			ItemStack held = PlayerHelper.getHeldItem(player);
 
-			if (held.getType() == CompMaterial.AIR.parseMaterial()) {
+			if (held.getType() == CompMaterial.AIR.get()) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.min item price air").sendPrefixedMessage(player);
 				return ReturnType.FAIL;
 			}
 
 			ListingPriceLimit listingPriceLimit = AuctionHouse.getPriceLimitManager().getPriceLimit(held.clone());
 
-			if (!NumberUtils.isNumeric(args[2])) {
+			if (!isNumeric(args[2])) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[2]).sendPrefixedMessage(player);
 				return ReturnType.FAIL;
 			}
