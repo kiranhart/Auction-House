@@ -35,6 +35,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The current file has been created by Kiran Hart
@@ -59,6 +60,7 @@ public class CommandPop extends Command {
 		for (int i = 0; i < totalListings; i++) {
 
 			final CompMaterial randomItem = getRandomElementFromList(InventorySafeMaterials.get());
+			final double price = ThreadLocalRandom.current().nextInt(5, 1000);
 			final AuctionedItem listing = new AuctionedItem(
 					UUID.randomUUID(),
 					player.getUniqueId(),
@@ -67,10 +69,10 @@ public class CommandPop extends Command {
 					player.getName(),
 					MaterialCategorizer.getMaterialCategory(randomItem.get()),
 					randomItem.parseItem(),
-					25,
+					price,
 					0,
 					0,
-					25,
+					price,
 					false,
 					false,
 					System.currentTimeMillis() + 1000L * 60 * 60
