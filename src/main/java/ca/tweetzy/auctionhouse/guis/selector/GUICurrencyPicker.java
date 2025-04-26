@@ -26,7 +26,7 @@ public final class GUICurrencyPicker extends AuctionPagedGUI<AbstractCurrency> {
 	private final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency;
 
 	public GUICurrencyPicker(final Gui parent, @NonNull final Player player, @NonNull final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency) {
-		super(parent, player, Settings.GUI_CURRENCY_PICKER_TITLE.getString(), 6, AuctionHouse.getCurrencyManager().getManagerContent().stream().filter(currency -> !currency.getOwningPlugin().equalsIgnoreCase("auctionhouse")).collect(Collectors.toList()));
+		super(parent, player, Settings.GUI_CURRENCY_PICKER_TITLE.getString(), 6, AuctionHouse.getCurrencyManager().getPermissionAllowed(player));
 		this.selectedCurrency = selectedCurrency;
 		setAcceptsItems(true);
 		setAllowClose(false);
@@ -38,31 +38,32 @@ public final class GUICurrencyPicker extends AuctionPagedGUI<AbstractCurrency> {
 		applyBackExit();
 
 		// custom item
-		setButton(getRows() - 1, 4, QuickItem
-				.of(CompMaterial.HOPPER)
-				.name(Settings.GUI_CURRENCY_PICKER_ITEMS_CUSTOM_NAME.getString())
-				.lore(Settings.GUI_CURRENCY_PICKER_ITEMS_CUSTOM_LORE.getStringList()).make(), click -> {
+		if (Settings.CURRENCY_ALLOW_CUSTOM.getBoolean())
+			setButton(getRows() - 1, 4, QuickItem
+					.of(CompMaterial.HOPPER)
+					.name(Settings.GUI_CURRENCY_PICKER_ITEMS_CUSTOM_NAME.getString())
+					.lore(Settings.GUI_CURRENCY_PICKER_ITEMS_CUSTOM_LORE.getStringList()).make(), click -> {
 
-			if (click.clickType == ClickType.RIGHT) {
-				click.manager.showGUI(click.player, new GUIMaterialPicker(null, click.player, null, item -> {
-					if (item != null) {
-						this.selectedCurrency.accept(new ItemCurrency(), item);
-					}
-				}));
-			}
-
-			if (click.clickType == ClickType.LEFT) {
-				final ItemStack cursor = click.cursor;
-				if (cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
-
-					final ItemStack currency = cursor.clone();
-					currency.setAmount(1);
-
-					setAllowClose(true);
-					this.selectedCurrency.accept(new ItemCurrency(), currency);
+				if (click.clickType == ClickType.RIGHT) {
+					click.manager.showGUI(click.player, new GUIMaterialPicker(null, click.player, null, item -> {
+						if (item != null) {
+							this.selectedCurrency.accept(new ItemCurrency(), item);
+						}
+					}));
 				}
-			}
-		});
+
+				if (click.clickType == ClickType.LEFT) {
+					final ItemStack cursor = click.cursor;
+					if (cursor != null && cursor.getType() != CompMaterial.AIR.get()) {
+
+						final ItemStack currency = cursor.clone();
+						currency.setAmount(1);
+
+						setAllowClose(true);
+						this.selectedCurrency.accept(new ItemCurrency(), currency);
+					}
+				}
+			});
 	}
 
 	@Override

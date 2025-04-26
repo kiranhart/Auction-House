@@ -43,6 +43,6 @@ public class SoundManager {
 	}
 
 	public void playSound(Player player, String sound) {
-		player.playSound(player.getLocation(), CompSound.matchCompSound(sound).get().parseSound(), Float.parseFloat(Settings.SOUND_VOLUME.getString()), Float.parseFloat(Settings.SOUND_PITCH.getString()));
+		player.playSound(player.getLocation(), CompSound.of(sound).orElse(CompSound.ENTITY_BAT_TAKEOFF).get(), Float.parseFloat(Settings.SOUND_VOLUME.getString()), Float.parseFloat(Settings.SOUND_PITCH.getString()));
 	}
 }

@@ -43,6 +43,8 @@ public class Settings {
 	public static final ConfigSetting HIDE_THANKYOU = new ConfigSetting(config, "hide thank you", false, "Hides the purchase thank you message in the console.");
 
 	public static final ConfigSetting CURRENCY_ALLOW_PICK = new ConfigSetting(config, "economy.currency.allow pick", true, "If true, players will be able to select which currency they want to use.");
+	public static final ConfigSetting CURRENCY_ALLOW_CUSTOM = new ConfigSetting(config, "economy.currency.allow custom item", true, "If true, players will be able to provide a custom item as the currency");
+	public static final ConfigSetting CURRENCY_LIMIT_TO_PERMISSION = new ConfigSetting(config, "economy.currency.limit to permission", false, "If true, currencies will be limited by permission. Example auctionhouse.currency.ultraeconomy_gems will allow usage of the gems currency from ultra economy");
 	public static final ConfigSetting CURRENCY_DEFAULT_SELECTED = new ConfigSetting(config, "economy.currency.default selection", "Vault/Vault", "The default currency selection, PluginName/CurrencyName -> Ex. Vault/Vault or UltraEconomy/Gems etc");
 	public static final ConfigSetting CURRENCY_VAULT_SYMBOL = new ConfigSetting(config, "economy.currency.vault symbol", "$", "When using default/vault currency, what symbol should be used.");
 	public static final ConfigSetting CURRENCY_VAULT_SYMBOL_OVERRIDES = new ConfigSetting(config, "economy.currency.vault symbol overrides", false, "If true, the vault symbol will override the symbol provided by the country/language combination");
@@ -1788,9 +1790,9 @@ public class Settings {
 	/*  ===============================
 	 *         AUCTION SOUNDS
 	 *  ===============================*/
-	public static final ConfigSetting SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE = new ConfigSetting(config, "sounds.listed item on the auction house", CompSound.ENTITY_EXPERIENCE_ORB_PICKUP.parseSound().name());
-	public static final ConfigSetting SOUNDS_NAVIGATE_GUI_PAGES = new ConfigSetting(config, "sounds.navigated between gui pages", CompSound.ENTITY_BAT_TAKEOFF.parseSound().name());
-	public static final ConfigSetting SOUNDS_NOT_ENOUGH_MONEY = new ConfigSetting(config, "sounds.not enough money", CompSound.ENTITY_ITEM_BREAK.parseSound().name());
+	public static final ConfigSetting SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE = new ConfigSetting(config, "sounds.listed item on the auction house", CompSound.ENTITY_EXPERIENCE_ORB_PICKUP.friendlyName());
+	public static final ConfigSetting SOUNDS_NAVIGATE_GUI_PAGES = new ConfigSetting(config, "sounds.navigated between gui pages", CompSound.ENTITY_BAT_TAKEOFF.friendlyName());
+	public static final ConfigSetting SOUNDS_NOT_ENOUGH_MONEY = new ConfigSetting(config, "sounds.not enough money", CompSound.ENTITY_ITEM_BREAK.friendlyName());
 
 	public static void setup() {
 		config.load();

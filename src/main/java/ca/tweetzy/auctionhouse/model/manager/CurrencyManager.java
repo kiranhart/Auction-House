@@ -15,7 +15,11 @@ import ca.tweetzy.flight.comp.enums.CompMaterial;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class CurrencyManager extends ListManager<AbstractCurrency> {
 
@@ -123,6 +127,20 @@ public final class CurrencyManager extends ListManager<AbstractCurrency> {
 
 	public String getFormattedBalance(@NonNull final OfflinePlayer offlinePlayer, String currency, ItemStack currencyItem) {
 		return AuctionHouse.getAPI().getFinalizedCurrencyNumber(getBalance(offlinePlayer, currency.split("/")[0], currency.split("/")[1]), currency, currencyItem);
+	}
+
+	public List<AbstractCurrency> getPermissionAllowed(@NonNull final Player player) {
+		if (!Settings.CURRENCY_LIMIT_TO_PERMISSION.getBoolean()) {
+			return getManagerContent().stream().filter(currency -> !currency.getOwningPlugin().equalsIgnoreCase("auctionhouse")).collect(Collectors.toList());
+		}
+
+		return getManagerContent()
+				.stream()
+				.filter(currency -> !currency.getOwningPlugin().equalsIgnoreCase("auctionhouse")
+						&&
+						player.hasPermission("auctionhouse.currency." + currency.getOwningPlugin().toLowerCase() + "_" + currency.getCurrencyName())
+				)
+				.collect(Collectors.toList());
 	}
 
 	public AbstractCurrency getNext(@NonNull final AbstractCurrency current) {
