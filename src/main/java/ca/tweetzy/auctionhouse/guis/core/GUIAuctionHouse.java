@@ -24,9 +24,9 @@ import ca.tweetzy.auctionhouse.helpers.SlotHelper;
 import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
 import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
+import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
 import lombok.NonNull;
@@ -248,10 +248,22 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				if (auctionedItem.isRequest()) {
 					if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.REQUESTS)) return;
 
-					if (click.player.getUniqueId().equals(auctionedItem.getOwner()) && !Settings.OWNER_CAN_FULFILL_OWN_REQUEST.getBoolean()) {
+					if ((!Settings.USE_NAMES_FOR_CHECKS.getBoolean() && click.player.getUniqueId().equals(auctionedItem.getOwner())) || (Settings.USE_NAMES_FOR_CHECKS.getBoolean() && click.player.getName().equalsIgnoreCase(auctionedItem.getOwnerName())) && !Settings.OWNER_CAN_FULFILL_OWN_REQUEST.getBoolean()) {
 						AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(click.player);
 						return;
 					}
+
+//					if (Settings.USE_NAMES_FOR_CHECKS.getBoolean()) {
+//						if (click.player.getName().equalsIgnoreCase(auctionedItem.getOwnerName()) && !Settings.OWNER_CAN_FULFILL_OWN_REQUEST.getBoolean()) {
+//							AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(click.player);
+//							return;
+//						}
+//					} else {
+//						if (click.player.getUniqueId().equals(auctionedItem.getOwner()) && !Settings.OWNER_CAN_FULFILL_OWN_REQUEST.getBoolean()) {
+//							AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(click.player);
+//							return;
+//						}
+//					}
 
 					cancelTask();
 					click.manager.showGUI(click.player, new GUIConfirmPurchase(this.auctionPlayer, auctionedItem, false));

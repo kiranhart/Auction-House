@@ -117,6 +117,7 @@ public class Settings {
 	public static final ConfigSetting PACKET_NAMESPACE_KEYS = new ConfigSetting(config, "auction setting.packet.namespaced keys", Arrays.asList("ecoitems", "ecoarmor"), "Namespaced keys of plugins using packet lore");
 
 	public static final ConfigSetting CART_SYSTEM_ENABLED = new ConfigSetting(config, "auction setting.cart system.enabled", false, "Should auction house allow the cart system?");
+	public static final ConfigSetting USE_NAMES_FOR_CHECKS = new ConfigSetting(config, "auction setting.experimental.use names for checks", false, "Do not touch this unless you have a good reason too?");
 
 
 	/*  ===============================
