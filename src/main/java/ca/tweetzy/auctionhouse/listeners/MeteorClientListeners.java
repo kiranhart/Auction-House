@@ -25,9 +25,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public final class MeteorClientListeners implements Listener {
 
@@ -35,12 +41,12 @@ public final class MeteorClientListeners implements Listener {
 
 	@EventHandler
 	public void onCraftDuringSell(final PrepareItemCraftEvent event) {
-		final Player player = (Player) event.getView().getPlayer();
+		final CraftingInventory craftingInventory = event.getInventory();
 
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player) && !isCancelled) {
+		if (AuctionHouse.getAuctionPlayerManager().isInSellProcess((Player) craftingInventory.getViewers().get(0)) && !isCancelled) {
 			isCancelled = true;
-			event.getInventory().setMatrix(new ItemStack[0]);
-			event.getInventory().setResult(null);
+			craftingInventory.setMatrix(new ItemStack[0]);
+			craftingInventory.setResult(null);
 			isCancelled = false;
 		}
 	}
@@ -104,4 +110,16 @@ public final class MeteorClientListeners implements Listener {
 			event.setCancelled(true);
 		}
 	}
+
+	public Inventory getTopInventory(InventoryEvent event) {
+		try {
+			Object view = event.getView();
+			Method getTopInventory = view.getClass().getMethod("getTopInventory");
+			getTopInventory.setAccessible(true);
+			return (Inventory) getTopInventory.invoke(view);
+		} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

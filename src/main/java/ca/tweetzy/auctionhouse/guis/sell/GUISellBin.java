@@ -228,6 +228,24 @@ public final class GUISellBin extends AuctionBaseGUI {
 
 			performAuctionListing(click);
 		});
+
+		drawTaxFeeInfo();
+	}
+
+	private void drawTaxFeeInfo(){
+		if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean()) {
+
+			final String fee = AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionAPI.getInstance().calculateListingFee(this.listingPrice), this.currency, this.currencyItem);
+
+			setItem(getRows() - 1, 2, QuickItem
+					.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_FEE_ITEM.getString())
+					.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_FEE_NAME.getString())
+					.lore(Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_FEE_LORE.getStringList(),
+							"listing_fee", Settings.TAX_LISTING_FEE_PERCENTAGE.getBoolean() ? Settings.TAX_LISTING_FEE.getDouble() + "%" : Settings.TAX_LISTING_FEE.getDouble(),
+							"listing_fee_total", fee
+					))
+					.make());
+		}
 	}
 
 	private void performAuctionListing(GuiClickEvent click) {

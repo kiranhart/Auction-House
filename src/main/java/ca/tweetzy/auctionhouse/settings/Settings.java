@@ -1395,6 +1395,16 @@ public class Settings {
 			"&7Click to list this item"
 	));
 
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_FEE_ITEM = new ConfigSetting(config, "gui.sell bin item.items.fee.item", "https://textures.minecraft.net/texture/a4e1da882e434829b96ec8ef242a384a53d89018fa65fee5b37deb04eccbf10e");
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_FEE_NAME = new ConfigSetting(config, "gui.sell bin item.items.fee.name", "&e&lListing Fee");
+	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_FEE_LORE = new ConfigSetting(config, "gui.sell bin item.items.fee.lore", Arrays.asList(
+			"&cThere is a listing fee to list this item.",
+			"",
+			"&7Rate&f: &a%listing_fee%",
+			"",
+			"&eCost to list&f: %listing_fee_total%"
+	));
+
 	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_TIME_ITEM = new ConfigSetting(config, "gui.sell bin item.items.time.item", CompMaterial.CLOCK.name());
 	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_TIME_NAME = new ConfigSetting(config, "gui.sell bin item.items.time.name", "&e&lListing Time");
 	public static final ConfigSetting GUI_SELL_BIN_ITEM_ITEMS_TIME_LORE = new ConfigSetting(config, "gui.sell bin item.items.time.lore", Arrays.asList(

@@ -281,7 +281,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 						else
 							AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
-						if (oldBidder.isOnline())
+						if (oldBidder.isOnline() && oldBidder.getName() != null)
 							AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
 									.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
 									.processPlaceholder("price", located.getFormattedCurrentPrice())
