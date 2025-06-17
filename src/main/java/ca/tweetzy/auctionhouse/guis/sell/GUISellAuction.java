@@ -378,9 +378,9 @@ public final class GUISellAuction extends AuctionBaseGUI {
 			final String fee = AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionAPI.getInstance().calculateListingFee(this.allowBuyNow ? this.binPrice : this.startingBid), this.currency, this.currencyItem);
 
 			setItem(getRows() - 1, 2, QuickItem
-					.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_FEE_ITEM.getString())
-					.name(Settings.GUI_SELL_BIN_ITEM_ITEMS_FEE_NAME.getString())
-					.lore(Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_FEE_LORE.getStringList(),
+					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_FEE_ITEM.getString())
+					.name(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_FEE_NAME.getString())
+					.lore(Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_FEE_LORE.getStringList(),
 							"listing_fee", Settings.TAX_LISTING_FEE_PERCENTAGE.getBoolean() ? Settings.TAX_LISTING_FEE.getDouble() + "%" : Settings.TAX_LISTING_FEE.getDouble(),
 							"listing_fee_total", fee
 					))
