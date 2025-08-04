@@ -37,6 +37,7 @@ import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.database.*;
 import ca.tweetzy.flight.nbtapi.NbtApiException;
+import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -316,6 +317,8 @@ public class DataManager extends DataManagerAbstract {
 	public void getItems(Callback<ArrayList<AuctionedItem>> callback) {
 		ArrayList<AuctionedItem> items = new ArrayList<>();
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+			final long startTime = System.currentTimeMillis();
+
 			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions")) {
 				ResultSet resultSet = statement.executeQuery();
 				final List<UUID> toRemove = new ArrayList<>();
@@ -338,6 +341,28 @@ public class DataManager extends DataManagerAbstract {
 						}
 					}
 
+					final String backupItemRaw = resultSet.getString("itemstack");
+					final ItemStack itemBackup = QuickItem.getItem(backupItemRaw);
+
+					try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET itemstack = ? WHERE id = ?")) {
+
+						boolean backupFallback = false;
+						try {
+							updateStatement.setString(1, QuickItem.toString(itemBackup));
+							updateStatement.setString(2, resultSet.getString("id"));
+							updateStatement.executeUpdate();
+						} catch (NbtApiException ignored) {
+							backupFallback = true;
+						}
+
+						if (backupFallback) {
+							// Attempt to update with the backup raw string
+							updateStatement.setString(1, backupItemRaw);
+							updateStatement.setString(2, resultSet.getString("id"));
+							updateStatement.executeUpdate();
+						}
+					}
+
 					if (resultSet.getBoolean("expired") && Settings.EXPIRATION_TIME_LIMIT_ENABLED.getBoolean() && Instant.ofEpochMilli(resultSet.getLong("expires_at")).isBefore(Instant.now().minus(Duration.ofHours(Settings.EXPIRATION_TIME_LIMIT.getInt())))) {
 						toRemove.add(UUID.fromString(resultSet.getString("id")));
 					} else {
@@ -347,6 +372,12 @@ public class DataManager extends DataManagerAbstract {
 
 				deleteItemsAsync(toRemove);
 				callback.accept(null, items);
+
+				final long endTime = System.currentTimeMillis();
+				final long elapsedMs = endTime - startTime;
+				Bukkit.getConsoleSender().sendMessage(Common.colorize("&8[&eAuctionHouse&8] &aLoaded & Updated Items In " + elapsedMs + " ms"));
+
+
 			} catch (Exception e) {
 				resolveCallback(callback, e);
 			}
@@ -522,6 +553,29 @@ public class DataManager extends DataManagerAbstract {
 							} catch (NbtApiException e) {
 								//todo idk do something
 							}
+						}
+					}
+
+
+					final String backupItemRaw = resultSet.getString("itemstack");
+					final ItemStack itemBackup = QuickItem.getItem(backupItemRaw);
+
+					try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "transactions SET itemstack = ? WHERE id = ?")) {
+
+						boolean backupFallback = false;
+						try {
+							updateStatement.setString(1, QuickItem.toString(itemBackup));
+							updateStatement.setString(2, resultSet.getString("id"));
+							updateStatement.executeUpdate();
+						} catch (NbtApiException e) {
+							backupFallback = true;
+						}
+
+						if (backupFallback) {
+							// Attempt to update with the backup raw string
+							updateStatement.setString(1, backupItemRaw);
+							updateStatement.setString(2, resultSet.getString("id"));
+							updateStatement.executeUpdate();
 						}
 					}
 
