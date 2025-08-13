@@ -48,6 +48,7 @@ public class Settings {
 	public static final ConfigSetting CURRENCY_DEFAULT_SELECTED = new ConfigSetting(config, "economy.currency.default selection", "Vault/Vault", "The default currency selection, PluginName/CurrencyName -> Ex. Vault/Vault or UltraEconomy/Gems etc");
 	public static final ConfigSetting CURRENCY_VAULT_SYMBOL = new ConfigSetting(config, "economy.currency.vault symbol", "$", "When using default/vault currency, what symbol should be used.");
 	public static final ConfigSetting CURRENCY_VAULT_SYMBOL_OVERRIDES = new ConfigSetting(config, "economy.currency.vault symbol overrides", false, "If true, the vault symbol will override the symbol provided by the country/language combination");
+//	public static final ConfigSetting CURRENCY_USE_PROVIDER_SYMBOL = new ConfigSetting(config, "economy.currency.use provider symbol", true, "If true, auction house will try to use the currency symbol provided by the currency plugin");
 	public static final ConfigSetting CURRENCY_BLACKLISTED = new ConfigSetting(config, "economy.currency.black listed", Collections.singletonList("UltraEconomy:Test"), "A list of owning plugins & the currency to be blacklisted. Ex. UltraEconomy:Test");
 	public static final ConfigSetting CURRENCY_FORMAT_LANGUAGE = new ConfigSetting(config, "economy.currency.format.language", "en", "An ISO 639 alpha-2 or alpha-3 language code.");
 	public static final ConfigSetting CURRENCY_FORMAT_COUNTRY = new ConfigSetting(config, "economy.currency.format.country", "US", "An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.");
@@ -1214,13 +1215,16 @@ public class Settings {
 	public static final ConfigSetting GUI_FILTER_TITLE = new ConfigSetting(config, "gui.filter.title", "&7Auction House - &eFilter Selection");
 	public static final ConfigSetting GUI_FILTER_BG_ITEM = new ConfigSetting(config, "gui.filter.bg item", CompMaterial.BLACK_STAINED_GLASS_PANE.name());
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_ALL_SLOTS = new ConfigSetting(config, "gui.filter.items.all.slots", 12);
 	public static final ConfigSetting GUI_FILTER_ITEMS_ALL_ITEM = new ConfigSetting(config, "gui.filter.items.all.item", CompMaterial.HOPPER.name());
 	public static final ConfigSetting GUI_FILTER_ITEMS_ALL_NAME = new ConfigSetting(config, "gui.filter.items.all.name", "&e&lAll");
 	public static final ConfigSetting GUI_FILTER_ITEMS_ALL_LORE = new ConfigSetting(config, "gui.filter.items.all.lore", Collections.singletonList("&7Click to set the filter to&f: &eAll"));
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_OWN_SLOTS = new ConfigSetting(config, "gui.filter.items.own.slots", 13);
 	public static final ConfigSetting GUI_FILTER_ITEMS_OWN_NAME = new ConfigSetting(config, "gui.filter.items.own.name", "&e&lYour Listings");
 	public static final ConfigSetting GUI_FILTER_ITEMS_OWN_LORE = new ConfigSetting(config, "gui.filter.items.own.lore", Collections.singletonList("&7Click to set the filter to&f: &eYour Listings"));
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_SEARCH_SLOTS = new ConfigSetting(config, "gui.filter.items.search.slots", 14);
 	public static final ConfigSetting GUI_FILTER_ITEMS_SEARCH_ITEM = new ConfigSetting(config, "gui.filter.items.search.item", CompMaterial.NAME_TAG.name());
 	public static final ConfigSetting GUI_FILTER_ITEMS_SEARCH_NAME = new ConfigSetting(config, "gui.filter.items.search.name", "&e&lSearch");
 	public static final ConfigSetting GUI_FILTER_ITEMS_SEARCH_LORE = new ConfigSetting(config, "gui.filter.items.search.lore", Arrays.asList(
@@ -1228,35 +1232,43 @@ public class Settings {
 			"&7Current search phrase&f: &e%filter_search_phrase%"
 	));
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_MISC_SLOTS = new ConfigSetting(config, "gui.filter.items.misc.slots", 19);
 	public static final ConfigSetting GUI_FILTER_ITEMS_MISC_ITEM = new ConfigSetting(config, "gui.filter.items.misc.item", CompMaterial.OAK_SIGN.name());
 	public static final ConfigSetting GUI_FILTER_ITEMS_MISC_NAME = new ConfigSetting(config, "gui.filter.items.misc.name", "&e&lMiscellaneous");
 	public static final ConfigSetting GUI_FILTER_ITEMS_MISC_LORE = new ConfigSetting(config, "gui.filter.items.misc.lore", Collections.singletonList("&7Click to set the filter to&f: &eMiscellaneous"));
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_POTIONS_SLOTS = new ConfigSetting(config, "gui.filter.items.potions.slots", 31);
 	public static final ConfigSetting GUI_FILTER_ITEMS_POTIONS_ITEM = new ConfigSetting(config, "gui.filter.items.potions.item", CompMaterial.SPLASH_POTION.name());
 	public static final ConfigSetting GUI_FILTER_ITEMS_POTIONS_NAME = new ConfigSetting(config, "gui.filter.items.potions.name", "&e&LPotions");
 	public static final ConfigSetting GUI_FILTER_ITEMS_POTIONS_LORE = new ConfigSetting(config, "gui.filter.items.potions.lore", Collections.singletonList("&7Click to set the filter to&f: &ePotions"));
 
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_ENCHANTS_SLOTS = new ConfigSetting(config, "gui.filter.items.enchants.slots", 20);
 	public static final ConfigSetting GUI_FILTER_ITEMS_ENCHANTS_ITEM = new ConfigSetting(config, "gui.filter.items.enchants.item", CompMaterial.ENCHANTED_BOOK.name());
 	public static final ConfigSetting GUI_FILTER_ITEMS_ENCHANTS_NAME = new ConfigSetting(config, "gui.filter.items.enchants.name", "&e&lEnchantments");
 	public static final ConfigSetting GUI_FILTER_ITEMS_ENCHANTS_LORE = new ConfigSetting(config, "gui.filter.items.enchants.lore", Collections.singletonList("&7Click to set the filter to&f: &eEnchantments"));
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_ARMOR_SLOTS = new ConfigSetting(config, "gui.filter.items.armor.slots", 21);
 	public static final ConfigSetting GUI_FILTER_ITEMS_ARMOR_ITEM = new ConfigSetting(config, "gui.filter.items.armor.item", CompMaterial.CHAINMAIL_CHESTPLATE.name());
 	public static final ConfigSetting GUI_FILTER_ITEMS_ARMOR_NAME = new ConfigSetting(config, "gui.filter.items.armor.name", "&e&lArmor");
 	public static final ConfigSetting GUI_FILTER_ITEMS_ARMOR_LORE = new ConfigSetting(config, "gui.filter.items.armor.lore", Collections.singletonList("&7Click to set the filter to&f: &eArmor"));
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_WEAPONS_SLOTS = new ConfigSetting(config, "gui.filter.items.weapons.slots", 22);
 	public static final ConfigSetting GUI_FILTER_ITEMS_WEAPONS_ITEM = new ConfigSetting(config, "gui.filter.items.weapons.item", CompMaterial.DIAMOND_SWORD.name());
 	public static final ConfigSetting GUI_FILTER_ITEMS_WEAPONS_NAME = new ConfigSetting(config, "gui.filter.items.weapons.name", "&e&lWeapons");
 	public static final ConfigSetting GUI_FILTER_ITEMS_WEAPONS_LORE = new ConfigSetting(config, "gui.filter.items.weapons.lore", Collections.singletonList("&7Click to set the filter to&f: &eWeapons"));
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_TOOLS_SLOTS = new ConfigSetting(config, "gui.filter.items.tools.slots", 23);
 	public static final ConfigSetting GUI_FILTER_ITEMS_TOOLS_ITEM = new ConfigSetting(config, "gui.filter.items.tools.item", CompMaterial.IRON_PICKAXE.name());
 	public static final ConfigSetting GUI_FILTER_ITEMS_TOOLS_NAME = new ConfigSetting(config, "gui.filter.items.tools.name", "&e&lTools");
 	public static final ConfigSetting GUI_FILTER_ITEMS_TOOLS_LORE = new ConfigSetting(config, "gui.filter.items.tools.lore", Collections.singletonList("&7Click to set the filter to&f: &eTools"));
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_SPAWNERS_SLOTS = new ConfigSetting(config, "gui.filter.items.spawners.slots",24);
 	public static final ConfigSetting GUI_FILTER_ITEMS_SPAWNERS_ITEM = new ConfigSetting(config, "gui.filter.items.spawners.item", CompMaterial.CREEPER_SPAWN_EGG.name());
 	public static final ConfigSetting GUI_FILTER_ITEMS_SPAWNERS_NAME = new ConfigSetting(config, "gui.filter.items.spawners.name", "&e&LSpawners");
 	public static final ConfigSetting GUI_FILTER_ITEMS_SPAWNERS_LORE = new ConfigSetting(config, "gui.filter.items.spawners.lore", Collections.singletonList("&7Click to set the filter to&f: &eSpawners"));
 
+	public static final ConfigSetting GUI_FILTER_ITEMS_BLOCKS_SLOTS = new ConfigSetting(config, "gui.filter.items.blocks.slots",25);
 	public static final ConfigSetting GUI_FILTER_ITEMS_BLOCKS_ITEM = new ConfigSetting(config, "gui.filter.items.blocks.item", CompMaterial.GOLD_BLOCK.name());
 	public static final ConfigSetting GUI_FILTER_ITEMS_BLOCKS_NAME = new ConfigSetting(config, "gui.filter.items.blocks.name", "&e&lBlocks");
 	public static final ConfigSetting GUI_FILTER_ITEMS_BLOCKS_LORE = new ConfigSetting(config, "gui.filter.items.blocks.lore", Collections.singletonList("&7Click to set the filter to&f: &eBlocks"));

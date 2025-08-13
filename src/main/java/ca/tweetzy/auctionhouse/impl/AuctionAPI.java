@@ -69,6 +69,7 @@ public final class AuctionAPI implements AuctionHouseAPI {
 			} else {
 				if (Settings.CURRENCY_VAULT_SYMBOL_OVERRIDES.getBoolean())
 					symbols.setCurrencySymbol(Settings.CURRENCY_VAULT_SYMBOL.getString());
+
 			}
 
 			decimalFormat.setDecimalFormatSymbols(symbols);
