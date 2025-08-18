@@ -215,6 +215,7 @@ public class PlayerListeners implements Listener {
 	public void onInventoryClick(PrepareAnvilEvent event) {
 		ItemStack stack = event.getResult();
 		if (stack == null || stack.getType() == CompMaterial.AIR.get() || stack.getAmount() == 0) return;
+		if (!Settings.PREVENT_SALE_OF_REPAIRED_ITEMS.getBoolean()) return;
 
 		NBT.modify(stack, nbt -> {
 			nbt.setBoolean("AuctionHouseRepaired", true);
