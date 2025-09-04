@@ -129,13 +129,13 @@ public class PlayerListeners implements Listener {
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) != null && AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed() != null) {
 
-//			final ItemStack toGiveRaw = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed();
+			final ItemStack toGiveRaw = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed();
 //
-//			if (BundleUtil.isBundledItem(toGiveRaw)) {
-//				PlayerUtils.giveItem(player, BundleUtil.extractBundleItems(toGiveRaw));
-//			} else {
-//				PlayerUtils.giveItem(player, toGiveRaw);
-//			}
+			if (BundleUtil.isBundledItem(toGiveRaw)) {
+				PlayerUtils.giveItem(player, BundleUtil.extractBundleItems(toGiveRaw));
+			} else {
+				PlayerUtils.giveItem(player, toGiveRaw);
+			}
 
 			AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setItemBeingListed(null);
 			AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setPlayer(null);

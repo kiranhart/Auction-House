@@ -34,6 +34,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 public final class MeteorClientListeners implements Listener {
 
@@ -43,7 +44,9 @@ public final class MeteorClientListeners implements Listener {
 	public void onCraftDuringSell(final PrepareItemCraftEvent event) {
 		final CraftingInventory craftingInventory = event.getInventory();
 
-		if (AuctionHouse.getAuctionPlayerManager().isInSellProcess((Player) craftingInventory.getViewers().get(0)) && !isCancelled) {
+		final List<HumanEntity> viewers = craftingInventory.getViewers();
+
+		if (!viewers.isEmpty() && AuctionHouse.getAuctionPlayerManager().isInSellProcess((Player) craftingInventory.getViewers().get(0)) && !isCancelled) {
 			isCancelled = true;
 			craftingInventory.setMatrix(new ItemStack[0]);
 			craftingInventory.setResult(null);
@@ -55,7 +58,7 @@ public final class MeteorClientListeners implements Listener {
 	public void onPlayerPlaceItemIntoFrame(final PlayerInteractEntityEvent event) {
 		final Player player = event.getPlayer();
 
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
+		if (AuctionHouse.getAuctionPlayerManager().isInSellProcess(player)) {
 			event.setCancelled(true);
 		}
 	}
@@ -64,21 +67,21 @@ public final class MeteorClientListeners implements Listener {
 	public void onItemDropDuringSell(final PlayerDropItemEvent event) {
 		final Player player = event.getPlayer();
 
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) event.setCancelled(true);
+		if (AuctionHouse.getAuctionPlayerManager().isInSellProcess(player)) event.setCancelled(true);
 	}
 
 	@EventHandler
 	public void onHotbarSwapDuringSell(final PlayerItemHeldEvent event) {
 		final Player player = event.getPlayer();
 
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) event.setCancelled(true);
+		if (AuctionHouse.getAuctionPlayerManager().isInSellProcess(player)) event.setCancelled(true);
 	}
 
 	@EventHandler
 	public void onOffhandSwap(final PlayerSwapHandItemsEvent event) {
 		final Player player = event.getPlayer();
 
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
+		if (AuctionHouse.getAuctionPlayerManager().isInSellProcess(player)) {
 			event.setCancelled(true);
 		}
 	}
@@ -89,7 +92,7 @@ public final class MeteorClientListeners implements Listener {
 		if (!(clicker instanceof Player)) return;
 
 		final Player player = (Player) clicker;
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) {
+		if (AuctionHouse.getAuctionPlayerManager().isInSellProcess(player)) {
 			event.setCancelled(true);
 		}
 	}
@@ -98,7 +101,7 @@ public final class MeteorClientListeners implements Listener {
 	public void onCommandDuringSell(final PlayerCommandPreprocessEvent event) {
 		final Player player = event.getPlayer();
 
-		if (AuctionHouse.getInstance().getAuctionPlayerManager().isInSellProcess(player)) event.setCancelled(true);
+		if (AuctionHouse.getAuctionPlayerManager().isInSellProcess(player)) event.setCancelled(true);
 	}
 
 	@EventHandler
