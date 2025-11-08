@@ -8,14 +8,14 @@
 
     <name>AuctionHouse</name>
     <description>The ultimate auction solution for your server</description>
-    <version>2.150.1</version>
+    <version>2.152.0</version>
     <packaging>jar</packaging>
     <properties>
         <author>Kiran Hart</author>
         <jarName>${project.name}</jarName>
         <main.class>${project.groupId}.${project.artifactId}.${project.name}</main.class>
         <java.version>8</java.version>
-        <flight.version>3.39.0</flight.version>
+        <flight.version>3.40.0</flight.version>
         <flight.path>ca.tweetzy</flight.path>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -400,7 +400,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>D:\Development\Spigot Servers\21.1\plugins</outputDirectory>
+                            <outputDirectory>D:\Development\Spigot Servers\1.21.4\plugins</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${project.build.directory}</directory>

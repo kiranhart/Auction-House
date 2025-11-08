@@ -38,7 +38,7 @@ public class AutoSaveTask extends BukkitRunnable {
 	public static AutoSaveTask startTask() {
 		if (instance == null) {
 			instance = new AutoSaveTask();
-			instance.runTaskTimerAsynchronously(AuctionHouse.getInstance(), 20 * 5, (long) 20 * Settings.AUTO_SAVE_EVERY.getInt());
+			instance.runTaskTimerAsynchronously(AuctionHouse.getInstance(), 20 * Settings.AUTO_SAVE_EVERY.getInt() , (long) 20 * Settings.AUTO_SAVE_EVERY.getInt());
 		}
 		return instance;
 	}

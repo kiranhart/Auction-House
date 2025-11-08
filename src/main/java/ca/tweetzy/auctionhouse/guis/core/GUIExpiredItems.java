@@ -22,7 +22,9 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
+import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
+import ca.tweetzy.auctionhouse.guis.confirmation.GUIGeneralConfirm;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -106,6 +108,24 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 			this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
 		}
 
+
+		if (Settings.EXPIRE_MENU_REQUIRES_CONFIRM.getBoolean()) {
+			click.manager.showGUI(click.player, new GUIGeneralConfirm(this.auctionPlayer, auctionedItem.getItem(), confirmed -> {
+				if (confirmed) {
+					give(isBundle, auctionedItem, click);
+				}
+
+				click.manager.showGUI(click.player, new GUIExpiredItems(this.parent, this.auctionPlayer, this.lastClicked));
+			}));
+
+
+		} else {
+			give(isBundle, auctionedItem, click);
+		}
+
+	}
+
+	private void give(boolean isBundle, AuctionedItem auctionedItem, GuiClickEvent click) {
 		if (isBundle) {
 			if (Settings.BUNDLE_IS_OPENED_ON_RECLAIM.getBoolean()) {
 				final List<ItemStack> bundleItems = BundleUtil.extractBundleItems(auctionedItem.getItem());

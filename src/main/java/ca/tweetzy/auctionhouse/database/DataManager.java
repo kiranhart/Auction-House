@@ -319,9 +319,17 @@ public class DataManager extends DataManagerAbstract {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
 			final long startTime = System.currentTimeMillis();
 
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions")) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions");
+				 PreparedStatement versionUpdateStatement = connection.prepareStatement(
+						 "UPDATE " + this.getTablePrefix() + "auctions SET serialize_version = 1, itemstack = ? WHERE id = ?");
+				 PreparedStatement itemUpdateStatement = connection.prepareStatement(
+						 "UPDATE " + this.getTablePrefix() + "auctions SET itemstack = ? WHERE id = ?")) {
+
 				ResultSet resultSet = statement.executeQuery();
 				final List<UUID> toRemove = new ArrayList<>();
+
+				int batchSize = 0;
+				final int BATCH_LIMIT = 500; // tweak as needed
 
 				while (resultSet.next()) {
 					AuctionedItem item = extractAuctionedItem(resultSet);
@@ -330,45 +338,56 @@ public class DataManager extends DataManagerAbstract {
 						continue;
 					}
 
+					// Handle serialize_version upgrade
 					if (resultSet.getInt("serialize_version") == 0) {
-						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
-							try {
-								updateStatement.setString(1, QuickItem.toString(item.getItem()));
-								updateStatement.setString(2, resultSet.getString("id"));
-								updateStatement.executeUpdate();
-							} catch (NbtApiException ignored) {
-							}
+						try {
+							versionUpdateStatement.setString(1, QuickItem.toString(item.getItem()));
+							versionUpdateStatement.setString(2, resultSet.getString("id"));
+							versionUpdateStatement.addBatch();
+							batchSize++;
+						} catch (NbtApiException ignored) {
 						}
 					}
 
+					// Backup + itemstack handling
 					final String backupItemRaw = resultSet.getString("itemstack");
 					final ItemStack itemBackup = QuickItem.getItem(backupItemRaw);
 
-					try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET itemstack = ? WHERE id = ?")) {
-
-						boolean backupFallback = false;
-						try {
-							updateStatement.setString(1, QuickItem.toString(itemBackup));
-							updateStatement.setString(2, resultSet.getString("id"));
-							updateStatement.executeUpdate();
-						} catch (NbtApiException ignored) {
-							backupFallback = true;
-						}
-
-						if (backupFallback) {
-							// Attempt to update with the backup raw string
-							updateStatement.setString(1, backupItemRaw);
-							updateStatement.setString(2, resultSet.getString("id"));
-							updateStatement.executeUpdate();
-						}
+					boolean backupFallback = false;
+					try {
+						itemUpdateStatement.setString(1, QuickItem.toString(itemBackup));
+						itemUpdateStatement.setString(2, resultSet.getString("id"));
+						itemUpdateStatement.addBatch();
+						batchSize++;
+					} catch (NbtApiException ignored) {
+						backupFallback = true;
 					}
 
+					if (backupFallback) {
+						itemUpdateStatement.setString(1, backupItemRaw);
+						itemUpdateStatement.setString(2, resultSet.getString("id"));
+						itemUpdateStatement.addBatch();
+						batchSize++;
+					}
+
+					// Handle expired items
 					if (resultSet.getBoolean("expired") && Settings.EXPIRATION_TIME_LIMIT_ENABLED.getBoolean() && Instant.ofEpochMilli(resultSet.getLong("expires_at")).isBefore(Instant.now().minus(Duration.ofHours(Settings.EXPIRATION_TIME_LIMIT.getInt())))) {
 						toRemove.add(UUID.fromString(resultSet.getString("id")));
 					} else {
 						items.add(item);
 					}
+
+					// Execute batches in chunks
+					if (batchSize >= BATCH_LIMIT) {
+						versionUpdateStatement.executeBatch();
+						itemUpdateStatement.executeBatch();
+						batchSize = 0;
+					}
 				}
+
+				// Flush remaining batches
+				versionUpdateStatement.executeBatch();
+				itemUpdateStatement.executeBatch();
 
 				deleteItemsAsync(toRemove);
 				callback.accept(null, items);
@@ -377,12 +396,82 @@ public class DataManager extends DataManagerAbstract {
 				final long elapsedMs = endTime - startTime;
 				Bukkit.getConsoleSender().sendMessage(Common.colorize("&8[&eAuctionHouse&8] &aLoaded & Updated Items In " + elapsedMs + " ms"));
 
-
 			} catch (Exception e) {
 				resolveCallback(callback, e);
 			}
 		}));
 	}
+
+
+//	public void getItems(Callback<ArrayList<AuctionedItem>> callback) {
+//		ArrayList<AuctionedItem> items = new ArrayList<>();
+//		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+//			final long startTime = System.currentTimeMillis();
+//
+//			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions")) {
+//				ResultSet resultSet = statement.executeQuery();
+//				final List<UUID> toRemove = new ArrayList<>();
+//
+//				while (resultSet.next()) {
+//					AuctionedItem item = extractAuctionedItem(resultSet);
+//
+//					if (item == null || item.getItem().getType() == CompMaterial.AIR.get()) {
+//						continue;
+//					}
+//
+//					if (resultSet.getInt("serialize_version") == 0) {
+//						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
+//							try {
+//								updateStatement.setString(1, QuickItem.toString(item.getItem()));
+//								updateStatement.setString(2, resultSet.getString("id"));
+//								updateStatement.executeUpdate();
+//							} catch (NbtApiException ignored) {
+//							}
+//						}
+//					}
+//
+//					final String backupItemRaw = resultSet.getString("itemstack");
+//					final ItemStack itemBackup = QuickItem.getItem(backupItemRaw);
+//
+//					try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET itemstack = ? WHERE id = ?")) {
+//
+//						boolean backupFallback = false;
+//						try {
+//							updateStatement.setString(1, QuickItem.toString(itemBackup));
+//							updateStatement.setString(2, resultSet.getString("id"));
+//							updateStatement.executeUpdate();
+//						} catch (NbtApiException ignored) {
+//							backupFallback = true;
+//						}
+//
+//						if (backupFallback) {
+//							// Attempt to update with the backup raw string
+//							updateStatement.setString(1, backupItemRaw);
+//							updateStatement.setString(2, resultSet.getString("id"));
+//							updateStatement.executeUpdate();
+//						}
+//					}
+//
+//					if (resultSet.getBoolean("expired") && Settings.EXPIRATION_TIME_LIMIT_ENABLED.getBoolean() && Instant.ofEpochMilli(resultSet.getLong("expires_at")).isBefore(Instant.now().minus(Duration.ofHours(Settings.EXPIRATION_TIME_LIMIT.getInt())))) {
+//						toRemove.add(UUID.fromString(resultSet.getString("id")));
+//					} else {
+//						items.add(item);
+//					}
+//				}
+//
+//				deleteItemsAsync(toRemove);
+//				callback.accept(null, items);
+//
+//				final long endTime = System.currentTimeMillis();
+//				final long elapsedMs = endTime - startTime;
+//				Bukkit.getConsoleSender().sendMessage(Common.colorize("&8[&eAuctionHouse&8] &aLoaded & Updated Items In " + elapsedMs + " ms"));
+//
+//
+//			} catch (Exception e) {
+//				resolveCallback(callback, e);
+//			}
+//		}));
+//	}
 
 	public void insertAuction(AuctionedItem item, Callback<AuctionedItem> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
@@ -531,11 +620,79 @@ public class DataManager extends DataManagerAbstract {
 		}));
 	}
 
+//	public void getTransactions(Callback<ArrayList<Transaction>> callback) {
+//		ArrayList<Transaction> transactions = new ArrayList<>();
+//		this.runAsync(() -> this.databaseConnector.connect(connection -> {
+//			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions")) {
+//				ResultSet resultSet = statement.executeQuery();
+//				while (resultSet.next()) {
+//					final Transaction transaction = extractTransaction(resultSet);
+//
+//					if (transaction == null || transaction.getItem().getType() == CompMaterial.AIR.get()) {
+//						continue;
+//					}
+//
+//					if (resultSet.getInt("serialize_version") == 0) {
+//						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "transactions SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
+//							try {
+//								String possible = QuickItem.toString(transaction.getItem());
+//								updateStatement.setString(1, possible);
+//								updateStatement.setString(2, resultSet.getString("id"));
+//								updateStatement.executeUpdate();
+//							} catch (NbtApiException e) {
+//								//todo idk do something
+//							}
+//						}
+//					}
+//
+//
+//					final String backupItemRaw = resultSet.getString("itemstack");
+//					final ItemStack itemBackup = QuickItem.getItem(backupItemRaw);
+//
+//					try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "transactions SET itemstack = ? WHERE id = ?")) {
+//
+//						boolean backupFallback = false;
+//						try {
+//							updateStatement.setString(1, QuickItem.toString(itemBackup));
+//							updateStatement.setString(2, resultSet.getString("id"));
+//							updateStatement.executeUpdate();
+//						} catch (NbtApiException e) {
+//							Bukkit.broadcastMessage("t fail");
+//							backupFallback = true;
+//						}
+//
+//						if (backupFallback) {
+//							// Attempt to update with the backup raw string
+//							updateStatement.setString(1, backupItemRaw);
+//							updateStatement.setString(2, resultSet.getString("id"));
+//							updateStatement.executeUpdate();
+//						}
+//					}
+//
+//					transactions.add(transaction);
+//				}
+//
+//				callback.accept(null, transactions);
+//			} catch (Exception e) {
+//				resolveCallback(callback, e);
+//			}
+//		}));
+//	}
+
 	public void getTransactions(Callback<ArrayList<Transaction>> callback) {
 		ArrayList<Transaction> transactions = new ArrayList<>();
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions")) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions");
+				 PreparedStatement versionUpdateStatement = connection.prepareStatement(
+						 "UPDATE " + this.getTablePrefix() + "transactions SET serialize_version = 1, itemstack = ? WHERE id = ?");
+				 PreparedStatement itemUpdateStatement = connection.prepareStatement(
+						 "UPDATE " + this.getTablePrefix() + "transactions SET itemstack = ? WHERE id = ?")) {
+
 				ResultSet resultSet = statement.executeQuery();
+
+				int batchSize = 0;
+				final int BATCH_LIMIT = 500; // tune as needed
+
 				while (resultSet.next()) {
 					final Transaction transaction = extractTransaction(resultSet);
 
@@ -543,51 +700,63 @@ public class DataManager extends DataManagerAbstract {
 						continue;
 					}
 
+					// Handle serialize_version upgrade
 					if (resultSet.getInt("serialize_version") == 0) {
-						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "transactions SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
-							try {
-								String possible = QuickItem.toString(transaction.getItem());
-								updateStatement.setString(1, possible);
-								updateStatement.setString(2, resultSet.getString("id"));
-								updateStatement.executeUpdate();
-							} catch (NbtApiException e) {
-								//todo idk do something
-							}
+						try {
+							String possible = QuickItem.toString(transaction.getItem());
+							versionUpdateStatement.setString(1, possible);
+							versionUpdateStatement.setString(2, resultSet.getString("id"));
+							versionUpdateStatement.addBatch();
+							batchSize++;
+						} catch (NbtApiException e) {
+							// TODO: decide what you want here (log, skip, etc.)
 						}
 					}
 
-
+					// Backup + itemstack handling
 					final String backupItemRaw = resultSet.getString("itemstack");
 					final ItemStack itemBackup = QuickItem.getItem(backupItemRaw);
 
-					try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "transactions SET itemstack = ? WHERE id = ?")) {
+					boolean backupFallback = false;
+					try {
+						itemUpdateStatement.setString(1, QuickItem.toString(itemBackup));
+						itemUpdateStatement.setString(2, resultSet.getString("id"));
+						itemUpdateStatement.addBatch();
+						batchSize++;
+					} catch (NbtApiException e) {
+						Bukkit.broadcastMessage("t fail");
+						backupFallback = true;
+					}
 
-						boolean backupFallback = false;
-						try {
-							updateStatement.setString(1, QuickItem.toString(itemBackup));
-							updateStatement.setString(2, resultSet.getString("id"));
-							updateStatement.executeUpdate();
-						} catch (NbtApiException e) {
-							backupFallback = true;
-						}
-
-						if (backupFallback) {
-							// Attempt to update with the backup raw string
-							updateStatement.setString(1, backupItemRaw);
-							updateStatement.setString(2, resultSet.getString("id"));
-							updateStatement.executeUpdate();
-						}
+					if (backupFallback) {
+						itemUpdateStatement.setString(1, backupItemRaw);
+						itemUpdateStatement.setString(2, resultSet.getString("id"));
+						itemUpdateStatement.addBatch();
+						batchSize++;
 					}
 
 					transactions.add(transaction);
+
+					// Execute batches in chunks
+					if (batchSize >= BATCH_LIMIT) {
+						versionUpdateStatement.executeBatch();
+						itemUpdateStatement.executeBatch();
+						batchSize = 0;
+					}
 				}
 
+				// Flush remaining batches
+				versionUpdateStatement.executeBatch();
+				itemUpdateStatement.executeBatch();
+
 				callback.accept(null, transactions);
+
 			} catch (Exception e) {
 				resolveCallback(callback, e);
 			}
 		}));
 	}
+
 
 	public void insertTransaction(Transaction transaction, Callback<Transaction> callback) {
 		this.runAsync(() -> this.databaseConnector.connect(connection -> {

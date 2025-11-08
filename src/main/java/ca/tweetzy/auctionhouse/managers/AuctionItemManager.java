@@ -64,6 +64,7 @@ public class AuctionItemManager {
 				for (AuctionedItem item : results) {
 					addAuctionItem(item);
 				}
+
 			} else {
 				error.printStackTrace();
 			}

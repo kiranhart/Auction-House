@@ -144,6 +144,7 @@ public class Settings {
 	public static final ConfigSetting ALLOW_REPEAT_BIDS = new ConfigSetting(config, "auction setting.allow repeated bids", true, "If true, the highest bidder on an item can keep placing bids to raise their initial bid.");
 	public static final ConfigSetting COLLECTION_BIN_ITEM_LIMIT = new ConfigSetting(config, "auction setting.collection bin item limit", 45, "How many items can be stored in the collection bin. If this is reached the player cannot list anymore items, regardless of active listings");
 	public static final ConfigSetting SELL_MENU_SKIPS_TYPE_SELECTION = new ConfigSetting(config, "auction setting.skip type selection for sell menu", false, "If true the sell menu process will skip asking for the listing type depending on your auction settings (ie. bin only or auction only)");
+	public static final ConfigSetting EXPIRE_MENU_REQUIRES_CONFIRM = new ConfigSetting(config, "auction setting.collection bin needs confirm", true, "If true the player must confirm they want to remove their item from the collection bin");
 
 	public static final ConfigSetting BUNDLE_LIST_LIMIT = new ConfigSetting(config, "auction setting.bundle listing limit.listing limit", 45, "How many bundled listings can a player sell at any given time");
 	public static final ConfigSetting BUNDLE_LIST_LIMIT_INCLUDE_COLLECTION_BIN = new ConfigSetting(config, "auction setting.bundle listing limit.include collection bin", false, "If true, collection bin bundles will also count towards this limit");
@@ -892,6 +893,19 @@ public class Settings {
 	public static final ConfigSetting GUI_CONFIRM_CANCEL_YES_NAME = new ConfigSetting(config, "gui.confirm cancel.yes.name", "&a&lConfirm");
 	public static final ConfigSetting GUI_CONFIRM_CANCEL_YES_LORE = new ConfigSetting(config, "gui.confirm cancel.yes.lore", Collections.singletonList(
 			"&7Click to confirm item cancellation"
+	));
+
+	public static final ConfigSetting GUI_CONFIRM_GENERAL_TITLE = new ConfigSetting(config, "gui.confirm general.title", "&7Are you sure?");
+	public static final ConfigSetting GUI_CONFIRM_GENERAL_NO_ITEM = new ConfigSetting(config, "gui.confirm general.no.item", "RED_STAINED_GLASS_PANE");
+	public static final ConfigSetting GUI_CONFIRM_GENERAL_NO_NAME = new ConfigSetting(config, "gui.confirm general.no.name", "&c&LCancel");
+	public static final ConfigSetting GUI_CONFIRM_GENERAL_NO_LORE = new ConfigSetting(config, "gui.confirm general.no.lore", Collections.singletonList(
+			"&7Click to cancel"
+	));
+
+	public static final ConfigSetting GUI_CONFIRM_GENERAL_YES_ITEM = new ConfigSetting(config, "gui.confirm general.yes.item", "LIME_STAINED_GLASS_PANE");
+	public static final ConfigSetting GUI_CONFIRM_GENERAL_YES_NAME = new ConfigSetting(config, "gui.confirm general.yes.name", "&a&lConfirm");
+	public static final ConfigSetting GUI_CONFIRM_GENERAL_YES_LORE = new ConfigSetting(config, "gui.confirm general.yes.lore", Collections.singletonList(
+			"&7Click to retrieve item"
 	));
 
 	/*  ===============================

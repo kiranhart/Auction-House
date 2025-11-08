@@ -135,22 +135,21 @@ public final class AuctionCreator {
 		if (auctionItem.getListedWorld() == null && seller != null)
 			auctionItem.setListedWorld(seller.getWorld().getName());
 
+		AuctionStartEvent startEvent = new AuctionStartEvent(seller, auctionItem, listingFee);
 
 		// check if not request
 		if (!auctionItem.isRequest()) {
-			AuctionStartEvent startEvent = new AuctionStartEvent(seller, auctionItem, listingFee);
-
-			if (Bukkit.isPrimaryThread())
+			if (Bukkit.isPrimaryThread()) {
 				Bukkit.getServer().getPluginManager().callEvent(startEvent);
-			else
+			} else {
 				Bukkit.getScheduler().runTask(AuctionHouse.getInstance(), () -> Bukkit.getServer().getPluginManager().callEvent(startEvent));
-
-			if (startEvent.isCancelled()) {
-				result.accept(auctionItem, EVENT_CANCELED);
-				return;
 			}
 		}
 
+		if (startEvent.isCancelled()) {
+			result.accept(auctionItem, EVENT_CANCELED);
+			return;
+		}
 		// overwrite to be random uuid since it's a server auction
 
 		if (auctionItem.isServerItem() && !auctionItem.isRequest()) {
