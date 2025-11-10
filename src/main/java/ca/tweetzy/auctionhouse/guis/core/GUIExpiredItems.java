@@ -22,7 +22,6 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
-import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIGeneralConfirm;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
@@ -114,10 +113,8 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 				if (confirmed) {
 					give(isBundle, auctionedItem, click);
 				}
-
 				click.manager.showGUI(click.player, new GUIExpiredItems(this.parent, this.auctionPlayer, this.lastClicked));
 			}));
-
 
 		} else {
 			give(isBundle, auctionedItem, click);
