@@ -8,14 +8,15 @@
 
     <name>AuctionHouse</name>
     <description>The ultimate auction solution for your server</description>
-    <version>2.152.1</version>
+    <version>2.152.2</version>
     <packaging>jar</packaging>
     <properties>
         <author>Kiran Hart</author>
         <jarName>${project.name}</jarName>
         <main.class>${project.groupId}.${project.artifactId}.${project.name}</main.class>
-        <java.version>8</java.version>
-        <flight.version>3.41.0</flight.version>
+        <!-- Bumped Java version to 21 so the build JDK can read/handle dependencies compiled with newer class file versions (major version 65). -->
+        <java.version>21</java.version>
+        <flight.version>3.43.0</flight.version>
         <flight.path>ca.tweetzy</flight.path>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -286,8 +287,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <!-- Use release for consistent compilation and bootclasspath handling -->
+                    <release>${java.version}</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -315,7 +316,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <!-- Bumped shade plugin to a more recent version with newer ASM support for modern class versions (Java 21 support) -->
+                <version>3.5.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

@@ -60,7 +60,13 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 
 	@Override
 	protected void draw() {
+		// Preserve page number before reset (reset() sets page = 1)
+		int currentPage = this.page;
 		reset();
+		// Restore page number after reset
+		this.page = currentPage;
+		// Set up page change handler synchronously before async operations
+		setOnPage(e -> draw());
 		populateItems();
 		drawFixed();
 	}
@@ -76,18 +82,43 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 			if (!this.async) {
 				renderItems();
 			} else {
+				// Do all heavy work async, then update GUI on main thread
 				AuctionHouse.newChain().asyncFirst(() -> {
-					this.fillSlots().forEach(slot -> setItem(slot, getDefaultItem()));
+					// Heavy operations on async thread:
+					// - prePopulate() might do filtering/sorting
+					// - Stream operations for pagination
 					prePopulate();
-
 					return this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toList());
-				}).asyncLast((data) -> {
+				}).syncLast((data) -> {
+					// All GUI operations on main thread (required for Bukkit API)
+					// Calculate pages
 					pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
+					
+					// Clear fill slots
+					this.fillSlots().forEach(slot -> setItem(slot, getDefaultItem()));
 
-					setPrevPage(getPreviousButtonSlot(), getPreviousButton());
-					setNextPage(getNextButtonSlot(), getNextButton());
-					setOnPage(e -> draw());
+					// Set up navigation buttons
+					// Only show previous button if not on first page
+					if (this.page > 1) {
+						setPrevPage(getPreviousButtonSlot(), getPreviousButton());
+					} else {
+						// Lock slot and remove click handlers when button is hidden
+						setUnlocked(getPreviousButtonSlot(), false);
+						setConditional(getPreviousButtonSlot(), null, null);
+						setItem(getPreviousButtonSlot(), getDefaultItem());
+					}
+					
+					// Only show next button if not on last page
+					if (this.page < pages) {
+						setNextPage(getNextButtonSlot(), getNextButton());
+					} else {
+						// Lock slot and remove click handlers when button is hidden
+						setUnlocked(getNextButtonSlot(), false);
+						setConditional(getNextButtonSlot(), null, null);
+						setItem(getNextButtonSlot(), getDefaultItem());
+					}
 
+					// Set items for current page
 					for (int i = 0; i < this.rows * 9; i++) {
 						if (this.fillSlots().contains(i) && this.fillSlots().indexOf(i) < data.size()) {
 							final T object = data.get(this.fillSlots().indexOf(i));
@@ -106,9 +137,26 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 		final List<T> itemsToFill = this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toList());
 		pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
 
-		setPrevPage(getPreviousButtonSlot(), getPreviousButton());
-		setNextPage(getNextButtonSlot(), getNextButton());
-		setOnPage(e -> draw());
+		// Only show previous button if not on first page
+		if (this.page > 1) {
+			setPrevPage(getPreviousButtonSlot(), getPreviousButton());
+		} else {
+			// Lock slot and remove click handlers when button is hidden
+			setUnlocked(getPreviousButtonSlot(), false);
+			setConditional(getPreviousButtonSlot(), null, null);
+			setItem(getPreviousButtonSlot(), getDefaultItem());
+		}
+		
+		// Only show next button if not on last page
+		if (this.page < pages) {
+			setNextPage(getNextButtonSlot(), getNextButton());
+		} else {
+			// Lock slot and remove click handlers when button is hidden
+			setUnlocked(getNextButtonSlot(), false);
+			setConditional(getNextButtonSlot(), null, null);
+			setItem(getNextButtonSlot(), getDefaultItem());
+		}
+		// setOnPage is already set in draw() method, no need to set it again here
 
 		for (int i = 0; i < this.rows * 9; i++) {
 			if (this.fillSlots().contains(i) && this.fillSlots().indexOf(i) < itemsToFill.size()) {

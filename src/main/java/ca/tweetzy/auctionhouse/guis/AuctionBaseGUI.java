@@ -42,7 +42,7 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 	}
 
 	public AuctionBaseGUI(Gui parent, @NonNull final Player player, @NonNull String title) {
-		super(parent, title);
+		super(parent, title, 1);
 		this.player = player;
 		setTitle(PlaceholderAPIHook.tryReplace(player, title));
 		applyDefaults();

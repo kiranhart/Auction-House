@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public final class PluginConfigGUI extends AuctionPagedGUI<Pair<String, MemoryConfiguration>> {
@@ -46,6 +46,6 @@ public final class PluginConfigGUI extends AuctionPagedGUI<Pair<String, MemoryCo
 
 	@Override
 	protected List<Integer> fillSlots() {
-		return Arrays.asList(13);
+		return Collections.singletonList(13);
 	}
 }

@@ -133,6 +133,22 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 					return;
 				}
 
+				// Determine if this purchase will fully consume the item
+				boolean willFullyConsume = !this.buyingSpecificQuantity || 
+					(located.getItem().getAmount() - this.purchaseQuantity < 1) || 
+					located.isInfinite();
+
+				// CRITICAL: Atomically mark item as purchased BEFORE processing to prevent race conditions
+				// Only mark if the item will be fully consumed (for partial purchases, multiple buyers are allowed)
+				// If another player already purchased it, this will return false and we'll exit early
+				if (willFullyConsume && !located.isInfinite()) {
+					if (!AuctionHouse.getAuctionItemManager().tryMarkAsPurchased(located)) {
+						AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(e.player);
+						e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+						return;
+					}
+				}
+
 				double buyNowPrice = this.buyingSpecificQuantity ? this.purchaseQuantity * this.pricePerItem : located.getBasePrice();
 				double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * buyNowPrice : 0D;
 
@@ -191,8 +207,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 					AuctionHouse.getDataManager().insertAuction(toGive, (error, inserted) -> AuctionHouse.getAuctionItemManager().addAuctionItem(toGive));
 
-
-					AuctionHouse.getAuctionItemManager().sendToGarbage(this.auctionItem);
+					// Item already marked as purchased above (race condition protection)
 
 					AuctionHouse.getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(player -> {
 						AuctionHouse.getTransactionManager().removeAllRelatedPlayers(auctionItem.getId());
@@ -249,8 +264,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 						transferFunds(e.player, buyNowPrice);
 					} else {
 						transferFunds(e.player, buyNowPrice);
-						if (!located.isInfinite())
-							AuctionHouse.getAuctionItemManager().sendToGarbage(located);
+						// Item already marked as purchased above (race condition protection) - no need to sendToGarbage again
 					}
 
 					NBT.modify(toGive, nbt -> {
@@ -262,8 +276,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 				} else {
 					transferFunds(e.player, buyNowPrice);
-					if (!located.isInfinite())
-						AuctionHouse.getAuctionItemManager().sendToGarbage(located);
+					// Item already marked as purchased above (race condition protection) - no need to sendToGarbage again
 
 					if (Settings.BIDDING_TAKES_MONEY.getBoolean() && !located.getHighestBidder().equals(located.getOwner())) {
 						final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(located.getHighestBidder());

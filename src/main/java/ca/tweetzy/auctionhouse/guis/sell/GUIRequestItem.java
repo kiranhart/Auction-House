@@ -26,7 +26,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
-import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
+import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -63,8 +63,8 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 				.lore(this.player, Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_AMT_LORE.getStringList(), "request_amount", amount))
 				.make(), click -> {
 
-			click.gui.exit();
-			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter request amount.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter request amount.subtitle").getMessage()) {
+		click.gui.exit();
+		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter request amount.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter request amount.subtitle").getMessage()) {
 
 				@Override
 				public void onExit(Player player) {
@@ -109,8 +109,8 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 				.lore(this.player, Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_PRICE_LORE.getStringList(), "request_price", AuctionHouse.getAPI().getNumberAsCurrency(price, false)))
 				.make(), click -> {
 
-			click.gui.exit();
-			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter request price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter request price.subtitle").getMessage()) {
+		click.gui.exit();
+		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter request price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter request price.subtitle").getMessage()) {
 
 				@Override
 				public void onExit(Player player) {

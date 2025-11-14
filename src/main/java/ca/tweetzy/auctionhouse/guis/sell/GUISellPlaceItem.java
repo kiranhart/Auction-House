@@ -46,6 +46,7 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 	private final AuctionPlayer auctionPlayer;
 	private final ViewMode viewMode;
 	private final ListingType listingType;
+	private boolean itemsProcessed = false; // Flag to prevent duplication on close
 
 	public GUISellPlaceItem(@NonNull final AuctionPlayer auctionPlayer, @NonNull final ViewMode viewMode, @NonNull final ListingType listingType) {
 		super(null, auctionPlayer.getPlayer(), viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_TITLE.getString() : Settings.GUI_SELL_PLACE_ITEM_BUNDLE_TITLE.getString(), viewMode == ViewMode.SINGLE_ITEM ? 4 : 6);
@@ -63,7 +64,12 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 			setItems(0, 35, AIR);
 		}
 
-		setOnClose(close -> gatherSellableItems().forEach(item -> PlayerUtils.giveItem(close.player, item)));
+		setOnClose(close -> {
+			// Only return items if they haven't been processed yet (prevents duplication)
+			if (!this.itemsProcessed) {
+				gatherSellableItems().forEach(item -> PlayerUtils.giveItem(close.player, item));
+			}
+		});
 
 		setPlayerInventoryAction(this::handleBlockedItemClick);
 		setDefaultAction(click -> {
@@ -119,6 +125,19 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 
 			final ItemStack toList = items.size() > 1 ? AuctionAPI.getInstance().createBundledItem(items.stream().findFirst().orElse(null), items.toArray(new ItemStack[0])) : items.stream().findFirst().orElse(null);
 			if (toList == null) return;
+
+			// Mark items as processed BEFORE clearing to prevent race condition
+			// If GUI closes between gathering and clearing, onClose won't return items
+			this.itemsProcessed = true;
+
+			// Clear items from GUI inventory to prevent duplication when setOnClose runs
+			if (this.viewMode == ViewMode.SINGLE_ITEM) {
+				click.gui.setItem(1, 4, AIR);
+			} else {
+				for (int i = 0; i < 36; i++) {
+					click.gui.setItem(i, AIR);
+				}
+			}
 
 			this.auctionPlayer.setItemBeingListed(toList);
 			click.gui.exit();

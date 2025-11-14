@@ -21,7 +21,7 @@ import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.SlotHelper;
-import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
+import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
@@ -354,9 +354,9 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		cancelTask();
 
 		if (Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean()) {
-			click.gui.exit();
+		click.gui.exit();
 
-			new TitleInput(player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.subtitle").getMessage()) {
+		new TitleInput(AuctionHouse.getInstance(), player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.subtitle").getMessage()) {
 
 				@Override
 				public void onExit(Player player) {

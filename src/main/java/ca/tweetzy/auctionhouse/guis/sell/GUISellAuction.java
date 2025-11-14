@@ -32,11 +32,12 @@ import ca.tweetzy.auctionhouse.guis.selector.GUICurrencyPicker;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.TimeConverter;
-import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
+import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -74,15 +75,20 @@ public final class GUISellAuction extends AuctionBaseGUI {
 
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_SELL_AUCTION_BG_ITEM.getString()).make()));
 
-		setOnClose(close -> {
+	setOnClose(close -> {
+		// Don't return item if we're opening an input (will be handled by onExit/onResult)
+		if (Gui.hasActiveInput(this.player)) {
+			return;
+		}
+			
 			final ItemStack itemToGive = this.auctionPlayer.getItemBeingListed();
-			if (itemToGive != null)
-
+			if (itemToGive != null) {
 				if (BundleUtil.isBundledItem(itemToGive)) {
 					PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(itemToGive));
 				} else {
 					PlayerUtils.giveItem(close.player, itemToGive);
 				}
+			}
 
 			this.auctionPlayer.setItemBeingListed(null);
 		});
@@ -132,12 +138,12 @@ public final class GUISellAuction extends AuctionBaseGUI {
 							"remaining_hours", times[1],
 							"remaining_minutes", times[2],
 							"remaining_seconds", times[3]
-					)).make(), click -> {
+		)).make(), click -> {
 
-				click.gui.exit();
-				new TitleInput(
-						click.player, Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage())
-				) {
+		click.gui.exit();
+			new TitleInput(
+					AuctionHouse.getInstance(), click.player, Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage())
+			) {
 
 					@Override
 					public void onExit(Player player) {
@@ -153,8 +159,8 @@ public final class GUISellAuction extends AuctionBaseGUI {
 						} catch (IllegalArgumentException e) {
 						}
 
-						if ((time / 1000) <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt()) {
-							click.manager.showGUI(click.player, new GUISellAuction(
+					if ((time / 1000) <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt()) {
+						click.manager.showGUI(click.player, new GUISellAuction(
 									GUISellAuction.this.auctionPlayer,
 									GUISellAuction.this.binPrice,
 									GUISellAuction.this.startingBid,
@@ -181,8 +187,8 @@ public final class GUISellAuction extends AuctionBaseGUI {
 						.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(), "listing_bin_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(binPrice, this.currency, this.currencyItem)))
 						.make(), click -> {
 
-					click.gui.exit();
-					new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.subtitle").getMessage()) {
+				click.gui.exit();
+				new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.subtitle").getMessage()) {
 
 						@Override
 						public void onExit(Player player) {
@@ -232,8 +238,8 @@ public final class GUISellAuction extends AuctionBaseGUI {
 				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(), "listing_start_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(startingBid, this.currency, this.currencyItem)))
 				.make(), click -> {
 
-			click.gui.exit();
-			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.starting bid price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.starting bid price.subtitle").getMessage()) {
+		click.gui.exit();
+		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.starting bid price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.starting bid price.subtitle").getMessage()) {
 
 				@Override
 				public void onExit(Player player) {
@@ -269,7 +275,6 @@ public final class GUISellAuction extends AuctionBaseGUI {
 					if (listingAmount > Settings.MAX_AUCTION_START_PRICE.getDouble())
 						listingAmount = Settings.MAX_AUCTION_START_PRICE.getDouble();
 
-
 					click.manager.showGUI(click.player, new GUISellAuction(
 							GUISellAuction.this.auctionPlayer,
 							GUISellAuction.this.binPrice,
@@ -293,8 +298,8 @@ public final class GUISellAuction extends AuctionBaseGUI {
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(), "listing_increment_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(bidIncrement, this.currency, this.currencyItem)))
 					.make(), click -> {
 
-				click.gui.exit();
-				new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.subtitle").getMessage()) {
+			click.gui.exit();
+			new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.subtitle").getMessage()) {
 
 					@Override
 					public void onExit(Player player) {
@@ -405,6 +410,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 				}
 
 				draw();
+				update();
 			});
 		}
 	}

@@ -23,7 +23,7 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
 import ca.tweetzy.auctionhouse.api.sync.SynchronizeResult;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
-import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
+import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
@@ -72,8 +72,8 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 	@Override
 	protected void onClick(ListingPriceLimit listingPriceLimit, GuiClickEvent event) {
 
-		if (event.clickType == ClickType.LEFT) {
-			new TitleInput(event.player, AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.min.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.min.subtitle").getMessage()) {
+	if (event.clickType == ClickType.LEFT) {
+		new TitleInput(AuctionHouse.getInstance(), event.player, AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.min.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.min.subtitle").getMessage()) {
 
 				@Override
 				public void onExit(Player player) {
@@ -107,8 +107,8 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 			};
 		}
 
-		if (event.clickType == ClickType.RIGHT) {
-			new TitleInput(event.player, AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.max.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.max.subtitle").getMessage()) {
+	if (event.clickType == ClickType.RIGHT) {
+		new TitleInput(AuctionHouse.getInstance(), event.player, AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.max.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.max.subtitle").getMessage()) {
 
 				@Override
 				public void onExit(Player player) {

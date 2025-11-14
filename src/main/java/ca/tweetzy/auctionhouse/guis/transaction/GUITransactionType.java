@@ -22,7 +22,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
-import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
+import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.flight.utils.MathUtil;
@@ -89,9 +89,9 @@ public final class GUITransactionType extends AuctionBaseGUI {
 					.lore(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_LORE.getStringList())
 					.make(), e -> {
 
-				e.gui.close();
+			e.gui.close();
 
-				new TitleInput(player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter deletion range.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter deletion range.subtitle").getMessage()) {
+			new TitleInput(AuctionHouse.getInstance(), player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter deletion range.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter deletion range.subtitle").getMessage()) {
 
 					@Override
 					public void onExit(Player player) {

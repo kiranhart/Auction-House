@@ -32,11 +32,12 @@ import ca.tweetzy.auctionhouse.guis.selector.GUICurrencyPicker;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.TimeConverter;
-import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
+import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.core.utils.PlayerUtils;
+import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -71,15 +72,19 @@ public final class GUISellBin extends AuctionBaseGUI {
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_SELL_BIN_BG_ITEM.getString()).make()));
 
 		setOnClose(close -> {
+			// Don't return item if we're opening an input (will be handled by onExit/onResult)
+		if (Gui.hasActiveInput(this.player)) {
+			return;
+		}
+			
 			final ItemStack itemToGive = this.auctionPlayer.getItemBeingListed();
-			if (itemToGive != null)
-
+			if (itemToGive != null) {
 				if (BundleUtil.isBundledItem(itemToGive)) {
 					PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(itemToGive));
 				} else {
 					PlayerUtils.giveItem(close.player, itemToGive);
 				}
-
+			}
 
 			this.auctionPlayer.setItemBeingListed(null);
 		});
@@ -129,8 +134,8 @@ public final class GUISellBin extends AuctionBaseGUI {
 							"remaining_seconds", times[3]
 					)).make(), click -> {
 
-				click.gui.exit();
-				new TitleInput(click.player, Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage())) {
+			click.gui.exit();
+			new TitleInput(AuctionHouse.getInstance(), click.player, Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage())) {
 
 
 					@Override
@@ -166,8 +171,8 @@ public final class GUISellBin extends AuctionBaseGUI {
 				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE.getStringList(), "listing_bin_price", AuctionHouse.getAPI().getNumberAsCurrency(listingPrice)))
 				.make(), click -> {
 
-			click.gui.exit();
-			new TitleInput(click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.subtitle").getMessage()) {
+		click.gui.exit();
+		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.subtitle").getMessage()) {
 
 				@Override
 				public void onExit(Player player) {

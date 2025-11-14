@@ -83,6 +83,17 @@ public class AuctionItemManager {
 		this.garbageBin.put(auctionedItem.getId(), auctionedItem);
 	}
 
+	/**
+	 * Atomically marks an item as purchased by adding it to the garbage bin.
+	 * Returns true if the item was successfully marked (wasn't already in garbage),
+	 * false if it was already marked (someone else purchased it).
+	 * This prevents race conditions where multiple players try to purchase the same item.
+	 */
+	public boolean tryMarkAsPurchased(@NonNull AuctionedItem auctionedItem) {
+		// putIfAbsent returns null if the key wasn't present (success), or the existing value if it was (failure)
+		return this.garbageBin.putIfAbsent(auctionedItem.getId(), auctionedItem) == null;
+	}
+
 	public AuctionedItem getItem(@NonNull UUID id) {
 		return this.items.getOrDefault(id, null);
 	}

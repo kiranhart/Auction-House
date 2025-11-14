@@ -28,7 +28,7 @@ import ca.tweetzy.auctionhouse.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmBid;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
-import ca.tweetzy.auctionhouse.helpers.input.TitleInput;
+import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.utils.MathUtil;
@@ -86,9 +86,9 @@ public class GUIBid extends AuctionBaseGUI {
 				.lore(this.player, Settings.GUI_BIDDING_ITEMS_CUSTOM_LORE.getStringList())
 				.make(), e -> {
 
-			e.gui.exit();
+		e.gui.exit();
 
-			new TitleInput(player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.subtitle").getMessage()) {
+		new TitleInput(AuctionHouse.getInstance(), player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.subtitle").getMessage()) {
 
 				@Override
 				public void onExit(Player player) {

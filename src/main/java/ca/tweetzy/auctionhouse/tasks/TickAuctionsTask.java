@@ -117,18 +117,28 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 			if (timeRemaining <= 0 && !auctionItem.isExpired()) {
 
+				// CRITICAL: Atomically mark item as processed BEFORE any operations to prevent race conditions
+				// If another thread (purchase/tick) already processed it, skip
+				if (!AuctionHouse.getAuctionItemManager().tryMarkAsPurchased(auctionItem)) {
+					// Item was already processed by another thread, skip
+					continue;
+				}
+
 				// the owner is the highest bidder, so just expire
 				if (auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
-					if (auctionItem.isServerItem() || auctionItem.isRequest())
-						AuctionHouse.getAuctionItemManager().sendToGarbage(auctionItem);
-					else
+					if (auctionItem.isServerItem() || auctionItem.isRequest()) {
+						// Already marked as purchased above
+					} else {
 						auctionItem.setExpired(true);
+					}
 					continue;
 				}
 
 				OfflinePlayer auctionWinner = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
 				if (!auctionWinner.isOnline() && auctionItem.hasValidItemCurrency()) {
 					auctionItem.setExpired(true);
+					// Remove from garbage since we're not processing it (will be handled as expired)
+					AuctionHouse.getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());
 					continue;
 				}
 
@@ -137,10 +147,13 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 				if (!Settings.BIDDING_TAKES_MONEY.getBoolean()) {
 					if (!auctionItem.playerHasSufficientMoney(auctionWinner, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice)) {
-						if (auctionItem.isServerItem())
-							AuctionHouse.getAuctionItemManager().sendToGarbage(auctionItem);
-						else
+						if (auctionItem.isServerItem()) {
+							// Already marked as purchased above
+						} else {
 							auctionItem.setExpired(true);
+							// Remove from garbage since we're not processing it (will be handled as expired)
+							AuctionHouse.getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());
+						}
 						continue;
 					}
 				}
@@ -148,7 +161,12 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 				AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(auctionItem.getOwner()), auctionWinner, auctionItem, AuctionSaleType.USED_BIDDING_SYSTEM, tax);
 				AuctionHouse.getInstance().getServer().getPluginManager().callEvent(auctionEndEvent);
-				if (auctionEndEvent.isCancelled()) continue;
+				if (auctionEndEvent.isCancelled()) {
+					// Event cancelled, remove from garbage and mark as expired
+					AuctionHouse.getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());
+					auctionItem.setExpired(true);
+					continue;
+				}
 
 
 				if (!Settings.BIDDING_TAKES_MONEY.getBoolean())
@@ -193,11 +211,13 @@ public class TickAuctionsTask extends BukkitRunnable {
 					// handle full inventory
 					if (auctionWinner.getPlayer().getInventory().firstEmpty() != -1) {
 						Bukkit.getServer().getScheduler().runTaskLater(AuctionHouse.getInstance(), () -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack), 0);
-						AuctionHouse.getAuctionItemManager().sendToGarbage(auctionItem);
+						// Item already marked as purchased above (race condition protection)
 					} else {
 						auctionItem.setOwner(auctionWinner.getUniqueId());
 						auctionItem.setHighestBidder(auctionWinner.getUniqueId());
 						auctionItem.setExpired(true);
+						// Remove from garbage since inventory is full (will be handled as expired)
+						AuctionHouse.getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());
 						continue;
 					}
 
@@ -206,6 +226,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 				auctionItem.setOwner(auctionWinner.getUniqueId());
 				auctionItem.setHighestBidder(auctionWinner.getUniqueId());
 				auctionItem.setExpired(true);
+				// Item already marked as purchased above (race condition protection)
 			}
 		}
 	}
