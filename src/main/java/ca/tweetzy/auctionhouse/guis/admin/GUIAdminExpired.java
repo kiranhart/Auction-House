@@ -28,7 +28,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
@@ -37,7 +36,7 @@ public final class GUIAdminExpired extends AuctionPagedGUI<AuctionedItem> {
 	final OfflinePlayer targetUser;
 
 	public GUIAdminExpired(Player viewer, OfflinePlayer targetUser) {
-		super(null, viewer, Settings.GUI_EXPIRED_ITEMS_ADMIN_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getInstance().getAuctionItemManager().getItems().values().stream().filter(item -> item.isExpired() && item.getOwner().equals(targetUser.getUniqueId()) && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(item.getId())).collect(Collectors.toList())));
+		super(null, viewer, Settings.GUI_EXPIRED_ITEMS_ADMIN_TITLE.getString(), 6, AuctionHouse.getInstance().getAuctionItemManager().getItems().values().stream().filter(item -> item.isExpired() && item.getOwner().equals(targetUser.getUniqueId()) && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(item.getId())).collect(Collectors.toList()));
 		this.targetUser = targetUser;
 		setAcceptsItems(false);
 		draw();

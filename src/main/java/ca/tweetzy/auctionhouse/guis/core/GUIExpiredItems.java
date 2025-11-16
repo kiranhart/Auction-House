@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIGeneralConfirm;
+import ca.tweetzy.auctionhouse.guis.helpers.GUIFilterHelper;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -72,11 +73,10 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 
 	@Override
 	protected void prePopulate() {
-		if (Settings.PER_WORLD_ITEMS.getBoolean()) {
-			this.items = this.items.stream().filter(item -> item.getListedWorld() == null || this.auctionPlayer.getPlayer().getWorld().getName().equals(item.getListedWorld())).collect(Collectors.toList());
-		}
-
-		this.items.sort(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed());
+		this.items = this.items.stream()
+				.filter(GUIFilterHelper.perWorldFilter(this.auctionPlayer.getPlayer()))
+				.sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed())
+				.collect(Collectors.toList());
 	}
 
 	@Override

@@ -30,7 +30,6 @@ import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +44,7 @@ public class GUIFilterWhitelistList extends AuctionPagedGUI<AuctionFilterItem> {
 	final AuctionItemCategory filerCategory;
 
 	public GUIFilterWhitelistList(Player player, AuctionItemCategory filerCategory) {
-		super(new GUIFilterWhitelist(player), player, Common.colorize(Settings.GUI_FILTER_WHITELIST_LIST_TITLE.getString().replace("%filter_category%", filerCategory.getTranslatedType())), 6, new ArrayList<>(AuctionHouse.getInstance().getFilterManager().getFilterWhitelist()));
+		super(new GUIFilterWhitelist(player), player, Common.colorize(Settings.GUI_FILTER_WHITELIST_LIST_TITLE.getString().replace("%filter_category%", filerCategory.getTranslatedType())), 6, AuctionHouse.getInstance().getFilterManager().getFilterWhitelist().stream().filter(item -> item.getCategory() == filerCategory).collect(Collectors.toList()));
 		this.filerCategory = filerCategory;
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILTER_WHITELIST_LIST_BG_ITEM.getString()).make()));
 		setUseLockedCells(true);
@@ -54,7 +53,7 @@ public class GUIFilterWhitelistList extends AuctionPagedGUI<AuctionFilterItem> {
 
 	@Override
 	protected void prePopulate() {
-		this.items = this.items.stream().filter(item -> item.getCategory() == this.filerCategory).collect(Collectors.toList());
+		// Filtering is done in constructor, no need to filter again
 	}
 
 	@Override

@@ -35,6 +35,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -62,16 +63,38 @@ public class GUIRequestTransactionList extends AuctionPagedGUI<RequestTransactio
 
 	@Override
 	protected void prePopulate() {
-		this.items = this.showAll ? new ArrayList<>(AuctionHouse.getRequestsManager().getManagerContent().values()) : AuctionHouse.getRequestsManager().getManagerContent().values().stream().filter(transaction -> transaction.getFulfillerUUID().equals(player.getUniqueId()) || transaction.getRequesterUUID().equals(player.getUniqueId())).collect(Collectors.toList());
+		final UUID playerUuid = this.player.getUniqueId();
+		
+		// Start with a stream from all request transactions
+		this.items = AuctionHouse.getRequestsManager().getManagerContent().values().stream()
+				// Filter by showAll or player-specific
+				.filter(transaction -> {
+					if (this.showAll) {
+						return true;
+					}
+					return transaction.getFulfillerUUID().equals(playerUuid) || transaction.getRequesterUUID().equals(playerUuid);
+				})
+				// Collect to list once
+				.collect(Collectors.toList());
 
-		// perform filter
-		if (this.auctionPlayer.getTransactionSortType() == AuctionSortType.PRICE) {
-			this.items = this.items.stream().sorted(Comparator.comparingDouble(RequestTransaction::getPaymentTotal).reversed()).collect(Collectors.toList());
+		// Apply sorting with comparator
+		final Comparator<RequestTransaction> sortComparator = createSortComparator(this.auctionPlayer.getTransactionSortType());
+		if (sortComparator != null) {
+			this.items.sort(sortComparator);
 		}
+	}
 
-		if (this.auctionPlayer.getTransactionSortType() == AuctionSortType.RECENT) {
-			this.items = this.items.stream().sorted(Comparator.comparingLong(RequestTransaction::getTimeCreated).reversed()).collect(Collectors.toList());
+	/**
+	 * Creates a comparator for sorting request transactions based on sort type
+	 */
+	private Comparator<RequestTransaction> createSortComparator(AuctionSortType sortType) {
+		if (sortType == AuctionSortType.PRICE) {
+			return Comparator.comparingDouble(RequestTransaction::getPaymentTotal).reversed();
 		}
+		if (sortType == AuctionSortType.RECENT) {
+			return Comparator.comparingLong(RequestTransaction::getTimeCreated).reversed();
+		}
+		return null;
 	}
 
 	@Override

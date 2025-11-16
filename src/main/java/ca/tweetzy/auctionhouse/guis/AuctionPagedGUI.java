@@ -32,6 +32,7 @@ import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,8 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 		super(parent, PlaceholderAPIHook.tryReplace(player, title), rows);
 		this.parent = parent;
 		this.player = player;
-		this.items = items;
+		// Only wrap in ArrayList if it's not already a mutable list
+		this.items = (items instanceof ArrayList) ? items : new ArrayList<>(items);
 		applyDefaults();
 	}
 

@@ -26,6 +26,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionStackType;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.guis.AuctionUpdatingPagedGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmCancel;
+import ca.tweetzy.auctionhouse.guis.helpers.GUIFilterHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.Common;
@@ -63,13 +64,10 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 	@Override
 	protected void prePopulate() {
-		this.items = new ArrayList<>(this.auctionPlayer.getItems(false));
-
-		if (Settings.PER_WORLD_ITEMS.getBoolean()) {
-			this.items = this.items.stream().filter(item -> item.getListedWorld() == null || this.auctionPlayer.getPlayer().getWorld().getName().equals(item.getListedWorld())).collect(Collectors.toList());
-		}
-
-		this.items.sort(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed());
+		this.items = this.auctionPlayer.getItems(false).stream()
+				.filter(GUIFilterHelper.perWorldFilter(this.auctionPlayer.getPlayer()))
+				.sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed())
+				.collect(Collectors.toList());
 	}
 
 	@Override

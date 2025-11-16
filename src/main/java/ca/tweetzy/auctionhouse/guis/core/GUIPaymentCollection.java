@@ -33,7 +33,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * The current file has been created by Kiran Hart
@@ -47,7 +48,7 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 	private Long lastClicked = null;
 
 	public GUIPaymentCollection(Gui parent, AuctionPlayer auctionPlayer) {
-		super(parent, auctionPlayer.getPlayer(), Settings.GUI_PAYMENT_COLLECTION_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getPaymentsManager().getPaymentsByPlayer(auctionPlayer.getPlayer())));
+		super(parent, auctionPlayer.getPlayer(), Settings.GUI_PAYMENT_COLLECTION_TITLE.getString(), 6, AuctionHouse.getPaymentsManager().getPaymentsByPlayer(auctionPlayer.getPlayer()));
 		this.auctionPlayer = auctionPlayer;
 		draw();
 	}
@@ -109,11 +110,14 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 				this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
 			}
 
+			// Collect payment IDs while paying
+			final List<UUID> paymentIds = new ArrayList<>(this.items.size());
 			for (AuctionPayment auctionPayment : this.items) {
 				auctionPayment.pay(e.player);
+				paymentIds.add(auctionPayment.getId());
 			}
 
-			AuctionHouse.getDataManager().deletePayments(this.items.stream().map(AuctionPayment::getId).collect(Collectors.toList()));
+			AuctionHouse.getDataManager().deletePayments(paymentIds);
 			this.items.forEach(payment -> AuctionHouse.getPaymentsManager().remove(payment.getId()));
 			e.manager.showGUI(e.player, new GUIPaymentCollection(this.auctionPlayer, this.lastClicked));
 		});

@@ -8,6 +8,7 @@ import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.auction.enums.*;
+import ca.tweetzy.auctionhouse.api.currency.AbstractCurrency;
 import ca.tweetzy.auctionhouse.events.AuctionBidEvent;
 import ca.tweetzy.auctionhouse.guis.AuctionUpdatingPagedGUI;
 import ca.tweetzy.auctionhouse.guis.admin.GUIAdminItem;
@@ -102,45 +103,88 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 	@Override
 	protected void prePopulate() {
-		this.items = new ArrayList<>(AuctionHouse.getAuctionItemManager().getValidItems(this.player));
+		// Start with a stream from the valid items collection
+		this.items = AuctionHouse.getAuctionItemManager().getValidItems(this.player).stream()
+				// Apply search filter if search keywords are provided
+				.filter(item -> {
+					if (this.searchKeywords != null && this.searchKeywords.length() != 0) {
+						return checkSearchCriteria(this.searchKeywords, item);
+					}
+					return true;
+				})
+				// Apply filter system if enabled
+				.filter(item -> {
+					if (this.auctionPlayer != null && Settings.ENABLE_FILTER_SYSTEM.getBoolean()) {
+						// Category filter
+						final AuctionItemCategory selectedFilter = this.auctionPlayer.getSelectedFilter();
+						if (selectedFilter != AuctionItemCategory.ALL && selectedFilter != AuctionItemCategory.SEARCH && selectedFilter != AuctionItemCategory.SELF) {
+							if (!checkFilterCriteria(item, selectedFilter)) {
+								return false;
+							}
+						} else if (selectedFilter == AuctionItemCategory.SELF) {
+							if (!item.getOwner().equals(this.auctionPlayer.getPlayer().getUniqueId())) {
+								return false;
+							}
+						} else if (selectedFilter == AuctionItemCategory.SEARCH && this.auctionPlayer.getCurrentSearchPhrase().length() != 0) {
+							if (!checkSearchCriteria(this.auctionPlayer.getCurrentSearchPhrase(), item)) {
+								return false;
+							}
+						}
 
-		if (this.searchKeywords != null && this.searchKeywords.length() != 0) {
-			this.items = this.items.stream().filter(item -> checkSearchCriteria(this.searchKeywords, item)).collect(Collectors.toList());
-		}
+						// Sale type filter
+						final AuctionSaleType saleType = this.auctionPlayer.getSelectedSaleType();
+						if (saleType == AuctionSaleType.USED_BIDDING_SYSTEM && !item.isBidItem()) {
+							return false;
+						}
+						if (saleType == AuctionSaleType.WITHOUT_BIDDING_SYSTEM && item.isBidItem()) {
+							return false;
+						}
 
+						// Currency filter
+						final AbstractCurrency currencyFilter = this.auctionPlayer.getSelectedCurrencyFilter();
+						if (currencyFilter != null && !currencyFilter.equals(AuctionHouse.getCurrencyManager().getAllCurrency())) {
+							if (!item.currencyMatches(currencyFilter)) {
+								return false;
+							}
+						}
+					}
+					return true;
+				})
+				// Collect to list once
+				.collect(Collectors.toList());
+
+		// Apply sorting - use compound comparator to avoid multiple sorts
+		final Comparator<AuctionedItem> baseComparator;
 		if (this.auctionPlayer != null && Settings.ENABLE_FILTER_SYSTEM.getBoolean()) {
-			if (this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.ALL && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SEARCH && this.auctionPlayer.getSelectedFilter() != AuctionItemCategory.SELF) {
-				this.items = this.items.stream().filter(item -> checkFilterCriteria(item, this.auctionPlayer.getSelectedFilter())).collect(Collectors.toList());
-			} else if (this.auctionPlayer.getSelectedFilter() == AuctionItemCategory.SELF) {
-				this.items = this.items.stream().filter(item -> item.getOwner().equals(this.auctionPlayer.getPlayer().getUniqueId())).collect(Collectors.toList());
-			} else if (this.auctionPlayer.getSelectedFilter() == AuctionItemCategory.SEARCH && this.auctionPlayer.getCurrentSearchPhrase().length() != 0) {
-				this.items = this.items.stream().filter(item -> checkSearchCriteria(this.auctionPlayer.getCurrentSearchPhrase(), item)).collect(Collectors.toList());
-			}
-
-			if (this.auctionPlayer.getSelectedSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM) {
-				this.items = this.items.stream().filter(AuctionedItem::isBidItem).collect(Collectors.toList());
-			}
-
-			if (this.auctionPlayer.getSelectedSaleType() == AuctionSaleType.WITHOUT_BIDDING_SYSTEM) {
-				this.items = this.items.stream().filter(item -> !item.isBidItem()).collect(Collectors.toList());
-			}
-
-			if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.PRICE) {
-				this.items = this.items.stream().sorted(Comparator.comparingDouble(AuctionedItem::getCurrentPrice).reversed()).collect(Collectors.toList());
-			} else if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.RECENT) {
-				this.items = this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed()).collect(Collectors.toList());
-			} else if (this.auctionPlayer.getAuctionSortType() == AuctionSortType.OLDEST) {
-				this.items = this.items.stream().sorted(Comparator.comparingLong(AuctionedItem::getExpiresAt)).collect(Collectors.toList());
-			}
-
-			// currency
-			if (this.auctionPlayer.getSelectedCurrencyFilter() != AuctionHouse.getCurrencyManager().getAllCurrency()) {
-				this.items = this.items.stream().filter(item -> item.currencyMatches(this.auctionPlayer.getSelectedCurrencyFilter())).collect(Collectors.toList());
-			}
+			baseComparator = createSortComparator(this.auctionPlayer.getAuctionSortType());
+		} else {
+			baseComparator = Comparator.comparing(AuctionedItem::isInfinite).reversed()
+					.thenComparing(Comparator.comparing(AuctionedItem::isListingPriorityActive).reversed());
 		}
+		this.items.sort(baseComparator);
+	}
 
-		this.items.sort(Comparator.comparing(AuctionedItem::isInfinite).reversed());
-		this.items.sort(Comparator.comparing(AuctionedItem::isListingPriorityActive).reversed());
+	/**
+	 * Creates a comparator for sorting based on the auction sort type
+	 */
+	private Comparator<AuctionedItem> createSortComparator(AuctionSortType sortType) {
+		Comparator<AuctionedItem> comparator;
+		switch (sortType) {
+			case PRICE:
+				comparator = Comparator.comparingDouble(AuctionedItem::getCurrentPrice).reversed();
+				break;
+			case OLDEST:
+				comparator = Comparator.comparingLong(AuctionedItem::getExpiresAt);
+				break;
+			case RECENT:
+			default:
+				comparator = Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed();
+				break;
+		}
+		// Always prioritize infinite items and listing priority
+		return comparator
+				.thenComparing(Comparator.comparing(AuctionedItem::isInfinite).reversed())
+				.thenComparing(Comparator.comparing(AuctionedItem::isListingPriorityActive).reversed());
 	}
 
 	@Override
@@ -155,38 +199,50 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		drawFixedButtons();
 		drawVariableButtons();
+		drawCustomButtons();
+	}
 
-		// generate the custom buttons
+	/**
+	 * Draws custom buttons from configuration
+	 */
+	private void drawCustomButtons() {
 		final ConfigurationSection customItemSection = AuctionHouse.getInstance().getCoreConfig().getConfigurationSection("gui.auction house.custom items");
-		if (customItemSection != null) {
-			customItemSection.getKeys(false).forEach(customItemEntry -> {
-				final ConfigurationSection customEntry = AuctionHouse.getInstance().getCoreConfig().getConfigurationSection("gui.auction house.custom items." + customItemEntry);
-				SlotHelper.getButtonSlots(customEntry.getString("slot")).forEach(slot -> {
-					setButton(slot, QuickItem
-							.of(customEntry.getString("item"))
-							.name(customEntry.getString("name"))
-							.lore(this.player, customEntry.getStringList("lore"))
-							.make(), click -> {
-
-						final List<String> commands = customEntry.getStringList("commands");
-
-						commands.forEach(cmd -> {
-							boolean isConsoleCommand = cmd.startsWith("[console]");
-
-							final String finalCommand = cmd
-									.replace("[player]", "").replace("[console] ", "")
-									.replace("[player] ", "").replace("[console]", "");
-
-							if (isConsoleCommand)
-								Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), finalCommand.replace("%player%", click.player.getName()));
-							else
-								click.player.performCommand(finalCommand.replace("%player%", click.player.getName()));
-						});
-					});
-				});
-
-			});
+		if (customItemSection == null) {
+			return;
 		}
+
+		customItemSection.getKeys(false).forEach(customItemEntry -> {
+			final ConfigurationSection customEntry = AuctionHouse.getInstance().getCoreConfig().getConfigurationSection("gui.auction house.custom items." + customItemEntry);
+			if (customEntry == null) {
+				return;
+			}
+
+			SlotHelper.getButtonSlots(customEntry.getString("slot")).forEach(slot -> {
+				setButton(slot, QuickItem
+						.of(customEntry.getString("item"))
+						.name(customEntry.getString("name"))
+						.lore(this.player, customEntry.getStringList("lore"))
+						.make(), click -> executeCustomButtonCommands(customEntry.getStringList("commands"), click));
+			});
+		});
+	}
+
+	/**
+	 * Executes commands for custom buttons
+	 */
+	private void executeCustomButtonCommands(List<String> commands, GuiClickEvent click) {
+		commands.forEach(cmd -> {
+			boolean isConsoleCommand = cmd.startsWith("[console]");
+			final String finalCommand = cmd
+					.replace("[player]", "").replace("[console] ", "")
+					.replace("[player] ", "").replace("[console]", "");
+
+			if (isConsoleCommand) {
+				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), finalCommand.replace("%player%", click.player.getName()));
+			} else {
+				click.player.performCommand(finalCommand.replace("%player%", click.player.getName()));
+			}
+		});
 	}
 
 	@Override

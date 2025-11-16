@@ -98,40 +98,78 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 
 	@Override
 	protected void prePopulate() {
-		this.items = this.showAll ? new ArrayList<>(AuctionHouse.getTransactionManager().getTransactions().values()) : AuctionHouse.getTransactionManager().getTransactions().values().stream().filter(transaction -> transaction.getSeller().equals(player.getUniqueId()) || transaction.getBuyer().equals(player.getUniqueId())).collect(Collectors.toList());
+		final UUID playerUuid = this.player.getUniqueId();
+		
+		// Start with a stream from all transactions
+		this.items = AuctionHouse.getTransactionManager().getTransactions().values().stream()
+				// Filter by showAll or player-specific
+				.filter(transaction -> {
+					if (this.showAll) {
+						return true;
+					}
+					return transaction.getSeller().equals(playerUuid) || transaction.getBuyer().equals(playerUuid);
+				})
+				// Filter by search UUID if provided
+				.filter(transaction -> {
+					if (this.searchUUID != null) {
+						return transaction.getSeller().equals(this.searchUUID) || transaction.getBuyer().equals(this.searchUUID);
+					}
+					return true;
+				})
+				// Filter by category
+				.filter(transaction -> {
+					final AuctionItemCategory selectedFilter = this.auctionPlayer.getSelectedTransactionFilter();
+					if (selectedFilter == AuctionItemCategory.ALL || selectedFilter == AuctionItemCategory.SEARCH || selectedFilter == AuctionItemCategory.SELF) {
+						return true;
+					}
+					return MaterialCategorizer.getMaterialCategory(transaction.getItem()) == selectedFilter;
+				})
+				// Filter by sale type
+				.filter(transaction -> {
+					final AuctionSaleType saleType = this.auctionPlayer.getSelectedTransactionSaleType();
+					if (saleType == AuctionSaleType.USED_BIDDING_SYSTEM) {
+						return transaction.getAuctionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM;
+					}
+					if (saleType == AuctionSaleType.WITHOUT_BIDDING_SYSTEM) {
+						return transaction.getAuctionSaleType() == AuctionSaleType.WITHOUT_BIDDING_SYSTEM;
+					}
+					return true;
+				})
+				// Filter by view filter
+				.filter(transaction -> {
+					final TransactionViewFilter viewFilter = this.auctionPlayer.getTransactionViewFilter();
+					if (viewFilter == TransactionViewFilter.ALL) {
+						return true;
+					}
+					if (viewFilter == TransactionViewFilter.BOUGHT) {
+						return transaction.getBuyer().equals(playerUuid);
+					}
+					if (viewFilter == TransactionViewFilter.SOLD) {
+						return transaction.getSeller().equals(playerUuid);
+					}
+					return true;
+				})
+				// Collect to list once
+				.collect(Collectors.toList());
 
-
-		if (this.searchUUID != null)
-			this.items = this.items.stream().filter(transaction -> transaction.getSeller().equals(this.searchUUID) || transaction.getBuyer().equals(this.searchUUID)).collect(Collectors.toList());
-
-		// perform filter
-		if (this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.ALL && this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.SEARCH && this.auctionPlayer.getSelectedTransactionFilter() != AuctionItemCategory.SELF) {
-			this.items = this.items.stream().filter(item -> MaterialCategorizer.getMaterialCategory(item.getItem()) == this.auctionPlayer.getSelectedTransactionFilter()).collect(Collectors.toList());
+		// Apply sorting with compound comparator
+		final Comparator<Transaction> sortComparator = createSortComparator(this.auctionPlayer.getTransactionSortType());
+		if (sortComparator != null) {
+			this.items.sort(sortComparator);
 		}
+	}
 
-		if (this.auctionPlayer.getSelectedTransactionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM) {
-			this.items = this.items.stream().filter(transaction -> transaction.getAuctionSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM).collect(Collectors.toList());
+	/**
+	 * Creates a comparator for sorting transactions based on sort type
+	 */
+	private Comparator<Transaction> createSortComparator(AuctionSortType sortType) {
+		if (sortType == AuctionSortType.PRICE) {
+			return Comparator.comparingDouble(Transaction::getFinalPrice).reversed();
 		}
-
-		if (this.auctionPlayer.getSelectedTransactionSaleType() == AuctionSaleType.WITHOUT_BIDDING_SYSTEM) {
-			this.items = this.items.stream().filter(transaction -> transaction.getAuctionSaleType() == AuctionSaleType.WITHOUT_BIDDING_SYSTEM).collect(Collectors.toList());
+		if (sortType == AuctionSortType.RECENT) {
+			return Comparator.comparingLong(Transaction::getTransactionTime).reversed();
 		}
-
-		if (this.auctionPlayer.getTransactionViewFilter() != TransactionViewFilter.ALL) {
-			if (this.auctionPlayer.getTransactionViewFilter() == TransactionViewFilter.BOUGHT)
-				this.items = this.items.stream().filter(transaction -> transaction.getBuyer().equals(this.player.getUniqueId())).collect(Collectors.toList());
-
-			if (this.auctionPlayer.getTransactionViewFilter() == TransactionViewFilter.SOLD)
-				this.items = this.items.stream().filter(transaction -> transaction.getSeller().equals(this.player.getUniqueId())).collect(Collectors.toList());
-		}
-
-		if (this.auctionPlayer.getTransactionSortType() == AuctionSortType.PRICE) {
-			this.items = this.items.stream().sorted(Comparator.comparingDouble(Transaction::getFinalPrice).reversed()).collect(Collectors.toList());
-		}
-
-		if (this.auctionPlayer.getTransactionSortType() == AuctionSortType.RECENT) {
-			this.items = this.items.stream().sorted(Comparator.comparingLong(Transaction::getTransactionTime).reversed()).collect(Collectors.toList());
-		}
+		return null;
 	}
 
 	@Override

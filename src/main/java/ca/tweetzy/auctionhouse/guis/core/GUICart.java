@@ -37,7 +37,7 @@ public final class GUICart extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 	@Override
 	protected void prePopulate() {
-		this.items = new ArrayList<>(AuctionHouse.getCartManager().getPlayerCart(this.player).getItems());
+		this.items = AuctionHouse.getCartManager().getPlayerCart(this.player).getItems();
 	}
 
 	@Override

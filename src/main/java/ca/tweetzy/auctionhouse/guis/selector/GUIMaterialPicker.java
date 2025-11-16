@@ -40,13 +40,16 @@ public final class GUIMaterialPicker extends AuctionPagedGUI<ItemStack> {
 
 	@Override
 	protected void prePopulate() {
-		final List<ItemStack> validMaterials = InventorySafeMaterials.get().stream().map(CompMaterial::parseItem).collect(Collectors.toList());
-		this.items.addAll(validMaterials);
-
-
-		if (this.searchQuery != null) {
-			this.items = this.items.stream().filter(mat -> Filterer.searchByItemInfo(this.searchQuery, mat)).collect(Collectors.toList());
-		}
+		// Combine mapping and filtering into a single stream operation
+		this.items = InventorySafeMaterials.get().stream()
+				.map(CompMaterial::parseItem)
+				.filter(mat -> {
+					if (this.searchQuery == null) {
+						return true;
+					}
+					return Filterer.searchByItemInfo(this.searchQuery, mat);
+				})
+				.collect(Collectors.toList());
 	}
 
 	@Override

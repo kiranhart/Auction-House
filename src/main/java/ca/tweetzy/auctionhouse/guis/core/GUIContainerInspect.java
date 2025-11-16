@@ -116,6 +116,11 @@ public class GUIContainerInspect extends AuctionPagedGUI<ItemStack> {
 
 	@Override
 	protected List<Integer> fillSlots() {
-		return IntStream.rangeClosed(0, 44).boxed().collect(Collectors.toList());
+		// Use ArrayList with known size for better performance
+		final List<Integer> slots = new ArrayList<>(45);
+		for (int i = 0; i <= 44; i++) {
+			slots.add(i);
+		}
+		return slots;
 	}
 }
