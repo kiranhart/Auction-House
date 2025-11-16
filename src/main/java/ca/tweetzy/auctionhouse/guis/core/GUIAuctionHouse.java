@@ -54,6 +54,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		super(null, Bukkit.getPlayer(auctionPlayer.getUuid()), Settings.GUI_AUCTION_HOUSE_TITLE.getString(), Settings.GUI_AUCTION_HOUSE_ROWS.getInt(), 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
 		this.auctionPlayer = auctionPlayer;
 		this.searchKeywords = searchKeywords;
+		setAllowShiftClick(true); // Enable shift clicking for filter button
 		setSlotClickDelay(getPreviousButtonSlot(), Settings.MAIN_AH_NAVIGATION_COOLDOWN.getLong());
 		setSlotClickDelay(getNextButtonSlot(), Settings.MAIN_AH_NAVIGATION_COOLDOWN.getLong());
 

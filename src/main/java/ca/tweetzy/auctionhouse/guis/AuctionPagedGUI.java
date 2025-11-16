@@ -100,7 +100,10 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 					// Set up navigation buttons
 					// Only show previous button if not on first page
 					if (this.page > 1) {
-						setPrevPage(getPreviousButtonSlot(), getPreviousButton());
+						setButton(getPreviousButtonSlot(), getPreviousButton(), click -> {
+							prevPage();
+							draw();
+						});
 					} else {
 						// Lock slot and remove click handlers when button is hidden
 						setUnlocked(getPreviousButtonSlot(), false);
@@ -110,7 +113,10 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 					
 					// Only show next button if not on last page
 					if (this.page < pages) {
-						setNextPage(getNextButtonSlot(), getNextButton());
+						setButton(getNextButtonSlot(), getNextButton(), click -> {
+							nextPage();
+							draw();
+						});
 					} else {
 						// Lock slot and remove click handlers when button is hidden
 						setUnlocked(getNextButtonSlot(), false);
@@ -139,7 +145,10 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 
 		// Only show previous button if not on first page
 		if (this.page > 1) {
-			setPrevPage(getPreviousButtonSlot(), getPreviousButton());
+			setButton(getPreviousButtonSlot(), getPreviousButton(), click -> {
+				prevPage();
+				draw();
+			});
 		} else {
 			// Lock slot and remove click handlers when button is hidden
 			setUnlocked(getPreviousButtonSlot(), false);
@@ -149,7 +158,10 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 		
 		// Only show next button if not on last page
 		if (this.page < pages) {
-			setNextPage(getNextButtonSlot(), getNextButton());
+			setButton(getNextButtonSlot(), getNextButton(), click -> {
+				nextPage();
+				draw();
+			});
 		} else {
 			// Lock slot and remove click handlers when button is hidden
 			setUnlocked(getNextButtonSlot(), false);
