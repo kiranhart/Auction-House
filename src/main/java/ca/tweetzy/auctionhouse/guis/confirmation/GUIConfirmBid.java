@@ -216,13 +216,13 @@ public class GUIConfirmBid extends AuctionUpdatingPagedGUI<AuctionedItem> {
 				.make(), click -> {
 
 			cancelTask();
-			click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
+			this.safeTransitionTo(click.manager, new GUIAuctionHouse(this.auctionPlayer));
 		});
 	}
 
 	private void endAndReturn(GuiClickEvent event) {
 		cancelTask();
-		event.manager.showGUI(event.player, new GUIAuctionHouse(this.auctionPlayer));
+		this.safeTransitionTo(event.manager, new GUIAuctionHouse(this.auctionPlayer));
 	}
 
 	@Override

@@ -110,7 +110,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 			if (deserializeItem.getItemMeta() instanceof BlockStateMeta) {
 				if (((BlockStateMeta) deserializeItem.getItemMeta()).getBlockState() instanceof ShulkerBox) {
 					AuctionHouse.getTransactionManager().getPrePurchaseHolding().remove(e.player);
-					e.manager.showGUI(e.player, new GUIContainerInspect(e.clickedItem, this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));
+					this.safeTransitionTo(e.manager, new GUIContainerInspect(e.clickedItem, this.auctionPlayer, this.auctionItem, this.buyingSpecificQuantity));
 				}
 			}
 		});
@@ -129,7 +129,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 				if (located == null || located.isExpired()) {
 					AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(e.player);
-					e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+					this.safeTransitionTo(e.manager, new GUIAuctionHouse(this.auctionPlayer));
 					return;
 				}
 
@@ -144,7 +144,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 				if (willFullyConsume && !located.isInfinite()) {
 					if (!AuctionHouse.getAuctionItemManager().tryMarkAsPurchased(located)) {
 						AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(e.player);
-						e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+						this.safeTransitionTo(e.manager, new GUIAuctionHouse(this.auctionPlayer));
 						return;
 					}
 				}
@@ -228,7 +228,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 					final AuctionRequestCompleteEvent requestCompleteEvent = new AuctionRequestCompleteEvent(this.auctionItem, new CompletedRequest(this.auctionItem, e.player, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? buyNowPrice : buyNowPrice - tax));
 					Bukkit.getServer().getPluginManager().callEvent(requestCompleteEvent);
 
-					e.gui.close();
+					this.safeTransitionTo(e.manager, new GUIAuctionHouse(this.auctionPlayer));
 					return;
 				}
 
@@ -236,14 +236,14 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 				if (!auctionItem.playerHasSufficientMoney(e.player, buyNowPrice + (Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? tax : 0D))) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
 					SoundManager.getInstance().playSound(e.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString());
-					e.gui.close();
+					this.safeTransitionTo(e.manager, new GUIAuctionHouse(this.auctionPlayer));
 					return;
 				}
 
 				if (!Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean() && e.player.getInventory().firstEmpty() == -1) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.noroom").sendPrefixedMessage(e.player);
 					SoundManager.getInstance().playSound(e.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString());
-					e.gui.close();
+					this.safeTransitionTo(e.manager, new GUIAuctionHouse(this.auctionPlayer));
 					return;
 				}
 
@@ -251,7 +251,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 				Bukkit.getServer().getPluginManager().callEvent(auctionEndEvent);
 				if (auctionEndEvent.isCancelled()) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.cancelled").sendPrefixedMessage(e.player);
-					e.gui.close();
+					this.safeTransitionTo(e.manager, new GUIAuctionHouse(this.auctionPlayer));
 					return;
 				}
 
@@ -341,17 +341,17 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 					player.closeInventory();
 				});
 
-				e.gui.close();
+				this.safeTransitionTo(e.manager, new GUIAuctionHouse(this.auctionPlayer));
 
 			} catch (ItemNotFoundException exception) {
 				AuctionHouse.getInstance().getLogger().info("Tried to purchase item that was bought, or does not exist");
 				AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(e.player);
-				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+				this.safeTransitionTo(e.manager, new GUIAuctionHouse(this.auctionPlayer));
 			} catch (Exception exception) {
 				AuctionHouse.getInstance().getLogger().severe("Error processing purchase: " + exception.getMessage());
 				exception.printStackTrace();
 				AuctionHouse.getInstance().getLocale().getMessage("general.error").sendPrefixedMessage(e.player);
-				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
+				this.safeTransitionTo(e.manager, new GUIAuctionHouse(this.auctionPlayer));
 			}
 		});
 
