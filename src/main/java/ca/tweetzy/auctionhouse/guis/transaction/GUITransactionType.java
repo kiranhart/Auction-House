@@ -89,12 +89,7 @@ public final class GUITransactionType extends AuctionBaseGUI {
 					.lore(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_LORE.getStringList())
 					.make(), e -> {
 
-			// Prevent setOnClose from reopening GUI when transitioning to TitleInput
-			// Temporarily clear the close handler, then close inventory
-			e.gui.setOnClose(null);
-			e.gui.setAllowClose(true);
-			e.player.closeInventory();
-
+			// TitleInput automatically handles allowClose and inventory closing
 			new TitleInput(AuctionHouse.getInstance(), player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter deletion range.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter deletion range.subtitle").getMessage()) {
 
 					@Override

@@ -411,12 +411,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		cancelTask();
 
 		if (Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean()) {
-		// Prevent setOnClose from reopening GUI when transitioning to TitleInput
-		// Temporarily clear the close handler, then close inventory
-		click.gui.setOnClose(null);
-		click.gui.setAllowClose(true);
-		click.player.closeInventory();
-
+		// TitleInput automatically handles allowClose and inventory closing
 		new TitleInput(AuctionHouse.getInstance(), player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.subtitle").getMessage()) {
 
 				@Override

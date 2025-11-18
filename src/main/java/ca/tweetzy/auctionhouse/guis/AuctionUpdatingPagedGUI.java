@@ -102,6 +102,24 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		}
 	}
 
+	/**
+	 * Safely transitions from this updating GUI to a new GUI.
+	 * This method handles:
+	 * - Canceling the update task
+	 * - Setting the transition flag to prevent setOnClose from running
+	 * - Properly showing the new GUI
+	 * 
+	 * @param manager The GuiManager instance
+	 * @param newGui The new GUI to transition to
+	 */
+	protected void safeTransitionTo(@NonNull ca.tweetzy.flight.gui.GuiManager manager, @NonNull ca.tweetzy.flight.gui.Gui newGui) {
+		// Cancel the update task before transitioning
+		this.cancelTask();
+		
+		// Use the transition method which handles the flag automatically
+		this.transitionTo(manager, this.player, newGui);
+	}
+
 	private void populateItems() {
 		if (this.items != null) {
 			// Do all heavy work async, then update GUI on main thread

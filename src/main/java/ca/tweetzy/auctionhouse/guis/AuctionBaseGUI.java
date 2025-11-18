@@ -18,12 +18,15 @@
 
 package ca.tweetzy.auctionhouse.guis;
 
+import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompSound;
 import ca.tweetzy.flight.gui.Gui;
+import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.hooks.PlaceholderAPIHook;
 import ca.tweetzy.flight.utils.QuickItem;
+import ca.tweetzy.flight.utils.input.TitleInput;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
@@ -104,5 +107,38 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 	@Override
 	protected int getNextButtonSlot() {
 		return 50;
+	}
+
+	/**
+	 * Safely transitions from this GUI to a new GUI.
+	 * This method handles:
+	 * - Setting the transition flag to prevent setOnClose from running
+	 * - Properly showing the new GUI
+	 * 
+	 * Note: For updating GUIs (AuctionUpdatingPagedGUI), use the overridden method
+	 * which also cancels update tasks.
+	 * 
+	 * @param manager The GuiManager instance
+	 * @param newGui The new GUI to transition to
+	 */
+	protected void safeTransitionTo(@NonNull GuiManager manager, @NonNull Gui newGui) {
+		// Use the transition method which handles the flag automatically
+		this.transitionTo(manager, this.player, newGui);
+	}
+
+	/**
+	 * Safely opens a TitleInput.
+	 * The TitleInput constructor automatically:
+	 * - Sets allowClose=true to prevent GUI from reopening
+	 * - Closes the inventory
+	 * - Preserves close handlers for item return
+	 * 
+	 * Developers can simply create a TitleInput directly - no manual setup needed!
+	 * 
+	 * @param titleInput The TitleInput instance to open (constructor handles everything)
+	 */
+	protected void safeOpenTitleInput(@NonNull TitleInput titleInput) {
+		// TitleInput constructor automatically handles allowClose and inventory closing
+		// No manual setup needed - just create the TitleInput!
 	}
 }

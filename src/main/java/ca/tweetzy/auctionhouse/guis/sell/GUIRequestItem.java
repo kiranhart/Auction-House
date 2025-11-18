@@ -63,11 +63,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 				.lore(this.player, Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_AMT_LORE.getStringList(), "request_amount", amount))
 				.make(), click -> {
 
-		// Prevent setOnClose from reopening GUI when transitioning to TitleInput
-		// Temporarily clear the close handler, then close inventory
-		click.gui.setOnClose(null);
-		click.gui.setAllowClose(true);
-		click.player.closeInventory();
+		// TitleInput automatically handles allowClose and inventory closing
 		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter request amount.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter request amount.subtitle").getMessage()) {
 
 				@Override
@@ -113,11 +109,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 				.lore(this.player, Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_PRICE_LORE.getStringList(), "request_price", AuctionHouse.getAPI().getNumberAsCurrency(price, false)))
 				.make(), click -> {
 
-		// Prevent setOnClose from reopening GUI when transitioning to TitleInput
-		// Temporarily clear the close handler, then close inventory
-		click.gui.setOnClose(null);
-		click.gui.setAllowClose(true);
-		click.player.closeInventory();
+		// TitleInput automatically handles allowClose and inventory closing
 		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter request price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter request price.subtitle").getMessage()) {
 
 				@Override

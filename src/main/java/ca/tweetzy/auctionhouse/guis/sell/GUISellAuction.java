@@ -140,11 +140,8 @@ public final class GUISellAuction extends AuctionBaseGUI {
 							"remaining_seconds", times[3]
 		)).make(), click -> {
 
-		// Prevent GUI from reopening when transitioning to TitleInput
-		// Keep the close handler so items are still returned, but set allowClose=true to prevent reopening
-		click.gui.setAllowClose(true);
-		click.player.closeInventory();
-			new TitleInput(
+		// TitleInput automatically handles allowClose and inventory closing
+		new TitleInput(
 					AuctionHouse.getInstance(), click.player, Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage())
 			) {
 
@@ -190,10 +187,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 						.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_LORE.getStringList(), "listing_bin_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(binPrice, this.currency, this.currencyItem)))
 						.make(), click -> {
 
-				// Prevent GUI from reopening when transitioning to TitleInput
-				// Keep the close handler so items are still returned, but set allowClose=true to prevent reopening
-				click.gui.setAllowClose(true);
-				click.player.closeInventory();
+				// TitleInput automatically handles allowClose and inventory closing
 				new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.subtitle").getMessage()) {
 
 						@Override
@@ -244,10 +238,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_LORE.getStringList(), "listing_start_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(startingBid, this.currency, this.currencyItem)))
 				.make(), click -> {
 
-		// Prevent GUI from reopening when transitioning to TitleInput
-		// Keep the close handler so items are still returned, but set allowClose=true to prevent reopening
-		click.gui.setAllowClose(true);
-		click.player.closeInventory();
+		// TitleInput automatically handles allowClose and inventory closing
 		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.starting bid price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.starting bid price.subtitle").getMessage()) {
 
 				@Override
@@ -307,10 +298,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 					.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_LORE.getStringList(), "listing_increment_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(bidIncrement, this.currency, this.currencyItem)))
 					.make(), click -> {
 
-			// Prevent GUI from reopening when transitioning to TitleInput
-			// Keep the close handler so items are still returned, but set allowClose=true to prevent reopening
-			click.gui.setAllowClose(true);
-			click.player.closeInventory();
+			// TitleInput automatically handles allowClose and inventory closing
 			new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.bid increment price.subtitle").getMessage()) {
 
 					@Override

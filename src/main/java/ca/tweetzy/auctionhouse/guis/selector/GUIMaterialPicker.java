@@ -56,12 +56,7 @@ public final class GUIMaterialPicker extends AuctionPagedGUI<ItemStack> {
 	protected void drawFixed() {
 
 		setButton(5, 4, buildSearchButton(), click -> {
-			// Prevent setOnClose from reopening GUI when transitioning to TitleInput
-			// Temporarily clear the close handler, then close inventory
-			click.gui.setOnClose(null);
-			click.gui.setAllowClose(true);
-			click.player.closeInventory();
-
+			// TitleInput automatically handles allowClose and inventory closing
 			new TitleInput(
 					AuctionHouse.getInstance(),
 					click.player,
