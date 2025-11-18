@@ -36,6 +36,10 @@ import ca.tweetzy.auctionhouse.transaction.Transaction;
 import ca.tweetzy.auctionhouse.transaction.TransactionViewFilter;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.database.*;
+import ca.tweetzy.flight.database.query.DeleteQuery;
+import ca.tweetzy.flight.database.query.InsertQuery;
+import ca.tweetzy.flight.database.query.SelectQuery;
+import ca.tweetzy.flight.database.query.UpdateQuery;
 import ca.tweetzy.flight.nbtapi.NbtApiException;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -77,68 +81,74 @@ public class DataManager extends DataManagerAbstract {
 	// 										 AUCTION BANS                                              //
 	//=================================================================================================//
 	public void insertBan(@NonNull final Ban ban, final Callback<Ban> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			final String query = "INSERT INTO " + this.getTablePrefix() + "bans (banned_player, banner, types, reason, permanent, expiration, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
-			final String fetchQuery = "SELECT * FROM " + this.getTablePrefix() + "bans WHERE banned_player = ?";
+		this.runAsync(() -> {
+			try {
+				getQueryBuilder().insert("bans")
+						.set("banned_player", ban.getId().toString())
+						.set("banner", ban.getBanner().toString())
+						.set("types", ban.getBanString())
+						.set("reason", ban.getReason())
+						.set("permanent", ban.isPermanent())
+						.set("expiration", ban.getExpireDate())
+						.set("created_at", ban.getTimeCreated())
+						.execute((ex, affectedRows) -> {
+							if (ex != null) {
+								ex.printStackTrace();
+								resolveCallback(callback, ex);
+								return;
+							}
 
-			try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-				final PreparedStatement fetch = connection.prepareStatement(fetchQuery);
-
-				fetch.setString(1, ban.getId().toString());
-
-				preparedStatement.setString(1, ban.getId().toString());
-				preparedStatement.setString(2, ban.getBanner().toString());
-				preparedStatement.setString(3, ban.getBanString());
-				preparedStatement.setString(4, ban.getReason());
-				preparedStatement.setBoolean(5, ban.isPermanent());
-				preparedStatement.setLong(6, ban.getExpireDate());
-				preparedStatement.setLong(7, ban.getTimeCreated());
-
-				preparedStatement.executeUpdate();
-
-				if (callback != null) {
-					final ResultSet res = fetch.executeQuery();
-					res.next();
-					callback.accept(null, extractBan(res));
-				}
-
+							if (callback != null) {
+								getQueryBuilder().select("bans")
+										.where("banned_player", ban.getId().toString())
+										.fetchFirst(rs -> {
+											try {
+												return extractBan(rs);
+											} catch (SQLException e) {
+												return null;
+											}
+										}, callback);
+							}
+						});
 			} catch (Exception e) {
 				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
-		}));
+		});
 	}
 
 	public void deleteBan(@NonNull final Ban ban, Callback<Boolean> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "bans WHERE banned_player = ?")) {
-				statement.setString(1, ban.getId().toString());
-
-				int result = statement.executeUpdate();
-				callback.accept(null, result > 0);
-
+		this.runAsync(() -> {
+			try {
+				getQueryBuilder().delete("bans")
+						.where("banned_player", ban.getId().toString())
+						.execute((ex, affectedRows) -> {
+							if (ex != null) {
+								resolveCallback(callback, ex);
+								return;
+							}
+							if (callback != null) {
+								callback.accept(null, affectedRows != null && affectedRows > 0);
+							}
+						});
 			} catch (Exception e) {
 				resolveCallback(callback, e);
 				e.printStackTrace();
 			}
-		}));
+		});
 	}
 
 	public void getBans(@NonNull final Callback<List<Ban>> callback) {
-		final List<Ban> bans = new ArrayList<>();
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "bans")) {
-				final ResultSet resultSet = statement.executeQuery();
-				while (resultSet.next()) {
-					final Ban ban = extractBan(resultSet);
-					bans.add(ban);
-				}
-
-				callback.accept(null, bans);
-			} catch (Exception e) {
-				resolveCallback(callback, e);
-			}
-		}));
+		this.runAsync(() -> {
+			getQueryBuilder().select("bans")
+					.fetch(rs -> {
+						try {
+							return extractBan(rs);
+						} catch (SQLException e) {
+							return null;
+						}
+					}, callback);
+		});
 	}
 
 	public Ban extractBan(final ResultSet resultSet) throws SQLException {
@@ -214,18 +224,31 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void getFilterWhitelist(Consumer<ArrayList<AuctionFilterItem>> callback) {
-		ArrayList<AuctionFilterItem> filterItems = new ArrayList<>();
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			String select = "SELECT * FROM " + this.getTablePrefix() + "filter_whitelist";
-
-			try (Statement statement = connection.createStatement()) {
-				ResultSet result = statement.executeQuery(select);
-				while (result.next()) {
-					filterItems.add((AuctionFilterItem) AuctionAPI.getInstance().convertBase64ToObject(result.getString("data")));
-				}
-			}
-			this.sync(() -> callback.accept(filterItems));
-		}));
+		this.runAsync(() -> {
+			getQueryBuilder().select("filter_whitelist")
+					.fetch(rs -> {
+						try {
+							return (AuctionFilterItem) AuctionAPI.getInstance().convertBase64ToObject(rs.getString("data"));
+						} catch (Exception e) {
+							return null;
+						}
+					}, (ex, results) -> {
+						if (ex != null) {
+							ex.printStackTrace();
+							this.sync(() -> callback.accept(new ArrayList<>()));
+							return;
+						}
+						ArrayList<AuctionFilterItem> filterItems = new ArrayList<>();
+						if (results != null) {
+							for (AuctionFilterItem item : results) {
+								if (item != null) {
+									filterItems.add(item);
+								}
+							}
+						}
+						this.sync(() -> callback.accept(filterItems));
+					});
+		});
 	}
 
 	//=================================================================================================//
@@ -474,70 +497,81 @@ public class DataManager extends DataManagerAbstract {
 //	}
 
 	public void insertAuction(AuctionedItem item, Callback<AuctionedItem> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "auctions(id, owner, highest_bidder, owner_name, highest_bidder_name, category, base_price, bid_start_price, bid_increment_price, current_price, expired, expires_at, item_material, item_name, item_lore, item_enchants, item, listed_world, infinite, allow_partial_buys, server_auction, is_request, request_count, serialize_version, itemstack, listing_priority, priority_expires_at, currency, currency_item) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+		this.runAsync(() -> {
+			try {
 				final AuctionAPI api = AuctionAPI.getInstance();
-				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "auctions WHERE id = ?");
-
-				fetch.setString(1, item.getId().toString());
-				statement.setString(1, item.getId().toString());
-				statement.setString(2, item.getOwner().toString());
-				statement.setString(3, item.getHighestBidder().toString());
-				statement.setString(4, item.getOwnerName());
-				statement.setString(5, item.getHighestBidderName());
-				statement.setString(6, item.getCategory().name());
-				statement.setDouble(7, item.getBasePrice());
-				statement.setDouble(8, item.getBidStartingPrice());
-				statement.setDouble(9, item.getBidIncrementPrice());
-				statement.setDouble(10, item.getCurrentPrice());
-				statement.setBoolean(11, item.isExpired());
-				statement.setLong(12, item.getExpiresAt());
-				statement.setString(13, item.getItem().getType().name()); // todo remove
-				statement.setString(14, api.getItemName(item.getItem())); // todo remove
-				statement.setString(15, api.serializeLines(api.getItemLore(item.getItem()))); // todo remove
-				statement.setString(16, api.serializeLines(api.getItemEnchantments(item.getItem()))); // todo remove
-
+				String itemEncoded;
 				try {
-					statement.setString(17, AuctionAPI.encodeItem(item.getItem()));
+					itemEncoded = AuctionAPI.encodeItem(item.getItem());
 				} catch (IllegalStateException ignored) {
-					statement.setString(17, "");
+					itemEncoded = "";
 				}
 
-				statement.setString(18, item.getListedWorld());
-				statement.setBoolean(19, item.isInfinite());
-				statement.setBoolean(20, item.isAllowPartialBuy());
-				statement.setBoolean(21, item.isServerItem());
-				statement.setBoolean(22, item.isRequest());
-				statement.setInt(23, item.getRequestAmount());
-
+				int serializeVersion = 1;
+				String itemstack;
 				try {
-					statement.setInt(24, 1);
-					statement.setString(25, QuickItem.toString(item.getItem()));
+					itemstack = QuickItem.toString(item.getItem());
 				} catch (NbtApiException e) {
-					statement.setInt(24, 0);
-					statement.setString(25, null);
+					serializeVersion = 0;
+					itemstack = null;
 				}
 
-				statement.setBoolean(26, item.isHasListingPriority());
-				statement.setLong(27, item.getPriorityExpiresAt());
+				String currencyItemStr = (item.getCurrencyItem() == null || item.getCurrencyItem() == CompMaterial.AIR.parseItem()) ? null : QuickItem.toString(item.getCurrencyItem());
 
-//				currency, currency_item, listed_server
-				statement.setString(28, item.getCurrency());
-				statement.setString(29, (item.getCurrencyItem() == null || item.getCurrencyItem() == CompMaterial.AIR.parseItem()) ? null : QuickItem.toString(item.getCurrencyItem()));
+				getQueryBuilder().insert("auctions")
+						.set("id", item.getId().toString())
+						.set("owner", item.getOwner().toString())
+						.set("highest_bidder", item.getHighestBidder().toString())
+						.set("owner_name", item.getOwnerName())
+						.set("highest_bidder_name", item.getHighestBidderName())
+						.set("category", item.getCategory().name())
+						.set("base_price", item.getBasePrice())
+						.set("bid_start_price", item.getBidStartingPrice())
+						.set("bid_increment_price", item.getBidIncrementPrice())
+						.set("current_price", item.getCurrentPrice())
+						.set("expired", item.isExpired())
+						.set("expires_at", item.getExpiresAt())
+						.set("item_material", item.getItem().getType().name()) // todo remove
+						.set("item_name", api.getItemName(item.getItem())) // todo remove
+						.set("item_lore", api.serializeLines(api.getItemLore(item.getItem()))) // todo remove
+						.set("item_enchants", api.serializeLines(api.getItemEnchantments(item.getItem()))) // todo remove
+						.set("item", itemEncoded)
+						.set("listed_world", item.getListedWorld())
+						.set("infinite", item.isInfinite())
+						.set("allow_partial_buys", item.isAllowPartialBuy())
+						.set("server_auction", item.isServerItem())
+						.set("is_request", item.isRequest())
+						.set("request_count", item.getRequestAmount())
+						.set("serialize_version", serializeVersion)
+						.set("itemstack", itemstack)
+						.set("listing_priority", item.isHasListingPriority())
+						.set("priority_expires_at", item.getPriorityExpiresAt())
+						.set("currency", item.getCurrency())
+						.set("currency_item", currencyItemStr)
+						.execute((ex, affectedRows) -> {
+							if (ex != null) {
+								ex.printStackTrace();
+								resolveCallback(callback, ex);
+								return;
+							}
 
-				statement.executeUpdate();
-
-				if (callback != null) {
-					ResultSet res = fetch.executeQuery();
-					res.next();
-					callback.accept(null, extractAuctionedItem(res));
-				}
-
+							if (callback != null) {
+								getQueryBuilder().select("auctions")
+										.where("id", item.getId().toString())
+										.fetchFirst(rs -> {
+											try {
+												return extractAuctionedItem(rs);
+											} catch (SQLException e) {
+												return null;
+											}
+										}, callback);
+							}
+						});
 			} catch (Exception e) {
 				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
-		}));
+		});
 	}
 
 	private AuctionedItem extractAuctionedItem(ResultSet resultSet) throws SQLException {
@@ -589,35 +623,41 @@ public class DataManager extends DataManagerAbstract {
 	//=================================================================================================//
 
 	public void getAdminLogs(Callback<ArrayList<AuctionAdminLog>> callback) {
-		ArrayList<AuctionAdminLog> logs = new ArrayList<>();
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "admin_logs")) {
-				ResultSet resultSet = statement.executeQuery();
-				while (resultSet.next()) {
+		this.runAsync(() -> {
+			this.databaseConnector.connect(connection -> {
+				try {
+					getQueryBuilder().select("admin_logs")
+							.fetchResultSet(resultSet -> {
+								ArrayList<AuctionAdminLog> logs = new ArrayList<>();
+								try {
+									while (resultSet.next()) {
+										final AuctionAdminLog log = extractAdminLog(resultSet);
+										if (log == null || log.getItem() == null || log.getItem().getType() == CompMaterial.AIR.get()) continue;
 
-					final AuctionAdminLog log = extractAdminLog(resultSet);
-					if (log == null || log.getItem() == null || log.getItem().getType() == CompMaterial.AIR.get()) continue;
+										if (resultSet.getInt("serialize_version") == 0) {
+											try {
+												String possible = QuickItem.toString(log.getItem());
+												getQueryBuilder().update("admin_logs")
+														.set("serialize_version", 1)
+														.set("itemstack", possible)
+														.where("id", resultSet.getInt("id"))
+														.execute(null);
+											} catch (NbtApiException ignored) {
+											}
+										}
 
-					if (resultSet.getInt("serialize_version") == 0) {
-						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "admin_logs SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
-							try {
-								String possible = QuickItem.toString(log.getItem());
-								updateStatement.setString(1, possible);
-								updateStatement.setInt(2, resultSet.getInt("id"));
-								updateStatement.executeUpdate();
-							} catch (NbtApiException ignored) {
-							}
-						}
-					}
-
-					logs.add(log);
+										logs.add(log);
+									}
+									callback.accept(null, logs);
+								} catch (SQLException e) {
+									resolveCallback(callback, e);
+								}
+							});
+				} catch (Exception e) {
+					resolveCallback(callback, e);
 				}
-
-				callback.accept(null, logs);
-			} catch (Exception e) {
-				resolveCallback(callback, e);
-			}
-		}));
+			});
+		});
 	}
 
 //	public void getTransactions(Callback<ArrayList<Transaction>> callback) {
@@ -759,296 +799,365 @@ public class DataManager extends DataManagerAbstract {
 
 
 	public void insertTransaction(Transaction transaction, Callback<Transaction> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "transactions (id, seller, seller_name, buyer, buyer_name, transaction_time, item, auction_sale_type, final_price, serialize_version, itemstack) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "transactions WHERE id = ?");
-
-				fetch.setString(1, transaction.getId().toString());
-				statement.setString(1, transaction.getId().toString());
-				statement.setString(2, transaction.getSeller().toString());
-				statement.setString(3, transaction.getSellerName());
-				statement.setString(4, transaction.getBuyer().toString());
-				statement.setString(5, transaction.getBuyerName());
-				statement.setLong(6, transaction.getTransactionTime());
-
+		this.runAsync(() -> {
+			try {
+				String itemEncoded;
 				try {
-					statement.setString(7, AuctionAPI.encodeItem(transaction.getItem()));
+					itemEncoded = AuctionAPI.encodeItem(transaction.getItem());
 				} catch (IllegalStateException ignored) {
-					statement.setString(7, "");
+					itemEncoded = "";
 				}
 
-				statement.setString(8, transaction.getAuctionSaleType().name());
-				statement.setDouble(9, transaction.getFinalPrice());
-
+				int serializeVersion = 1;
+				String itemstack;
 				try {
-					statement.setInt(10, 1);
-					statement.setString(11, QuickItem.toString(transaction.getItem()));
+					itemstack = QuickItem.toString(transaction.getItem());
 				} catch (NbtApiException e) {
-					statement.setInt(10, 0);
-					statement.setString(11, null);
+					serializeVersion = 0;
+					itemstack = null;
 				}
 
-				statement.executeUpdate();
+				getQueryBuilder().insert("transactions")
+						.set("id", transaction.getId().toString())
+						.set("seller", transaction.getSeller().toString())
+						.set("seller_name", transaction.getSellerName())
+						.set("buyer", transaction.getBuyer().toString())
+						.set("buyer_name", transaction.getBuyerName())
+						.set("transaction_time", transaction.getTransactionTime())
+						.set("item", itemEncoded)
+						.set("auction_sale_type", transaction.getAuctionSaleType().name())
+						.set("final_price", transaction.getFinalPrice())
+						.set("serialize_version", serializeVersion)
+						.set("itemstack", itemstack)
+						.execute((ex, affectedRows) -> {
+							if (ex != null) {
+								ex.printStackTrace();
+								resolveCallback(callback, ex);
+								return;
+							}
 
-				if (callback != null) {
-					ResultSet res = fetch.executeQuery();
-					res.next();
-
-					final Transaction inserted = extractTransaction(res);
-					if (inserted != null)
-						callback.accept(null, inserted);
-				}
-
+							if (callback != null) {
+								getQueryBuilder().select("transactions")
+										.where("id", transaction.getId().toString())
+										.fetchFirst(rs -> {
+											try {
+												return extractTransaction(rs);
+											} catch (SQLException e) {
+												return null;
+											}
+										}, (ex2, result) -> {
+											if (ex2 != null) {
+												resolveCallback(callback, ex2);
+											} else if (result != null) {
+												callback.accept(null, result);
+											} else {
+												callback.accept(null, null);
+											}
+										});
+							}
+						});
 			} catch (Exception e) {
 				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
-		}));
+		});
 	}
 
 	public void insertCompletedRequest(RequestTransaction requestTransaction, Callback<RequestTransaction> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "completed_requests (id, item, amount, price, requester_uuid, requester_name, fulfiller_uuid, fulfiller_name, time_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "completed_requests WHERE id = ?");
+		this.runAsync(() -> {
+			try {
+				getQueryBuilder().insert("completed_requests")
+						.set("id", requestTransaction.getId().toString())
+						.set("item", QuickItem.toString(requestTransaction.getRequestedItem()))
+						.set("amount", requestTransaction.getAmountRequested())
+						.set("price", requestTransaction.getPaymentTotal())
+						.set("requester_uuid", requestTransaction.getRequesterUUID().toString())
+						.set("requester_name", requestTransaction.getRequesterName())
+						.set("fulfiller_uuid", requestTransaction.getFulfillerUUID().toString())
+						.set("fulfiller_name", requestTransaction.getFulfillerName())
+						.set("time_created", requestTransaction.getTimeCreated())
+						.execute((ex, affectedRows) -> {
+							if (ex != null) {
+								ex.printStackTrace();
+								resolveCallback(callback, ex);
+								return;
+							}
 
-				fetch.setString(1, requestTransaction.getId().toString());
-				statement.setString(1, requestTransaction.getId().toString());
-				statement.setString(2, QuickItem.toString(requestTransaction.getRequestedItem()));
-				statement.setInt(3, requestTransaction.getAmountRequested());
-				statement.setDouble(4, requestTransaction.getPaymentTotal());
-				statement.setString(5, requestTransaction.getRequesterUUID().toString());
-				statement.setString(6, requestTransaction.getRequesterName());
-				statement.setString(7, requestTransaction.getFulfillerUUID().toString());
-				statement.setString(8, requestTransaction.getFulfillerName());
-				statement.setLong(9, requestTransaction.getTimeCreated());
-
-				statement.executeUpdate();
-
-				if (callback != null) {
-					ResultSet res = fetch.executeQuery();
-					res.next();
-
-					final RequestTransaction inserted = extractCompletedRequest(res);
-					if (inserted != null)
-						callback.accept(null, inserted);
-				}
-
+							if (callback != null) {
+								getQueryBuilder().select("completed_requests")
+										.where("id", requestTransaction.getId().toString())
+										.fetchFirst(rs -> {
+											try {
+												return extractCompletedRequest(rs);
+											} catch (SQLException e) {
+												return null;
+											}
+										}, (ex2, result) -> {
+											if (ex2 != null) {
+												resolveCallback(callback, ex2);
+											} else if (result != null) {
+												callback.accept(null, result);
+											} else {
+												callback.accept(null, null);
+											}
+										});
+							}
+						});
 			} catch (Exception e) {
 				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
-		}));
+		});
 	}
 
 	public void getCompletedRequests(Callback<ArrayList<RequestTransaction>> callback) {
-		ArrayList<RequestTransaction> transactions = new ArrayList<>();
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "completed_requests")) {
-				ResultSet resultSet = statement.executeQuery();
-				while (resultSet.next()) {
-					final RequestTransaction transaction = extractCompletedRequest(resultSet);
-
-					if (transaction == null) {
-						continue;
-					}
-
-					transactions.add(transaction);
-				}
-
-				callback.accept(null, transactions);
-			} catch (Exception e) {
-				resolveCallback(callback, e);
-			}
-		}));
+		this.runAsync(() -> {
+			getQueryBuilder().select("completed_requests")
+					.fetch(rs -> {
+						try {
+							RequestTransaction transaction = extractCompletedRequest(rs);
+							return transaction == null ? null : transaction;
+						} catch (SQLException e) {
+							return null;
+						}
+					}, (ex, results) -> {
+						if (ex != null) {
+							resolveCallback(callback, ex);
+							return;
+						}
+						ArrayList<RequestTransaction> transactions = new ArrayList<>();
+						if (results != null) {
+							for (RequestTransaction transaction : results) {
+								if (transaction != null) {
+									transactions.add(transaction);
+								}
+							}
+						}
+						callback.accept(null, transactions);
+					});
+		});
 	}
 
 
 	public void insertLog(AuctionAdminLog adminLog) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "admin_logs(admin, admin_name, target, target_name, item, item_id, action, time, serialize_version, itemstack) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-
-				statement.setString(1, adminLog.getAdmin().toString());
-				statement.setString(2, adminLog.getAdminName());
-				statement.setString(3, adminLog.getTarget().toString());
-				statement.setString(4, adminLog.getTargetName());
-
+		this.runAsync(() -> {
+			try {
+				String itemEncoded;
 				try {
-					statement.setString(5, AuctionAPI.encodeItem(adminLog.getItem()));
+					itemEncoded = AuctionAPI.encodeItem(adminLog.getItem());
 				} catch (IllegalStateException ignored) {
-					statement.setString(5, "");
+					itemEncoded = "";
 				}
 
-				statement.setString(6, adminLog.getItemId().toString());
-				statement.setString(7, adminLog.getAdminAction().name());
-				statement.setLong(8, adminLog.getTime());
-
+				int serializeVersion = 1;
+				String itemstack;
 				try {
-					statement.setInt(9, 1);
-					statement.setString(10, QuickItem.toString(adminLog.getItem()));
+					itemstack = QuickItem.toString(adminLog.getItem());
 				} catch (NbtApiException e) {
-					statement.setInt(9, 0);
-					statement.setString(10, null);
+					serializeVersion = 0;
+					itemstack = null;
 				}
 
-				statement.executeUpdate();
+				getQueryBuilder().insert("admin_logs")
+						.set("admin", adminLog.getAdmin().toString())
+						.set("admin_name", adminLog.getAdminName())
+						.set("target", adminLog.getTarget().toString())
+						.set("target_name", adminLog.getTargetName())
+						.set("item", itemEncoded)
+						.set("item_id", adminLog.getItemId().toString())
+						.set("action", adminLog.getAdminAction().name())
+						.set("time", adminLog.getTime())
+						.set("serialize_version", serializeVersion)
+						.set("itemstack", itemstack)
+						.execute(null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}));
+		});
 	}
 
 	//=================================================================================================//
 	// 								     LISTING PRICE LIMITS                                          //
 	//=================================================================================================//
 	public void insertListingPriceLimit(ListingPriceLimit priceLimit, Callback<ListingPriceLimit> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "listing_prices (id, item, min_price, max_price, serialize_version, itemstack) VALUES(?, ?, ?, ?, ?, ?)")) {
-				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "listing_prices WHERE id = ?");
-
-				fetch.setString(1, priceLimit.getId().toString());
-				statement.setString(1, priceLimit.getId().toString());
-
+		this.runAsync(() -> {
+			try {
+				String itemEncoded;
 				try {
-					statement.setString(5, AuctionAPI.encodeItem(priceLimit.getItem()));
-
+					itemEncoded = AuctionAPI.encodeItem(priceLimit.getItem());
 				} catch (IllegalStateException ignored) {
-					statement.setString(5, "");
+					itemEncoded = "";
 				}
 
-				statement.setDouble(3, priceLimit.getMinPrice());
-				statement.setDouble(4, priceLimit.getMaxPrice());
-
+				int serializeVersion = 1;
+				String itemstack;
 				try {
-					statement.setInt(5, 1);
-					statement.setString(6, QuickItem.toString(priceLimit.getItem()));
+					itemstack = QuickItem.toString(priceLimit.getItem());
 				} catch (NbtApiException e) {
-					statement.setInt(5, 0);
-					statement.setString(6, null);
+					serializeVersion = 0;
+					itemstack = null;
 				}
 
+				getQueryBuilder().insert("listing_prices")
+						.set("id", priceLimit.getId().toString())
+						.set("item", itemEncoded)
+						.set("min_price", priceLimit.getMinPrice())
+						.set("max_price", priceLimit.getMaxPrice())
+						.set("serialize_version", serializeVersion)
+						.set("itemstack", itemstack)
+						.execute((ex, affectedRows) -> {
+							if (ex != null) {
+								ex.printStackTrace();
+								resolveCallback(callback, ex);
+								return;
+							}
 
-				statement.executeUpdate();
-
-				if (callback != null) {
-					ResultSet res = fetch.executeQuery();
-					res.next();
-					callback.accept(null, extractListingPriceLimit(res));
-				}
-
+							if (callback != null) {
+								getQueryBuilder().select("listing_prices")
+										.where("id", priceLimit.getId().toString())
+										.fetchFirst(rs -> {
+											try {
+												return extractListingPriceLimit(rs);
+											} catch (SQLException e) {
+												return null;
+											}
+										}, callback);
+							}
+						});
 			} catch (Exception e) {
 				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
-		}));
+		});
 	}
 
 	public void getListingPriceLimits(Callback<ArrayList<ListingPriceLimit>> callback) {
-		ArrayList<ListingPriceLimit> listingPriceLimits = new ArrayList<>();
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "listing_prices")) {
-				ResultSet resultSet = statement.executeQuery();
-				while (resultSet.next()) {
+		this.runAsync(() -> {
+			this.databaseConnector.connect(connection -> {
+				try {
+					getQueryBuilder().select("listing_prices")
+							.fetchResultSet(resultSet -> {
+								ArrayList<ListingPriceLimit> listingPriceLimits = new ArrayList<>();
+								try {
+									while (resultSet.next()) {
+										final ListingPriceLimit listingPrice = extractListingPriceLimit(resultSet);
+										if (listingPrice == null || listingPrice.getItem() == null || listingPrice.getItem().getType() == CompMaterial.AIR.get()) continue;
 
-					final ListingPriceLimit listingPrice = extractListingPriceLimit(resultSet);
-					if (listingPrice == null || listingPrice.getItem() == null || listingPrice.getItem().getType() == CompMaterial.AIR.get()) continue;
+										if (resultSet.getInt("serialize_version") == 0) {
+											try {
+												String possible = QuickItem.toString(listingPrice.getItem());
+												getQueryBuilder().update("listing_prices")
+														.set("serialize_version", 1)
+														.set("itemstack", possible)
+														.where("id", resultSet.getString("id"))
+														.execute(null);
+											} catch (NbtApiException ignored) {
+											}
+										}
 
-					if (resultSet.getInt("serialize_version") == 0) {
-						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "listing_prices SET serialize_version = 1, itemstack = ? WHERE id = ?")) {
-							try {
-								String possible = QuickItem.toString(listingPrice.getItem());
-								updateStatement.setString(1, possible);
-								updateStatement.setString(2, resultSet.getString("id"));
-								updateStatement.executeUpdate();
-							} catch (NbtApiException ignored) {
-							}
-						}
-					}
-
-					listingPriceLimits.add(listingPrice);
+										listingPriceLimits.add(listingPrice);
+									}
+									callback.accept(null, listingPriceLimits);
+								} catch (SQLException e) {
+									resolveCallback(callback, e);
+								}
+							});
+				} catch (Exception e) {
+					resolveCallback(callback, e);
 				}
-
-				callback.accept(null, listingPriceLimits);
-			} catch (Exception e) {
-				resolveCallback(callback, e);
-			}
-		}));
+			});
+		});
 	}
 
 	public void deleteListingPriceLimit(@NonNull final UUID uuid, Callback<Boolean> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM " + this.getTablePrefix() + "listing_prices WHERE id = ?")) {
-				statement.setString(1, uuid.toString());
-
-				int result = statement.executeUpdate();
-				callback.accept(null, result > 0);
-
+		this.runAsync(() -> {
+			try {
+				getQueryBuilder().delete("listing_prices")
+						.where("id", uuid.toString())
+						.execute((ex, affectedRows) -> {
+							if (ex != null) {
+								resolveCallback(callback, ex);
+								return;
+							}
+							if (callback != null) {
+								callback.accept(null, affectedRows != null && affectedRows > 0);
+							}
+						});
 			} catch (Exception e) {
 				resolveCallback(callback, e);
 			}
-		}));
+		});
 	}
 
 	public void updateListingPriceLimit(@NonNull final ListingPriceLimit listingPriceLimit, Callback<Boolean> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "listing_prices SET min_price = ?, max_price = ? WHERE id = ?")) {
-
-				statement.setDouble(1, listingPriceLimit.getMinPrice());
-				statement.setDouble(2, listingPriceLimit.getMaxPrice());
-				statement.setString(3, listingPriceLimit.getId().toString());
-
-				int result = statement.executeUpdate();
-
-				if (callback != null)
-					callback.accept(null, result > 0);
-
+		this.runAsync(() -> {
+			try {
+				getQueryBuilder().update("listing_prices")
+						.set("min_price", listingPriceLimit.getMinPrice())
+						.set("max_price", listingPriceLimit.getMaxPrice())
+						.where("id", listingPriceLimit.getId().toString())
+						.execute((ex, affectedRows) -> {
+							if (ex != null) {
+								resolveCallback(callback, ex);
+								return;
+							}
+							if (callback != null) {
+								callback.accept(null, affectedRows != null && affectedRows > 0);
+							}
+						});
 			} catch (Exception e) {
 				resolveCallback(callback, e);
 			}
-		}));
+		});
 	}
 
 
 	public void insertStatistic(Statistic statistic, Callback<Statistic> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + this.getTablePrefix() + "statistic (uuid, stat_owner, stat_type, value, time) VALUES (?, ?, ?, ?, ?)")) {
+		this.runAsync(() -> {
+			try {
+				getQueryBuilder().insert("statistic")
+						.set("uuid", statistic.getId().toString())
+						.set("stat_owner", statistic.getOwner().toString())
+						.set("stat_type", statistic.getType().name())
+						.set("value", statistic.getValue())
+						.set("time", statistic.getTimeCreated())
+						.execute((ex, affectedRows) -> {
+							if (ex != null) {
+								ex.printStackTrace();
+								resolveCallback(callback, ex);
+								return;
+							}
 
-				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "statistic WHERE uuid = ?");
-
-				fetch.setString(1, statistic.getId().toString());
-				statement.setString(1, statistic.getId().toString());
-				statement.setString(2, statistic.getOwner().toString());
-				statement.setString(3, statistic.getType().name());
-				statement.setDouble(4, statistic.getValue());
-				statement.setLong(5, statistic.getTimeCreated());
-				statement.executeUpdate();
-
-				if (callback != null) {
-					ResultSet res = fetch.executeQuery();
-					res.next();
-					callback.accept(null, extractAuctionStatistic(res));
-				}
-
+							if (callback != null) {
+								getQueryBuilder().select("statistic")
+										.where("uuid", statistic.getId().toString())
+										.fetchFirst(rs -> {
+											try {
+												return extractAuctionStatistic(rs);
+											} catch (SQLException e) {
+												return null;
+											}
+										}, callback);
+							}
+						});
 			} catch (Exception e) {
 				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
-		}));
+		});
 	}
 
 	public void getStatistics(Callback<List<Statistic>> callback) {
-		List<Statistic> stats = new ArrayList<>();
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "statistic")) {
-				ResultSet resultSet = statement.executeQuery();
-				while (resultSet.next()) {
-					stats.add(extractAuctionStatistic(resultSet));
-				}
-
-				callback.accept(null, stats);
-			} catch (Exception e) {
-				resolveCallback(callback, e);
-			}
-		}));
+		this.runAsync(() -> {
+			getQueryBuilder().select("statistic")
+					.fetch(rs -> {
+						try {
+							return extractAuctionStatistic(rs);
+						} catch (SQLException e) {
+							return null;
+						}
+					}, callback);
+		});
 	}
 
 	public void deleteTransactions(Collection<UUID> transactions) {
@@ -1115,108 +1224,145 @@ public class DataManager extends DataManagerAbstract {
 	}
 
 	public void getAuctionPlayers(Callback<ArrayList<AuctionPlayer>> callback) {
-		ArrayList<AuctionPlayer> auctionPlayers = new ArrayList<>();
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "player")) {
-				ResultSet resultSet = statement.executeQuery();
-				while (resultSet.next()) {
-					auctionPlayers.add(extractAuctionPlayer(resultSet));
-				}
-
-				callback.accept(null, auctionPlayers);
-			} catch (Exception e) {
-				resolveCallback(callback, e);
-			}
-		}));
+		this.runAsync(() -> {
+			getQueryBuilder().select("player")
+					.fetch(rs -> {
+						try {
+							return extractAuctionPlayer(rs);
+						} catch (SQLException e) {
+							return null;
+						}
+					}, (ex, results) -> {
+						if (ex != null) {
+							resolveCallback(callback, ex);
+							return;
+						}
+						ArrayList<AuctionPlayer> auctionPlayers = new ArrayList<>();
+						if (results != null) {
+							for (AuctionPlayer player : results) {
+								if (player != null) {
+									auctionPlayers.add(player);
+								}
+							}
+						}
+						callback.accept(null, auctionPlayers);
+					});
+		});
 	}
 
 	public void updateAuctionPlayer(@NonNull final AuctionPlayer auctionPlayer, Callback<Boolean> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "player SET filter_sale_type = ?, filter_item_category = ?, filter_sort_type = ?, last_listed_item = ? WHERE uuid = ?")) {
-				statement.setString(1, auctionPlayer.getSelectedSaleType().name());
-				statement.setString(2, auctionPlayer.getSelectedFilter().name());
-				statement.setString(3, auctionPlayer.getAuctionSortType().name());
-				statement.setLong(4, auctionPlayer.getLastListedItem());
-				statement.setString(5, auctionPlayer.getUuid().toString());
-
-				int result = statement.executeUpdate();
-
-				if (callback != null)
-					callback.accept(null, result > 0);
-
+		this.runAsync(() -> {
+			try {
+				getQueryBuilder().update("player")
+						.set("filter_sale_type", auctionPlayer.getSelectedSaleType().name())
+						.set("filter_item_category", auctionPlayer.getSelectedFilter().name())
+						.set("filter_sort_type", auctionPlayer.getAuctionSortType().name())
+						.set("last_listed_item", auctionPlayer.getLastListedItem())
+						.where("uuid", auctionPlayer.getUuid().toString())
+						.execute((ex, affectedRows) -> {
+							if (ex != null) {
+								resolveCallback(callback, ex);
+								return;
+							}
+							if (callback != null) {
+								callback.accept(null, affectedRows != null && affectedRows > 0);
+							}
+						});
 			} catch (Exception e) {
 				resolveCallback(callback, e);
 			}
-		}));
+		});
 	}
 
 	public void getAuctionPayments(Callback<ArrayList<AuctionPayment>> callback) {
-		ArrayList<AuctionPayment> payments = new ArrayList<>();
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "payments")) {
-				ResultSet resultSet = statement.executeQuery();
-				while (resultSet.next()) {
+		this.runAsync(() -> {
+			this.databaseConnector.connect(connection -> {
+				try {
+					getQueryBuilder().select("payments")
+							.fetchResultSet(resultSet -> {
+								ArrayList<AuctionPayment> payments = new ArrayList<>();
+								try {
+									while (resultSet.next()) {
+										final AuctionPayment payment = extractAuctionPayment(resultSet);
+										if (payment == null || payment.getItem() == null || payment.getItem().getType() == CompMaterial.AIR.get()) continue;
 
-					final AuctionPayment payment = extractAuctionPayment(resultSet);
-					if (payment == null || payment.getItem() == null || payment.getItem().getType() == CompMaterial.AIR.get()) continue;
+										if (resultSet.getInt("serialize_version") == 0) {
+											try {
+												String possible = QuickItem.toString(payment.getItem());
+												getQueryBuilder().update("payments")
+														.set("serialize_version", 1)
+														.set("itemstack", possible)
+														.where("uuid", resultSet.getString("uuid"))
+														.where("time", resultSet.getLong("time"))
+														.execute(null);
+											} catch (NbtApiException ignored) {
+											}
+										}
 
-					if (resultSet.getInt("serialize_version") == 0) {
-						try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "payments SET serialize_version = 1, itemstack = ? WHERE uuid = ? AND time = ?")) {
-							try {
-								String possible = QuickItem.toString(payment.getItem());
-								updateStatement.setString(1, possible);
-								updateStatement.setString(2, resultSet.getString("uuid"));
-								updateStatement.setLong(3, resultSet.getLong("time"));
-								updateStatement.executeUpdate();
-							} catch (NbtApiException ignored) {
-							}
-						}
-					}
-
-					payments.add(payment);
+										payments.add(payment);
+									}
+									callback.accept(null, payments);
+								} catch (SQLException e) {
+									resolveCallback(callback, e);
+								}
+							});
+				} catch (Exception e) {
+					resolveCallback(callback, e);
 				}
-
-				callback.accept(null, payments);
-			} catch (Exception e) {
-				resolveCallback(callback, e);
-			}
-		}));
+			});
+		});
 	}
 
 	public void insertAuctionPayment(AuctionPayment auctionPayment, Callback<AuctionPayment> callback) {
-		this.runAsync(() -> this.databaseConnector.connect(connection -> {
-			try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + getTablePrefix() + "payments (uuid, payment_for, amount, time, item, from_name, reason, currency, currency_item) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-				PreparedStatement fetch = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "payments WHERE uuid = ?");
+		this.runAsync(() -> {
+			try {
+				String currencyItemStr = (auctionPayment.getCurrencyItem() == null || auctionPayment.getCurrencyItem() == CompMaterial.AIR.parseItem()) ? null : QuickItem.toString(auctionPayment.getCurrencyItem());
 
-				fetch.setString(1, auctionPayment.getId().toString());
-				statement.setString(1, auctionPayment.getId().toString());
-				statement.setString(2, auctionPayment.getTo().toString());
-				statement.setDouble(3, auctionPayment.getAmount());
-				statement.setLong(4, auctionPayment.getTime());
-				statement.setString(5, AuctionAPI.encodeItem(auctionPayment.getItem()));
-				statement.setString(6, auctionPayment.getFromName());
-				statement.setString(7, auctionPayment.getReason().name());
+				getQueryBuilder().insert("payments")
+						.set("uuid", auctionPayment.getId().toString())
+						.set("payment_for", auctionPayment.getTo().toString())
+						.set("amount", auctionPayment.getAmount())
+						.set("time", auctionPayment.getTime())
+						.set("item", AuctionAPI.encodeItem(auctionPayment.getItem()))
+						.set("from_name", auctionPayment.getFromName())
+						.set("reason", auctionPayment.getReason().name())
+						.set("currency", auctionPayment.getCurrency())
+						.set("currency_item", currencyItemStr)
+						.execute((ex, affectedRows) -> {
+							if (ex != null) {
+								ex.printStackTrace();
+								resolveCallback(callback, ex);
+								return;
+							}
 
-				statement.setString(8, auctionPayment.getCurrency());
-				statement.setString(9, (auctionPayment.getCurrencyItem() == null || auctionPayment.getCurrencyItem() == CompMaterial.AIR.parseItem()) ? null : QuickItem.toString(auctionPayment.getCurrencyItem()));
+							// insert into storage
+							AuctionHouse.getPaymentsManager().add(auctionPayment);
 
-
-				statement.executeUpdate();
-
-				// insert into storage
-				AuctionHouse.getPaymentsManager().add(auctionPayment);
-
-				if (callback != null) {
-					ResultSet res = fetch.executeQuery();
-					res.next();
-					callback.accept(null, extractAuctionPayment(res));
-				}
-
+							if (callback != null) {
+								getQueryBuilder().select("payments")
+										.where("uuid", auctionPayment.getId().toString())
+										.fetchFirst(rs -> {
+											try {
+												return extractAuctionPayment(rs);
+											} catch (SQLException e) {
+												return null;
+											}
+										}, (ex2, result) -> {
+											if (ex2 != null) {
+												resolveCallback(callback, ex2);
+											} else if (result != null) {
+												callback.accept(null, result);
+											} else {
+												callback.accept(null, null);
+											}
+										});
+							}
+						});
 			} catch (Exception e) {
 				e.printStackTrace();
 				resolveCallback(callback, e);
 			}
-		}));
+		});
 	}
 
 	public void deletePayments(Collection<UUID> payments) {
