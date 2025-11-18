@@ -77,14 +77,31 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	}
 
 	protected void startTask() {
+		// Cancel any existing task first (safety measure)
+		if (this.task != null && !this.task.isCancelled()) {
+			this.task.cancel();
+			if (AuctionHouse.isDebugMode()) {
+				AuctionHouse.getInstance().getLogger().warning("[AuctionUpdatingPagedGUI] Cancelled existing task before starting new one for " + this.getClass().getSimpleName() + " (player: " + this.player.getName() + ")");
+			}
+		}
+		
 		this.task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), () -> {
 //			this.fillSlots().forEach(slot -> setItem(slot, getDefaultItem()));
 			populateItems();
 		}, 0L, updateDelay);
+		
+		// Debug logging
+		if (AuctionHouse.isDebugMode()) {
+			AuctionHouse.getInstance().getLogger().info("[AuctionUpdatingPagedGUI] Started update task for " + this.getClass().getSimpleName() + " (player: " + this.player.getName() + ", task ID: " + this.task.getTaskId() + ", delay: " + this.updateDelay + " ticks)");
+		}
 	}
 
 	protected void applyClose() {
 		setOnClose(close -> {
+			// Debug logging
+			if (AuctionHouse.isDebugMode()) {
+				AuctionHouse.getInstance().getLogger().info("[AuctionUpdatingPagedGUI] setOnClose triggered for " + this.getClass().getSimpleName() + " (player: " + close.player.getName() + ")");
+			}
 			cancelTask();
 		});
 	}
@@ -97,8 +114,20 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	}
 
 	protected void cancelTask() {
-		if (this.task != null) {
+		if (this.task != null && !this.task.isCancelled()) {
+			int taskId = this.task.getTaskId();
 			this.task.cancel();
+			this.task = null; // Clear reference to prevent memory leaks
+			// Debug logging
+			if (AuctionHouse.isDebugMode()) {
+				AuctionHouse.getInstance().getLogger().info("[AuctionUpdatingPagedGUI] Cancelled update task for " + this.getClass().getSimpleName() + " (player: " + this.player.getName() + ", task ID: " + taskId + ")");
+			}
+		} else if (this.task != null) {
+			// Task was already cancelled, but reference still exists - clear it
+			this.task = null;
+			if (AuctionHouse.isDebugMode()) {
+				AuctionHouse.getInstance().getLogger().warning("[AuctionUpdatingPagedGUI] Task was already cancelled but reference still exists for " + this.getClass().getSimpleName() + " (player: " + this.player.getName() + ") - cleared reference");
+			}
 		}
 	}
 

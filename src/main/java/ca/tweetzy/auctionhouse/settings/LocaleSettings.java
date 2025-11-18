@@ -296,6 +296,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.syntax.price limit", "pricelimit [set <min/max> <price>]");
 		languageNodes.put("commands.syntax.stats", "stats [player]");
 		languageNodes.put("commands.syntax.request", "request <price> [-single]");
+		languageNodes.put("commands.syntax.debug", "debug");
 
 		languageNodes.put("commands.description.active", "View all your auction listings");
 		languageNodes.put("commands.description.cart", "Used to view your cart");
@@ -317,6 +318,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.description.price limit", "Adds a minimum sell price to an item");
 		languageNodes.put("commands.description.stats", "View yours or another players stats");
 		languageNodes.put("commands.description.request", "Makes request for item your holding");
+		languageNodes.put("commands.description.debug", "Toggle debug mode for development and research");
 	}
 
 	public static void send(CommandSender sender, String msg) {

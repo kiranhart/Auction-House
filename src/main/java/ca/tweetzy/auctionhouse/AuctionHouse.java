@@ -80,6 +80,12 @@ public class AuctionHouse extends TweetyPlugin {
 	@Getter
 	private static TweetzyYamlConfig migrationCoreConfig;
 
+	//==========================================================================//
+	// Debug toggle for development/research
+	@Getter
+	@Setter
+	private static boolean debugMode = false;
+
 	private DatabaseConnector databaseConnector;
 	private DataManager dataManager;
 
@@ -259,7 +265,8 @@ public class AuctionHouse extends TweetyPlugin {
 				new CommandBids(),
 				new CommandConfirm(),
 				new CommandRequest(),
-				new CommandPop()
+				new CommandPop(),
+				new CommandDebug()
 
 		);
 
