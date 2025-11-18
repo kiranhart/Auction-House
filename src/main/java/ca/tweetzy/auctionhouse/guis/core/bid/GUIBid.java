@@ -31,7 +31,6 @@ import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.MathUtil;
-import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -73,9 +72,12 @@ public class GUIBid extends AuctionBaseGUI {
 				return;
 			}
 
-			e.gui.exit();
+			// Prevent setOnClose from reopening GUI when transitioning to confirmation
+			// Temporarily clear the close handler, then show confirmation GUI directly
+			e.gui.setOnClose(null);
 			final double minBid = Settings.USE_REALISTIC_BIDDING.getBoolean() ? this.auctionItem.getCurrentPrice() + this.auctionItem.getBidIncrementPrice() : this.auctionItem.getBidIncrementPrice();
-
+			
+			// Show confirmation GUI directly - it will replace the current GUI
 			e.manager.showGUI(e.player, new GUIConfirmBid(this.auctionPlayer, auctionItem, minBid));
 		});
 
@@ -86,13 +88,17 @@ public class GUIBid extends AuctionBaseGUI {
 				.lore(this.player, Settings.GUI_BIDDING_ITEMS_CUSTOM_LORE.getStringList())
 				.make(), e -> {
 
-		e.gui.exit();
+		// Prevent setOnClose from reopening GUI when transitioning to TitleInput
+		// Temporarily clear the close handler, then close inventory
+		e.gui.setOnClose(null);
+		e.gui.setAllowClose(true);
+		e.player.closeInventory();
 
 		new TitleInput(AuctionHouse.getInstance(), player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.subtitle").getMessage()) {
 
 				@Override
 				public void onExit(Player player) {
-					AuctionHouse.getInstance().getGuiManager().showGUI(player, new GUIAuctionHouse(GUIBid.this.auctionPlayer));
+					AuctionHouse.getGuiManager().showGUI(player, new GUIAuctionHouse(GUIBid.this.auctionPlayer));
 				}
 
 				@Override

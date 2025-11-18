@@ -134,7 +134,10 @@ public final class GUISellBin extends AuctionBaseGUI {
 							"remaining_seconds", times[3]
 					)).make(), click -> {
 
-			click.gui.exit();
+			// Prevent GUI from reopening when transitioning to TitleInput
+			// Keep the close handler so items are still returned, but set allowClose=true to prevent reopening
+			click.gui.setAllowClose(true);
+			click.player.closeInventory();
 			new TitleInput(AuctionHouse.getInstance(), click.player, Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.title").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.subtitle").getMessage()), Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.listing time.actionbar").getMessage())) {
 
 
@@ -171,7 +174,10 @@ public final class GUISellBin extends AuctionBaseGUI {
 				.lore(this.player, Replacer.replaceVariables(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_LORE.getStringList(), "listing_bin_price", AuctionHouse.getAPI().getNumberAsCurrency(listingPrice)))
 				.make(), click -> {
 
-		click.gui.exit();
+		// Prevent GUI from reopening when transitioning to TitleInput
+		// Keep the close handler so items are still returned, but set allowClose=true to prevent reopening
+		click.gui.setAllowClose(true);
+		click.player.closeInventory();
 		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.buy now price.subtitle").getMessage()) {
 
 				@Override
