@@ -323,8 +323,18 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 //					}
 
 					cancelTask();
-					click.manager.showGUI(click.player, new GUIConfirmPurchase(this.auctionPlayer, auctionedItem, false));
-					AuctionHouse.getTransactionManager().addPrePurchase(click.player, auctionedItem.getId());
+					if (Settings.ASK_FOR_PURCHASE_CONFIRMATION.getBoolean()) {
+						click.manager.showGUI(click.player, new GUIConfirmPurchase(this.auctionPlayer, auctionedItem, false));
+						AuctionHouse.getTransactionManager().addPrePurchase(click.player, auctionedItem.getId());
+					} else {
+						// Process purchase directly without confirmation
+						int preAmount = auctionedItem.getItem().getAmount();
+						boolean buyingSpecificQuantity = preAmount > 1;
+						int purchaseQuantity = buyingSpecificQuantity ? preAmount : 0;
+						double pricePerItem = buyingSpecificQuantity ? auctionedItem.getBasePrice() / preAmount : 0D;
+						GUIConfirmPurchase.processPurchase(click.player, this.auctionPlayer, auctionedItem, buyingSpecificQuantity, purchaseQuantity, pricePerItem);
+						click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
+					}
 					return;
 				}
 
@@ -372,8 +382,21 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		cancelTask();
-		click.manager.showGUI(click.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, buyingQuantity));
-		AuctionHouse.getTransactionManager().addPrePurchase(click.player, auctionItem.getId());
+		if (Settings.ASK_FOR_PURCHASE_CONFIRMATION.getBoolean()) {
+			click.manager.showGUI(click.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, buyingQuantity));
+			AuctionHouse.getTransactionManager().addPrePurchase(click.player, auctionItem.getId());
+		} else {
+			// Process purchase directly without confirmation
+			int preAmount = auctionItem.getItem().getAmount();
+			boolean buyingSpecificQuantity = buyingQuantity && preAmount > 1;
+			if (preAmount == 1) {
+				buyingSpecificQuantity = false;
+			}
+			int purchaseQuantity = buyingSpecificQuantity ? preAmount : 0;
+			double pricePerItem = buyingSpecificQuantity ? auctionItem.getBasePrice() / preAmount : 0D;
+			GUIConfirmPurchase.processPurchase(click.player, this.auctionPlayer, auctionItem, buyingSpecificQuantity, purchaseQuantity, pricePerItem);
+			click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
+		}
 	}
 
 	//======================================================================================================//
@@ -392,8 +415,21 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				}
 
 				cancelTask();
-				click.manager.showGUI(click.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
-				AuctionHouse.getTransactionManager().addPrePurchase(click.player, auctionItem.getId());
+				if (Settings.ASK_FOR_PURCHASE_CONFIRMATION.getBoolean()) {
+					click.manager.showGUI(click.player, new GUIConfirmPurchase(this.auctionPlayer, auctionItem, false));
+					AuctionHouse.getTransactionManager().addPrePurchase(click.player, auctionItem.getId());
+				} else {
+					// Process purchase directly without confirmation
+					int preAmount = auctionItem.getItem().getAmount();
+					boolean buyingSpecificQuantity = preAmount > 1;
+					if (preAmount == 1) {
+						buyingSpecificQuantity = false;
+					}
+					int purchaseQuantity = buyingSpecificQuantity ? preAmount : 0;
+					double pricePerItem = buyingSpecificQuantity ? auctionItem.getBasePrice() / preAmount : 0D;
+					GUIConfirmPurchase.processPurchase(click.player, this.auctionPlayer, auctionItem, buyingSpecificQuantity, purchaseQuantity, pricePerItem);
+					click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer));
+				}
 			}
 			return;
 		}
