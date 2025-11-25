@@ -189,6 +189,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 				toGive.setRequestAmount(amountNeeded);
 				toGive.setRequest(true);
+				toGive.setCreatedAt(System.currentTimeMillis());
 
 				AuctionHouse.getDataManager().insertAuction(toGive, (error, inserted) -> AuctionHouse.getAuctionItemManager().addAuctionItem(toGive));
 

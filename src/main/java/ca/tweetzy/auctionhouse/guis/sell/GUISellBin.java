@@ -293,6 +293,7 @@ public final class GUISellBin extends AuctionBaseGUI {
 			item.setCurrency(this.currency);
 
 		item.setCurrencyItem(this.currencyItem);
+		item.setCreatedAt(System.currentTimeMillis());
 
 		return item;
 	}

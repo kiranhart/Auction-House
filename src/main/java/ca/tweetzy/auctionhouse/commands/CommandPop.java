@@ -78,6 +78,8 @@ public class CommandPop extends Command {
 					System.currentTimeMillis() + 1000L * 60 * 60
 			);
 
+			listing.setCreatedAt(System.currentTimeMillis());
+
 			AuctionCreator.create(AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()), listing, (created, listingResult) -> {
 
 			});

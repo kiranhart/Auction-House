@@ -93,6 +93,8 @@ public class AuctionedItem {
 	private String currency = AuctionHouse.getCurrencyManager().getDefaultCurrency().getStoreableName();
 	private ItemStack currencyItem;
 
+	private Long createdAt;
+
 	public AuctionedItem() {
 	}
 
@@ -152,6 +154,7 @@ public class AuctionedItem {
 		requested.setAllowPartialBuy(false);
 		requested.setRequest(true);
 		requested.setRequestAmount(requestAmount);
+		requested.setCreatedAt(System.currentTimeMillis());
 
 		return requested;
 	}

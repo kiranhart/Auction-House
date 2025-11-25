@@ -414,6 +414,8 @@ public final class CommandSell extends Command {
 			auctionedItem.setCurrencyItem(null);
 		}
 
+		auctionedItem.setCreatedAt(System.currentTimeMillis());
+
 		AuctionHouse.getAuctionPlayerManager().addToSellProcess(player);
 
 		if (Settings.ASK_FOR_LISTING_CONFIRMATION.getBoolean()) {

@@ -165,6 +165,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 			auctionedItem.setListedWorld(e.player.getWorld().getName());
 			auctionedItem.setInfinite(false);
 			auctionedItem.setAllowPartialBuy(false);
+			auctionedItem.setCreatedAt(System.currentTimeMillis());
 
 			auctionPlayer.setItemBeingListed(bundle);
 

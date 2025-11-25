@@ -33,7 +33,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class AuctionPagedGUI<T> extends BaseGUI {
@@ -90,9 +92,28 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 					// - prePopulate() might do filtering/sorting
 					// - Stream operations for pagination
 					prePopulate();
-					return this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toList());
-				}).syncLast((data) -> {
-					// All GUI operations on main thread (required for Bukkit API)
+					final List<T> paginatedItems = this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toList());
+					
+					// Build ItemStacks asynchronously (heavy work: string processing, lore building)
+					final Map<Integer, ItemStack> slotToItemStack = new HashMap<>();
+					final Map<Integer, T> slotToObject = new HashMap<>();
+					
+					for (int i = 0; i < this.rows * 9; i++) {
+						if (this.fillSlots().contains(i) && this.fillSlots().indexOf(i) < paginatedItems.size()) {
+							final T object = paginatedItems.get(this.fillSlots().indexOf(i));
+							slotToItemStack.put(i, this.makeDisplayItem(object));
+							slotToObject.put(i, object);
+						}
+					}
+					
+					// Return both maps as a pair
+					return new Object[] { slotToItemStack, slotToObject };
+				}).syncLast((result) -> {
+					@SuppressWarnings("unchecked")
+					final Map<Integer, ItemStack> slotToItemStack = (Map<Integer, ItemStack>) ((Object[]) result)[0];
+					@SuppressWarnings("unchecked")
+					final Map<Integer, T> slotToObject = (Map<Integer, T>) ((Object[]) result)[1];
+					
 					// Calculate pages
 					pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
 					
@@ -126,12 +147,12 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 						setItem(getNextButtonSlot(), getDefaultItem());
 					}
 
-					// Set items for current page
-					for (int i = 0; i < this.rows * 9; i++) {
-						if (this.fillSlots().contains(i) && this.fillSlots().indexOf(i) < data.size()) {
-							final T object = data.get(this.fillSlots().indexOf(i));
-							setButton(i, this.makeDisplayItem(object), click -> this.onClick(object, click));
-						}
+					// Set items for current page using pre-built ItemStacks
+					for (Map.Entry<Integer, ItemStack> entry : slotToItemStack.entrySet()) {
+						final int slot = entry.getKey();
+						final ItemStack itemStack = entry.getValue();
+						final T object = slotToObject.get(slot);
+						setButton(slot, itemStack, click -> this.onClick(object, click));
 					}
 				}).execute();
 			}

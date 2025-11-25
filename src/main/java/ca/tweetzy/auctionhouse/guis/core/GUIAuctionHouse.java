@@ -178,7 +178,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				break;
 			case RECENT:
 			default:
-				comparator = Comparator.comparingLong(AuctionedItem::getExpiresAt).reversed();
+				comparator = Comparator.comparing(AuctionedItem::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder()));
 				break;
 		}
 		// Always prioritize infinite items and listing priority

@@ -457,6 +457,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 			auctionedItem.setCurrency(this.currency);
 
 		auctionedItem.setCurrencyItem(this.currencyItem);
+		auctionedItem.setCreatedAt(System.currentTimeMillis());
 
 		return auctionedItem;
 	}

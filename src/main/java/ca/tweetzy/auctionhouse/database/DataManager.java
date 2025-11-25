@@ -264,7 +264,7 @@ public class DataManager extends DataManagerAbstract {
 			connection.setAutoCommit(false);
 			SQLException err = null;
 
-			PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET owner = ?, owner_name = ?, highest_bidder = ?, highest_bidder_name = ?, base_price = ?, bid_start_price = ?, bid_increment_price = ?, current_price = ?, expires_at = ?, expired = ?, item = ?, serialize_version = ?, itemstack = ?, listing_priority = ?, priority_expires_at = ? WHERE id = ?");
+			PreparedStatement statement = connection.prepareStatement("UPDATE " + this.getTablePrefix() + "auctions SET owner = ?, owner_name = ?, highest_bidder = ?, highest_bidder_name = ?, base_price = ?, bid_start_price = ?, bid_increment_price = ?, current_price = ?, expires_at = ?, expired = ?, item = ?, serialize_version = ?, itemstack = ?, listing_priority = ?, priority_expires_at = ?, created_at = ? WHERE id = ?");
 			for (AuctionedItem item : items) {
 				try {
 					statement.setString(1, item.getOwner().toString());
@@ -296,7 +296,13 @@ public class DataManager extends DataManagerAbstract {
 					statement.setBoolean(14, item.getPriorityExpiresAt() >= System.currentTimeMillis() && item.isHasListingPriority());
 					statement.setLong(15, item.getPriorityExpiresAt());
 
-					statement.setString(16, item.getId().toString());
+					if (item.getCreatedAt() != null) {
+						statement.setLong(16, item.getCreatedAt());
+					} else {
+						statement.setNull(16, java.sql.Types.BIGINT);
+					}
+
+					statement.setString(17, item.getId().toString());
 
 
 					statement.addBatch();
@@ -548,6 +554,7 @@ public class DataManager extends DataManagerAbstract {
 						.set("priority_expires_at", item.getPriorityExpiresAt())
 						.set("currency", item.getCurrency())
 						.set("currency_item", currencyItemStr)
+						.set("created_at", item.getCreatedAt())
 						.execute((ex, affectedRows) -> {
 							if (ex != null) {
 								ex.printStackTrace();
@@ -613,6 +620,11 @@ public class DataManager extends DataManagerAbstract {
 
 		auctionItem.setCurrency(resultSet.getString("currency"));
 		auctionItem.setCurrencyItem(resultSet.getString("currency_item") == null ? null : QuickItem.getItem(resultSet.getString("currency_item")));
+
+		if (hasColumn(resultSet, "created_at")) {
+			long createdAt = resultSet.getLong("created_at");
+			auctionItem.setCreatedAt(resultSet.wasNull() ? null : createdAt);
+		}
 
 		return auctionItem;
 	}
