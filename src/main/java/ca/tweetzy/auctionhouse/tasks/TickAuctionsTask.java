@@ -124,15 +124,17 @@ public class TickAuctionsTask extends BukkitRunnable {
 					continue;
 				}
 
-				// the owner is the highest bidder, so just expire
-				if (auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
-					if (auctionItem.isServerItem() || auctionItem.isRequest()) {
-						// Already marked as purchased above
-					} else {
-						auctionItem.setExpired(true);
-					}
-					continue;
+			// the owner is the highest bidder, so just expire
+			if (auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
+				if (auctionItem.isServerItem() || auctionItem.isRequest()) {
+					// Already marked as purchased above
+				} else {
+					// Remove from garbage bin so item can be retrieved from collection bin
+					AuctionHouse.getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());
+					auctionItem.setExpired(true);
 				}
+				continue;
+			}
 
 				OfflinePlayer auctionWinner = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
 				if (!auctionWinner.isOnline() && auctionItem.hasValidItemCurrency()) {
