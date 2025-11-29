@@ -54,6 +54,22 @@ public class AuctionListeners implements Listener {
 		final Player seller = e.getSeller();
 		final AuctionedItem auctionedItem = e.getAuctionItem();
 
+		// Log auction creation
+		if (AuctionHouse.getTransactionLogger() != null && !e.isCancelled()) {
+			String itemName = auctionedItem.getItem().hasItemMeta() && auctionedItem.getItem().getItemMeta().hasDisplayName() 
+				? auctionedItem.getItem().getItemMeta().getDisplayName() 
+				: auctionedItem.getItem().getType().name();
+			AuctionHouse.getTransactionLogger().logAuctionCreate(
+				seller.getName(),
+				itemName,
+				auctionedItem.getItem().getAmount(),
+				auctionedItem.getBasePrice(),
+				auctionedItem.getCurrency(),
+				auctionedItem.getId().toString(),
+				auctionedItem.isBidItem()
+			);
+		}
+
 		// ignore if server item
 		if (!auctionedItem.isServerItem())
 			new AuctionStatistic(seller.getUniqueId(), auctionedItem.isBidItem() ? AuctionStatisticType.CREATED_AUCTION : AuctionStatisticType.CREATED_BIN, 1).store(null);
@@ -100,11 +116,74 @@ public class AuctionListeners implements Listener {
 	public void onAuctionRequestComplete(AuctionRequestCompleteEvent event) {
 		if (!Settings.RECORD_TRANSACTIONS.getBoolean()) return;
 
-		final AuctionedItem originalListing = event.getOriginalListing();
 		final RequestTransaction completedRequest = event.getRequestTransaction();
 
-		completedRequest.store(stored -> {
+		// Log request fulfillment with balance changes
+		if (AuctionHouse.getTransactionLogger() != null && !event.isCancelled()) {
+			String itemName = completedRequest.getRequestedItem().hasItemMeta() && completedRequest.getRequestedItem().getItemMeta().hasDisplayName()
+				? completedRequest.getRequestedItem().getItemMeta().getDisplayName()
+				: completedRequest.getRequestedItem().getType().name();
+			// Get currency from original listing if available
+			String currency = "Vault/Vault"; // Default currency
+			if (event.getOriginalListing() != null) {
+				currency = event.getOriginalListing().getCurrency();
+			}
+			
+			// Get balances for logging
+			String[] currencyParts = currency.split("/");
+			String currencyPlugin = currencyParts.length > 0 ? currencyParts[0] : "Vault";
+			String currencyName = currencyParts.length > 1 ? currencyParts[1] : "Vault";
+			
+			OfflinePlayer requester = Bukkit.getOfflinePlayer(completedRequest.getRequesterUUID());
+			OfflinePlayer fulfiller = Bukkit.getOfflinePlayer(completedRequest.getFulfillerUUID());
+			
+			double requesterOldBalance = AuctionHouse.getCurrencyManager().getBalance(requester, currencyPlugin, currencyName);
+			double fulfillerOldBalance = AuctionHouse.getCurrencyManager().getBalance(fulfiller, currencyPlugin, currencyName);
+			
+			double paymentAmount = completedRequest.getPaymentTotal();
+			double requesterNewBalance = requesterOldBalance - paymentAmount;
+			double fulfillerNewBalance = fulfillerOldBalance + paymentAmount;
+			
+			AuctionHouse.getTransactionLogger().logRequestFulfill(
+				completedRequest.getId().toString(),
+				completedRequest.getRequesterName(),
+				completedRequest.getFulfillerName(),
+				itemName,
+				completedRequest.getAmountRequested(),
+				completedRequest.getPaymentTotal(),
+				currency,
+				requesterOldBalance,
+				requesterNewBalance,
+				fulfillerOldBalance,
+				fulfillerNewBalance
+			);
+		}
 
+		completedRequest.store(stored -> {
+			if (stored != null) {
+				// Create a regular Transaction for the completed offer
+				// The fulfiller is the seller (they sold the item), the requester is the buyer
+				final org.bukkit.inventory.ItemStack transactionItem = completedRequest.getRequestedItem().clone();
+				transactionItem.setAmount(completedRequest.getAmountRequested());
+
+				AuctionHouse.newChain().async(() -> {
+					AuctionHouse.getDataManager().insertTransaction(new Transaction(
+							UUID.randomUUID(),
+							completedRequest.getFulfillerUUID(), // fulfiller is the seller
+							completedRequest.getRequesterUUID(), // requester is the buyer
+							completedRequest.getFulfillerName(),
+							completedRequest.getRequesterName(),
+							completedRequest.getTimeCreated(),
+							transactionItem,
+							AuctionSaleType.WITHOUT_BIDDING_SYSTEM, // offers are always non-bid
+							completedRequest.getPaymentTotal()
+					), (error, transaction) -> {
+						if (error == null && transaction != null) {
+							AuctionHouse.getTransactionManager().addTransaction(transaction);
+						}
+					});
+				}).execute();
+			}
 		});
 	}
 
@@ -114,6 +193,61 @@ public class AuctionListeners implements Listener {
 		final OfflinePlayer originalOwner = e.getOriginalOwner(), buyer = e.getBuyer();
 		final UUID originalOwnerUUID = originalOwner.getUniqueId(), buyerUUID = buyer.getUniqueId();
 		final AuctionedItem auctionedItem = e.getAuctionItem();
+
+		// Log auction end with balance changes
+		if (AuctionHouse.getTransactionLogger() != null && !e.isCancelled()) {
+			String itemName = auctionedItem.getItem().hasItemMeta() && auctionedItem.getItem().getItemMeta().hasDisplayName()
+				? auctionedItem.getItem().getItemMeta().getDisplayName()
+				: auctionedItem.getItem().getType().name();
+			
+			// Get balances for logging
+			String[] currencyParts = auctionedItem.getCurrency().split("/");
+			String currencyPlugin = currencyParts.length > 0 ? currencyParts[0] : "Vault";
+			String currencyName = currencyParts.length > 1 ? currencyParts[1] : "Vault";
+			
+			double buyerOldBalance = AuctionHouse.getCurrencyManager().getBalance(buyer, currencyPlugin, currencyName);
+			double sellerOldBalance = AuctionHouse.getCurrencyManager().getBalance(originalOwner, currencyPlugin, currencyName);
+			
+			double transactionAmount = e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM ? auctionedItem.getCurrentPrice() : auctionedItem.getBasePrice();
+			double tax = e.getTax();
+			double buyerPays = Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? transactionAmount + tax : transactionAmount;
+			double sellerReceives = Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? transactionAmount : transactionAmount - tax;
+			
+			double buyerNewBalance = buyerOldBalance - buyerPays;
+			double sellerNewBalance = sellerOldBalance + sellerReceives;
+			
+			if (e.getSaleType() == AuctionSaleType.USED_BIDDING_SYSTEM) {
+				// Auction expired/sold via bidding
+				AuctionHouse.getTransactionLogger().logAuctionExpire(
+					originalOwner.getName() != null ? originalOwner.getName() : "Unknown",
+					buyer.getName() != null ? buyer.getName() : "Unknown",
+					itemName,
+					auctionedItem.getItem().getAmount(),
+					auctionedItem.getCurrentPrice(),
+					auctionedItem.getCurrency(),
+					auctionedItem.getId().toString(),
+					buyerOldBalance,
+					buyerNewBalance,
+					sellerOldBalance,
+					sellerNewBalance
+				);
+			} else {
+				// Buy now purchase
+				AuctionHouse.getTransactionLogger().logAuctionPurchase(
+					buyer.getName() != null ? buyer.getName() : "Unknown",
+					originalOwner.getName() != null ? originalOwner.getName() : "Unknown",
+					itemName,
+					auctionedItem.getItem().getAmount(),
+					auctionedItem.getBasePrice(),
+					auctionedItem.getCurrency(),
+					auctionedItem.getId().toString(),
+					buyerOldBalance,
+					buyerNewBalance,
+					sellerOldBalance,
+					sellerNewBalance
+				);
+			}
+		}
 
 		if (!auctionedItem.isServerItem()) {
 			new AuctionStatistic(originalOwnerUUID, auctionedItem.isBidItem() ? AuctionStatisticType.SOLD_AUCTION : AuctionStatisticType.SOLD_BIN, 1).store(null);
@@ -174,6 +308,49 @@ public class AuctionListeners implements Listener {
 
 	@EventHandler
 	public void onAuctionBid(AuctionBidEvent e) {
+		// Log auction bid with balance changes
+		if (AuctionHouse.getTransactionLogger() != null && !e.isCancelled()) {
+			final AuctionedItem auctionedItem = e.getAuctionedItem();
+			String itemName = auctionedItem.getItem().hasItemMeta() && auctionedItem.getItem().getItemMeta().hasDisplayName()
+				? auctionedItem.getItem().getItemMeta().getDisplayName()
+				: auctionedItem.getItem().getType().name();
+			double previousBid = auctionedItem.getHighestBidder().equals(auctionedItem.getOwner()) ? 0 : auctionedItem.getCurrentPrice() - (e.getNewBidAmount() - auctionedItem.getCurrentPrice());
+			
+			// Get balances for logging
+			String[] currencyParts = auctionedItem.getCurrency().split("/");
+			String currencyPlugin = currencyParts.length > 0 ? currencyParts[0] : "Vault";
+			String currencyName = currencyParts.length > 1 ? currencyParts[1] : "Vault";
+			
+			double bidderOldBalance = AuctionHouse.getCurrencyManager().getBalance(e.getBidder(), currencyPlugin, currencyName);
+			double bidderNewBalance = bidderOldBalance - e.getNewBidAmount();
+			
+			Double previousBidderOldBalance = null;
+			Double previousBidderNewBalance = null;
+			
+			// If there was a previous bidder, get their balance info
+			if (!auctionedItem.getHighestBidder().equals(auctionedItem.getOwner()) && Settings.BIDDING_TAKES_MONEY.getBoolean()) {
+				OfflinePlayer previousBidder = Bukkit.getOfflinePlayer(auctionedItem.getHighestBidder());
+				if (previousBidder != null) {
+					previousBidderOldBalance = AuctionHouse.getCurrencyManager().getBalance(previousBidder, currencyPlugin, currencyName);
+					previousBidderNewBalance = previousBidderOldBalance + auctionedItem.getCurrentPrice(); // They get refunded
+				}
+			}
+			
+			AuctionHouse.getTransactionLogger().logAuctionBid(
+				e.getBidder().getName() != null ? e.getBidder().getName() : "Unknown",
+				auctionedItem.getOwnerName() != null ? auctionedItem.getOwnerName() : "Unknown",
+				itemName,
+				e.getNewBidAmount(),
+				previousBid,
+				auctionedItem.getCurrency(),
+				auctionedItem.getId().toString(),
+				bidderOldBalance,
+				bidderNewBalance,
+				previousBidderOldBalance,
+				previousBidderNewBalance
+			);
+		}
+
 		if (!Settings.DISCORD_ENABLED.getBoolean() && Settings.DISCORD_ALERT_ON_BID.getBoolean()) return;
 		AuctionHouse.newChain().async(() -> {
 			final AuctionedItem auctionedItem = e.getAuctionedItem();
@@ -194,5 +371,19 @@ public class AuctionListeners implements Listener {
 		if (!Settings.LOG_ADMIN_ACTIONS.getBoolean()) return;
 		AuctionHouse.getListingManager().cancelListingWebhook(event.getAuctionAdminLog().getItemId());
 		AuctionHouse.getDataManager().insertLog(event.getAuctionAdminLog());
+
+		// Log admin action to transaction logger
+		if (AuctionHouse.getTransactionLogger() != null && !event.isCancelled()) {
+			String itemName = event.getAuctionAdminLog().getItem().hasItemMeta() && event.getAuctionAdminLog().getItem().getItemMeta().hasDisplayName()
+				? event.getAuctionAdminLog().getItem().getItemMeta().getDisplayName()
+				: event.getAuctionAdminLog().getItem().getType().name();
+			AuctionHouse.getTransactionLogger().logAdminAction(
+				event.getAuctionAdminLog().getAdminName(),
+				event.getAuctionAdminLog().getTargetName(),
+				itemName,
+				event.getAuctionAdminLog().getAdminAction().name(),
+				event.getAuctionAdminLog().getItemId().toString()
+			);
+		}
 	}
 }

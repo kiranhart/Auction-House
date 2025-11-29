@@ -52,6 +52,12 @@ public final class CartManager extends KeyValueManager<UUID, Cart> {
 		final Cart cart = getPlayerCart(player);
 		if (cart.getItems().isEmpty()) return cart;
 
+		// Track cart purchase totals
+		int totalItemCount = 0;
+		double totalPrice = 0.0;
+		String currency = null;
+		Double buyerOldBalance = null;
+
 		for (AuctionedItem item : cart.getItems()) {
 			try {
 
@@ -97,6 +103,18 @@ public final class CartManager extends KeyValueManager<UUID, Cart> {
 				PlayerUtils.giveItem(player, foundItem);
 				sendMessages(player, located, false, 0, foundItem.getAmount());
 
+				// Track cart totals
+				totalItemCount++;
+				totalPrice += located.getBasePrice();
+				if (currency == null) {
+					currency = located.getCurrency();
+					// Get buyer's balance before checkout
+					String[] currencyParts = currency.split("/");
+					String currencyPlugin = currencyParts.length > 0 ? currencyParts[0] : "Vault";
+					String currencyName = currencyParts.length > 1 ? currencyParts[1] : "Vault";
+					buyerOldBalance = AuctionHouse.getCurrencyManager().getBalance(player, currencyPlugin, currencyName);
+				}
+
 				if (Settings.BROADCAST_AUCTION_SALE.getBoolean()) {
 					final OfflinePlayer seller = Bukkit.getOfflinePlayer(located.getOwner());
 
@@ -123,6 +141,23 @@ public final class CartManager extends KeyValueManager<UUID, Cart> {
 			}
 		}
 
+		// Log cart purchase with balance changes
+		if (AuctionHouse.getTransactionLogger() != null && totalItemCount > 0 && currency != null) {
+			String[] currencyParts = currency.split("/");
+			String currencyPlugin = currencyParts.length > 0 ? currencyParts[0] : "Vault";
+			String currencyName = currencyParts.length > 1 ? currencyParts[1] : "Vault";
+			
+			double buyerNewBalance = AuctionHouse.getCurrencyManager().getBalance(player, currencyPlugin, currencyName);
+			
+			AuctionHouse.getTransactionLogger().logCartPurchase(
+				player.getName(),
+				totalItemCount,
+				totalPrice,
+				currency,
+				buyerOldBalance,
+				buyerNewBalance
+			);
+		}
 
 		return cart;
 	}

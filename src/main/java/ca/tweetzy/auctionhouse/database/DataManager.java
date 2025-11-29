@@ -98,6 +98,21 @@ public class DataManager extends DataManagerAbstract {
 								return;
 							}
 
+							// Log ban creation
+							if (AuctionHouse.getTransactionLogger() != null && affectedRows != null && affectedRows > 0) {
+								String bannedPlayerName = Bukkit.getOfflinePlayer(ban.getId()).getName();
+								if (bannedPlayerName == null) bannedPlayerName = "Unknown";
+								String adminName = Bukkit.getOfflinePlayer(ban.getBanner()).getName();
+								if (adminName == null) adminName = "Unknown";
+								AuctionHouse.getTransactionLogger().logBanCreate(
+									adminName,
+									bannedPlayerName,
+									ban.getBanString(),
+									ban.getReason(),
+									ban.isPermanent()
+								);
+							}
+
 							if (callback != null) {
 								getQueryBuilder().select("bans")
 										.where("banned_player", ban.getId().toString())
@@ -127,6 +142,19 @@ public class DataManager extends DataManagerAbstract {
 								resolveCallback(callback, ex);
 								return;
 							}
+							
+							// Log ban removal
+							if (AuctionHouse.getTransactionLogger() != null && affectedRows != null && affectedRows > 0) {
+								String unbannedPlayerName = Bukkit.getOfflinePlayer(ban.getId()).getName();
+								if (unbannedPlayerName == null) unbannedPlayerName = "Unknown";
+								String adminName = Bukkit.getOfflinePlayer(ban.getBanner()).getName();
+								if (adminName == null) adminName = "Unknown";
+								AuctionHouse.getTransactionLogger().logBanRemove(
+									adminName,
+									unbannedPlayerName
+								);
+							}
+							
 							if (callback != null) {
 								callback.accept(null, affectedRows != null && affectedRows > 0);
 							}
@@ -561,6 +589,9 @@ public class DataManager extends DataManagerAbstract {
 								resolveCallback(callback, ex);
 								return;
 							}
+
+							// Log auction insertion (already logged in event, but log here for database confirmation)
+							// Note: Auction creation is already logged in AuctionStartEvent, so we skip duplicate logging
 
 							if (callback != null) {
 								getQueryBuilder().select("auctions")
@@ -1345,6 +1376,20 @@ public class DataManager extends DataManagerAbstract {
 								ex.printStackTrace();
 								resolveCallback(callback, ex);
 								return;
+							}
+
+							// Log payment creation (balance doesn't change until collected)
+							if (AuctionHouse.getTransactionLogger() != null && affectedRows != null && affectedRows > 0) {
+								String playerName = auctionPayment.getFromName() != null ? auctionPayment.getFromName() : "Unknown";
+								AuctionHouse.getTransactionLogger().logPaymentCreate(
+									playerName,
+									auctionPayment.getAmount(),
+									auctionPayment.getCurrency(),
+									auctionPayment.getReason().name(),
+									auctionPayment.getId().toString(),
+									null, // Balance doesn't change until payment is collected
+									null
+								);
 							}
 
 							// insert into storage

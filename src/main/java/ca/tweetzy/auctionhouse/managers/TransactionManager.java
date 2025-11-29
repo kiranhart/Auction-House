@@ -63,7 +63,7 @@ public class TransactionManager {
 		while (iterator.hasNext()) {
 			Map.Entry<UUID, Transaction> entry = iterator.next();
 			if (entry.getValue().getBuyer().equals(buyer)) {
-				total++;
+				total += entry.getValue().getItem().getAmount();
 			}
 		}
 		return total;
@@ -75,7 +75,7 @@ public class TransactionManager {
 		while (iterator.hasNext()) {
 			Map.Entry<UUID, Transaction> entry = iterator.next();
 			if (entry.getValue().getSeller().equals(seller)) {
-				total++;
+				total += entry.getValue().getItem().getAmount();
 			}
 		}
 		return total;

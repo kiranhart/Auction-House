@@ -109,10 +109,16 @@ public class CommandAdmin extends Command {
 				break;
 			case "endall":
 				if (!sender.hasPermission("auctionhouse.cmd.admin.endall")) return ReturnType.FAIL;
+				int endedCount = 0;
 				for (UUID id : AuctionHouse.getAuctionItemManager().getItems().keySet()) {
 					AuctionHouse.getAuctionItemManager().getItems().get(id).setExpired(true);
+					endedCount++;
 				}
 				AuctionHouse.getInstance().getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(sender);
+				if (AuctionHouse.getTransactionLogger() != null) {
+					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "endall", "Ended " + endedCount + " auctions");
+				}
 				break;
 			case "bans":
 				if (!(sender instanceof Player)) break;
@@ -122,20 +128,31 @@ public class CommandAdmin extends Command {
 				break;
 			case "relistall":
 				if (!sender.hasPermission("auctionhouse.cmd.admin.relistall")) return ReturnType.FAIL;
+				int relistedCount = 0;
 				for (UUID id : AuctionHouse.getAuctionItemManager().getItems().keySet()) {
 					if (AuctionHouse.getAuctionItemManager().getItems().get(id).isExpired()) {
 						int relistTime = args.length == 1 ? AuctionHouse.getAuctionItemManager().getItems().get(id).isBidItem() ? Settings.DEFAULT_AUCTION_LISTING_TIME.getInt() : Settings.DEFAULT_BIN_LISTING_TIME.getInt() : Integer.parseInt(args[1]);
 
 						AuctionHouse.getAuctionItemManager().getItems().get(id).setExpiresAt(System.currentTimeMillis() + 1000L * relistTime);
 						AuctionHouse.getAuctionItemManager().getItems().get(id).setExpired(false);
+						relistedCount++;
 					}
 				}
 				AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(sender);
+				if (AuctionHouse.getTransactionLogger() != null) {
+					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "relistall", "Relisted " + relistedCount + " expired auctions");
+				}
 				break;
 			case "clearall":
 				if (!sender.hasPermission("auctionhouse.cmd.admin.clearall")) return ReturnType.FAIL;
 				// Don't tell ppl that this exists
+				int clearedCount = AuctionHouse.getAuctionItemManager().getItems().size();
 				AuctionHouse.getAuctionItemManager().getItems().clear();
+				if (AuctionHouse.getTransactionLogger() != null) {
+					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "clearall", "Cleared " + clearedCount + " auctions");
+				}
 				break;
 			case "clear":
 				if (args.length < 4) return ReturnType.FAIL;
@@ -149,6 +166,12 @@ public class CommandAdmin extends Command {
 
 				handleUserClear(player, returnMoney, returnItems);
 
+				if (AuctionHouse.getTransactionLogger() != null) {
+					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "clear", 
+						"Player: " + args[1] + ", ReturnItems: " + returnItems + ", ReturnMoney: " + returnMoney);
+				}
+
 				break;
 			case "clearbids":
 				if (args.length < 3) return ReturnType.FAIL;
@@ -161,6 +184,12 @@ public class CommandAdmin extends Command {
 
 				handleUserBidClear(player, returnMoney);
 				AuctionHouse.getInstance().getLocale().getMessage("general.admin.cleared bids").processPlaceholder("player", args[1]).sendPrefixedMessage(sender);
+				
+				if (AuctionHouse.getTransactionLogger() != null) {
+					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "clearbids", 
+						"Player: " + args[1] + ", ReturnMoney: " + returnMoney);
+				}
 				break;
 			case "opensell":
 				if (args.length < 2) return ReturnType.FAIL;
@@ -169,6 +198,11 @@ public class CommandAdmin extends Command {
 				player = PlayerUtils.findPlayer(args[1]);
 				if (player == null) return ReturnType.FAIL;
 				if (AuctionHouse.getInstance().getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.SELL)) return ReturnType.FAIL;
+
+				if (AuctionHouse.getTransactionLogger() != null) {
+					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "opensell", "Opened sell GUI for: " + args[1]);
+				}
 
 				ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 
@@ -215,6 +249,11 @@ public class CommandAdmin extends Command {
 				}
 
 				AuctionHouse.getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
+				
+				if (AuctionHouse.getTransactionLogger() != null) {
+					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "open", "Opened auction house GUI for: " + args[1]);
+				}
 				break;
 		}
 

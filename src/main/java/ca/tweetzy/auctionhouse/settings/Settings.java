@@ -1083,6 +1083,7 @@ public class Settings {
 			"&7Seller&F: &e%seller%",
 			"&7Buyer&F: &e%buyer%",
 			"&7Item name&F: %item_name%",
+			"&7Quantity&F: &e%item_quantity%",
 			"&7Date&F: &e%date%",
 			"",
 			"&7Click to view more details"
@@ -1841,6 +1842,12 @@ public class Settings {
 	public static final ConfigSetting SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE = new ConfigSetting(config, "sounds.listed item on the auction house", CompSound.ENTITY_EXPERIENCE_ORB_PICKUP.friendlyName());
 	public static final ConfigSetting SOUNDS_NAVIGATE_GUI_PAGES = new ConfigSetting(config, "sounds.navigated between gui pages", CompSound.ENTITY_BAT_TAKEOFF.friendlyName());
 	public static final ConfigSetting SOUNDS_NOT_ENOUGH_MONEY = new ConfigSetting(config, "sounds.not enough money", CompSound.ENTITY_ITEM_BREAK.friendlyName());
+
+	/*  ===============================
+	 *      TRANSACTION LOGGING
+	 *  ===============================*/
+	public static final ConfigSetting TRANSACTION_LOGGING_ENABLED = new ConfigSetting(config, "settings.transaction logging.enabled", true, "If true, all transactional actions will be logged to daily-rotated log files");
+	public static final ConfigSetting TRANSACTION_LOGGING_RETENTION_DAYS = new ConfigSetting(config, "settings.transaction logging.retention days", 30, "How many days to keep transaction log files before automatic cleanup (0 = never cleanup)");
 
 	public static void setup() {
 		config.load();

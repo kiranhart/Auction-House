@@ -242,7 +242,8 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 						"seller", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME,
 						"buyer", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName(),
 						"date", AuctionAPI.getInstance().convertMillisToDate(transaction.getTransactionTime()),
-						"item_name", AuctionAPI.getInstance().getItemName(item)
+						"item_name", AuctionAPI.getInstance().getItemName(item),
+						"item_quantity", String.valueOf(item.getAmount())
 				)).make();
 	}
 

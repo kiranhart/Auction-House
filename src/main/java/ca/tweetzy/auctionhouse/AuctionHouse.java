@@ -30,6 +30,7 @@ import ca.tweetzy.auctionhouse.impl.AuctionAPI;
 import ca.tweetzy.auctionhouse.listeners.*;
 import ca.tweetzy.auctionhouse.managers.*;
 import ca.tweetzy.auctionhouse.model.manager.*;
+import ca.tweetzy.auctionhouse.model.TransactionLogger;
 import ca.tweetzy.auctionhouse.settings.LocaleSettings;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.settings.v3.Translations;
@@ -106,6 +107,8 @@ public class AuctionHouse extends TweetyPlugin {
 	private final BanManager banManager = new BanManager();
 	private final AuctionStatisticManager auctionStatisticManager = new AuctionStatisticManager();
 	private final PaymentsManager paymentsManager = new PaymentsManager();
+
+	private TransactionLogger transactionLogger;
 
 	private AuctionHouseAPI API;
 
@@ -223,6 +226,13 @@ public class AuctionHouse extends TweetyPlugin {
 		this.cartManager.load();
 		this.cooldownManager = new CooldownManager(this);
 
+		// Initialize transaction logger
+		if (Settings.TRANSACTION_LOGGING_ENABLED.getBoolean()) {
+			this.transactionLogger = new TransactionLogger(this);
+			this.transactionLogger.start();
+			Common.log("&aTransaction logging enabled - logs stored in plugins/AuctionHouse/logs/");
+		}
+
 		// listeners
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new MeteorClientListeners(), this);
@@ -334,6 +344,11 @@ public class AuctionHouse extends TweetyPlugin {
 
 	@Override
 	public void onPluginDisable() {
+		// Shutdown transaction logger
+		if (this.transactionLogger != null) {
+			this.transactionLogger.stop();
+		}
+
 		if (this.dataManager != null) {
 			// clean up the garbage items
 			this.dataManager.deleteItems(this.auctionItemManager.getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
@@ -448,6 +463,10 @@ public class AuctionHouse extends TweetyPlugin {
 
 	public static CategoryManager getCategoryManager() {
 		return getInstance().categoryManager;
+	}
+
+	public static TransactionLogger getTransactionLogger() {
+		return getInstance().transactionLogger;
 	}
 
 	public static Economy getEconomy() {

@@ -137,13 +137,6 @@ public class TickAuctionsTask extends BukkitRunnable {
 			}
 
 				OfflinePlayer auctionWinner = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder());
-				if (!auctionWinner.isOnline() && auctionItem.hasValidItemCurrency()) {
-					auctionItem.setExpired(true);
-					// Remove from garbage since we're not processing it (will be handled as expired)
-					AuctionHouse.getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());
-					continue;
-				}
-
 				double finalPrice = auctionItem.getCurrentPrice();
 				double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_AUCTION_WON_PERCENTAGE.getDouble() / 100) * auctionItem.getCurrentPrice() : 0D;
 
@@ -228,6 +221,8 @@ public class TickAuctionsTask extends BukkitRunnable {
 				auctionItem.setOwner(auctionWinner.getUniqueId());
 				auctionItem.setHighestBidder(auctionWinner.getUniqueId());
 				auctionItem.setExpired(true);
+				// Remove from garbage bin so item can be retrieved from collection bin
+				AuctionHouse.getAuctionItemManager().getGarbageBin().remove(auctionItem.getId());
 				// Item already marked as purchased above (race condition protection)
 			}
 		}

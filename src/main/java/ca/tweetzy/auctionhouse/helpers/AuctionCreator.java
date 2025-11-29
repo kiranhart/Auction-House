@@ -194,6 +194,21 @@ public final class AuctionCreator {
 			if (auctionPlayer != null)
 				auctionPlayer.setItemBeingListed(null);
 
+			// Log request creation if it's a request
+			if (AuctionHouse.getTransactionLogger() != null && error == null && inserted != null && inserted.isRequest() && seller != null) {
+				String itemName = inserted.getItem().hasItemMeta() && inserted.getItem().getItemMeta().hasDisplayName()
+					? inserted.getItem().getItemMeta().getDisplayName()
+					: inserted.getItem().getType().name();
+				AuctionHouse.getTransactionLogger().logRequestCreate(
+					seller.getName(),
+					itemName,
+					inserted.getItem().getAmount(),
+					inserted.getBasePrice(),
+					inserted.getCurrency(),
+					inserted.getId().toString()
+				);
+			}
+
 			if (error != null) {
 				if (Settings.SHOW_LISTING_ERROR_IN_CONSOLE.getBoolean())
 					error.printStackTrace();
