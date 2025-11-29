@@ -175,7 +175,7 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 				
 				// Return both maps as a pair
 				return new Object[] { slotToItemStack, slotToObject };
-			}).syncLast((result) -> {
+			}).asyncLast((result) -> {
 				@SuppressWarnings("unchecked")
 				final Map<Integer, ItemStack> slotToItemStack = (Map<Integer, ItemStack>) ((Object[]) result)[0];
 				@SuppressWarnings("unchecked")
