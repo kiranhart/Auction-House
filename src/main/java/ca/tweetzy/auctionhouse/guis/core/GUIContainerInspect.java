@@ -25,6 +25,7 @@ import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.guis.confirmation.GUIConfirmPurchase;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.block.ShulkerBox;
@@ -35,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * The current file has been created by Kiran Hart
@@ -72,7 +72,9 @@ public class GUIContainerInspect extends AuctionPagedGUI<ItemStack> {
 		if (this.container.getType().name().contains("SHULKER_BOX")) {
 			BlockStateMeta meta = (BlockStateMeta) this.container.getItemMeta();
 			ShulkerBox skulkerBox = (ShulkerBox) meta.getBlockState();
-			this.items = Arrays.asList(skulkerBox.getInventory().getContents());
+			this.items = Arrays.stream(skulkerBox.getInventory().getContents())
+					.filter(item -> item != null)
+					.collect(Collectors.toList());
 		}
 
 		setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouse(AuctionHouse.getAuctionPlayerManager().getPlayer(close.player.getUniqueId()))));
@@ -107,7 +109,7 @@ public class GUIContainerInspect extends AuctionPagedGUI<ItemStack> {
 
 	@Override
 	protected ItemStack makeDisplayItem(ItemStack item) {
-		return item;
+		return item != null ? item : new ItemStack(CompMaterial.AIR.get());
 	}
 
 	@Override

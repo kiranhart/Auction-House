@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public final class BundleUtil {
@@ -58,6 +59,10 @@ public final class BundleUtil {
 			return items;
 
 		final ItemStack[] bundledItems = NBT.get(itemStack, nbt -> (ItemStack[]) nbt.getItemStackArray("AuctionBundleItems"));
-		return new ArrayList<>(Arrays.asList(bundledItems));
+		if (bundledItems == null)
+			return new ArrayList<>();
+		return Arrays.stream(bundledItems)
+				.filter(item -> item != null)
+				.collect(Collectors.toList());
 	}
 }
