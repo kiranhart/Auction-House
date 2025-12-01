@@ -25,6 +25,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -46,23 +47,25 @@ public class CommandSearch extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		if (args.length <= 0) return ReturnType.INVALID_SYNTAX;
-		final Player player = (Player) sender;
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		if (context.getArgCount() == 0) return ReturnType.INVALID_SYNTAX;
+		final Player player = context.getPlayer();
 
 		if (CommandMiddleware.handleAccessHours(player) == ReturnType.FAIL) return ReturnType.FAIL;
 		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
-		final StringBuilder builder = new StringBuilder();
-		for (String arg : args) {
-			builder.append(arg).append(" ");
-		}
+		String searchQuery = context.joinArgs(0);
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
 			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
 			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
-		AuctionHouse.getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()), builder.toString().trim()));
+		AuctionHouse.getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()), searchQuery));
 		return ReturnType.SUCCESS;
 	}
 
@@ -83,6 +86,11 @@ public class CommandSearch extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
 		return null;
 	}
 }

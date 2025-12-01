@@ -25,6 +25,7 @@ import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.gui.helper.InventorySafeMaterials;
@@ -51,11 +52,16 @@ public class CommandPop extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAIL;
-		if (args.length < 1) return ReturnType.FAIL;
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
 
-		final Player player = (Player) sender;
-		final int totalListings = MathUtil.isInt(args[0]) ? Integer.parseInt(args[0]) : 1;
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		if (AuctionAPI.tellMigrationStatus(context.getSender())) return ReturnType.FAIL;
+		if (!context.hasArg(0)) return ReturnType.FAIL;
+
+		final Player player = context.getPlayer();
+		final int totalListings = MathUtil.isInt(context.getArg(0)) ? Integer.parseInt(context.getArg(0)) : 1;
 
 		for (int i = 0; i < totalListings; i++) {
 
@@ -99,6 +105,11 @@ public class CommandPop extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
 		return null;
 	}
 

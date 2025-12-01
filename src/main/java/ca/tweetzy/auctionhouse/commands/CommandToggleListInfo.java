@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -47,7 +48,12 @@ public class CommandToggleListInfo extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		final Player player = (Player) sender;
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		final Player player = context.getPlayer();
 		final UUID playerUUID = player.getUniqueId();
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(playerUUID) == null) {
@@ -64,6 +70,11 @@ public class CommandToggleListInfo extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
 		return null;
 	}
 

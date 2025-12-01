@@ -44,6 +44,7 @@ import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.nbtapi.NBT;
 import org.bukkit.Bukkit;
@@ -69,7 +70,12 @@ public final class CommandSell extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		Player player = (Player) sender;
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		Player player = context.getPlayer();
 
 		if (CommandMiddleware.handleAccessHours(player) == ReturnType.FAIL) return ReturnType.FAIL;
 		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
@@ -95,7 +101,7 @@ public final class CommandSell extends Command {
 		}
 
 		// Open the sell menu enabled
-		if (args.length == 0) {
+		if (context.getArgCount() == 0) {
 			if (!Settings.ALLOW_USAGE_OF_SELL_GUI.getBoolean()) {
 				return ReturnType.INVALID_SYNTAX;
 			}
@@ -172,57 +178,59 @@ public final class CommandSell extends Command {
 				"month"
 		);
 
-		for (int i = 0; i < args.length; i++) {
+		for (int i = 0; i < context.getArgCount(); i++) {
+			String arg = context.getArg(i);
+			if (arg == null) continue;
 
-			if (MathUtil.isDouble(args[i]) && !Double.isNaN(Double.parseDouble(args[i]))) {
+			if (MathUtil.isDouble(arg) && !Double.isNaN(Double.parseDouble(arg))) {
 				boolean hasTimeValue = false;
 
-				if (i + 1 < args.length) {
-					if (timeSets.contains(args[i + 1].toLowerCase()))
+				if (context.hasArg(i + 1)) {
+					if (timeSets.contains(context.getArg(i + 1, "").toLowerCase()))
 						hasTimeValue = true;
 				}
 
 				if (!hasTimeValue) {
 					if (buyNowPrice == null)
-						buyNowPrice = Double.parseDouble(args[i]);
+						buyNowPrice = Double.parseDouble(arg);
 					else if (startingBid == null)
-						startingBid = Double.parseDouble(args[i]);
+						startingBid = Double.parseDouble(arg);
 					else
-						bidIncrement = Double.parseDouble(args[i]);
+						bidIncrement = Double.parseDouble(arg);
 				}
 			}
 
-			if (Settings.CMD_FLAG_ALIAS_SELL_BUNDLE.getStringList().contains(args[i]))
+			if (Settings.CMD_FLAG_ALIAS_SELL_BUNDLE.getStringList().contains(arg))
 				isBundle = true;
 
-			if (Settings.CMD_FLAG_ALIAS_SELL_PARTIAL_BUY.getStringList().contains(args[i]))
+			if (Settings.CMD_FLAG_ALIAS_SELL_PARTIAL_BUY.getStringList().contains(arg))
 				partialBuy = true;
 
 
-			if (Settings.CMD_FLAG_ALIAS_SELL_SINGLE.getStringList().contains(args[i]))
+			if (Settings.CMD_FLAG_ALIAS_SELL_SINGLE.getStringList().contains(arg))
 				singleItemFromStack = true;
 
-			if (player.hasPermission("auctionhouse.cmdflag.stack") && Settings.CMD_FLAG_ALIAS_SELL_STACK_PRICE.getStringList().contains(args[i]))
+			if (player.hasPermission("auctionhouse.cmdflag.stack") && Settings.CMD_FLAG_ALIAS_SELL_STACK_PRICE.getStringList().contains(arg))
 				isStackPrice = true;
 
-			if ((Settings.CMD_FLAG_ALIAS_SELL_INFINITE.getStringList().contains(args[i])) && (player.hasPermission("auctionhouse.admin") || player.isOp()))
+			if ((Settings.CMD_FLAG_ALIAS_SELL_INFINITE.getStringList().contains(arg)) && (player.hasPermission("auctionhouse.admin") || player.isOp()))
 				isInfinite = true;
 
 			// check if the listing should be a server auction
-			if (Settings.CMD_FLAG_ALIAS_SELL_SERVER.getStringList().contains(args[i]) && (player.hasPermission("auctionhouse.admin") || player.isOp()))
+			if (Settings.CMD_FLAG_ALIAS_SELL_SERVER.getStringList().contains(arg) && (player.hasPermission("auctionhouse.admin") || player.isOp()))
 				serverAuction = true;
 
-			if (Settings.CMD_FLAG_ALIAS_SELL_TIME.getStringList().contains(args[i]) && Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
-				if (i + 2 < args.length) {
-					int customTime = (int) AuctionAPI.toTicks(args[i + 1] + " " + args[i + 2]);
+			if (Settings.CMD_FLAG_ALIAS_SELL_TIME.getStringList().contains(arg) && Settings.ALLOW_PLAYERS_TO_DEFINE_AUCTION_TIME.getBoolean()) {
+				if (context.hasArg(i + 2)) {
+					int customTime = (int) AuctionAPI.toTicks(context.getArg(i + 1) + " " + context.getArg(i + 2));
 
 					if (customTime <= Settings.MAX_CUSTOM_DEFINED_TIME.getInt())
 						allowedTime = customTime;
 				}
 			}
 
-			if (Settings.CURRENCY_ALLOW_PICK.getBoolean() && AuctionHouse.getCurrencyManager().locateCurrency(args[i]) != null) {
-				final AbstractCurrency curr = AuctionHouse.getCurrencyManager().locateCurrency(args[i]);
+			if (Settings.CURRENCY_ALLOW_PICK.getBoolean() && AuctionHouse.getCurrencyManager().locateCurrency(arg) != null) {
+				final AbstractCurrency curr = AuctionHouse.getCurrencyManager().locateCurrency(arg);
 				currency = curr.getStoreableName();
 			}
 		}
@@ -519,11 +527,16 @@ public final class CommandSell extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
-		if (args.length == 1)
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
+		if (context.getArgCount() == 1)
 			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion one").getMessage().split(" "));
-		if (args.length == 2)
+		if (context.getArgCount() == 2)
 			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion two").getMessage().split(" "));
-		if (args.length == 3 && Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && !Settings.FORCE_AUCTION_USAGE.getBoolean())
+		if (context.getArgCount() == 3 && Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && !Settings.FORCE_AUCTION_USAGE.getBoolean())
 			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion three").getMessage().split(" "));
 		return null;
 	}

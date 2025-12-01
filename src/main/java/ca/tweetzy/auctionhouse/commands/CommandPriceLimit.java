@@ -28,6 +28,7 @@ import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import org.bukkit.command.CommandSender;
@@ -59,15 +60,20 @@ public class CommandPriceLimit extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		final Player player = (Player) sender;
-		if (args.length == 0) {
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		final Player player = context.getPlayer();
+		if (context.getArgCount() == 0) {
 			AuctionHouse.getGuiManager().showGUI(player, new GUIPriceLimits(player));
 			return ReturnType.SUCCESS;
 		}
 
-		if (args.length == 3 && args[0].equalsIgnoreCase("set")) {
+		if (context.getArgCount() == 3 && context.getArg(0, "").equalsIgnoreCase("set")) {
 
-//			if (!args[1].equalsIgnoreCase("min") || !args[1].equalsIgnoreCase("max")) return ReturnType.INVALID_SYNTAX;
+//			if (!context.getArg(1, "").equalsIgnoreCase("min") || !context.getArg(1, "").equalsIgnoreCase("max")) return ReturnType.INVALID_SYNTAX;
 
 			ItemStack held = PlayerHelper.getHeldItem(player);
 
@@ -78,16 +84,16 @@ public class CommandPriceLimit extends Command {
 
 			ListingPriceLimit listingPriceLimit = AuctionHouse.getPriceLimitManager().getPriceLimit(held.clone());
 
-			if (!isNumeric(args[2])) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[2]).sendPrefixedMessage(player);
+			if (!isNumeric(context.getArg(2))) {
+				AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", context.getArg(2)).sendPrefixedMessage(player);
 				return ReturnType.FAIL;
 			}
 
-			final double price = Double.parseDouble(args[2]);
+			final double price = Double.parseDouble(context.getArg(2));
 			boolean requiresCreate = false;
 
 			if (listingPriceLimit != null) {
-				switch (args[1]) {
+				switch (context.getArg(1, "")) {
 					case "min":
 						listingPriceLimit.setMinPrice(price);
 						break;
@@ -97,7 +103,7 @@ public class CommandPriceLimit extends Command {
 				}
 			} else {
 				requiresCreate = true;
-				switch (args[1]) {
+				switch (context.getArg(1, "")) {
 					case "min":
 						listingPriceLimit = new AuctionPriceLimit(
 								UUID.randomUUID(),
@@ -154,8 +160,13 @@ public class CommandPriceLimit extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
-		if (args.length == 1) return Collections.singletonList("set");
-		if (args.length == 2) return Arrays.asList("min", "max");
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
+		if (context.getArgCount() == 1) return Collections.singletonList("set");
+		if (context.getArgCount() == 2) return Arrays.asList("min", "max");
 		return null;
 	}
 }

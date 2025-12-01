@@ -36,9 +36,9 @@ import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.core.utils.PlayerUtils;
-import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.utils.Common;
 import org.bukkit.Bukkit;
@@ -66,13 +66,18 @@ public class CommandAdmin extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		if (args.length < 1) return ReturnType.FAIL;
-		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAIL;
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
 
-		switch (args[0].toLowerCase()) {
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		if (!context.hasArg(0)) return ReturnType.FAIL;
+		if (AuctionAPI.tellMigrationStatus(context.getSender())) return ReturnType.FAIL;
+
+		switch (context.getArg(0).toLowerCase()) {
 			case "logs":
-				if (!(sender instanceof Player)) break;
-				Player player = (Player) sender;
+				if (!context.isPlayer()) break;
+				Player player = context.getPlayer();
 				if (!player.hasPermission("auctionhouse.cmd.admin.logs")) return ReturnType.FAIL;
 
 				AuctionHouse.getDataManager().getAdminLogs((error, logs) -> {
@@ -83,24 +88,24 @@ public class CommandAdmin extends Command {
 				});
 				break;
 			case "viewexpired":
-				if (!(sender instanceof Player)) break;
-				player = (Player) sender;
+				if (!context.isPlayer()) break;
+				player = context.getPlayer();
 				if (!player.hasPermission("auctionhouse.cmd.admin.viewexpired")) return ReturnType.FAIL;
 
 
-				if (args.length < 2) return ReturnType.FAIL;
-				OfflinePlayer target = Bukkit.getPlayerExact(args[1]);
+				if (!context.hasArg(1)) return ReturnType.FAIL;
+				OfflinePlayer target = Bukkit.getPlayerExact(context.getArg(1));
 
 				if (target == null) {
 					for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-						if (offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(args[1])) {
+						if (offlinePlayer.getName() != null && offlinePlayer.getName().equalsIgnoreCase(context.getArg(1))) {
 							target = offlinePlayer;
 						}
 					}
 				}
 
 				if (target == null) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[1]).sendPrefixedMessage(sender);
+					AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", context.getArg(1)).sendPrefixedMessage(context.getSender());
 					return ReturnType.FAIL;
 				}
 
@@ -108,100 +113,100 @@ public class CommandAdmin extends Command {
 
 				break;
 			case "endall":
-				if (!sender.hasPermission("auctionhouse.cmd.admin.endall")) return ReturnType.FAIL;
+				if (!context.getSender().hasPermission("auctionhouse.cmd.admin.endall")) return ReturnType.FAIL;
 				int endedCount = 0;
 				for (UUID id : AuctionHouse.getAuctionItemManager().getItems().keySet()) {
 					AuctionHouse.getAuctionItemManager().getItems().get(id).setExpired(true);
 					endedCount++;
 				}
-				AuctionHouse.getInstance().getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(sender);
+				AuctionHouse.getInstance().getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(context.getSender());
 				if (AuctionHouse.getTransactionLogger() != null) {
-					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
 					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "endall", "Ended " + endedCount + " auctions");
 				}
 				break;
 			case "bans":
-				if (!(sender instanceof Player)) break;
-				player = (Player) sender;
+				if (!context.isPlayer()) break;
+				player = context.getPlayer();
 				if (!player.hasPermission("auctionhouse.cmd.admin.bans")) return ReturnType.FAIL;
 				AuctionHouse.getGuiManager().showGUI(player, new GUIBans(player));
 				break;
 			case "relistall":
-				if (!sender.hasPermission("auctionhouse.cmd.admin.relistall")) return ReturnType.FAIL;
+				if (!context.getSender().hasPermission("auctionhouse.cmd.admin.relistall")) return ReturnType.FAIL;
 				int relistedCount = 0;
 				for (UUID id : AuctionHouse.getAuctionItemManager().getItems().keySet()) {
 					if (AuctionHouse.getAuctionItemManager().getItems().get(id).isExpired()) {
-						int relistTime = args.length == 1 ? AuctionHouse.getAuctionItemManager().getItems().get(id).isBidItem() ? Settings.DEFAULT_AUCTION_LISTING_TIME.getInt() : Settings.DEFAULT_BIN_LISTING_TIME.getInt() : Integer.parseInt(args[1]);
+						int relistTime = !context.hasArg(1) ? AuctionHouse.getAuctionItemManager().getItems().get(id).isBidItem() ? Settings.DEFAULT_AUCTION_LISTING_TIME.getInt() : Settings.DEFAULT_BIN_LISTING_TIME.getInt() : Integer.parseInt(context.getArg(1));
 
 						AuctionHouse.getAuctionItemManager().getItems().get(id).setExpiresAt(System.currentTimeMillis() + 1000L * relistTime);
 						AuctionHouse.getAuctionItemManager().getItems().get(id).setExpired(false);
 						relistedCount++;
 					}
 				}
-				AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(sender);
+				AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(context.getSender());
 				if (AuctionHouse.getTransactionLogger() != null) {
-					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
 					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "relistall", "Relisted " + relistedCount + " expired auctions");
 				}
 				break;
 			case "clearall":
-				if (!sender.hasPermission("auctionhouse.cmd.admin.clearall")) return ReturnType.FAIL;
+				if (!context.getSender().hasPermission("auctionhouse.cmd.admin.clearall")) return ReturnType.FAIL;
 				// Don't tell ppl that this exists
 				int clearedCount = AuctionHouse.getAuctionItemManager().getItems().size();
 				AuctionHouse.getAuctionItemManager().getItems().clear();
 				if (AuctionHouse.getTransactionLogger() != null) {
-					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
 					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "clearall", "Cleared " + clearedCount + " auctions");
 				}
 				break;
 			case "clear":
-				if (args.length < 4) return ReturnType.FAIL;
-				if (!sender.hasPermission("auctionhouse.cmd.admin.clear")) return ReturnType.FAIL;
+				if (!context.hasArg(3)) return ReturnType.FAIL;
+				if (!context.getSender().hasPermission("auctionhouse.cmd.admin.clear")) return ReturnType.FAIL;
 
-				player = PlayerUtils.findPlayer(args[1]);
+				player = PlayerUtils.findPlayer(context.getArg(1));
 				if (player == null) return ReturnType.FAIL;
 
-				final boolean returnItems = Boolean.parseBoolean(args[2]);
-				boolean returnMoney = Boolean.parseBoolean(args[3]);
+				final boolean returnItems = Boolean.parseBoolean(context.getArg(2));
+				boolean returnMoney = Boolean.parseBoolean(context.getArg(3));
 
 				handleUserClear(player, returnMoney, returnItems);
 
 				if (AuctionHouse.getTransactionLogger() != null) {
-					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
 					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "clear", 
-						"Player: " + args[1] + ", ReturnItems: " + returnItems + ", ReturnMoney: " + returnMoney);
+						"Player: " + context.getArg(1) + ", ReturnItems: " + returnItems + ", ReturnMoney: " + returnMoney);
 				}
 
 				break;
 			case "clearbids":
-				if (args.length < 3) return ReturnType.FAIL;
-				if (!sender.hasPermission("auctionhouse.cmd.admin.clearbids")) return ReturnType.FAIL;
+				if (!context.hasArg(2)) return ReturnType.FAIL;
+				if (!context.getSender().hasPermission("auctionhouse.cmd.admin.clearbids")) return ReturnType.FAIL;
 
-				player = PlayerUtils.findPlayer(args[1]);
+				player = PlayerUtils.findPlayer(context.getArg(1));
 				if (player == null) return ReturnType.FAIL;
 
-				returnMoney = Boolean.parseBoolean(args[2]);
+				returnMoney = Boolean.parseBoolean(context.getArg(2));
 
 				handleUserBidClear(player, returnMoney);
-				AuctionHouse.getInstance().getLocale().getMessage("general.admin.cleared bids").processPlaceholder("player", args[1]).sendPrefixedMessage(sender);
+				AuctionHouse.getInstance().getLocale().getMessage("general.admin.cleared bids").processPlaceholder("player", context.getArg(1)).sendPrefixedMessage(context.getSender());
 				
 				if (AuctionHouse.getTransactionLogger() != null) {
-					String adminName = sender instanceof Player ? sender.getName() : "Console";
+					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
 					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "clearbids", 
-						"Player: " + args[1] + ", ReturnMoney: " + returnMoney);
+						"Player: " + context.getArg(1) + ", ReturnMoney: " + returnMoney);
 				}
 				break;
 			case "opensell":
-				if (args.length < 2) return ReturnType.FAIL;
-				if (!sender.hasPermission("auctionhouse.cmd.admin.opensell")) return ReturnType.FAIL;
+				if (!context.hasArg(1)) return ReturnType.FAIL;
+				if (!context.getSender().hasPermission("auctionhouse.cmd.admin.opensell")) return ReturnType.FAIL;
 
-				player = PlayerUtils.findPlayer(args[1]);
+				player = PlayerUtils.findPlayer(context.getArg(1));
 				if (player == null) return ReturnType.FAIL;
 				if (AuctionHouse.getInstance().getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.SELL)) return ReturnType.FAIL;
 
 				if (AuctionHouse.getTransactionLogger() != null) {
-					String adminName = sender instanceof Player ? sender.getName() : "Console";
-					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "opensell", "Opened sell GUI for: " + args[1]);
+					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
+					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "opensell", "Opened sell GUI for: " + context.getArg(1));
 				}
 
 				ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
@@ -235,10 +240,10 @@ public class CommandAdmin extends Command {
 				}
 				break;
 			case "open":
-				if (args.length < 2) return ReturnType.FAIL;
-				if (!sender.hasPermission("auctionhouse.cmd.admin.open")) return ReturnType.FAIL;
+				if (!context.hasArg(1)) return ReturnType.FAIL;
+				if (!context.getSender().hasPermission("auctionhouse.cmd.admin.open")) return ReturnType.FAIL;
 
-				player = PlayerUtils.findPlayer(args[1]);
+				player = PlayerUtils.findPlayer(context.getArg(1));
 				if (player == null) return ReturnType.FAIL;
 
 				if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
@@ -251,8 +256,8 @@ public class CommandAdmin extends Command {
 				AuctionHouse.getGuiManager().showGUI(player, new GUIAuctionHouse(AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId())));
 				
 				if (AuctionHouse.getTransactionLogger() != null) {
-					String adminName = sender instanceof Player ? sender.getName() : "Console";
-					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "open", "Opened auction house GUI for: " + args[1]);
+					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
+					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "open", "Opened auction house GUI for: " + context.getArg(1));
 				}
 				break;
 		}
@@ -262,9 +267,14 @@ public class CommandAdmin extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
-		if (args.length == 1) return Arrays.asList("endall", "relistall", "logs", "viewexpired", "open", "clear", "clearbids");
-		if (args.length == 2 && args[0].equalsIgnoreCase("relistAll")) return Arrays.asList("1", "2", "3", "4", "5");
-		if (args.length == 2 && (args[0].equalsIgnoreCase("viewexpired") || args[0].equalsIgnoreCase("open")))
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
+		if (context.getArgCount() == 1) return Arrays.asList("endall", "relistall", "logs", "viewexpired", "open", "clear", "clearbids");
+		if (context.getArgCount() == 2 && context.getArg(0, "").equalsIgnoreCase("relistAll")) return Arrays.asList("1", "2", "3", "4", "5");
+		if (context.getArgCount() == 2 && (context.getArg(0, "").equalsIgnoreCase("viewexpired") || context.getArg(0, "").equalsIgnoreCase("open")))
 			return Bukkit.getOnlinePlayers().stream().map(OfflinePlayer::getName).collect(Collectors.toList());
 		return null;
 	}

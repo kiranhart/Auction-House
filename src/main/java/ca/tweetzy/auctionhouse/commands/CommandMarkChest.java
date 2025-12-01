@@ -23,6 +23,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import org.bukkit.NamespacedKey;
@@ -48,8 +49,13 @@ public final class CommandMarkChest extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
 		if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) return ReturnType.FAIL;
-		final Player player = (Player) sender;
+		final Player player = context.getPlayer();
 
 //		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
@@ -75,6 +81,11 @@ public final class CommandMarkChest extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
 		return null;
 	}
 

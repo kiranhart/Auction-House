@@ -25,6 +25,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -48,11 +49,16 @@ public class CommandTransactions extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		final Player player = (Player) sender;
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		final Player player = context.getPlayer();
 
 		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
-		if (args.length == 0) {
+		if (context.getArgCount() == 0) {
 
 			if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !player.hasPermission("auctionhouse.transactions.viewall")) {
 				AuctionHouse.getGuiManager().showGUI(player, new GUITransactionList(player, false));
@@ -63,17 +69,17 @@ public class CommandTransactions extends Command {
 			return ReturnType.SUCCESS;
 		}
 
-		if (args.length == 2 && args[0].equalsIgnoreCase("search")) {
-			final Player target = PlayerUtils.findPlayer(args[1]);
+		if (context.getArgCount() == 2 && context.getArg(0, "").equalsIgnoreCase("search")) {
+			final Player target = PlayerUtils.findPlayer(context.getArg(1));
 
 			AuctionHouse.newChain().async(() -> {
 				OfflinePlayer offlinePlayer = null;
 
 				if (target == null) {
 					// try and look for an offline player
-					offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
+					offlinePlayer = Bukkit.getOfflinePlayer(context.getArg(1));
 					if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[1]).sendPrefixedMessage(player);
+						AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", context.getArg(1)).sendPrefixedMessage(player);
 						return;
 					}
 				}
@@ -105,6 +111,11 @@ public class CommandTransactions extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
 		return null;
 	}
 }

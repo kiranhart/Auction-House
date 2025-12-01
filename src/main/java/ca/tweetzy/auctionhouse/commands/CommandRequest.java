@@ -34,6 +34,7 @@ import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import org.bukkit.Bukkit;
@@ -60,7 +61,12 @@ public class CommandRequest extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		final Player player = (Player) sender;
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		final Player player = context.getPlayer();
 
 		if (CommandMiddleware.handleAccessHours(player) == ReturnType.FAIL) return ReturnType.FAIL;
 		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
@@ -107,14 +113,14 @@ public class CommandRequest extends Command {
 			}
 		}
 
-		if (args.length < 1) {
+		if (context.getArgCount() == 0) {
 			AuctionHouse.getGuiManager().showGUI(player, new GUIRequestItem(auctionPlayer, originalItem, originalItem.getAmount(), Settings.MIN_REQUEST_PRICE.getDouble()));
 			return ReturnType.SUCCESS;
 		}
 
 		// check if price is even a number
-		if (!MathUtil.isDouble(args[0])) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", args[0]).sendPrefixedMessage(player);
+		if (!MathUtil.isDouble(context.getArg(0))) {
+			AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", context.getArg(0)).sendPrefixedMessage(player);
 			return ReturnType.FAIL;
 		}
 
@@ -136,7 +142,7 @@ public class CommandRequest extends Command {
 		}
 
 		// check min/max prices
-		final double price = Double.parseDouble(args[0]);
+		final double price = Double.parseDouble(context.getArg(0));
 
 		if (price < Settings.MIN_REQUEST_PRICE.getDouble()) {
 			AuctionHouse.getInstance().getLocale().getMessage("pricing.request.min price").processPlaceholder("price", Settings.MIN_REQUEST_PRICE.getDouble()).sendPrefixedMessage(player);
@@ -185,6 +191,11 @@ public class CommandRequest extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
 		return null;
 	}
 }

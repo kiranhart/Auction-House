@@ -23,6 +23,7 @@ import ca.tweetzy.auctionhouse.database.DataManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import ca.tweetzy.flight.database.DatabaseConnector;
 import ca.tweetzy.flight.database.SQLiteConnector;
@@ -45,7 +46,12 @@ public final class CommandUpload extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		if (args.length < 1) {
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		if (!context.hasArg(0)) {
 			List<String> warning = Arrays.asList(
 					"&cPlease add &4-confirm &cto confirm you understand the following risks.",
 					"",
@@ -55,11 +61,11 @@ public final class CommandUpload extends Command {
 					"&f4. &4You made a backup of your &cauctionhouse.db &4file."
 			);
 
-			Common.colorize(warning).forEach(sender::sendMessage);
+			Common.colorize(warning).forEach(context.getSender()::sendMessage);
 			return ReturnType.FAIL;
 		}
 
-		if (!args[0].equalsIgnoreCase("-confirm")) return ReturnType.FAIL;
+		if (!context.getArg(0, "").equalsIgnoreCase("-confirm")) return ReturnType.FAIL;
 
 		final DatabaseConnector databaseConnector = new SQLiteConnector(AuctionHouse.getInstance());
 		final DataManager manager = new DataManager(databaseConnector, AuctionHouse.getInstance(), null);
@@ -84,6 +90,11 @@ public final class CommandUpload extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
 		return null;
 	}
 

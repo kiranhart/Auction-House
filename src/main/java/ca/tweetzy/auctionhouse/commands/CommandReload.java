@@ -23,6 +23,7 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.command.CommandSender;
 
@@ -42,15 +43,25 @@ public class CommandReload extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAIL;
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		if (AuctionAPI.tellMigrationStatus(context.getSender())) return ReturnType.FAIL;
 		final AuctionHouse instance = AuctionHouse.getInstance();
 		instance.reloadConfig();
-		instance.getLocale().newMessage(Common.colorize("&aReloaded files")).sendPrefixedMessage(sender);
+		instance.getLocale().newMessage(Common.colorize("&aReloaded files")).sendPrefixedMessage(context.getSender());
 		return ReturnType.SUCCESS;
 	}
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
 		return null;
 	}
 

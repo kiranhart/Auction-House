@@ -23,6 +23,7 @@ import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.command.CommandSender;
 
@@ -40,16 +41,21 @@ public class CommandDebug extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		if (AuctionAPI.tellMigrationStatus(sender)) return ReturnType.FAIL;
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		if (AuctionAPI.tellMigrationStatus(context.getSender())) return ReturnType.FAIL;
 		
 		// Toggle debug mode
 		AuctionHouse.setDebugMode(!AuctionHouse.isDebugMode());
 		
 		final String status = AuctionHouse.isDebugMode() ? "&aenabled" : "&cdisabled";
-		AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&7Debug mode has been " + status + "&7.")).sendPrefixedMessage(sender);
+		AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&7Debug mode has been " + status + "&7.")).sendPrefixedMessage(context.getSender());
 		
 		if (AuctionHouse.isDebugMode()) {
-			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&7You will now see detailed debug messages in the console.")).sendPrefixedMessage(sender);
+			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&7You will now see detailed debug messages in the console.")).sendPrefixedMessage(context.getSender());
 		}
 		
 		return ReturnType.SUCCESS;
@@ -57,6 +63,11 @@ public class CommandDebug extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
 		return null;
 	}
 

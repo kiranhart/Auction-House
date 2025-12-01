@@ -22,6 +22,7 @@ import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.command.CommandSender;
 
@@ -42,13 +43,23 @@ public class CommandMigrate extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cMigration support for v1 has been dropped since 2.53.0, use 2.52.0 or lower to migrate first.")).sendPrefixedMessage(sender);
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cMigration support for v1 has been dropped since 2.53.0, use 2.52.0 or lower to migrate first.")).sendPrefixedMessage(context.getSender());
 		return ReturnType.SUCCESS;
 	}
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
-		if (args.length == 1) return Collections.singletonList("confirm");
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
+		if (context.getArgCount() == 1) return Collections.singletonList("confirm");
 		return null;
 	}
 

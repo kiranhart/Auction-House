@@ -28,6 +28,7 @@ import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -52,24 +53,29 @@ public class CommandFilter extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		final Player player = (Player) sender;
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		final Player player = context.getPlayer();
 //		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
-		if (args.length == 0) {
+		if (context.getArgCount() == 0) {
 			AuctionHouse.getGuiManager().showGUI(player, new GUIFilterWhitelist(player));
 			return ReturnType.SUCCESS;
 		}
 
-		if (args.length == 2 && args[0].equalsIgnoreCase("additem")) {
+		if (context.getArgCount() == 2 && context.getArg(0, "").equalsIgnoreCase("additem")) {
 			boolean isValid = false;
 			for (AuctionItemCategory value : AuctionItemCategory.values()) {
-				if (args[1].toUpperCase().equals(value.name())) {
+				if (context.getArg(1, "").toUpperCase().equals(value.name())) {
 					isValid = true;
 					break;
 				}
 			}
 
-			if (isValid && AuctionItemCategory.valueOf(args[1].toUpperCase()).isWhitelistAllowed()) {
+			if (isValid && AuctionItemCategory.valueOf(context.getArg(1, "").toUpperCase()).isWhitelistAllowed()) {
 
 				ItemStack held = PlayerHelper.getHeldItem(player);
 				if (held.getType() == CompMaterial.AIR.get()) {
@@ -78,14 +84,14 @@ public class CommandFilter extends Command {
 				}
 
 
-				if (AuctionHouse.getFilterManager().getFilteredItem(held) != null && AuctionHouse.getFilterManager().getFilteredItem(held).getCategory() == AuctionItemCategory.valueOf(args[1].toUpperCase())) {
+				if (AuctionHouse.getFilterManager().getFilteredItem(held) != null && AuctionHouse.getFilterManager().getFilteredItem(held).getCategory() == AuctionItemCategory.valueOf(context.getArg(1, "").toUpperCase())) {
 					AuctionHouse.getInstance().getLocale().getMessage("general.filteritemaddedalready").sendPrefixedMessage(player);
 					return ReturnType.FAIL;
 				}
 
-				AuctionFilterItem filterItem = new AuctionFilterItem(held, AuctionItemCategory.valueOf(args[1].toUpperCase()));
+				AuctionFilterItem filterItem = new AuctionFilterItem(held, AuctionItemCategory.valueOf(context.getArg(1, "").toUpperCase()));
 				AuctionHouse.getFilterManager().addFilterItem(filterItem);
-				AuctionHouse.getInstance().getLocale().getMessage("general.addeditemtofilterwhitelist").processPlaceholder("item_name", AuctionAPI.getInstance().getItemName(held)).processPlaceholder("filter_category", args[1]).sendPrefixedMessage(player);
+				AuctionHouse.getInstance().getLocale().getMessage("general.addeditemtofilterwhitelist").processPlaceholder("item_name", AuctionAPI.getInstance().getItemName(held)).processPlaceholder("filter_category", context.getArg(1)).sendPrefixedMessage(player);
 			}
 		}
 
@@ -109,8 +115,13 @@ public class CommandFilter extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
-		if (args.length == 1) return Collections.singletonList("additem");
-		if (args.length == 2)
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
+		if (context.getArgCount() == 1) return Collections.singletonList("additem");
+		if (context.getArgCount() == 2)
 			return Arrays.stream(AuctionItemCategory.values()).filter(AuctionItemCategory::isWhitelistAllowed).map(AuctionItemCategory::getTranslatedType).collect(Collectors.toList());
 		return null;
 	}

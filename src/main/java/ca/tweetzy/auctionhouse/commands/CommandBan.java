@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.guis.selector.GUIPlayerSelector;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -46,9 +47,14 @@ public class CommandBan extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
-		final Player player = (Player) sender;
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
 
-		if (args.length == 0) {
+	@Override
+	protected ReturnType execute(CommandContext context) {
+		final Player player = context.getPlayer();
+
+		if (context.getArgCount() == 0) {
 			// open the player picker then redirect to the ban user menu
 			AuctionHouse.getGuiManager().showGUI(player, new GUIPlayerSelector(player, selected -> {
 				if (AuctionHouse.getBanManager().isBannedAlready(selected)) {
@@ -61,15 +67,15 @@ public class CommandBan extends Command {
 			return ReturnType.SUCCESS;
 		}
 
-		final Player target = Bukkit.getPlayerExact(args[0]);
+		final Player target = Bukkit.getPlayerExact(context.getArg(0));
 
 		if (target == null) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", args[0]).sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", context.getArg(0)).sendPrefixedMessage(player);
 			return ReturnType.FAIL;
 		}
 
 		if (AuctionHouse.getBanManager().isBannedAlready(target)) {
-			AuctionHouse.getInstance().getLocale().getMessage("ban.user already banned").processPlaceholder("player_name", args[0]).sendPrefixedMessage(player);
+			AuctionHouse.getInstance().getLocale().getMessage("ban.user already banned").processPlaceholder("player_name", context.getArg(0)).sendPrefixedMessage(player);
 			return ReturnType.FAIL;
 		}
 
@@ -79,7 +85,12 @@ public class CommandBan extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
-		if (args.length == 1) {
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
+		if (context.getArgCount() == 1) {
 			return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
 		}
 

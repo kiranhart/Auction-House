@@ -24,6 +24,7 @@ import ca.tweetzy.auctionhouse.guis.settings.PluginConfigGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
+import ca.tweetzy.flight.command.CommandContext;
 import ca.tweetzy.flight.command.ReturnType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -44,9 +45,14 @@ public class CommandSettings extends Command {
 
 	@Override
 	protected ReturnType execute(CommandSender sender, String... args) {
+		return execute(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected ReturnType execute(CommandContext context) {
 		if (!Settings.ALLOW_USAGE_OF_IN_GAME_EDITOR.getBoolean()) return ReturnType.FAIL;
 
-		Player player = (Player) sender;
+		Player player = context.getPlayer();
 		if (AuctionAPI.tellMigrationStatus(player)) return ReturnType.FAIL;
 
 		AuctionHouse.getGuiManager().showGUI(player, new PluginConfigGUI(player));
@@ -55,6 +61,11 @@ public class CommandSettings extends Command {
 
 	@Override
 	protected List<String> tab(CommandSender sender, String... args) {
+		return tab(new CommandContext(sender, args, getSubCommands().isEmpty() ? "" : getSubCommands().get(0)));
+	}
+
+	@Override
+	protected List<String> tab(CommandContext context) {
 		return null;
 	}
 
