@@ -85,6 +85,9 @@ public final class GUIMaterialPicker extends AuctionPagedGUI<ItemStack> {
 
 	@Override
 	protected ItemStack makeDisplayItem(ItemStack item) {
+		if (item == null) {
+			return new ItemStack(CompMaterial.AIR.get());
+		}
 		return QuickItem.of(item)
 				.name("&e&l" + ChatUtil.capitalizeFully(item.getType()))
 				.lore(this.player, Settings.GUI_MATERIAL_PICKER_ITEMS_MATERIAL_LORE.getStringList())

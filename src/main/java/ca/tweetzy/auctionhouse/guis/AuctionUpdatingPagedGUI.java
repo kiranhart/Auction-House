@@ -168,8 +168,13 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 				for (int i = 0; i < this.rows * 9; i++) {
 					if (this.fillSlots().contains(i) && this.fillSlots().indexOf(i) < paginatedItems.size()) {
 						final T object = paginatedItems.get(this.fillSlots().indexOf(i));
-						slotToItemStack.put(i, this.makeDisplayItem(object));
-						slotToObject.put(i, object);
+						if (object != null) {
+							ItemStack displayItem = this.makeDisplayItem(object);
+							if (displayItem != null) {
+								slotToItemStack.put(i, displayItem);
+								slotToObject.put(i, object);
+							}
+						}
 					}
 				}
 				

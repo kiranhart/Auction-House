@@ -50,8 +50,12 @@ public final class BundleUtil {
 
 		for (int i = 0; i < totalBundledItems; i++) {
 			int finalI = i;
-			if (NBT.get(itemStack, (Function<ReadableItemNBT, Boolean>) nbt -> nbt.hasTag("AuctionBundleItem-" + finalI)))
-				items.add(AuctionAPI.getInstance().deserializeItem(NBT.get(itemStack, nbt -> (byte[]) nbt.getByteArray("AuctionBundleItem-" + finalI))));
+			if (NBT.get(itemStack, (Function<ReadableItemNBT, Boolean>) nbt -> nbt.hasTag("AuctionBundleItem-" + finalI))) {
+				ItemStack deserializedItem = AuctionAPI.getInstance().deserializeItem(NBT.get(itemStack, nbt -> (byte[]) nbt.getByteArray("AuctionBundleItem-" + finalI)));
+				if (deserializedItem != null) {
+					items.add(deserializedItem);
+				}
+			}
 		}
 
 
