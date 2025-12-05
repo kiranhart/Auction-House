@@ -207,6 +207,8 @@ public class TickAuctionsTask extends BukkitRunnable {
 					if (auctionWinner.getPlayer().getInventory().firstEmpty() != -1) {
 						Bukkit.getServer().getScheduler().runTaskLater(AuctionHouse.getInstance(), () -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack), 0);
 						// Item already marked as purchased above (race condition protection)
+						// Skip expiration logic to prevent item from appearing in collection bin
+						continue;
 					} else {
 						auctionItem.setOwner(auctionWinner.getUniqueId());
 						auctionItem.setHighestBidder(auctionWinner.getUniqueId());
