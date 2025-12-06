@@ -827,19 +827,19 @@ public class AuctionAPI {
 			for (String item : Settings.BLOCKED_ITEMS.getStringList()) {
 				final String[] split = item.split(":");
 
-				if (split.length == 1) {
-					if (split[0].contains(itemStack.getType().name())) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
-						return false;
-					}
+			if (split.length == 1) {
+				if (split[0].equals(itemStack.getType().name())) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
+					return false;
 				}
+			}
 
-				if (split.length == 2 && MathUtil.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
-					if (split[0].contains(itemStack.getType().name()) && itemStack.getItemMeta() != null && itemStack.getItemMeta().getCustomModelData() == Integer.parseInt(split[1])) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
-						return false;
-					}
+			if (split.length == 2 && MathUtil.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+				if (split[0].equals(itemStack.getType().name()) && itemStack.getItemMeta() != null && itemStack.getItemMeta().getCustomModelData() == Integer.parseInt(split[1])) {
+					AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
+					return false;
 				}
+			}
 			}
 		}
 

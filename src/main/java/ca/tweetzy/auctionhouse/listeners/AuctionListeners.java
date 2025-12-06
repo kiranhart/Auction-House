@@ -163,11 +163,12 @@ public class AuctionListeners implements Listener {
 			if (stored != null) {
 				// Create a regular Transaction for the completed offer
 				// The fulfiller is the seller (they sold the item), the requester is the buyer
+				// Set amount to 1 - each purchase counts as a single transaction regardless of stack size
 				final org.bukkit.inventory.ItemStack transactionItem = completedRequest.getRequestedItem().clone();
-				transactionItem.setAmount(completedRequest.getAmountRequested());
+				transactionItem.setAmount(1);
 
 				AuctionHouse.newChain().async(() -> {
-					AuctionHouse.getDataManager().insertTransaction(new Transaction(
+					final Transaction requestTransaction = new Transaction(
 							UUID.randomUUID(),
 							completedRequest.getFulfillerUUID(), // fulfiller is the seller
 							completedRequest.getRequesterUUID(), // requester is the buyer
@@ -177,9 +178,17 @@ public class AuctionListeners implements Listener {
 							transactionItem,
 							AuctionSaleType.WITHOUT_BIDDING_SYSTEM, // offers are always non-bid
 							completedRequest.getPaymentTotal()
-					), (error, transaction) -> {
-						if (error == null && transaction != null) {
+					);
+					AuctionHouse.getDataManager().insertTransaction(requestTransaction, (error, transaction) -> {
+						if (error != null) {
+							AuctionHouse.getInstance().getLogger().severe("Failed to insert transaction for request " + completedRequest.getId() + ": " + error.getMessage());
+							error.printStackTrace();
+						} else if (transaction != null) {
 							AuctionHouse.getTransactionManager().addTransaction(transaction);
+						} else {
+							AuctionHouse.getInstance().getLogger().warning("Transaction insert succeeded but fetch returned null for request " + completedRequest.getId() + ". Transaction may not be in memory.");
+							// Fallback: use the original transaction object since insert was successful
+							AuctionHouse.getTransactionManager().addTransaction(requestTransaction);
 						}
 					});
 				}).execute();
@@ -265,19 +274,31 @@ public class AuctionListeners implements Listener {
 					price = auctionedItem.getCurrentPrice();
 				}
 
-				AuctionHouse.getDataManager().insertTransaction(new Transaction(
+				// Create transaction item with amount 1 - each purchase counts as a single transaction
+				org.bukkit.inventory.ItemStack transactionItem = auctionedItem.getItem().clone();
+				transactionItem.setAmount(1);
+				
+				final Transaction auctionTransaction = new Transaction(
 						UUID.randomUUID(),
 						originalOwnerUUID,
 						buyerUUID,
 						auctionedItem.getOwnerName(),
 						buyer.getName(),
 						System.currentTimeMillis(),
-						auctionedItem.getItem(),
+						transactionItem,
 						e.getSaleType(),
 						price
-				), (error, transaction) -> {
-					if (error == null) {
+				);
+				AuctionHouse.getDataManager().insertTransaction(auctionTransaction, (error, transaction) -> {
+					if (error != null) {
+						AuctionHouse.getInstance().getLogger().severe("Failed to insert transaction for auction " + auctionedItem.getId() + ": " + error.getMessage());
+						error.printStackTrace();
+					} else if (transaction != null) {
 						AuctionHouse.getTransactionManager().addTransaction(transaction);
+					} else {
+						AuctionHouse.getInstance().getLogger().warning("Transaction insert succeeded but fetch returned null for auction " + auctionedItem.getId() + ". Using original transaction object as fallback.");
+						// Fallback: use the original transaction object since insert was successful
+						AuctionHouse.getTransactionManager().addTransaction(auctionTransaction);
 					}
 				});
 			}

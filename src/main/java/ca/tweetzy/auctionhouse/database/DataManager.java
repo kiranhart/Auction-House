@@ -879,24 +879,32 @@ public class DataManager extends DataManagerAbstract {
 								return;
 							}
 
-							if (callback != null) {
-								getQueryBuilder().select("transactions")
-										.where("id", transaction.getId().toString())
-										.fetchFirst(rs -> {
-											try {
-												return extractTransaction(rs);
-											} catch (SQLException e) {
-												return null;
-											}
-										}, (ex2, result) -> {
-											if (ex2 != null) {
-												resolveCallback(callback, ex2);
-											} else if (result != null) {
-												callback.accept(null, result);
-											} else {
-												callback.accept(null, null);
-											}
-										});
+							// Verify that the insert actually affected rows
+							if (affectedRows != null && affectedRows > 0) {
+								if (callback != null) {
+									getQueryBuilder().select("transactions")
+											.where("id", transaction.getId().toString())
+											.fetchFirst(rs -> {
+												try {
+													return extractTransaction(rs);
+												} catch (SQLException e) {
+													return null;
+												}
+											}, (ex2, result) -> {
+												if (ex2 != null) {
+													callback.accept(null, transaction);
+												} else if (result != null) {
+													callback.accept(null, result);
+												} else {
+													callback.accept(null, transaction);
+												}
+											});
+								}
+							} else {
+								// Insert didn't affect any rows - this is an error
+								Exception insertError = new Exception("Transaction insert did not affect any rows. Transaction ID: " + transaction.getId());
+								plugin.getLogger().severe("Failed to insert transaction: " + insertError.getMessage());
+								resolveCallback(callback, insertError);
 							}
 						});
 			} catch (Exception e) {
