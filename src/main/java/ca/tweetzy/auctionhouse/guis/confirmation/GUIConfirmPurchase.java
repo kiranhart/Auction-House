@@ -127,16 +127,6 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 				(located.getItem().getAmount() - purchaseQuantity < 1) ||
 				located.isInfinite();
 
-			// CRITICAL: Atomically mark item as purchased BEFORE processing to prevent race conditions
-			// Only mark if the item will be fully consumed (for partial purchases, multiple buyers are allowed)
-			// If another player already purchased it, this will return false and we'll exit early
-			if (willFullyConsume && !located.isInfinite()) {
-				if (!AuctionHouse.getAuctionItemManager().tryMarkAsPurchased(located)) {
-					AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(player);
-					return false;
-				}
-			}
-
 			double buyNowPrice = buyingSpecificQuantity ? purchaseQuantity * pricePerItem : located.getBasePrice();
 			double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * buyNowPrice : 0D;
 			final boolean isRequest = auctionItem.isRequest();
@@ -224,10 +214,21 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 				return false;
 			}
 
+			// Check inventory space BEFORE marking as purchased to prevent item deletion
 			if (!Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean() && player.getInventory().firstEmpty() == -1) {
 				AuctionHouse.getInstance().getLocale().getMessage("general.noroom").sendPrefixedMessage(player);
 				SoundManager.getInstance().playSound(player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString());
 				return false;
+			}
+
+			// CRITICAL: Atomically mark item as purchased AFTER all validation checks to prevent race conditions
+			// Only mark if the item will be fully consumed (for partial purchases, multiple buyers are allowed)
+			// If another player already purchased it, this will return false and we'll exit early
+			if (willFullyConsume && !located.isInfinite()) {
+				if (!AuctionHouse.getAuctionItemManager().tryMarkAsPurchased(located)) {
+					AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(player);
+					return false;
+				}
 			}
 
 			AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(auctionItem.getOwner()), player, auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM, tax, false);
