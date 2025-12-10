@@ -249,7 +249,7 @@ public class AuctionAPI {
 	 */
 	public String getItemName(ItemStack stack) {
 		Objects.requireNonNull(stack, "Item stack cannot be null when getting name");
-		final String name = stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " "));
+		final String name = stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : (stack.getItemMeta().hasItemName() ? stack.getItemMeta().getItemName() : WordUtils.capitalize(stack.getType().name().toLowerCase().replace("_", " ")));
 		return name;
 	}
 
