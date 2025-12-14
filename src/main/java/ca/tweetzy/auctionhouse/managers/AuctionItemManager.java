@@ -21,6 +21,7 @@ package ca.tweetzy.auctionhouse.managers;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.flight.utils.Common;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
@@ -72,7 +73,14 @@ public class AuctionItemManager {
 	}
 
 	public void end() {
-		AuctionHouse.getDataManager().updateItems(this.items.values(), null);
+		AuctionHouse.getDataManager().updateItems(this.items.values(), result -> {
+			if (result != null) {
+
+
+				Common.log("&cSomething went wrong while updating items during plugin shutdown. Error");
+				result.printStackTrace();
+			}
+		});
 	}
 
 	public void addAuctionItem(@NonNull AuctionedItem auctionedItem) {
