@@ -107,22 +107,32 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 			this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
 		}
 
+		if (!AuctionHouse.getAuctionItemManager().isGarbageItem(auctionedItem)) {
+			if (Settings.EXPIRE_MENU_REQUIRES_CONFIRM.getBoolean()) {
+				click.manager.showGUI(click.player, new GUIGeneralConfirm(this.auctionPlayer, auctionedItem.getItem(), confirmed -> {
+					if (confirmed) {
+						give(isBundle, auctionedItem, click);
+						// Jsinco - Add else check so this isn't called twice.
+					} else {
+						click.manager.showGUI(click.player, new GUIExpiredItems(this.parent, this.auctionPlayer, this.lastClicked));
+					}
+					// End Jsinco
+				}));
 
-		if (Settings.EXPIRE_MENU_REQUIRES_CONFIRM.getBoolean()) {
-			click.manager.showGUI(click.player, new GUIGeneralConfirm(this.auctionPlayer, auctionedItem.getItem(), confirmed -> {
-				if (confirmed) {
-					give(isBundle, auctionedItem, click);
-				}
-				click.manager.showGUI(click.player, new GUIExpiredItems(this.parent, this.auctionPlayer, this.lastClicked));
-			}));
-
-		} else {
-			give(isBundle, auctionedItem, click);
+			} else {
+				give(isBundle, auctionedItem, click);
+			}
 		}
-
 	}
 
+	// Jsinco - Prevent double reclaiming
 	private void give(boolean isBundle, AuctionedItem auctionedItem, GuiClickEvent click) {
+		if (AuctionHouse.getAuctionItemManager().isGarbageItem(auctionedItem)) {
+			return;
+		}
+		// Send to garbage before giving item to help prevent dupe exploits
+		AuctionHouse.getAuctionItemManager().sendToGarbage(auctionedItem);
+
 		if (isBundle) {
 			if (Settings.BUNDLE_IS_OPENED_ON_RECLAIM.getBoolean()) {
 				final List<ItemStack> bundleItems = BundleUtil.extractBundleItems(auctionedItem.getItem());
@@ -147,9 +157,9 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 			}
 		}
 
-		AuctionHouse.getAuctionItemManager().sendToGarbage(auctionedItem);
 		click.manager.showGUI(click.player, new GUIExpiredItems(this.parent, this.auctionPlayer, this.lastClicked));
 	}
+	// End Jsinco
 
 	@Override
 	protected void drawFixed() {
@@ -184,7 +194,15 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 				this.lastClicked = System.currentTimeMillis() + Settings.CLAIM_MS_DELAY.getInt();
 			}
 
+			// Jsinco - Prevent double reclaiming
 			for (AuctionedItem auctionItem : this.items) {
+				if (AuctionHouse.getAuctionItemManager().isGarbageItem(auctionItem)) {
+					// Jsinco - Maybe add some logging to track how this happened
+					continue;
+				}
+				// Same as before, immediately send to garbage.
+				AuctionHouse.getAuctionItemManager().sendToGarbage(auctionItem);
+
 				final boolean isBundle = BundleUtil.isBundledItem(auctionItem.getItem());
 
 				if (e.player.getInventory().firstEmpty() == -1) {
@@ -192,6 +210,7 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 					break;
 				}
 
+				// Jsinco - This should be extracted out to a common method but my project cannot index so it's too hard for me to do right now
 				if (isBundle) {
 					if (Settings.BUNDLE_IS_OPENED_ON_RECLAIM.getBoolean()) {
 						final List<ItemStack> bundleItems = BundleUtil.extractBundleItems(auctionItem.getItem());
@@ -216,8 +235,8 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 					}
 				}
 
-				AuctionHouse.getAuctionItemManager().sendToGarbage(auctionItem);
 			}
+			// End Jsinco
 
 			e.manager.showGUI(e.player, new GUIExpiredItems(this.auctionPlayer, this.lastClicked));
 		});

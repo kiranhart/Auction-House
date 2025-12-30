@@ -116,11 +116,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 			}
 
 			if (timeRemaining <= 0 && !auctionItem.isExpired()) {
-
-				// CRITICAL: Atomically mark item as processed BEFORE any operations to prevent race conditions
-				// If another thread (purchase/tick) already processed it, skip
 				if (!AuctionHouse.getAuctionItemManager().tryMarkAsPurchased(auctionItem)) {
-					// Item was already processed by another thread, skip
 					continue;
 				}
 
