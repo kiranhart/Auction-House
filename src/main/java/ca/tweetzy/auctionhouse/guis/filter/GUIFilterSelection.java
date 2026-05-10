@@ -18,13 +18,15 @@
 
 package ca.tweetzy.auctionhouse.guis.filter;
 
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.helpers.SlotHelper;
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -44,7 +46,7 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 	final AuctionPlayer auctionPlayer;
 
 	public GUIFilterSelection(AuctionPlayer auctionPlayer) {
-		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.filter.title"), 5);
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_FILTER_TITLE), 5);
 		this.auctionPlayer = auctionPlayer;
 
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILTER_BG_ITEM.getString()).make()));
@@ -57,7 +59,7 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 	protected void draw() {
 
 		if (AuctionItemCategory.ALL.isEnabled())
-			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_ALL_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_ALL_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter.items.all.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter.items.all.lore")).make(), e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_ALL_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_ALL_ITEM.getString()).name(TranslationManager.string(this.player, Translations.GUI_FILTER_ALL_NAME)).lore(this.player, TranslationManager.list(this.player, Translations.GUI_FILTER_ALL_LORE)).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.ALL);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
@@ -65,16 +67,16 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 
 
 		if (AuctionItemCategory.SELF.isEnabled())
-			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_OWN_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(this.player).name(AuctionLocale.msg(this.player, "gui.filter.items.own.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter.items.own.lore")).make(), e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_OWN_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(this.player).name(TranslationManager.string(this.player, Translations.GUI_FILTER_OWN_NAME)).lore(this.player, TranslationManager.list(this.player, Translations.GUI_FILTER_OWN_LORE)).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.SELF);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			}));
 
 		if (AuctionItemCategory.SEARCH.isEnabled())
-			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_SEARCH_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_SEARCH_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter.items.search.name")).lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.filter.items.search.lore"), "filter_search_phrase", this.auctionPlayer.getCurrentSearchPhrase())).make(), e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_SEARCH_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_SEARCH_ITEM.getString()).name(TranslationManager.string(this.player, Translations.GUI_FILTER_SEARCH_NAME)).lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_FILTER_SEARCH_LORE), "filter_search_phrase", this.auctionPlayer.getCurrentSearchPhrase())).make(), e -> {
 				if (!e.player.hasPermission("auctionhouse.cmd.search")) {
-					AuctionLocale.tell(e.player, "commands.no_permission");
+					Common.tell(e.player, TranslationManager.string(e.player instanceof Player pl ? pl : null, Translations.COMMANDS_NO_PERMISSION));
 					return;
 				}
 
@@ -83,8 +85,8 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 				new TitleInput(
 						AuctionHouse.getInstance(),
 						ap.getPlayer(),
-						Common.colorize(AuctionLocale.msg(e.player, "titles.material search.title")),
-						Common.colorize(AuctionLocale.msg(e.player, "titles.material search.subtitle"))
+						Common.colorize(TranslationManager.string(e.player, Translations.TITLES_MATERIAL_SEARCH_TITLE)),
+						Common.colorize(TranslationManager.string(e.player, Translations.TITLES_MATERIAL_SEARCH_SUBTITLE))
 				) {
 					@Override
 					public boolean onResult(String string) {
@@ -105,7 +107,7 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 			}));
 
 		if (AuctionItemCategory.MISC.isEnabled())
-			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_MISC_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_MISC_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter.items.misc.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter.items.misc.lore")).make(), e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_MISC_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_MISC_ITEM.getString()).name(TranslationManager.string(this.player, Translations.GUI_FILTER_MISC_NAME)).lore(this.player, TranslationManager.list(this.player, Translations.GUI_FILTER_MISC_LORE)).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.MISC);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
@@ -113,7 +115,7 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 
 
 		if (AuctionItemCategory.ENCHANTS.isEnabled())
-			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_ENCHANTS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_ENCHANTS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter.items.enchants.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter.items.enchants.lore")).make(), e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_ENCHANTS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_ENCHANTS_ITEM.getString()).name(TranslationManager.string(this.player, Translations.GUI_FILTER_ENCHANTS_NAME)).lore(this.player, TranslationManager.list(this.player, Translations.GUI_FILTER_ENCHANTS_LORE)).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.ENCHANTS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
@@ -121,7 +123,7 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 
 
 		if (AuctionItemCategory.ARMOR.isEnabled())
-			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_ARMOR_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_ARMOR_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter.items.armor.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter.items.armor.lore")).make(), e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_ARMOR_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_ARMOR_ITEM.getString()).name(TranslationManager.string(this.player, Translations.GUI_FILTER_ARMOR_NAME)).lore(this.player, TranslationManager.list(this.player, Translations.GUI_FILTER_ARMOR_LORE)).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.ARMOR);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
@@ -129,7 +131,7 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 
 
 		if (AuctionItemCategory.WEAPONS.isEnabled())
-			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_WEAPONS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_WEAPONS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter.items.weapons.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter.items.weapons.lore")).make(), e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_WEAPONS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_WEAPONS_ITEM.getString()).name(TranslationManager.string(this.player, Translations.GUI_FILTER_WEAPONS_NAME)).lore(this.player, TranslationManager.list(this.player, Translations.GUI_FILTER_WEAPONS_LORE)).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.WEAPONS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
@@ -137,7 +139,7 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 
 
 		if (AuctionItemCategory.TOOLS.isEnabled())
-			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_TOOLS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_TOOLS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter.items.tools.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter.items.tools.lore")).make(), e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_TOOLS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_TOOLS_ITEM.getString()).name(TranslationManager.string(this.player, Translations.GUI_FILTER_TOOLS_NAME)).lore(this.player, TranslationManager.list(this.player, Translations.GUI_FILTER_TOOLS_LORE)).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.TOOLS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
@@ -145,7 +147,7 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 
 
 		if (AuctionItemCategory.SPAWNERS.isEnabled())
-			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_SPAWNERS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_SPAWNERS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter.items.spawners.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter.items.spawners.lore")).make(), e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_SPAWNERS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_SPAWNERS_ITEM.getString()).name(TranslationManager.string(this.player, Translations.GUI_FILTER_SPAWNERS_NAME)).lore(this.player, TranslationManager.list(this.player, Translations.GUI_FILTER_SPAWNERS_LORE)).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.SPAWNERS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
@@ -153,14 +155,14 @@ public class GUIFilterSelection extends AuctionBaseGUI {
 
 
 		if (AuctionItemCategory.BLOCKS.isEnabled())
-			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_BLOCKS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_BLOCKS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter.items.blocks.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter.items.blocks.lore")).make(), e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_BLOCKS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_BLOCKS_ITEM.getString()).name(TranslationManager.string(this.player, Translations.GUI_FILTER_BLOCKS_NAME)).lore(this.player, TranslationManager.list(this.player, Translations.GUI_FILTER_BLOCKS_LORE)).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.BLOCKS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));
 			}));
 
 		if (AuctionItemCategory.POTIONS.isEnabled())
-			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_POTIONS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_POTIONS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter.items.potions.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter.items.potions.lore")).make(), e -> {
+			SlotHelper.getButtonSlots(Settings.GUI_FILTER_ITEMS_POTIONS_SLOTS.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_FILTER_ITEMS_POTIONS_ITEM.getString()).name(TranslationManager.string(this.player, Translations.GUI_FILTER_POTIONS_NAME)).lore(this.player, TranslationManager.list(this.player, Translations.GUI_FILTER_POTIONS_LORE)).make(), e -> {
 				this.auctionPlayer.setSelectedFilter(AuctionItemCategory.POTIONS);
 				updatePlayerFilter(this.auctionPlayer);
 				e.manager.showGUI(e.player, new GUIAuctionHouse(this.auctionPlayer));

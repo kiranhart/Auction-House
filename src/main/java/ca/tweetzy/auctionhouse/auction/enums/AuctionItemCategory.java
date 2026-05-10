@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.auction.enums;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 
@@ -115,29 +117,29 @@ public enum AuctionItemCategory {
 	public String getTranslatedType() {
 		switch (this) {
 			case ALL:
-				return AuctionLocale.msg(null, "auction_filter.categories.all");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_ALL);
 			case FOOD:
-				return AuctionLocale.msg(null, "auction_filter.categories.food");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_FOOD);
 			case ARMOR:
-				return AuctionLocale.msg(null, "auction_filter.categories.armor");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_ARMOR);
 			case BLOCKS:
-				return AuctionLocale.msg(null, "auction_filter.categories.blocks");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_BLOCKS);
 			case TOOLS:
-				return AuctionLocale.msg(null, "auction_filter.categories.tools");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_TOOLS);
 			case MISC:
-				return AuctionLocale.msg(null, "auction_filter.categories.misc");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_MISC);
 			case ENCHANTS:
-				return AuctionLocale.msg(null, "auction_filter.categories.enchants");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_ENCHANTS);
 			case SPAWNERS:
-				return AuctionLocale.msg(null, "auction_filter.categories.spawners");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_SPAWNERS);
 			case WEAPONS:
-				return AuctionLocale.msg(null, "auction_filter.categories.weapons");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_WEAPONS);
 			case SELF:
-				return AuctionLocale.msg(null, "auction_filter.categories.self");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_SELF);
 			case POTIONS:
-				return AuctionLocale.msg(null, "auction_filter.categories.potions");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_POTIONS);
 			case SEARCH:
-				return AuctionLocale.msg(null, "auction_filter.categories.search");
+				return TranslationManager.string(Translations.AUCTION_FILTER_CATEGORIES_SEARCH);
 		}
 		return getType();
 	}

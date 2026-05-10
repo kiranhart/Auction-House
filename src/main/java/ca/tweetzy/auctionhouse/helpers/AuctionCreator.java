@@ -27,8 +27,9 @@ import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.events.AuctionStartEvent;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.auctionhouse.settings.Translations;
+import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.utils.PlayerUtil;
 import com.google.gson.JsonObject;
@@ -51,7 +52,7 @@ import static ca.tweetzy.auctionhouse.api.auction.ListingResult.*;
 public final class AuctionCreator {
 
 	public static final UUID SERVER_AUCTION_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-	public static final String SERVER_LISTING_NAME = AuctionLocale.msg(null, "general.server listing");
+	public static final String SERVER_LISTING_NAME = TranslationManager.string(Translations.GENERAL_SERVER_LISTING);
 
 
 	public void create(final AuctionPlayer auctionPlayer, @NonNull final AuctionedItem auctionItem, @NonNull final BiConsumer<AuctionedItem, ListingResult> result) {
@@ -74,13 +75,13 @@ public final class AuctionCreator {
 
 			// Hooks & Special Cases
 			if (!Settings.ALLOW_SALE_OF_DAMAGED_ITEMS.getBoolean() && AuctionAPI.getInstance().isDamaged(auctionItem.getItem())) {
-				AuctionLocale.tell(seller, "general.cannot list damaged item");
+				Common.tell(seller, TranslationManager.string(seller, Translations.GENERAL_CANNOT_LIST_DAMAGED_ITEM));
 				result.accept(auctionItem, CANNOT_SELL_DAMAGED_ITEM);
 				return;
 			}
 
 			if (Settings.PREVENT_SALE_OF_REPAIRED_ITEMS.getBoolean() && AuctionAPI.getInstance().isRepaired(auctionItem.getItem())) {
-				AuctionLocale.tell(seller, "general.cannot list repaired item");
+				Common.tell(seller, TranslationManager.string(seller, Translations.GENERAL_CANNOT_LIST_REPAIRED_ITEM));
 				result.accept(auctionItem, CANNOT_SELL_REPAIRED_ITEM);
 				return;
 			}
@@ -88,14 +89,14 @@ public final class AuctionCreator {
 
 		if (!auctionItem.isRequest()) {
 			if (!AuctionAPI.getInstance().meetsMinItemPrice(BundleUtil.isBundledItem(auctionItem.getItem()), auctionItem.isBidItem(), auctionItem.getItem(), auctionItem.getBasePrice(), auctionItem.getBidStartingPrice())) {
-				AuctionLocale.tell(seller, "pricing.minitemprice", "price",AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(auctionItem.getItem()).getMinPrice(), false));
+				Common.tell(seller, TranslationManager.string(seller, Translations.PRICING_MIN_ITEM_PRICE, "price",AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(auctionItem.getItem()).getMinPrice(), false)));
 
 				result.accept(auctionItem, MINIMUM_PRICE_NOT_MET);
 				return;
 			}
 
 			if (AuctionAPI.getInstance().isAtMaxItemPrice(BundleUtil.isBundledItem(auctionItem.getItem()), auctionItem.isBidItem(), auctionItem.getItem(), auctionItem.getBasePrice(), auctionItem.getBidStartingPrice())) {
-				AuctionLocale.tell(seller, "pricing.maxitemprice", "price",AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(auctionItem.getItem()).getMaxPrice(), false));
+				Common.tell(seller, TranslationManager.string(seller, Translations.PRICING_MAX_ITEM_PRICE, "price",AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(auctionItem.getItem()).getMaxPrice(), false)));
 
 				result.accept(auctionItem, ABOVE_MAXIMUM_PRICE);
 				return;
@@ -110,15 +111,15 @@ public final class AuctionCreator {
 		// check tax
 		if (Settings.TAX_ENABLED.getBoolean() && Settings.TAX_CHARGE_LISTING_FEE.getBoolean() && !auctionItem.isServerItem() && !auctionItem.isRequest()) {
 			if (!AuctionHouse.getCurrencyManager().has(seller, listingFee)) {
-				AuctionLocale.tell(seller, "auction.tax.cannotpaylistingfee", "price",AuctionHouse.getAPI().getNumberAsCurrency(listingFee, false));
+				Common.tell(seller, TranslationManager.string(seller, Translations.AUCTION_TAX_CANNOT_PAY_LISTING_FEE, "price",AuctionHouse.getAPI().getNumberAsCurrency(listingFee, false)));
 				result.accept(auctionItem, CANNOT_PAY_LISTING_FEE);
 				return;
 			}
 
 			AuctionHouse.getCurrencyManager().withdraw(seller, listingFee);
-			AuctionLocale.tell(seller, "auction.tax.paidlistingfee", "price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(listingFee, auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
+			Common.tell(seller, TranslationManager.string(seller, Translations.AUCTION_TAX_PAID_LISTING_FEE, "price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(listingFee, auctionItem.getCurrency(), auctionItem.getCurrencyItem())));
 
-			AuctionLocale.tell(seller, "pricing.moneyremove", "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(seller, auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(listingFee, auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
+			Common.tell(seller, TranslationManager.string(seller, Translations.PRICING_MONEY_REMOVE, "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(seller, auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(listingFee, auctionItem.getCurrency(), auctionItem.getCurrencyItem())));
 		}
 
 		// final item adjustments
@@ -158,9 +159,13 @@ public final class AuctionCreator {
 			SoundManager.getInstance().playSound(seller, Settings.SOUNDS_LISTED_ITEM_ON_AUCTION_HOUSE.getString());
 
 
-		String NAX = AuctionLocale.msg(null, "auction.biditemwithdisabledbuynow");
-		String listedKey = auctionItem.isRequest() ? "auction.listed.request" : auctionItem.isBidItem() ? "auction.listed.withbid" : "auction.listed.nobid";
-		String msg = AuctionLocale.msg(null, listedKey,
+		String NAX = TranslationManager.string(Translations.AUCTION_BID_ITEM_WITH_DISABLED_BUY_NOW);
+		String msg = TranslationManager.string(
+				auctionItem.isRequest()
+						? Translations.AUCTION_LISTED_REQUEST
+						: auctionItem.isBidItem()
+								? Translations.AUCTION_LISTED_WITH_BID
+								: Translations.AUCTION_LISTED_NO_BID,
 				"amount", finalItemToSell.getAmount(),
 				"item", AuctionAPI.getInstance().getItemName(finalItemToSell),
 				"base_price", auctionItem.getBasePrice() <= -1 ? NAX : auctionItem.getFormattedBasePrice(),
@@ -205,7 +210,7 @@ public final class AuctionCreator {
 					error.printStackTrace();
 
 				if (seller != null) {
-					AuctionLocale.tell(seller, "general.something_went_wrong_while_listing");
+					Common.tell(seller, TranslationManager.string(seller, Translations.GENERAL_SOMETHING_WENT_WRONG_WHILE_LISTING));
 
 					ItemStack originalCopy = auctionItem.getCleanItem().clone();
 					int totalOriginal = BundleUtil.isBundledItem(originalCopy) ? AuctionAPI.getInstance().getItemCountInPlayerInventory(seller, originalCopy) : originalCopy.getAmount();
@@ -228,7 +233,7 @@ public final class AuctionCreator {
 								seller.getUniqueId(),
 								listingFee,
 								auctionItem.getItem(),
-								AuctionLocale.msg(null, "general.prefix"),
+								TranslationManager.string(Translations.GENERAL_PREFIX),
 								PaymentReason.LISTING_FAILED,
 								auctionItem.getCurrency(),
 								auctionItem.getCurrencyItem()
@@ -236,7 +241,7 @@ public final class AuctionCreator {
 					else
 						AuctionHouse.getCurrencyManager().deposit(seller, listingFee, auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
-					AuctionLocale.tell(seller, "pricing.moneyadd", "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(seller, auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",AuctionHouse.getAPI().getNumberAsCurrency(listingFee, false));
+					Common.tell(seller, TranslationManager.string(seller, Translations.PRICING_MONEY_ADD, "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(seller, auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",AuctionHouse.getAPI().getNumberAsCurrency(listingFee, false)));
 				}
 
 				result.accept(auctionItem, UNKNOWN);
@@ -248,9 +253,13 @@ public final class AuctionCreator {
 			//====================================================================================
 			// ANOTHER VERY SHIT BROADCAST THAT IS IN FACT BROKEN
 			if (Settings.BROADCAST_AUCTION_LIST.getBoolean() && !auctionItem.isRequest()) {
-				final String prefix = AuctionLocale.msg(null, "general.prefix");
-				String broadcastKey = auctionItem.isServerItem() ? "auction.broadcast.serverlisting" : auctionItem.isBidItem() ? "auction.broadcast.withbid" : "auction.broadcast.nobid";
-				String msgToAll = AuctionLocale.msg(null, broadcastKey,
+				final String prefix = TranslationManager.string(Translations.GENERAL_PREFIX);
+				String msgToAll = TranslationManager.string(
+						auctionItem.isServerItem()
+								? Translations.AUCTION_BROADCAST_SERVER_LISTING
+								: auctionItem.isBidItem()
+										? Translations.AUCTION_BROADCAST_WITH_BID
+										: Translations.AUCTION_BROADCAST_NO_BID,
 						"amount", finalItemToSell.getAmount(),
 						"player", auctionItem.isServerItem() ? SERVER_LISTING_NAME : seller.getName(),
 						"player_displayname", auctionItem.isServerItem() ? SERVER_LISTING_NAME : AuctionAPI.getInstance().getDisplayName(seller),

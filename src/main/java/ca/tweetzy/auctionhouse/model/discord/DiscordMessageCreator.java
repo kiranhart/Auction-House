@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.model.discord;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
@@ -92,8 +94,8 @@ public final class DiscordMessageCreator {
 		final DiscordWebhook hook = generateBaseHook();
 		DiscordWebhook.EmbedObject embed = generateBaseEmbed();
 
-		embed.addField(AuctionLocale.msg(null, "discord.field.seller.name"), AuctionLocale.msg(null, "discord.field.seller.value").replace("%seller%", this.listing.isServerItem() ? AuctionCreator.SERVER_LISTING_NAME : this.seller.getName()), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
-		embed.addField(AuctionLocale.msg(null, "discord.field.item.name"), AuctionLocale.msg(null, "discord.field.item.value").replace("%item_name%", "x" + this.listing.getItem().getAmount() + " " + ChatColor.stripColor(Settings.FORCE_MATERIAL_NAMES_FOR_DISCORD.getBoolean() ? ChatUtil.capitalize(this.listing.getItem().getType()) : ItemUtil.getItemName(this.listing.getItem()))), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_SELLER_NAME), TranslationManager.string(Translations.DISCORD_FIELD_SELLER_VALUE).replace("%seller%", this.listing.isServerItem() ? AuctionCreator.SERVER_LISTING_NAME : this.seller.getName()), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_ITEM_NAME), TranslationManager.string(Translations.DISCORD_FIELD_ITEM_VALUE).replace("%item_name%", "x" + this.listing.getItem().getAmount() + " " + ChatColor.stripColor(Settings.FORCE_MATERIAL_NAMES_FOR_DISCORD.getBoolean() ? ChatUtil.capitalize(this.listing.getItem().getType()) : ItemUtil.getItemName(this.listing.getItem()))), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean());
 
 		if (this.listing.getItem().getItemMeta() != null && this.listing.getItem().getItemMeta().getLore() != null) {
 			final List<String> lore = this.listing.getItem().getItemMeta().getLore();
@@ -102,7 +104,7 @@ public final class DiscordMessageCreator {
 
 			for (String s : lore) {
 				embed.addField(
-						isFirst ? AuctionLocale.msg(null, "discord.field.item lore.name") : "",
+						isFirst ? TranslationManager.string(Translations.DISCORD_FIELD_ITEM_LORE_NAME) : "",
 						ChatColor.stripColor(s),
 						false
 				);
@@ -136,37 +138,37 @@ public final class DiscordMessageCreator {
 
 	public DiscordWebhook.EmbedObject applyBinPurchaseInfo(DiscordWebhook.EmbedObject embed) {
 		embed = applyBinInfo(embed);
-		embed.addField(AuctionLocale.msg(null, "discord.field.bin listing bought.name"), AuctionLocale.msg(null, "discord.field.bin listing bought.value").replace("%buyer%", this.buyer.getName()), Settings.DISCORD_MSG_FIELD_BIN_BOUGHT_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_BIN_BOUGHT_NAME), TranslationManager.string(Translations.DISCORD_FIELD_BIN_BOUGHT_VALUE).replace("%buyer%", this.buyer.getName()), Settings.DISCORD_MSG_FIELD_BIN_BOUGHT_INLINE.getBoolean());
 		return embed;
 	}
 
 	public DiscordWebhook.EmbedObject applyBidInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(AuctionLocale.msg(null, "discord.field.auction start price.name"), AuctionLocale.msg(null, "discord.field.auction start price.value").replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
-		embed.addField(AuctionLocale.msg(null, "discord.field.auction bidder.name"), AuctionLocale.msg(null, "discord.field.auction bidder.value").replace("%bidder%", this.bidder.getName()), Settings.DISCORD_MSG_FIELD_AUCTION_BIDDER_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_START_PRICE_NAME), TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_START_PRICE_VALUE).replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_BIDDER_NAME), TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_BIDDER_VALUE).replace("%bidder%", this.bidder.getName()), Settings.DISCORD_MSG_FIELD_AUCTION_BIDDER_INLINE.getBoolean());
 
-		embed.addField(AuctionLocale.msg(null, "discord.field.bid amount.name"), AuctionLocale.msg(null, "discord.field.bid amount.value").replace("%bid_amount%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.bidAmount, this.listing.getCurrency(), this.listing.getCurrencyItem())), Settings.DISCORD_MSG_FIELD_BID_AMT_INLINE.getBoolean());
-		embed.addField(AuctionLocale.msg(null, "discord.field.current auction price.name"), AuctionLocale.msg(null, "discord.field.current auction price.value").replace("%current_price%", this.listing.getFormattedCurrentPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_BID_AMT_NAME), TranslationManager.string(Translations.DISCORD_FIELD_BID_AMT_VALUE).replace("%bid_amount%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.bidAmount, this.listing.getCurrency(), this.listing.getCurrencyItem())), Settings.DISCORD_MSG_FIELD_BID_AMT_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_CURRENT_PRICE_NAME), TranslationManager.string(Translations.DISCORD_FIELD_CURRENT_PRICE_VALUE).replace("%current_price%", this.listing.getFormattedCurrentPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_INLINE.getBoolean());
 
 		return embed;
 	}
 
 
 	public DiscordWebhook.EmbedObject applyAuctionWonInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(AuctionLocale.msg(null, "discord.field.auction start price.name"), AuctionLocale.msg(null, "discord.field.auction start price.value").replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
-		embed.addField(AuctionLocale.msg(null, "discord.field.auction listing won price.name"), AuctionLocale.msg(null, "discord.field.auction listing won price.value").replace("%final_price%", this.listing.getFormattedCurrentPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_WON_INLINE.getBoolean());
-		embed.addField(AuctionLocale.msg(null, "discord.field.auction winner.name"), AuctionLocale.msg(null, "discord.field.auction winner.value").replace("%winner%", this.buyer.getName()), Settings.DISCORD_MSG_FIELD_AUCTION_WINNER_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_START_PRICE_NAME), TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_START_PRICE_VALUE).replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_WON_NAME), TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_WON_VALUE).replace("%final_price%", this.listing.getFormattedCurrentPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_WON_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_WINNER_NAME), TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_WINNER_VALUE).replace("%winner%", this.buyer.getName()), Settings.DISCORD_MSG_FIELD_AUCTION_WINNER_INLINE.getBoolean());
 		return embed;
 	}
 
 	public DiscordWebhook.EmbedObject applyBinInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(AuctionLocale.msg(null, "discord.field.bin listing price.name"), AuctionLocale.msg(null, "discord.field.bin listing price.value").replace("%item_price%", this.listing.getFormattedBasePrice()), Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_BIN_LISTING_PRICE_NAME), TranslationManager.string(Translations.DISCORD_FIELD_BIN_LISTING_PRICE_VALUE).replace("%item_price%", this.listing.getFormattedBasePrice()), Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_INLINE.getBoolean());
 		return embed;
 	}
 
 	public DiscordWebhook.EmbedObject applyAuctionInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(AuctionLocale.msg(null, "discord.field.auction start price.name"), AuctionLocale.msg(null, "discord.field.auction start price.value").replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
+		embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_START_PRICE_NAME), TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_START_PRICE_VALUE).replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
 		if (this.listing.getBasePrice() != -1)
-			embed.addField(AuctionLocale.msg(null, "discord.field.auction buyout price.name"), AuctionLocale.msg(null, "discord.field.auction buyout price.value").replace("%buy_now_price%", this.listing.getFormattedBasePrice()), Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_INLINE.getBoolean());
+			embed.addField(TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_BUYOUT_PRICE_NAME), TranslationManager.string(Translations.DISCORD_FIELD_AUCTION_BUYOUT_PRICE_VALUE).replace("%buy_now_price%", this.listing.getFormattedBasePrice()), Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_INLINE.getBoolean());
 		return embed;
 	}
 
@@ -174,8 +176,8 @@ public final class DiscordMessageCreator {
 		final DiscordWebhook hook = new DiscordWebhook(this.webhook);
 
 		// basic settings
-		hook.setUsername(AuctionLocale.msg(null, "discord.user.username"));
-		hook.setAvatarUrl(AuctionLocale.msg(null, "discord.user.avatar picture"));
+		hook.setUsername(TranslationManager.string(Translations.DISCORD_USER_USERNAME));
+		hook.setAvatarUrl(TranslationManager.string(Translations.DISCORD_USER_AVATAR_PICTURE));
 
 		return hook;
 	}
@@ -186,23 +188,23 @@ public final class DiscordMessageCreator {
 		// assign title
 		switch (this.messageType) {
 			case NEW_AUCTION_LISTING:
-				embed.setTitle(AuctionLocale.msg(null, "discord.titles.new auction listing"));
+				embed.setTitle(TranslationManager.string(Translations.DISCORD_TITLE_NEW_AUCTION_LISTING));
 				embed.setColor(extractColor(Settings.DISCORD_COLOR_NEW_AUCTION_LISTING.getString()));
 				break;
 			case NEW_BIN_LISTING:
-				embed.setTitle(AuctionLocale.msg(null, "discord.titles.new bin listing"));
+				embed.setTitle(TranslationManager.string(Translations.DISCORD_TITLE_NEW_BIN_LISTING));
 				embed.setColor(extractColor(Settings.DISCORD_COLOR_NEW_BIN_LISTING.getString()));
 				break;
 			case AUCTION_LISTING_WON:
-				embed.setTitle(AuctionLocale.msg(null, "discord.titles.auction listing won"));
+				embed.setTitle(TranslationManager.string(Translations.DISCORD_TITLE_AUCTION_LISTING_WON));
 				embed.setColor(extractColor(Settings.DISCORD_COLOR_AUCTION_LISTING_WON.getString()));
 				break;
 			case BIN_LISTING_BOUGHT:
-				embed.setTitle(AuctionLocale.msg(null, "discord.titles.bin listing bought"));
+				embed.setTitle(TranslationManager.string(Translations.DISCORD_TITLE_BIN_LISTING_BOUGHT));
 				embed.setColor(extractColor(Settings.DISCORD_COLOR_BIN_LISTING_BOUGHT.getString()));
 				break;
 			case BID_PLACED:
-				embed.setTitle(AuctionLocale.msg(null, "discord.titles.new bid"));
+				embed.setTitle(TranslationManager.string(Translations.DISCORD_TITLE_NEW_BID));
 				embed.setColor(extractColor(Settings.DISCORD_COLOR_NEW_BID.getString()));
 				break;
 		}

@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.transaction;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 
 public enum TransactionViewFilter {
@@ -35,11 +37,11 @@ public enum TransactionViewFilter {
 	public String getTranslatedType() {
 		switch (this) {
 			case SOLD:
-				return AuctionLocale.msg(null, "transaction_filter.buy_type.sold");
+				return TranslationManager.string(Translations.TRANSACTION_FILTER_BUY_TYPE_SOLD);
 			case BOUGHT:
-				return AuctionLocale.msg(null, "transaction_filter.buy_type.bought");
+				return TranslationManager.string(Translations.TRANSACTION_FILTER_BUY_TYPE_BOUGHT);
 			case ALL:
-				return AuctionLocale.msg(null, "transaction_filter.buy_type.all");
+				return TranslationManager.string(Translations.TRANSACTION_FILTER_BUY_TYPE_ALL);
 			default:
 				return getType();
 		}

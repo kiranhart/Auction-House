@@ -1,7 +1,9 @@
 package ca.tweetzy.auctionhouse.model.manager;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import lombok.NonNull;
@@ -29,7 +31,7 @@ public final class CooldownManager {
 		}
 
 		if (cooldownEndsAt > System.currentTimeMillis()) {
-			AuctionLocale.tell(player, "general.cooldown.command", "time",formatTime(cooldownEndsAt - System.currentTimeMillis()));
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_COOLDOWN_COMMAND, "time",formatTime(cooldownEndsAt - System.currentTimeMillis())));
 			return true;
 		}
 

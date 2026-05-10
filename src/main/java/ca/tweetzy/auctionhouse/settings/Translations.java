@@ -24,7 +24,10 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import lombok.NonNull;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class Translations extends TranslationManager {
 
@@ -1082,6 +1085,40 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry DISCORD_FIELD_BID_AMT_VALUE = create("discord.field.bid amount.value", "%bid_amount%");
 	public static TranslationEntry DISCORD_FIELD_CURRENT_PRICE_NAME = create("discord.field.current auction price.name", "Current Price");
 	public static TranslationEntry DISCORD_FIELD_CURRENT_PRICE_VALUE = create("discord.field.current auction price.value", "%current_price%");
+
+	public static TranslationEntry DISCORD_USER_USERNAME = create("discord.user.username", "Auction House");
+	public static TranslationEntry DISCORD_USER_AVATAR_PICTURE = create("discord.user.avatar picture", "");
+
+	private static final ConcurrentHashMap<String, TranslationEntry> ENTRY_BY_KEY = new ConcurrentHashMap<>();
+
+	static {
+		for (Field field : Translations.class.getFields()) {
+			if (!Modifier.isPublic(field.getModifiers()) || !Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
+			if (!TranslationEntry.class.isAssignableFrom(field.getType())) {
+				continue;
+			}
+			try {
+				TranslationEntry entry = (TranslationEntry) field.get(null);
+				if (entry != null) {
+					ENTRY_BY_KEY.put(entry.getKey().toLowerCase(Locale.ROOT), entry);
+				}
+			} catch (ReflectiveOperationException ignored) {
+			}
+		}
+	}
+
+	/**
+	 * Resolve a translation entry by its registration key (e.g. queued offline notifications).
+	 */
+	public static TranslationEntry entryForKey(@NonNull String key) {
+		TranslationEntry entry = ENTRY_BY_KEY.get(key.toLowerCase(Locale.ROOT));
+		if (entry == null) {
+			throw new IllegalStateException("Missing Translations registry for locale key: " + key);
+		}
+		return entry;
+	}
 
 	public static void init() {
 		new Translations(AuctionHouse.getInstance()).setup(AuctionHouse.getInstance());

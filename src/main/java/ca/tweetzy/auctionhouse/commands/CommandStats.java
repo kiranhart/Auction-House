@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.statistics.GUIStatisticView;
@@ -75,7 +77,7 @@ public class CommandStats extends Command {
 		final Player target = Bukkit.getPlayerExact(context.getArg(0));
 
 		if (target == null) {
-			AuctionLocale.tell(context.getSender(), "general.playernotfound", "player",context.getArg(0));
+			Common.tell(context.getSender(), TranslationManager.string(context.getSender() instanceof Player pl ? pl : null, Translations.GENERAL_PLAYER_NOT_FOUND, "player",context.getArg(0)));
 			return ReturnType.FAIL;
 		}
 
@@ -92,12 +94,12 @@ public class CommandStats extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.stats");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_STATS);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.stats");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_STATS);
 	}
 
 	@Override

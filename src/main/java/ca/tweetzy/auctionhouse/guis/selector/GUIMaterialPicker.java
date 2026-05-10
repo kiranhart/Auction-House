@@ -1,7 +1,8 @@
 package ca.tweetzy.auctionhouse.guis.selector;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -31,7 +32,7 @@ public final class GUIMaterialPicker extends AuctionPagedGUI<ItemStack> {
 	private final Consumer<ItemStack> selected;
 
 	public GUIMaterialPicker(final Gui parent, Player player, final String searchQuery, @NonNull final Consumer<ItemStack> selected) {
-		super(parent, player, AuctionLocale.msg(player, "gui.material picker.title"), 6, new ArrayList<>());
+		super(parent, player, TranslationManager.string(player, Translations.GUI_MATERIAL_PICKER_TITLE), 6, new ArrayList<>());
 		setAcceptsItems(true);
 		setAllowClose(false);
 		this.searchQuery = searchQuery;
@@ -62,8 +63,8 @@ public final class GUIMaterialPicker extends AuctionPagedGUI<ItemStack> {
 			new TitleInput(
 					AuctionHouse.getInstance(),
 					click.player,
-					Common.colorize(AuctionLocale.msg(null, "titles.material search.title")),
-					Common.colorize(AuctionLocale.msg(null, "titles.material search.subtitle"))
+					Common.colorize(TranslationManager.string(Translations.TITLES_MATERIAL_SEARCH_TITLE)),
+					Common.colorize(TranslationManager.string(Translations.TITLES_MATERIAL_SEARCH_SUBTITLE))
 			) {
 				@Override
 				public boolean onResult(String string) {
@@ -92,22 +93,22 @@ public final class GUIMaterialPicker extends AuctionPagedGUI<ItemStack> {
 		}
 		return QuickItem.of(item)
 				.name("&e&l" + ChatUtil.capitalizeFully(item.getType()))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.material picker.items.material.lore"))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_MATERIAL_PICKER_MATERIAL_LORE))
 				.make();
 	}
 
 	protected ItemStack buildSearchButton() {
 		return QuickItem.of(CompMaterial.OAK_SIGN)
-				.name(AuctionLocale.msg(this.player, "gui.material picker.items.search.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.material picker.items.search.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_MATERIAL_PICKER_SEARCH_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_MATERIAL_PICKER_SEARCH_LORE))
 				.make();
 	}
 
 	protected ItemStack buildResetButton() {
 		return QuickItem
 				.of(CompMaterial.LAVA_BUCKET)
-				.name(AuctionLocale.msg(this.player, "gui.material picker.items.reset.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.material picker.items.reset.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_MATERIAL_PICKER_RESET_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_MATERIAL_PICKER_RESET_LORE))
 				.make();
 	}
 

@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
@@ -46,12 +49,12 @@ public final class CommandMiddleware {
 		if (AuctionHouse.getCooldownManager().isInCooldown(player)) return ReturnType.FAIL;
 
 		if (Settings.BLOCKED_WORLDS.getStringList().contains(player.getWorld().getName())) {
-			AuctionLocale.tell(player, "general.disabled in world");
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_DISABLED_IN_WORLD));
 			return ReturnType.FAIL;
 		}
 
 		if (Settings.USE_AUCTION_CHEST_MODE.getBoolean() && !player.hasPermission("auctionhouse.auctionchestbypass")) {
-			AuctionLocale.tell(player, "general.visit auction chest");
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_VISIT_AUCTION_CHEST));
 			return ReturnType.FAIL;
 		}
 
@@ -63,7 +66,7 @@ public final class CommandMiddleware {
 
 	public ReturnType handleAccessHours(@NonNull final Player player) {
 		if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
-			AuctionLocale.tell(player, "general.auction house closed");
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_AUCTION_HOUSE_CLOSED));
 			return ReturnType.FAIL;
 		}
 

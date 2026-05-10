@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
 import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
@@ -82,7 +85,7 @@ public class CommandTransactions extends Command {
 					// try and look for an offline player
 					offlinePlayer = Bukkit.getOfflinePlayer(context.getArg(1));
 					if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
-						AuctionLocale.tell(player, "general.playernotfound", "player",context.getArg(1));
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_PLAYER_NOT_FOUND, "player",context.getArg(1)));
 						return;
 					}
 				}
@@ -104,12 +107,12 @@ public class CommandTransactions extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.transactions");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_TRANSACTIONS);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.transactions");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_TRANSACTIONS);
 	}
 
 	@Override

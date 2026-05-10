@@ -1,7 +1,7 @@
 package ca.tweetzy.auctionhouse.guis.selector;
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
-
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.currency.AbstractCurrency;
 import ca.tweetzy.auctionhouse.api.currency.IconableCurrency;
@@ -28,7 +28,7 @@ public final class GUICurrencyPicker extends AuctionPagedGUI<AbstractCurrency> {
 	private final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency;
 
 	public GUICurrencyPicker(final Gui parent, @NonNull final Player player, @NonNull final BiConsumer<AbstractCurrency, ItemStack> selectedCurrency) {
-		super(parent, player, AuctionLocale.msg(player, "gui.currency picker.title"), 6, AuctionHouse.getCurrencyManager().getPermissionAllowed(player));
+		super(parent, player, TranslationManager.string(player, Translations.GUI_CURRENCY_PICKER_TITLE), 6, AuctionHouse.getCurrencyManager().getPermissionAllowed(player));
 		this.selectedCurrency = selectedCurrency;
 		setAcceptsItems(true);
 		setAllowClose(false);
@@ -43,8 +43,8 @@ public final class GUICurrencyPicker extends AuctionPagedGUI<AbstractCurrency> {
 		if (Settings.CURRENCY_ALLOW_CUSTOM.getBoolean())
 			setButton(getRows() - 1, 4, QuickItem
 					.of(CompMaterial.HOPPER)
-					.name(AuctionLocale.msg(this.player, "gui.currency picker.items.custom currency.name"))
-					.lore(AuctionLocale.msgList(this.player, "gui.currency picker.items.custom currency.lore")).make(), click -> {
+					.name(TranslationManager.string(this.player, Translations.GUI_CURRENCY_PICKER_CUSTOM_NAME))
+					.lore(TranslationManager.list(this.player, Translations.GUI_CURRENCY_PICKER_CUSTOM_LORE)).make(), click -> {
 
 				if (click.clickType == ClickType.RIGHT) {
 					click.manager.showGUI(click.player, new GUIMaterialPicker(null, click.player, null, item -> {
@@ -79,7 +79,7 @@ public final class GUICurrencyPicker extends AuctionPagedGUI<AbstractCurrency> {
 
 		quickItem.name(currency.getCurrencyName().equalsIgnoreCase("vault") ? "&a" + Settings.CURRENCY_VAULT_SYMBOL.getString() : "&e" + currency.getDisplayName());
 
-		quickItem.lore(Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.currency picker.items.currency.lore"), "currency_owning_plugin", currency.getOwningPlugin()));
+		quickItem.lore(Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_CURRENCY_PICKER_CURRENCY_LORE), "currency_owning_plugin", currency.getOwningPlugin()));
 
 		return quickItem.make();
 	}

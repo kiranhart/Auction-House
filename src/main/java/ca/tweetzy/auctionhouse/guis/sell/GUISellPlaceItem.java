@@ -19,7 +19,11 @@
 package ca.tweetzy.auctionhouse.guis.sell;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
+import org.bukkit.entity.Player;
 import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
 import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
@@ -52,7 +56,7 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 	private boolean itemsProcessed = false; // Flag to prevent duplication on close
 
 	public GUISellPlaceItem(@NonNull final AuctionPlayer auctionPlayer, @NonNull final ViewMode viewMode, @NonNull final ListingType listingType) {
-		super(null, auctionPlayer.getPlayer(), viewMode == ViewMode.SINGLE_ITEM ? AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.sell place item.title") : AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.sell place item.bundle title"), viewMode == ViewMode.SINGLE_ITEM ? 4 : 6);
+		super(null, auctionPlayer.getPlayer(), viewMode == ViewMode.SINGLE_ITEM ? TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_SELL_PLACE_ITEM_TITLE) : TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_SELL_PLACE_ITEM_BUNDLE_TITLE), viewMode == ViewMode.SINGLE_ITEM ? 4 : 6);
 		this.auctionPlayer = auctionPlayer;
 		this.viewMode = viewMode;
 		this.listingType = listingType;
@@ -103,8 +107,8 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_SELL_PLACE_ITEM_ITEMS_CONTINUE_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.sell place item.items.continue.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.sell place item.items.continue.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_SELL_PLACE_ITEM_CONTINUE_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_SELL_PLACE_ITEM_CONTINUE_LORE))
 				.make(), click -> {
 
 			final ArrayList<ItemStack> items = gatherSellableItems();
@@ -122,7 +126,7 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 
 			// check if item contains too many bundle/shulker
 			if (totalBundleShulkers > Settings.MAX_SHULKER_IN_BUNDLE.getInt()) {
-				AuctionLocale.tell(player, "general.shulker bundle limit");
+				Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_SHULKER_BUNDLE_LIMIT));
 				return;
 			}
 
@@ -168,12 +172,12 @@ public final class GUISellPlaceItem extends AuctionBaseGUI {
 		if (Settings.ALLOW_ITEM_BUNDLES.getBoolean()) {
 			setButton(getRows() - 1, 8, QuickItem
 					.of(this.viewMode == ViewMode.SINGLE_ITEM ? Settings.GUI_SELL_PLACE_ITEM_ITEMS_SINGLE_ITEM.getString() : Settings.GUI_SELL_PLACE_ITEM_ITEMS_BUNDLE_ITEM.getString())
-					.name(this.viewMode == ViewMode.SINGLE_ITEM ? AuctionLocale.msg(this.player, "gui.sell place item.items.single.name") : AuctionLocale.msg(this.player, "gui.sell place item.items.bundle.name"))
-					.lore(this.player, this.viewMode == ViewMode.SINGLE_ITEM ? AuctionLocale.msgList(this.player, "gui.sell place item.items.single.lore") : AuctionLocale.msgList(this.player, "gui.sell place item.items.bundle.lore"))
+					.name(this.viewMode == ViewMode.SINGLE_ITEM ? TranslationManager.string(this.player, Translations.GUI_SELL_PLACE_ITEM_SINGLE_NAME) : TranslationManager.string(this.player, Translations.GUI_SELL_PLACE_ITEM_BUNDLE_NAME))
+					.lore(this.player, this.viewMode == ViewMode.SINGLE_ITEM ? TranslationManager.list(this.player, Translations.GUI_SELL_PLACE_ITEM_SINGLE_LORE) : TranslationManager.list(this.player, Translations.GUI_SELL_PLACE_ITEM_BUNDLE_LORE))
 					.make(), click -> {
 
 				if (auctionPlayer.isAtBundleLimit()) {
-					AuctionLocale.tell(player, "general.bundlelistlimit");
+					Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BUNDLE_LIST_LIMIT));
 					return;
 				}
 

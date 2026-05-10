@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.api;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
@@ -539,8 +541,8 @@ public class AuctionAPI {
 		Objects.requireNonNull(items, "Cannot create a bundled item with no items");
 		ItemStack item = QuickItem
 				.of(Settings.ITEM_BUNDLE_ITEM.getString())
-				.name(Replacer.replaceVariables(AuctionLocale.msg(null, "auction setting.bundles.name"), "item_name", getItemName(baseItem)))
-				.lore(Replacer.replaceVariables(AuctionLocale.msgList(null, "auction setting.bundles.lore"), "item_name", getItemName(baseItem)))
+				.name(Replacer.replaceVariables(TranslationManager.string(Translations.ITEM_BUNDLE_NAME), "item_name", getItemName(baseItem)))
+				.lore(Replacer.replaceVariables(TranslationManager.list(Translations.ITEM_BUNDLE_LORE), "item_name", getItemName(baseItem)))
 				.make();
 
 		ItemMeta meta = item.getItemMeta();
@@ -793,7 +795,7 @@ public class AuctionAPI {
 			if (player.isOnline())
 				AuctionHouse.getCurrencyManager().deposit(player, auctionedItem.getCurrencyItem(), (int) amount);
 			else
-				AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, auctionedItem.getItem(), AuctionLocale.msg(null, "general.prefix"), PaymentReason.ITEM_SOLD, auctionedItem.getCurrency(), auctionedItem.getCurrencyItem()), null);
+				AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, auctionedItem.getItem(), TranslationManager.string(Translations.GENERAL_PREFIX), PaymentReason.ITEM_SOLD, auctionedItem.getCurrency(), auctionedItem.getCurrencyItem()), null);
 
 		else {
 			final String[] currSplit = auctionedItem.getCurrency().split("/");
@@ -822,7 +824,7 @@ public class AuctionAPI {
 
 		if (Settings.MAKE_BLOCKED_ITEMS_A_WHITELIST.getBoolean()) {
 			if (!Settings.BLOCKED_ITEMS.getStringList().contains(itemStack.getType().name())) {
-				AuctionLocale.tell(player, "general.blockeditem", "item",itemStack.getType().name());
+				Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BLOCKED_ITEM, "item",itemStack.getType().name()));
 				return false;
 			}
 		} else {
@@ -831,14 +833,14 @@ public class AuctionAPI {
 
 			if (split.length == 1) {
 				if (split[0].equals(itemStack.getType().name())) {
-					AuctionLocale.tell(player, "general.blockeditem", "item",itemStack.getType().name());
+					Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BLOCKED_ITEM, "item",itemStack.getType().name()));
 					return false;
 				}
 			}
 
 			if (split.length == 2 && MathUtil.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
 				if (split[0].equals(itemStack.getType().name()) && itemStack.getItemMeta() != null && itemStack.getItemMeta().getCustomModelData() == Integer.parseInt(split[1])) {
-					AuctionLocale.tell(player, "general.blockeditem", "item",itemStack.getType().name());
+					Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BLOCKED_ITEM, "item",itemStack.getType().name()));
 					return false;
 				}
 			}
@@ -848,7 +850,7 @@ public class AuctionAPI {
 		// Check NBT tags
 		for (String nbtTag : Settings.BLOCKED_NBT_TAGS.getStringList()) {
 			if (NBT.get(itemStack, nbt -> (boolean) nbt.hasTag(nbtTag))) {
-				AuctionLocale.tell(player, "general.blockednbttag", "nbttag",nbtTag);
+				Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BLOCKED_NBT_TAG, "nbttag",nbtTag));
 				return false;
 			}
 		}
@@ -859,7 +861,7 @@ public class AuctionAPI {
 		// Check for blocked names and lore
 		for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
 			if (match(s, itemName)) {
-				AuctionLocale.tell(player, "general.blockedname");
+				Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BLOCKED_NAME));
 				meets = false;
 			}
 		}
@@ -868,7 +870,7 @@ public class AuctionAPI {
 			for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
 				for (String line : itemLore) {
 					if (match(s, line)) {
-						AuctionLocale.tell(player, "general.blockedlore");
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BLOCKED_LORE));
 						meets = false;
 					}
 				}
@@ -889,14 +891,14 @@ public class AuctionAPI {
 
 						if (split.length == 1) {
 							if (split[0].contains(shulkerContent.getType().name())) {
-								AuctionLocale.tell(player, "general.blockeditem", "item",shulkerContent.getType().name());
+								Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BLOCKED_ITEM, "item",shulkerContent.getType().name()));
 								return false;
 							}
 						}
 
 						if (split.length == 2 && MathUtil.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
 							if (split[0].contains(shulkerContent.getType().name()) && shulkerContent.getItemMeta() != null && shulkerContent.getItemMeta().getCustomModelData() == Integer.parseInt(split[1])) {
-								AuctionLocale.tell(player, "general.blockeditem", "item",shulkerContent.getType().name());
+								Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BLOCKED_ITEM, "item",shulkerContent.getType().name()));
 								return false;
 							}
 						}
@@ -905,7 +907,7 @@ public class AuctionAPI {
 					// Check NBT tags
 					for (String nbtTag : Settings.BLOCKED_NBT_TAGS.getStringList()) {
 						if (NBT.get(itemStack, nbt -> (boolean) nbt.hasTag(nbtTag))) {
-							AuctionLocale.tell(player, "general.blockednbttag", "nbttag",nbtTag);
+							Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BLOCKED_NBT_TAG, "nbttag",nbtTag));
 							return false;
 						}
 					}
@@ -916,7 +918,7 @@ public class AuctionAPI {
 					// Check for blocked names and lore
 					for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
 						if (match(s, itemNameShulker)) {
-							AuctionLocale.tell(player, "general.blockedname");
+							Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BLOCKED_NAME));
 							meets = false;
 							break;
 						}
@@ -926,7 +928,7 @@ public class AuctionAPI {
 						for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
 							for (String line : itemLoreShulker) {
 								if (match(s, line)) {
-									AuctionLocale.tell(player, "general.blockedlore");
+									Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_BLOCKED_LORE));
 									meets = false;
 									break;
 								}

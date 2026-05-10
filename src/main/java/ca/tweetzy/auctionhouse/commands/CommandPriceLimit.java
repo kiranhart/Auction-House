@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
 import ca.tweetzy.auctionhouse.guis.admin.GUIPriceLimits;
@@ -79,14 +82,14 @@ public class CommandPriceLimit extends Command {
 			ItemStack held = PlayerHelper.getHeldItem(player);
 
 			if (held.getType() == CompMaterial.AIR.get()) {
-				AuctionLocale.tell(player, "general.min item price air");
+				Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_MIN_ITEM_PRICE_AIR));
 				return ReturnType.FAIL;
 			}
 
 			ListingPriceLimit listingPriceLimit = AuctionHouse.getPriceLimitManager().getPriceLimit(held.clone());
 
 			if (!isNumeric(context.getArg(2))) {
-				AuctionLocale.tell(player, "general.notanumber", "value",context.getArg(2));
+				Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",context.getArg(2)));
 				return ReturnType.FAIL;
 			}
 
@@ -128,14 +131,14 @@ public class CommandPriceLimit extends Command {
 				// run store
 				listingPriceLimit.store(stored -> {
 					if (stored != null) {
-						AuctionLocale.tell(player, "pricing.limit.added price limit");
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.PRICING_LIMIT_ADDED_PRICE_LIMIT));
 					}
 				});
 			} else {
 				// run update
 				listingPriceLimit.sync(success -> {
 					if (success) {
-						AuctionLocale.tell(player, "pricing.limit.updated price limit");
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.PRICING_LIMIT_UPDATED_PRICE_LIMIT));
 					}
 				});
 			}
@@ -151,12 +154,12 @@ public class CommandPriceLimit extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.price limit");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_PRICE_LIMIT);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.price limit");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_PRICE_LIMIT);
 	}
 
 	@Override

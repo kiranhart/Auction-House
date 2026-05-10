@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.guis.core;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
+import org.bukkit.entity.Player;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -53,7 +56,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 	private final AuctionPlayer auctionPlayer;
 
 	public GUIActiveAuctions(AuctionPlayer auctionPlayer) {
-		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.active auctions.title"), 6, 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_ACTIVE_AUCTIONS_TITLE), 6, 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
 		this.auctionPlayer = auctionPlayer;
 
 		if (Settings.AUTO_REFRESH_ACTIVE_AUCTION_PAGES.getBoolean()) {
@@ -90,7 +93,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 				}
 
 				if (Settings.SELLERS_MUST_WAIT_FOR_TIME_LIMIT_AFTER_BID.getBoolean() && item.containsValidBid()) {
-					AuctionLocale.tell(click.player, "general.cannot cancel item with bid");
+					Common.tell(click.player, TranslationManager.string(click.player instanceof Player pl ? pl : null, Translations.GENERAL_CANNOT_CANCEL_ITEM_WITH_BID));
 					return;
 				}
 
@@ -106,7 +109,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 										oldBidder.getUniqueId(),
 										item.getCurrentPrice(),
 										item.getItem(),
-										AuctionLocale.msg(null, "general.prefix"),
+										TranslationManager.string(Translations.GENERAL_PREFIX),
 										PaymentReason.BID_RETURNED,
 										item.getCurrency(),
 										item.getCurrencyItem()
@@ -115,7 +118,7 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 								AuctionHouse.getCurrencyManager().deposit(oldBidder, item.getCurrentPrice());
 
 							if (oldBidder.isOnline())
-								AuctionLocale.tell(oldBidder.getPlayer(), "pricing.moneyadd", "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, item.getCurrency().split("/")[0], item.getCurrency().split("/")[1]), item.getCurrency(), item.getCurrencyItem()),"price",item.getFormattedCurrentPrice());
+								Common.tell(oldBidder.getPlayer(), TranslationManager.string(oldBidder.getPlayer() instanceof Player pl ? pl : null, Translations.PRICING_MONEY_ADD, "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, item.getCurrency().split("/")[0], item.getCurrency().split("/")[1]), item.getCurrency(), item.getCurrencyItem()),"price",item.getFormattedCurrentPrice()));
 						}
 
 						draw();
@@ -139,18 +142,18 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 			case SHIFT_LEFT:
 				if (!Settings.LISTING_PRIORITY_ENABLED.getBoolean()) return;
 				if (!Settings.LISTING_PRIORITY_TIME_ALLOW_MULTI_BOOST.getBoolean() && item.isListingPriorityActive()) {
-					AuctionLocale.tell(click.player, "general.priority boost.already boosted");
+					Common.tell(click.player, TranslationManager.string(click.player instanceof Player pl ? pl : null, Translations.GENERAL_PRIORITY_BOOST_ALREADY_BOOSTED));
 					return;
 				}
 
 				// check bal
 				if (!AuctionHouse.getEconomy().has(click.player, Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble())) {
-					AuctionLocale.tell(click.player, "general.notenoughmoney");
+					Common.tell(click.player, TranslationManager.string(click.player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_ENOUGH_MONEY));
 					return;
 				}
 
 				AuctionHouse.getEconomy().withdrawPlayer(click.player, Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble());
-				AuctionLocale.tell(click.player, "pricing.moneyremove", "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(click.player, item.getCurrency().split("/")[0], item.getCurrency().split("/")[1]), item.getCurrency(), item.getCurrencyItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble(), item.getCurrency(), item.getCurrencyItem()));
+				Common.tell(click.player, TranslationManager.string(click.player instanceof Player pl ? pl : null, Translations.PRICING_MONEY_REMOVE, "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(click.player, item.getCurrency().split("/")[0], item.getCurrency().split("/")[1]), item.getCurrency(), item.getCurrencyItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.LISTING_PRIORITY_TIME_COST_PER_BOOST.getDouble(), item.getCurrency(), item.getCurrencyItem())));
 
 				long newBoostTime = item.getPriorityExpiresAt() + (System.currentTimeMillis() + (1000L * Settings.LISTING_PRIORITY_TIME_PER_BOOST.getInt()));
 
@@ -179,8 +182,8 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 		setButton(5, 1, QuickItem
 				.of(Settings.GUI_ACTIVE_AUCTIONS_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.active auctions.cancel all.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.active auctions.cancel all.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_ACTIVE_AUCTIONS_CANCEL_ALL_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_ACTIVE_AUCTIONS_CANCEL_ALL_LORE))
 				.make(), e -> {
 
 			if (Settings.ASK_FOR_CANCEL_CONFIRM_ON_ALL_ITEMS.getBoolean()) {
@@ -191,8 +194,8 @@ public class GUIActiveAuctions extends AuctionUpdatingPagedGUI<AuctionedItem> {
 						20,
 						20 * 5,
 						20,
-						Common.colorize(AuctionLocale.msg(null, "titles.end all confirm.title")),
-						Common.colorize(AuctionLocale.msg(null, "titles.end all confirm.subtitle"))
+						Common.colorize(TranslationManager.string(Translations.TITLES_END_ALL_CONFIRM_TITLE)),
+						Common.colorize(TranslationManager.string(Translations.TITLES_END_ALL_CONFIRM_SUBTITLE))
 				);
 
 				// reset the request time for cancel

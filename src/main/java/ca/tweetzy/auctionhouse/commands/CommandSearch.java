@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
@@ -78,12 +80,12 @@ public class CommandSearch extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.search");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_SEARCH);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.search");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_SEARCH);
 	}
 
 	@Override

@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.guis.transaction;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
@@ -46,7 +49,7 @@ public final class GUITransactionType extends AuctionBaseGUI {
 
 
 	public GUITransactionType(Player player) {
-		super(new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())), player, AuctionLocale.msg(player, "gui.transactions type.title"), 4);
+		super(new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())), player, TranslationManager.string(player, Translations.GUI_TRANSACTIONS_TYPE_TITLE), 4);
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_TRANSACTIONS_TYPE_BG_ITEM.getString()).make()));
 		draw();
 	}
@@ -59,12 +62,12 @@ public final class GUITransactionType extends AuctionBaseGUI {
 
 		setButton(11, QuickItem
 				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.transactions type.items.all transactions.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.transactions type.items.all transactions.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_TRANSACTIONS_TYPE_ALL_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_TRANSACTIONS_TYPE_ALL_LORE))
 				.make(), e -> {
 
 			if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !e.player.hasPermission("auctionhouse.transactions.viewall")) {
-				AuctionLocale.tell(e.player, "commands.no_permission");
+				Common.tell(e.player, TranslationManager.string(e.player instanceof Player pl ? pl : null, Translations.COMMANDS_NO_PERMISSION));
 				return;
 			}
 
@@ -73,26 +76,26 @@ public final class GUITransactionType extends AuctionBaseGUI {
 
 		setButton(13, QuickItem
 				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.transactions type.items.self transactions.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.transactions type.items.self transactions.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_TRANSACTIONS_TYPE_SELF_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_TRANSACTIONS_TYPE_SELF_LORE))
 				.make(), e -> e.manager.showGUI(e.player, new GUITransactionList(e.player, false)));
 
 		setButton(15, QuickItem
 				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_REQUEST_TRANSACTIONS_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.transactions type.items.requests transactions.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.transactions type.items.requests transactions.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_TRANSACTIONS_TYPE_REQUEST_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_TRANSACTIONS_TYPE_REQUEST_LORE))
 				.make(), e -> e.manager.showGUI(e.player, new GUIRequestTransactionList(e.player, false)));
 
 		if (player.isOp() || player.hasPermission("auctionhouse.admin")) {
 
 			setButton(3, 8, QuickItem
 					.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_ITEM.getString())
-					.name(AuctionLocale.msg(this.player, "gui.transactions type.items.delete transactions.name"))
-					.lore(this.player, AuctionLocale.msgList(this.player, "gui.transactions type.items.delete transactions.lore"))
+					.name(TranslationManager.string(this.player, Translations.GUI_TRANSACTIONS_TYPE_DELETE_NAME))
+					.lore(this.player, TranslationManager.list(this.player, Translations.GUI_TRANSACTIONS_TYPE_DELETE_LORE))
 					.make(), e -> {
 
 			// TitleInput automatically handles allowClose and inventory closing
-			new TitleInput(AuctionHouse.getInstance(), player, AuctionLocale.msg(null, "titles.enter deletion range.title"), AuctionLocale.msg(null, "titles.enter deletion range.subtitle")) {
+			new TitleInput(AuctionHouse.getInstance(), player, TranslationManager.string(Translations.TITLES_ENTER_DELETION_RANGE_TITLE), TranslationManager.string(Translations.TITLES_ENTER_DELETION_RANGE_SUBTITLE)) {
 
 					@Override
 					public void onExit(Player player) {
@@ -105,19 +108,19 @@ public final class GUITransactionType extends AuctionBaseGUI {
 
 						final String[] parts = ChatColor.stripColor(string).split(" ");
 						if (parts.length < 2) {
-							AuctionLocale.tell(player, "general.invalidrange");
+							Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_INVALID_RANGE));
 							return false;
 						}
 
 						if (!MathUtil.isInt(parts[0]) && Arrays.asList("second", "minute", "hour", "day", "week", "month", "year").contains(parts[1].toLowerCase())) {
-							AuctionLocale.tell(player, "prompts.enter deletion range");
+							Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.PROMPTS_ENTER_DELETION_RANGE));
 							return false;
 						}
 
 						final long ticks = AuctionAPI.toTicks(string);
 
 						AuctionHouse.newChain().async(() -> {
-							AuctionLocale.tell(e.player, "general.transaction delete begin");
+							Common.tell(e.player, TranslationManager.string(e.player instanceof Player pl ? pl : null, Translations.GENERAL_TRANSACTION_DELETE_BEGIN));
 							List<UUID> toRemove = new ArrayList<>();
 
 							Set<Map.Entry<UUID, Transaction>> entrySet = instance.getTransactionManager().getTransactions().entrySet();
@@ -134,7 +137,7 @@ public final class GUITransactionType extends AuctionBaseGUI {
 							}
 
 							instance.getDataManager().deleteTransactions(toRemove);
-							AuctionLocale.tell(e.player, "general.deleted transactions", "deleted_transactions",toRemove.size());
+							Common.tell(e.player, TranslationManager.string(e.player instanceof Player pl ? pl : null, Translations.GENERAL_DELETED_TRANSACTIONS, "deleted_transactions",toRemove.size()));
 						}).execute();
 						return true;
 					}

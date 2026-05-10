@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
 import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
@@ -67,7 +70,7 @@ public class CommandUnban extends Command {
 		if (target == null) {
 			offlinePlayer = Bukkit.getOfflinePlayer(context.getArg(0));
 			if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
-				AuctionLocale.tell(context.getSender(), "general.playernotfound", "player",context.getArg(0));
+				Common.tell(context.getSender(), TranslationManager.string(context.getSender() instanceof Player pl ? pl : null, Translations.GENERAL_PLAYER_NOT_FOUND, "player",context.getArg(0)));
 				return ReturnType.FAIL;
 			}
 		}
@@ -75,14 +78,14 @@ public class CommandUnban extends Command {
 		UUID toUnBan = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
 
 		if (!AuctionHouse.getBanManager().getManagerContent().containsKey(toUnBan)) {
-			AuctionLocale.tell(context.getSender(), "ban.user not banned", "player_name",context.getArg(0));
+			Common.tell(context.getSender(), TranslationManager.string(context.getSender() instanceof Player pl ? pl : null, Translations.BAN_USER_NOT_BANNED, "player_name",context.getArg(0)));
 			return ReturnType.FAIL;
 		}
 
 		final Ban ban = AuctionHouse.getBanManager().get(toUnBan);
 		ban.unStore(result -> {
 			if (result == SynchronizeResult.SUCCESS) {
-				AuctionLocale.tell(context.getSender(), "ban.user unbanned", "player_name",context.getArg(0));
+				Common.tell(context.getSender(), TranslationManager.string(context.getSender() instanceof Player pl ? pl : null, Translations.BAN_USER_UNBANNED, "player_name",context.getArg(0)));
 			}
 		});
 
@@ -108,11 +111,11 @@ public class CommandUnban extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.unban");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_UNBAN);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.unban");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_UNBAN);
 	}
 }

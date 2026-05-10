@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.guis.core;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
@@ -50,7 +52,7 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 	private Long lastClicked = null;
 
 	public GUIPaymentCollection(Gui parent, AuctionPlayer auctionPlayer) {
-		super(parent, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.payment collection.title"), 6, AuctionHouse.getPaymentsManager().getPaymentsByPlayer(auctionPlayer.getPlayer()));
+		super(parent, auctionPlayer.getPlayer(), TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_PAYMENT_COLLECTION_TITLE), 6, AuctionHouse.getPaymentsManager().getPaymentsByPlayer(auctionPlayer.getPlayer()));
 		this.auctionPlayer = auctionPlayer;
 		draw();
 	}
@@ -69,8 +71,8 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 	protected ItemStack makeDisplayItem(AuctionPayment payment) {
 		return QuickItem
 				.of(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_ITEM.getString())
-				.name(Replacer.replaceVariables(AuctionLocale.msg(this.player, "gui.payment collection.payment.name"), "payment_amount", AuctionHouse.getAPI().getNumberAsCurrency(payment.getAmount(), false)))
-				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.payment collection.payment.lore"),
+				.name(Replacer.replaceVariables(TranslationManager.string(this.player, Translations.GUI_PAYMENT_COLLECTION_PAYMENT_NAME), "payment_amount", AuctionHouse.getAPI().getNumberAsCurrency(payment.getAmount(), false)))
+				.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_PAYMENT_COLLECTION_PAYMENT_LORE),
 						"item_name", AuctionAPI.getInstance().getItemName(payment.getItem()),
 						"from_name", payment.getFromName(),
 						"payment_reason", payment.getReason().getTranslation()
@@ -100,8 +102,8 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 		applyBackExit();
 
 		setButton(5, 1, QuickItem.of(Settings.GUI_PAYMENT_COLLECTION_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.payment collection.claim all.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.payment collection.claim all.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_PAYMENT_COLLECTION_CLAIM_ALL_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_PAYMENT_COLLECTION_CLAIM_ALL_LORE))
 				.make(), e -> {
 
 			if (this.lastClicked == null) {

@@ -19,9 +19,11 @@
 package ca.tweetzy.auctionhouse.model.manager;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.auction.QueuedNotification;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.auctionhouse.settings.Translations;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.flight.utils.Common;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.NonNull;
@@ -56,10 +58,16 @@ public final class NotificationManager {
 			Bukkit.getScheduler().runTask(AuctionHouse.getInstance(), () -> {
 				for (QueuedNotification n : toDeliver) {
 					Map<String, String> placeholders = parsePlaceholders(n.getPlaceholderDataJson());
-					AuctionLocale.tell(player, n.getMessageKey(), placeholders);
+					Object[] pairs = new Object[placeholders.size() * 2];
+					int ix = 0;
+					for (Map.Entry<String, String> e : placeholders.entrySet()) {
+						pairs[ix++] = e.getKey();
+						pairs[ix++] = e.getValue();
+					}
+					Common.tell(player, TranslationManager.string(player, Translations.entryForKey(n.getMessageKey()), pairs));
 				}
 				if (list.size() > MAX_DELIVER_PER_JOIN) {
-					AuctionLocale.tell(player, "general.offline notifications more", "count",String.valueOf(list.size() - MAX_DELIVER_PER_JOIN));
+					Common.tell(player, TranslationManager.string(player, Translations.GENERAL_OFFLINE_NOTIFICATIONS_MORE, "count",String.valueOf(list.size() - MAX_DELIVER_PER_JOIN)));
 				}
 				AuctionHouse.getDataManager().deleteNotifications(toDelete, null);
 			});

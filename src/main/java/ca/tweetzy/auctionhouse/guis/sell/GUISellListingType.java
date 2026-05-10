@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.guis.sell;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.ListingType;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
@@ -36,7 +38,7 @@ public final class GUISellListingType extends AuctionBaseGUI {
 	private final Consumer<ListingType> listingType;
 
 	public GUISellListingType(@NonNull final AuctionPlayer auctionPlayer, final Consumer<ListingType> listingType) {
-		super(null, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.sell listing type.title"), 3);
+		super(null, auctionPlayer.getPlayer(), TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_SELL_LISTING_TYPE_TITLE), 3);
 		this.auctionPlayer = auctionPlayer;
 		this.listingType = listingType;
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_SELL_LISTING_TYPE_BG_ITEM.getString()).make()));
@@ -58,16 +60,16 @@ public final class GUISellListingType extends AuctionBaseGUI {
 
 		setButton(getRows() - 1, 0, QuickItem
 				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_RETURN_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.sell listing type.items.return.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.sell listing type.items.return.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_SELL_LISTING_TYPE_RETURN_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_SELL_LISTING_TYPE_RETURN_LORE))
 				.make(), click -> click.manager.showGUI(click.player, new GUIAuctionHouse(this.auctionPlayer)));
 	}
 
 	private void drawAuctionButton(int col) {
 		setButton(1, col, QuickItem
 				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_AUCTION_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.sell listing type.items.auction.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.sell listing type.items.auction.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_SELL_LISTING_TYPE_AUCTION_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_SELL_LISTING_TYPE_AUCTION_LORE))
 				.make(), click -> {
 
 			if (this.listingType != null)
@@ -78,8 +80,8 @@ public final class GUISellListingType extends AuctionBaseGUI {
 	private void drawBinButton(int col) {
 		setButton(1, col, QuickItem
 				.of(Settings.GUI_SELL_LISTING_TYPE_ITEMS_BIN_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.sell listing type.items.bin.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.sell listing type.items.bin.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_SELL_LISTING_TYPE_BIN_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_SELL_LISTING_TYPE_BIN_LORE))
 				.make(), click -> {
 
 			if (this.listingType != null)

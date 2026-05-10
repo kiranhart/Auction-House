@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse;
 
+
+import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.auctionhouse.api.AuctionHouseAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.commands.*;
@@ -27,7 +29,6 @@ import ca.tweetzy.auctionhouse.database.migrations.v2.*;
 import ca.tweetzy.auctionhouse.helpers.UpdateChecker;
 import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.impl.AuctionAPI;
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.listeners.*;
 import ca.tweetzy.auctionhouse.managers.*;
 import ca.tweetzy.auctionhouse.model.manager.*;
@@ -133,8 +134,8 @@ public class AuctionHouse extends FlightPlugin {
 		initializeBStats();
 
 		Translations.init();
-		Common.setPrefix(Common.colorize(AuctionLocale.msg(null, "general.prefix")));
-		Common.setPluginName(Common.colorize(AuctionLocale.msg(null, "general.plugin name")));
+		Common.setPrefix(Common.colorize(TranslationManager.string(Translations.GENERAL_PREFIX)));
+		Common.setPluginName(Common.colorize(TranslationManager.string(Translations.GENERAL_PLUGIN_NAME)));
 
 		// Setup the database if enabled
 		this.databaseConnector = Settings.DATABASE_USE.getBoolean() ? new MySQLConnector(
@@ -227,7 +228,7 @@ public class AuctionHouse extends FlightPlugin {
 		this.auctionPlayerManager.loadPlayers();
 		this.watchlistManager.load();
 
-		this.commandManager.setSyntaxErrorMessages(AuctionLocale.msgList(null, "command info.error information"));
+		this.commandManager.setSyntaxErrorMessages(TranslationManager.list(Translations.COMMAND_INFO_ERROR_INFORMATION));
 
 		this.commandManager.registerCommandDynamically(new CommandAuctionHouse()).addSubCommands(
 				new CommandSell(),

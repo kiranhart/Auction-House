@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.tasks;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
 import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
@@ -112,7 +114,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 			if (!auctionItem.isExpired()) {
 				if (Settings.BROADCAST_AUCTION_ENDING.getBoolean()) {
 					if (timeRemaining <= Settings.BROADCAST_AUCTION_ENDING_AT_TIME.getInt() && timeRemaining % 10 == 0 && timeRemaining != 0) {
-						Bukkit.getOnlinePlayers().forEach(player -> AuctionLocale.tell(player, "auction.broadcast.ending", "item",AuctionAPI.getInstance().getItemName(itemStack),"seconds",timeRemaining));
+						Bukkit.getOnlinePlayers().forEach(player -> Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.AUCTION_BROADCAST_ENDING, "item",AuctionAPI.getInstance().getItemName(itemStack),"seconds",timeRemaining)));
 					}
 				}
 			}
@@ -174,8 +176,8 @@ public class TickAuctionsTask extends BukkitRunnable {
 				String buyerName = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder()).getName() != null ? Bukkit.getOfflinePlayer(auctionItem.getHighestBidder()).getName() : "Unknown";
 
 				if (auctionOwner.isOnline() && auctionOwner.getPlayer() != null) {
-					AuctionLocale.tell(auctionOwner.getPlayer(), "auction.itemsold", "item",itemName,"amount",String.valueOf(itemStack.clone().getAmount()),"price",sellerPriceStr,"buyer_name",buyerName,"buyer_displayname",AuctionAPI.getInstance().getDisplayName(Bukkit.getOfflinePlayer(auctionItem.getHighestBidder())));
-					AuctionLocale.tell(auctionOwner.getPlayer(), "pricing.moneyadd", "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(auctionOwner, auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",sellerPriceStr);
+					Common.tell(auctionOwner.getPlayer(), TranslationManager.string(auctionOwner.getPlayer() instanceof Player pl ? pl : null, Translations.AUCTION_ITEM_SOLD, "item",itemName,"amount",String.valueOf(itemStack.clone().getAmount()),"price",sellerPriceStr,"buyer_name",buyerName,"buyer_displayname",AuctionAPI.getInstance().getDisplayName(Bukkit.getOfflinePlayer(auctionItem.getHighestBidder()))));
+					Common.tell(auctionOwner.getPlayer(), TranslationManager.string(auctionOwner.getPlayer() instanceof Player pl ? pl : null, Translations.PRICING_MONEY_ADD, "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(auctionOwner, auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",sellerPriceStr));
 				} else {
 					java.util.Map<String, String> itemsoldPlaceholders = new java.util.HashMap<>();
 					itemsoldPlaceholders.put("item", itemName);
@@ -191,10 +193,10 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 				if (auctionWinner.isOnline()) {
 					assert auctionWinner.getPlayer() != null;
-					AuctionLocale.tell(auctionWinner.getPlayer(), "auction.bidwon", "item",AuctionAPI.getInstance().getItemName(itemStack),"amount",itemStack.getAmount(),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
+					Common.tell(auctionWinner.getPlayer(), TranslationManager.string(auctionWinner.getPlayer() instanceof Player pl ? pl : null, Translations.AUCTION_BID_WON, "item",AuctionAPI.getInstance().getItemName(itemStack),"amount",itemStack.getAmount(),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem())));
 
 					if (!Settings.BIDDING_TAKES_MONEY.getBoolean())
-						AuctionLocale.tell(auctionWinner.getPlayer(), "pricing.moneyremove", "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(auctionWinner.getPlayer(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
+						Common.tell(auctionWinner.getPlayer(), TranslationManager.string(auctionWinner.getPlayer() instanceof Player pl ? pl : null, Translations.PRICING_MONEY_REMOVE, "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(auctionWinner.getPlayer(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem())));
 
 					// remove the dupe tracking
 					NBT.modify(itemStack, nbt -> {

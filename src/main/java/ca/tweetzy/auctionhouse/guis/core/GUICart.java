@@ -1,7 +1,10 @@
 package ca.tweetzy.auctionhouse.guis.core;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
+import org.bukkit.entity.Player;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -24,7 +27,7 @@ public final class GUICart extends AuctionUpdatingPagedGUI<AuctionedItem> {
 	private final AuctionPlayer auctionPlayer;
 
 	public GUICart(Gui parent, @NonNull final AuctionPlayer auctionPlayer) {
-		super(parent, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.cart.title"), Settings.GUI_CART_ROWS.getInt(), 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
+		super(parent, auctionPlayer.getPlayer(), TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_CART_TITLE), Settings.GUI_CART_ROWS.getInt(), 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
 		this.auctionPlayer = auctionPlayer;
 
 		if (!Bukkit.getOfflinePlayer(auctionPlayer.getUuid()).isOnline()) return;
@@ -56,12 +59,12 @@ public final class GUICart extends AuctionUpdatingPagedGUI<AuctionedItem> {
 		// checkout button
 		setButton(Settings.GUI_CART_ITEMS_CHECKOUT_SLOT.getInt(), QuickItem
 				.of(Settings.GUI_CART_ITEMS_CHECKOUT_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.cart.items.checkout.name"))
-				.lore(AuctionLocale.msgList(this.player, "gui.cart.items.checkout.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_CART_CHECKOUT_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_CART_CHECKOUT_LORE))
 				.make(), click -> {
 
 			if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
-				AuctionLocale.tell(player, "general.auction house closed");
+				Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_AUCTION_HOUSE_CLOSED));
 				return;
 			}
 

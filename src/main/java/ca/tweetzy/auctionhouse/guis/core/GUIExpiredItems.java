@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.guis.core;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -58,7 +60,7 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 
 
 	public GUIExpiredItems(Gui parent, AuctionPlayer auctionPlayer, Long lastClicked) {
-		super(parent, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.expired auctions.title"), 6, new ArrayList<>(auctionPlayer.getItems(true)));
+		super(parent, auctionPlayer.getPlayer(), TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_EXPIRED_AUCTIONS_TITLE), 6, new ArrayList<>(auctionPlayer.getItems(true)));
 		this.parent = parent;
 		this.auctionPlayer = auctionPlayer;
 		this.lastClicked = lastClicked;
@@ -186,14 +188,14 @@ public class GUIExpiredItems extends AuctionPagedGUI<AuctionedItem> {
 		if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean()) {
 			setButton(5, 2, QuickItem
 					.of(Settings.GUI_EXPIRED_AUCTIONS_PAYMENTS_ITEM.getString())
-					.name(AuctionLocale.msg(this.player, "gui.expired auctions.collect payments.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.expired auctions.collect payments.lore"))
+					.name(TranslationManager.string(this.player, Translations.GUI_EXPIRED_AUCTIONS_COLLECT_PAYMENTS_NAME)).lore(this.player, TranslationManager.list(this.player, Translations.GUI_EXPIRED_AUCTIONS_COLLECT_PAYMENTS_LORE))
 					.make(), e -> e.manager.showGUI(e.player, new GUIPaymentCollection(this, this.auctionPlayer)));
 		}
 
 		setButton(5, 1, QuickItem
 				.of(Settings.GUI_EXPIRED_AUCTIONS_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.expired auctions.cancel all.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.expired auctions.cancel all.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_EXPIRED_AUCTIONS_CLAIM_ALL_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_EXPIRED_AUCTIONS_CLAIM_ALL_LORE))
 				.make(), e -> {
 
 			if (AuctionHouse.getBanManager().isStillBanned(e.player, BanType.EVERYTHING, BanType.ITEM_COLLECTION)) return;

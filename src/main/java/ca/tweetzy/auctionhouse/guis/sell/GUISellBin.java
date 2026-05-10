@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.guis.sell;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
 import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
@@ -64,7 +66,7 @@ public final class GUISellBin extends AuctionBaseGUI {
 	private ItemStack currencyItem;
 
 	public GUISellBin(@NonNull final AuctionPlayer auctionPlayer, final double listingPrice, final long listingTime, boolean allowPartialBuy, String currency, ItemStack currencyItem) {
-		super(null, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.sell bin item.title"), 6);
+		super(null, auctionPlayer.getPlayer(), TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_SELL_BIN_TITLE), 6);
 		this.auctionPlayer = auctionPlayer;
 		this.listingPrice = listingPrice;
 		this.listingTime = listingTime;
@@ -107,8 +109,8 @@ public final class GUISellBin extends AuctionBaseGUI {
 		if (Settings.CURRENCY_ALLOW_PICK.getBoolean())
 			setButton(getRows() - 1, 8, QuickItem
 					.of(Settings.GUI_SELL_ITEM_ITEM_CURRENCY_ITEM.getString())
-					.name(AuctionLocale.msg(this.player, "gui.global items.currency.name"))
-					.lore(this.player, AuctionLocale.msgList(this.player, "gui.global items.currency.lore"))
+					.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_CURRENCY_NAME))
+					.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_CURRENCY_LORE))
 					.make(), click -> click.manager.showGUI(click.player, new GUICurrencyPicker(this, click.player, (currency, itemCurrency) -> {
 
 				this.currency = currency.getStoreableName();
@@ -125,8 +127,8 @@ public final class GUISellBin extends AuctionBaseGUI {
 
 			setButton(3, 1, QuickItem
 					.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_TIME_ITEM.getString())
-					.name(AuctionLocale.msg(this.player, "gui.sell bin item.items.time.name"))
-					.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.sell bin item.items.time.lore"),
+					.name(TranslationManager.string(this.player, Translations.GUI_SELL_BIN_TIME_NAME))
+					.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_SELL_BIN_TIME_LORE),
 							"remaining_days", times[0],
 							"remaining_hours", times[1],
 							"remaining_minutes", times[2],
@@ -134,7 +136,7 @@ public final class GUISellBin extends AuctionBaseGUI {
 					)).make(), click -> {
 
 			// TitleInput automatically handles allowClose and inventory closing
-			new TitleInput(AuctionHouse.getInstance(), click.player, Common.colorize(AuctionLocale.msg(null, "titles.listing time.title")), Common.colorize(AuctionLocale.msg(null, "titles.listing time.subtitle")), Common.colorize(AuctionLocale.msg(null, "titles.listing time.actionbar"))) {
+			new TitleInput(AuctionHouse.getInstance(), click.player, Common.colorize(TranslationManager.string(Translations.TITLES_LISTING_TIME_TITLE)), Common.colorize(TranslationManager.string(Translations.TITLES_LISTING_TIME_SUBTITLE)), Common.colorize(TranslationManager.string(Translations.TITLES_LISTING_TIME_ACTIONBAR))) {
 
 
 					@Override
@@ -166,12 +168,12 @@ public final class GUISellBin extends AuctionBaseGUI {
 
 		setButton(3, 4, QuickItem
 				.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_PRICE_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.sell bin item.items.price.name"))
-				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.sell bin item.items.price.lore"), "listing_bin_price", AuctionHouse.getAPI().getNumberAsCurrency(listingPrice)))
+				.name(TranslationManager.string(this.player, Translations.GUI_SELL_BIN_PRICE_NAME))
+				.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_SELL_BIN_PRICE_LORE), "listing_bin_price", AuctionHouse.getAPI().getNumberAsCurrency(listingPrice)))
 				.make(), click -> {
 
 		// TitleInput automatically handles allowClose and inventory closing
-		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionLocale.msg(null, "titles.buy now price.title"), AuctionLocale.msg(null, "titles.buy now price.subtitle")) {
+		new TitleInput(AuctionHouse.getInstance(), click.player, TranslationManager.string(Translations.TITLES_BUY_NOW_PRICE_TITLE), TranslationManager.string(Translations.TITLES_BUY_NOW_PRICE_SUBTITLE)) {
 
 				@Override
 				public void onExit(Player player) {
@@ -183,13 +185,13 @@ public final class GUISellBin extends AuctionBaseGUI {
 					string = ChatColor.stripColor(string);
 
 					if (!MathUtil.isDouble(string)) {
-						AuctionLocale.tell(player, "general.notanumber", "value",string);
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 						return false;
 					}
 
 					double listingAmount = Double.parseDouble(string);
 					if (Double.isNaN(listingAmount)) {
-						AuctionLocale.tell(player, "general.notanumber", "value",string);
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 						return false;
 					}
 
@@ -209,8 +211,8 @@ public final class GUISellBin extends AuctionBaseGUI {
 
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_CONTINUE_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.sell bin item.items.confirm.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.sell bin item.items.confirm.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_SELL_BIN_CONFIRM_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_SELL_BIN_CONFIRM_LORE))
 				.make(), click -> {
 
 			if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, this.auctionPlayer.getItemBeingListed())) return;
@@ -243,8 +245,8 @@ public final class GUISellBin extends AuctionBaseGUI {
 
 			setItem(getRows() - 1, 2, QuickItem
 					.of(Settings.GUI_SELL_BIN_ITEM_ITEMS_FEE_ITEM.getString())
-					.name(AuctionLocale.msg(this.player, "gui.sell bin item.items.fee.name"))
-					.lore(Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.sell bin item.items.fee.lore"),
+					.name(TranslationManager.string(this.player, Translations.GUI_SELL_BIN_FEE_NAME))
+					.lore(Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_SELL_BIN_FEE_LORE),
 							"listing_fee", Settings.TAX_LISTING_FEE_PERCENTAGE.getBoolean() ? Settings.TAX_LISTING_FEE.getDouble() + "%" : Settings.TAX_LISTING_FEE.getDouble(),
 							"listing_fee_total", fee
 					))
@@ -273,8 +275,8 @@ public final class GUISellBin extends AuctionBaseGUI {
 		if (Settings.ALLOW_PURCHASE_OF_SPECIFIC_QUANTITIES.getBoolean()) {
 			setButton(3, 7, QuickItem
 					.of(this.allowPartialBuy ? Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_ENABLED_ITEM.getString() : Settings.GUI_SELL_BIN_ITEM_ITEMS_PARTIAL_DISABLED_ITEM.getString())
-					.name(this.allowPartialBuy ? AuctionLocale.msg(this.player, "gui.sell bin item.items.partial enabled.name") : AuctionLocale.msg(this.player, "gui.sell bin item.items.partial disabled.name"))
-					.lore(this.player, this.allowPartialBuy ? AuctionLocale.msgList(this.player, "gui.sell bin item.items.partial enabled.lore") : AuctionLocale.msgList(this.player, "gui.sell bin item.items.partial disabled.lore"))
+					.name(this.allowPartialBuy ? TranslationManager.string(this.player, Translations.GUI_SELL_BIN_PARTIAL_ENABLED_NAME) : TranslationManager.string(this.player, Translations.GUI_SELL_BIN_PARTIAL_DISABLED_NAME))
+					.lore(this.player, this.allowPartialBuy ? TranslationManager.list(this.player, Translations.GUI_SELL_BIN_PARTIAL_ENABLED_LORE) : TranslationManager.list(this.player, Translations.GUI_SELL_BIN_PARTIAL_DISABLED_LORE))
 					.make(), e -> {
 
 				this.allowPartialBuy = !allowPartialBuy;

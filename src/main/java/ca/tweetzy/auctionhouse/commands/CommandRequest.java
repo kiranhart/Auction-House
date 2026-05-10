@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
@@ -85,7 +87,7 @@ public class CommandRequest extends Command {
 		final ItemStack originalItem = PlayerHelper.getHeldItem(player).clone();
 
 		if (originalItem.getType() == CompMaterial.AIR.get()) {
-			AuctionLocale.tell(player, "general.air");
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_AIR));
 			return ReturnType.FAIL;
 		}
 
@@ -107,7 +109,7 @@ public class CommandRequest extends Command {
 					}
 
 					if (containsItems) {
-						AuctionLocale.tell(player, "general.request shulker contains items");
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_REQUEST_SHULKER_CONTAINS_ITEMS));
 						return ReturnType.FAIL;
 					}
 				}
@@ -122,7 +124,7 @@ public class CommandRequest extends Command {
 
 		// check if price is even a number
 		if (!MathUtil.isDouble(context.getArg(0))) {
-			AuctionLocale.tell(player, "general.notanumber", "value",context.getArg(0));
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",context.getArg(0)));
 			return ReturnType.FAIL;
 		}
 
@@ -131,7 +133,7 @@ public class CommandRequest extends Command {
 
 		// check if at limit
 		if (auctionPlayer.isAtItemLimit(player)) {
-			AuctionLocale.tell(player, "general.requestlimit");
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_REQUEST_LIMIT));
 			return ReturnType.FAIL;
 		}
 
@@ -147,12 +149,12 @@ public class CommandRequest extends Command {
 		final double price = Double.parseDouble(context.getArg(0));
 
 		if (price < Settings.MIN_REQUEST_PRICE.getDouble()) {
-			AuctionLocale.tell(player, "pricing.request.min price", "price",Settings.MIN_REQUEST_PRICE.getDouble());
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.PRICING_REQUEST_MIN_PRICE, "price",Settings.MIN_REQUEST_PRICE.getDouble()));
 			return ReturnType.FAIL;
 		}
 
 		if (price > Settings.MAX_REQUEST_PRICE.getDouble()) {
-			AuctionLocale.tell(player, "pricing.request.max price", "price",Settings.MAX_REQUEST_PRICE.getDouble());
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.PRICING_REQUEST_MAX_PRICE, "price",Settings.MAX_REQUEST_PRICE.getDouble()));
 			return ReturnType.FAIL;
 		}
 
@@ -183,12 +185,12 @@ public class CommandRequest extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.request");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_REQUEST);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.request");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_REQUEST);
 	}
 
 	@Override

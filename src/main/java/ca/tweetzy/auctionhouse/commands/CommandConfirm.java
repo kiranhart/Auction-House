@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -68,17 +70,17 @@ public class CommandConfirm extends Command {
 		final AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
 		if (auctionPlayer.getEndAllRequestTime() == -1) {
-			AuctionLocale.tell(player, "general.nothing to confirm");
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOTHING_TO_CONFIRM));
 			return ReturnType.SUCCESS;
 		}
 
 		if (System.currentTimeMillis() > auctionPlayer.getEndAllRequestTime()) {
-			AuctionLocale.tell(player, "general.confirm time limit reached");
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_CONFIRM_TIME_LIMIT_REACHED));
 			return ReturnType.SUCCESS;
 		}
 
 		if (System.currentTimeMillis() <= auctionPlayer.getEndAllRequestTime()) {
-			AuctionLocale.tell(player, "general.confirmed cancellation");
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_CONFIRMED_CANCELLATION));
 			auctionPlayer.setEndAllRequestTime(-1);
 			Titles.clearTitle(player);
 
@@ -104,12 +106,12 @@ public class CommandConfirm extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.confirm");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_CONFIRM);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.confirm");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_CONFIRM);
 	}
 
 	@Override

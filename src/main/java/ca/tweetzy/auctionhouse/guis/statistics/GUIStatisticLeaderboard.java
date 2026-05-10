@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.guis.statistics;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -46,7 +48,7 @@ public final class GUIStatisticLeaderboard extends AuctionPagedGUI<Pair<UUID, Do
 	private final AuctionStatisticType statisticType;
 
 	public GUIStatisticLeaderboard(AuctionPlayer player, AuctionStatisticType statisticType) {
-		super(new GUIStatisticViewSelect(player), player.getPlayer(), AuctionLocale.msg(player.getPlayer(), "gui.stat view leaderboard.items.title"), 6, new ArrayList<>());
+		super(new GUIStatisticViewSelect(player), player.getPlayer(), TranslationManager.string(player.getPlayer(), Translations.GUI_STATS_LEADERBOARD_TITLE), 6, new ArrayList<>());
 		this.auctionPlayer = player;
 		this.statisticType = statisticType;
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_STATS_LEADERBOARD_BG_ITEM.getString()).make()));
@@ -67,8 +69,8 @@ public final class GUIStatisticLeaderboard extends AuctionPagedGUI<Pair<UUID, Do
 		applyBackExit();
 
 		setButton(5, 4, QuickItem.of(Settings.GUI_STATS_LEADERBOARD_ITEMS_STAT_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.stat view leaderboard.items.stat.name"))
-				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.stat view leaderboard.items.stat.lore"), "statistic_name", statisticType.getTranslatedType()))
+				.name(TranslationManager.string(this.player, Translations.GUI_STATS_LEADERBOARD_STAT_NAME))
+				.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_STATS_LEADERBOARD_STAT_LORE), "statistic_name", statisticType.getTranslatedType()))
 				.make(), click -> click.manager.showGUI(click.player, new GUIStatisticLeaderboard(this.auctionPlayer, this.statisticType.next())));
 	}
 
@@ -80,8 +82,8 @@ public final class GUIStatisticLeaderboard extends AuctionPagedGUI<Pair<UUID, Do
 
 		return QuickItem
 				.of(head)
-				.name(AuctionLocale.msg(this.player, "gui.stat view leaderboard.items.player.name").replace("%player_name%", targetUser.getName() == null ? "&e&lUsername not found" : targetUser.getName()))
-				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.stat view leaderboard.items.player.lore"),
+				.name(TranslationManager.string(this.player, Translations.GUI_STATS_LEADERBOARD_PLAYER_NAME).replace("%player_name%", targetUser.getName() == null ? "&e&lUsername not found" : targetUser.getName()))
+				.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_STATS_LEADERBOARD_PLAYER_LORE),
 						"player_name", targetUser.getName() == null ? "&e&lUsername not found" : targetUser.getName(),
 						"auction_statistic_name", statisticType.getTranslatedType(),
 						"auction_statistic_value", AuctionHouse.getAPI().getNumberAsCurrency(entry.getSecond())

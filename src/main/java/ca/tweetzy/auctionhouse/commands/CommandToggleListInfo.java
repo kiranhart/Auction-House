@@ -19,9 +19,10 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.auctionhouse.settings.Translations;
+import ca.tweetzy.flight.settings.TranslationManager;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
@@ -64,7 +65,8 @@ public class CommandToggleListInfo extends Command {
 
 		final AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(playerUUID);
 		auctionPlayer.setShowListingInfo(!auctionPlayer.isShowListingInfo());
-		AuctionLocale.tell(player, auctionPlayer.isShowListingInfo() ? "general.toggled listing.on" : "general.toggled listing.off");
+		Common.tell(player, TranslationManager.string(player,
+				auctionPlayer.isShowListingInfo() ? Translations.GENERAL_TOGGLED_LISTING_ON : Translations.GENERAL_TOGGLED_LISTING_OFF));
 
 		return ReturnType.SUCCESS;
 	}
@@ -86,11 +88,11 @@ public class CommandToggleListInfo extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.togglelistinfo");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_TOGGLELISTINFO);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.togglelistinfo");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_TOGGLELISTINFO);
 	}
 }

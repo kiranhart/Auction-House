@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.guis.admin;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
@@ -47,7 +50,7 @@ import java.util.List;
 public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 
 	public GUIPriceLimits(Player player) {
-		super(null, player, AuctionLocale.msg(player, "gui.price limits.title"), 6, AuctionHouse.getPriceLimitManager().getManagerContent());
+		super(null, player, TranslationManager.string(player, Translations.GUI_PRICE_LIMITS_TITLE), 6, AuctionHouse.getPriceLimitManager().getManagerContent());
 		draw();
 	}
 
@@ -59,7 +62,7 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 	@Override
 	protected ItemStack makeDisplayItem(ListingPriceLimit listingPriceLimit) {
 		final List<String> lore = AuctionAPI.getInstance().getItemLore(listingPriceLimit.getItem().clone());
-		lore.addAll(AuctionLocale.msgList(this.player, "gui.price limits.lore"));
+		lore.addAll(TranslationManager.list(this.player, Translations.GUI_PRICE_LIMITS_LORE));
 
 		return QuickItem
 				.of(listingPriceLimit.getItem().clone())
@@ -75,7 +78,7 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 	protected void onClick(ListingPriceLimit listingPriceLimit, GuiClickEvent event) {
 
 	if (event.clickType == ClickType.LEFT) {
-		new TitleInput(AuctionHouse.getInstance(), event.player, AuctionLocale.msg(null, "titles.price limit.min.title"), AuctionLocale.msg(null, "titles.price limit.min.subtitle")) {
+		new TitleInput(AuctionHouse.getInstance(), event.player, TranslationManager.string(Translations.TITLES_PRICE_LIMIT_MIN_TITLE), TranslationManager.string(Translations.TITLES_PRICE_LIMIT_MIN_SUBTITLE)) {
 
 				@Override
 				public void onExit(Player player) {
@@ -87,14 +90,14 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 					string = ChatColor.stripColor(string);
 
 					if (!MathUtil.isDouble(string)) {
-						AuctionLocale.tell(player, "general.notanumber", "value",string);
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 						return false;
 					}
 
 					double newPrice = Double.parseDouble(string);
 
 					if (Double.isNaN(newPrice)) {
-						AuctionLocale.tell(player, "general.notanumber", "value",string);
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 						return false;
 					}
 
@@ -110,7 +113,7 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 		}
 
 	if (event.clickType == ClickType.RIGHT) {
-		new TitleInput(AuctionHouse.getInstance(), event.player, AuctionLocale.msg(null, "titles.price limit.max.title"), AuctionLocale.msg(null, "titles.price limit.max.subtitle")) {
+		new TitleInput(AuctionHouse.getInstance(), event.player, TranslationManager.string(Translations.TITLES_PRICE_LIMIT_MAX_TITLE), TranslationManager.string(Translations.TITLES_PRICE_LIMIT_MAX_SUBTITLE)) {
 
 				@Override
 				public void onExit(Player player) {
@@ -122,14 +125,14 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 					string = ChatColor.stripColor(string);
 
 					if (!MathUtil.isDouble(string)) {
-						AuctionLocale.tell(player, "general.notanumber", "value",string);
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 						return false;
 					}
 
 					double newPrice = Double.parseDouble(string);
 
 					if (Double.isNaN(newPrice)) {
-						AuctionLocale.tell(player, "general.notanumber", "value",string);
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 						return false;
 					}
 

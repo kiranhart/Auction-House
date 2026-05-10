@@ -18,8 +18,10 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import org.bukkit.entity.Player;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.flight.utils.Common;
@@ -53,9 +55,9 @@ public class CommandReload extends Command {
 		if (AuctionAPI.tellMigrationStatus(context.getSender())) return ReturnType.FAIL;
 		Settings.init();
 		Translations.init();
-		Common.setPrefix(Common.colorize(AuctionLocale.msg(null, "general.prefix")));
-		Common.setPluginName(Common.colorize(AuctionLocale.msg(null, "general.plugin name")));
-		AuctionLocale.tell(context.getSender(), "general.reloaded");
+		Common.setPrefix(Common.colorize(TranslationManager.string(Translations.GENERAL_PREFIX)));
+		Common.setPluginName(Common.colorize(TranslationManager.string(Translations.GENERAL_PLUGIN_NAME)));
+		Common.tell(context.getSender(), TranslationManager.string(context.getSender() instanceof Player pl ? pl : null, Translations.GENERAL_RELOADED));
 		return ReturnType.SUCCESS;
 	}
 
@@ -76,11 +78,11 @@ public class CommandReload extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.reload");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_RELOAD);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.reload");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_RELOAD);
 	}
 }

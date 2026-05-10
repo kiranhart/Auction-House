@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
 import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
@@ -108,7 +110,7 @@ public class CommandAdmin extends Command {
 				}
 
 				if (target == null) {
-					AuctionLocale.tell(context.getSender(), "general.playernotfound", "player",context.getArg(1));
+					Common.tell(context.getSender(), TranslationManager.string(context.getSender() instanceof Player pl ? pl : null, Translations.GENERAL_PLAYER_NOT_FOUND, "player",context.getArg(1)));
 					return ReturnType.FAIL;
 				}
 
@@ -122,7 +124,7 @@ public class CommandAdmin extends Command {
 					AuctionHouse.getAuctionItemManager().getItems().get(id).setExpired(true);
 					endedCount++;
 				}
-				AuctionLocale.tell(context.getSender(), "general.endedallauctions");
+				Common.tell(context.getSender(), TranslationManager.string(context.getSender() instanceof Player pl ? pl : null, Translations.GENERAL_ENDED_ALL_AUCTIONS));
 				if (AuctionHouse.getTransactionLogger() != null) {
 					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
 					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "endall", "Ended " + endedCount + " auctions");
@@ -146,7 +148,7 @@ public class CommandAdmin extends Command {
 						relistedCount++;
 					}
 				}
-				AuctionLocale.tell(context.getSender(), "general.relisteditems");
+				Common.tell(context.getSender(), TranslationManager.string(context.getSender() instanceof Player pl ? pl : null, Translations.GENERAL_RELISTED_ITEMS));
 				if (AuctionHouse.getTransactionLogger() != null) {
 					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
 					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "relistall", "Relisted " + relistedCount + " expired auctions");
@@ -191,7 +193,7 @@ public class CommandAdmin extends Command {
 				returnMoney = Boolean.parseBoolean(context.getArg(2));
 
 				handleUserBidClear(player, returnMoney);
-				AuctionLocale.tell(context.getSender(), "general.admin.cleared bids", "player",context.getArg(1));
+				Common.tell(context.getSender(), TranslationManager.string(context.getSender() instanceof Player pl ? pl : null, Translations.GENERAL_ADMIN_CLEARED_BIDS, "player",context.getArg(1)));
 				
 				if (AuctionHouse.getTransactionLogger() != null) {
 					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
@@ -215,7 +217,7 @@ public class CommandAdmin extends Command {
 				ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 
 				if (itemToSell.getType() == CompMaterial.AIR.get() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
-					AuctionLocale.tell(player, "general.air");
+					Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_AIR));
 					return ReturnType.FAIL;
 				} else {
 					final AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
@@ -349,7 +351,7 @@ public class CommandAdmin extends Command {
 						AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 					if (oldBidder.isOnline())
-						AuctionLocale.tell(oldBidder.getPlayer(), "pricing.moneyadd", "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",auctionItem.getFormattedCurrentPrice());
+						Common.tell(oldBidder.getPlayer(), TranslationManager.string(oldBidder.getPlayer() instanceof Player pl ? pl : null, Translations.PRICING_MONEY_ADD, "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",auctionItem.getFormattedCurrentPrice()));
 
 				}
 			}

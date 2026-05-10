@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.auction.enums;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 
 public enum PaymentReason {
@@ -32,13 +34,13 @@ public enum PaymentReason {
 	public String getTranslation() {
 		switch (this) {
 			case LISTING_FAILED:
-				return AuctionLocale.msg(null, "payments.listing failed");
+				return TranslationManager.string(Translations.PAYMENTS_LISTING_FAILED);
 			case ITEM_SOLD:
-				return AuctionLocale.msg(null, "payments.item sold");
+				return TranslationManager.string(Translations.PAYMENTS_ITEM_SOLD);
 			case ADMIN_REMOVED:
-				return AuctionLocale.msg(null, "payments.admin removed");
+				return TranslationManager.string(Translations.PAYMENTS_ADMIN_REMOVED);
 			case BID_RETURNED:
-				return AuctionLocale.msg(null, "payments.bid returned");
+				return TranslationManager.string(Translations.PAYMENTS_BID_RETURNED);
 		}
 
 		return this.name();

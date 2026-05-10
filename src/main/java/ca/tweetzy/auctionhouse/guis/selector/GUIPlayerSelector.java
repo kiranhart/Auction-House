@@ -1,7 +1,7 @@
 package ca.tweetzy.auctionhouse.guis.selector;
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
-
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
@@ -26,7 +26,7 @@ public final class GUIPlayerSelector extends AuctionPagedGUI<OfflinePlayer> {
 	private final Consumer<OfflinePlayer> selectedPlayer;
 
 	public GUIPlayerSelector(@NonNull final Player player, @NonNull final Consumer<OfflinePlayer> selectedPlayer) {
-		super(null, player, AuctionLocale.msg(player, "gui.player selector.title"), 6, new ArrayList<>());
+		super(null, player, TranslationManager.string(player, Translations.GUI_PLAYER_SELECTOR_TITLE), 6, new ArrayList<>());
 		setAsync(true);
 		this.selectedPlayer = selectedPlayer;
 		draw();
@@ -47,8 +47,8 @@ public final class GUIPlayerSelector extends AuctionPagedGUI<OfflinePlayer> {
 
 		QuickItem item = QuickItem
 				.of(CompMaterial.PLAYER_HEAD)
-				.name(AuctionLocale.msg(this.player, "gui.player selector.items.player.name").replace("%player_name%", name))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.player selector.items.player.lore"));
+				.name(TranslationManager.string(this.player, Translations.GUI_PLAYER_SELECTOR_PLAYER_NAME).replace("%player_name%", name))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_PLAYER_SELECTOR_PLAYER_LORE));
 
 
 		return XSkull

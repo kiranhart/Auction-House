@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.guis.core;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -59,7 +61,7 @@ public class GUIContainerInspect extends AuctionPagedGUI<ItemStack> {
 	 * @param container is the shulker box
 	 */
 	public GUIContainerInspect(AuctionPlayer auctionPlayer, ItemStack container) {
-		super(null, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.inspect.title"), 6, new ArrayList<>());
+		super(null, auctionPlayer.getPlayer(), TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_INSPECT_TITLE), 6, new ArrayList<>());
 		this.container = container;
 		this.fromPurchaseGUI = false;
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_INSPECT_BG_ITEM.getString()).make()));

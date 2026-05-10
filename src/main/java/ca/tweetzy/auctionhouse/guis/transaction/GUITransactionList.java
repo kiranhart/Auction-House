@@ -18,6 +18,10 @@
 
 package ca.tweetzy.auctionhouse.guis.transaction;
 
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -26,7 +30,6 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.helpers.SlotHelper;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -65,7 +68,7 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 	}
 
 	public GUITransactionList(Player player, boolean showAll) {
-		super(null, player, showAll ? AuctionLocale.msg(player, "gui.transactions.title all") : AuctionLocale.msg(player, "gui.transactions.title"), 6, new ArrayList<>());
+		super(null, player, showAll ? TranslationManager.string(player, Translations.GUI_TRANSACTIONS_TITLE_ALL) : TranslationManager.string(player, Translations.GUI_TRANSACTIONS_TITLE), 6, new ArrayList<>());
 		this.auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 		this.showAll = showAll;
 		applyDelay();
@@ -82,11 +85,11 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 
 		setClickDelayAction((lastClicked, delay, click) -> {
 			if (click.slot == getPreviousButtonSlot() || click.slot == getNextButtonSlot()) {
-				AuctionLocale.tell(player, "general.cooldown.navigate page", "time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked));
+				Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_COOLDOWN_NAVIGATE_PAGE, "time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked)));
 				return;
 			}
 
-			AuctionLocale.tell(player, "general.cooldown.filter", "time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked));
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_COOLDOWN_FILTER, "time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked)));
 
 		});
 	}
@@ -181,8 +184,8 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 
 		setButton(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_SLOT.getInt(), QuickItem
 				.of(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.transactions.items.filter.name"))
-				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.transactions.items.filter.lore"),
+				.name(TranslationManager.string(this.player, Translations.GUI_TRANSACTIONS_FILTER_NAME))
+				.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_TRANSACTIONS_FILTER_LORE),
 						"filter_category", auctionPlayer.getSelectedTransactionFilter().getTranslatedType(),
 						"filter_auction_type", auctionPlayer.getSelectedTransactionSaleType().getTranslatedType(),
 						"filter_sort_order", auctionPlayer.getTransactionSortType().getTranslatedType(),
@@ -227,12 +230,12 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 	protected ItemStack makeDisplayItem(Transaction transaction) {
 		final ItemStack item = transaction.getItem().clone();
 		final OfflinePlayer seller = Bukkit.getOfflinePlayer(transaction.getSeller());
-		final String SERVER_LISTING_NAME = AuctionLocale.msg(null, "general.server listing");
+		final String SERVER_LISTING_NAME = TranslationManager.string(Translations.GENERAL_SERVER_LISTING);
 
 		return QuickItem
 				.of(item)
-				.name(Replacer.replaceVariables(AuctionLocale.msg(this.player, "gui.transactions.items.transaction.name"), "item_name", AuctionAPI.getInstance().getItemName(item), "transaction_id", transaction.getId().toString()))
-				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.transactions.items.transaction.lore"),
+				.name(Replacer.replaceVariables(TranslationManager.string(this.player, Translations.GUI_TRANSACTIONS_ITEM_NAME), "item_name", AuctionAPI.getInstance().getItemName(item), "transaction_id", transaction.getId().toString()))
+				.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_TRANSACTIONS_ITEM_LORE),
 						"transaction_id", transaction.getId().toString(),
 						"seller", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME,
 						"buyer", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName(),

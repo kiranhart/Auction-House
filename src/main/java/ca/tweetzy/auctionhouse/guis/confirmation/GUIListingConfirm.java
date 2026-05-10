@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -46,7 +48,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 	private final Set<UUID> resulted = new HashSet<>();
 
 	public GUIListingConfirm(Player player, AuctionedItem auctionedItem, Consumer<Boolean> result) {
-		super(null, player, AuctionLocale.msg(player, "gui.confirm listing.title"), 1);
+		super(null, player, TranslationManager.string(player, Translations.GUI_CONFIRM_LISTING_TITLE), 1);
 		this.auctionedItem = auctionedItem;
 		this.result = result;
 		setAcceptsItems(false);
@@ -91,8 +93,8 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 	private void drawNo(int slot) {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_LISTING_NO_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.confirm listing.no.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm listing.no.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_CONFIRM_LISTING_NO_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_CONFIRM_LISTING_NO_LORE))
 				.make(), click -> {
 
 			if (resulted.contains(click.player.getUniqueId())) return;
@@ -108,8 +110,8 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 	private void drawYes(int slot) {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_LISTING_YES_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.confirm listing.yes.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm listing.yes.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_CONFIRM_LISTING_YES_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_CONFIRM_LISTING_YES_LORE))
 				.make(), click -> {
 
 			if (resulted.contains(click.player.getUniqueId())) return;

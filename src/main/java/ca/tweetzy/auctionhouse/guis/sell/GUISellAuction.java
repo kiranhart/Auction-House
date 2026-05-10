@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.guis.sell;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
 import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
@@ -66,7 +68,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 	private ItemStack currencyItem;
 
 	public GUISellAuction(@NonNull final AuctionPlayer auctionPlayer, final double binPrice, final double startingBid, final double bidIncrement, final long listingTime, final boolean allowBuyNow, String currency, ItemStack currencyItem) {
-		super(null, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.sell auction item.title"), 6);
+		super(null, auctionPlayer.getPlayer(), TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_SELL_AUCTION_TITLE), 6);
 		this.auctionPlayer = auctionPlayer;
 		this.binPrice = binPrice;
 		this.startingBid = startingBid;
@@ -112,8 +114,8 @@ public final class GUISellAuction extends AuctionBaseGUI {
 		if (Settings.CURRENCY_ALLOW_PICK.getBoolean())
 			setButton(getRows() - 1, 8, QuickItem
 					.of(Settings.GUI_SELL_ITEM_ITEM_CURRENCY_ITEM.getString())
-					.name(AuctionLocale.msg(this.player, "gui.global items.currency.name"))
-					.lore(this.player, AuctionLocale.msgList(this.player, "gui.global items.currency.lore"))
+					.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_CURRENCY_NAME))
+					.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_CURRENCY_LORE))
 					.make(), click -> click.manager.showGUI(click.player, new GUICurrencyPicker(this, click.player, (currency, itemCurrency) -> {
 
 				this.currency = currency.getStoreableName();
@@ -131,8 +133,8 @@ public final class GUISellAuction extends AuctionBaseGUI {
 
 			setButton(3, 1, QuickItem
 					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_TIME_ITEM.getString())
-					.name(AuctionLocale.msg(this.player, "gui.sell auction item.items.time.name"))
-					.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.sell auction item.items.time.lore"),
+					.name(TranslationManager.string(this.player, Translations.GUI_SELL_AUCTION_TIME_NAME))
+					.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_SELL_AUCTION_TIME_LORE),
 							"remaining_days", times[0],
 							"remaining_hours", times[1],
 							"remaining_minutes", times[2],
@@ -141,7 +143,7 @@ public final class GUISellAuction extends AuctionBaseGUI {
 
 		// TitleInput automatically handles allowClose and inventory closing
 		new TitleInput(
-					AuctionHouse.getInstance(), click.player, Common.colorize(AuctionLocale.msg(null, "titles.listing time.title")), Common.colorize(AuctionLocale.msg(null, "titles.listing time.subtitle")), Common.colorize(AuctionLocale.msg(null, "titles.listing time.actionbar"))
+					AuctionHouse.getInstance(), click.player, Common.colorize(TranslationManager.string(Translations.TITLES_LISTING_TIME_TITLE)), Common.colorize(TranslationManager.string(Translations.TITLES_LISTING_TIME_SUBTITLE)), Common.colorize(TranslationManager.string(Translations.TITLES_LISTING_TIME_ACTIONBAR))
 			) {
 
 					@Override
@@ -182,12 +184,12 @@ public final class GUISellAuction extends AuctionBaseGUI {
 			if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean())
 				setButton(3, 4, QuickItem
 						.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_PRICE_ITEM.getString())
-						.name(AuctionLocale.msg(this.player, "gui.sell auction item.items.bin price.name"))
-						.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.sell auction item.items.bin price.lore"), "listing_bin_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(binPrice, this.currency, this.currencyItem)))
+						.name(TranslationManager.string(this.player, Translations.GUI_SELL_AUCTION_BIN_PRICE_NAME))
+						.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_SELL_AUCTION_BIN_PRICE_LORE), "listing_bin_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(binPrice, this.currency, this.currencyItem)))
 						.make(), click -> {
 
 				// TitleInput automatically handles allowClose and inventory closing
-				new TitleInput(AuctionHouse.getInstance(), click.player, AuctionLocale.msg(null, "titles.buy now price.title"), AuctionLocale.msg(null, "titles.buy now price.subtitle")) {
+				new TitleInput(AuctionHouse.getInstance(), click.player, TranslationManager.string(Translations.TITLES_BUY_NOW_PRICE_TITLE), TranslationManager.string(Translations.TITLES_BUY_NOW_PRICE_SUBTITLE)) {
 
 						@Override
 						public void onExit(Player player) {
@@ -199,13 +201,13 @@ public final class GUISellAuction extends AuctionBaseGUI {
 							string = ChatColor.stripColor(string);
 
 							if (!MathUtil.isDouble(string)) {
-								AuctionLocale.tell(player, "general.notanumber", "value",string);
+								Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 								return false;
 							}
 
 							double listingAmount = Double.parseDouble(string);
 							if (Double.isNaN(listingAmount)) {
-								AuctionLocale.tell(player, "general.notanumber", "value",string);
+								Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 								return false;
 							}
 
@@ -233,12 +235,12 @@ public final class GUISellAuction extends AuctionBaseGUI {
 
 		setButton(3, 3, QuickItem
 				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_STARTING_PRICE_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.sell auction item.items.starting price.name"))
-				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.sell auction item.items.starting price.lore"), "listing_start_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(startingBid, this.currency, this.currencyItem)))
+				.name(TranslationManager.string(this.player, Translations.GUI_SELL_AUCTION_STARTING_PRICE_NAME))
+				.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_SELL_AUCTION_STARTING_PRICE_LORE), "listing_start_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(startingBid, this.currency, this.currencyItem)))
 				.make(), click -> {
 
 		// TitleInput automatically handles allowClose and inventory closing
-		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionLocale.msg(null, "titles.starting bid price.title"), AuctionLocale.msg(null, "titles.starting bid price.subtitle")) {
+		new TitleInput(AuctionHouse.getInstance(), click.player, TranslationManager.string(Translations.TITLES_STARTING_BID_PRICE_TITLE), TranslationManager.string(Translations.TITLES_STARTING_BID_PRICE_SUBTITLE)) {
 
 				@Override
 				public void onExit(Player player) {
@@ -250,20 +252,20 @@ public final class GUISellAuction extends AuctionBaseGUI {
 					string = ChatColor.stripColor(string);
 
 					if (!MathUtil.isDouble(string)) {
-						AuctionLocale.tell(player, "general.notanumber", "value",string);
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 						return false;
 					}
 
 					double listingAmount = Double.parseDouble(string);
 					if (Double.isNaN(listingAmount)) {
-						AuctionLocale.tell(player, "general.notanumber", "value",string);
+						Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 						return false;
 					}
 
 					if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && GUISellAuction.this.allowBuyNow)
 						if (Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && listingAmount >= GUISellAuction.this.binPrice) {
 //							listingAmount = GUISellAuction.this.binPrice / 2 <= 0 ? Settings.MIN_AUCTION_START_PRICE.getDouble() : GUISellAuction.this.binPrice / 2;
-							AuctionLocale.tell(player, "pricing.startingpricetoohigh", "price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(GUISellAuction.this.binPrice, GUISellAuction.this.currency, GUISellAuction.this.currencyItem));
+							Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.PRICING_STARTING_PRICE_TOO_HIGH, "price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(GUISellAuction.this.binPrice, GUISellAuction.this.currency, GUISellAuction.this.currencyItem)));
 
 							return false;
 						}
@@ -293,12 +295,12 @@ public final class GUISellAuction extends AuctionBaseGUI {
 		if (!Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean()) {
 			setButton(3, 5, QuickItem
 					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_INCREMENT_PRICE_ITEM.getString())
-					.name(AuctionLocale.msg(this.player, "gui.sell auction item.items.increment price.name"))
-					.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.sell auction item.items.increment price.lore"), "listing_increment_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(bidIncrement, this.currency, this.currencyItem)))
+					.name(TranslationManager.string(this.player, Translations.GUI_SELL_AUCTION_INCREMENT_PRICE_NAME))
+					.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_SELL_AUCTION_INCREMENT_PRICE_LORE), "listing_increment_price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(bidIncrement, this.currency, this.currencyItem)))
 					.make(), click -> {
 
 			// TitleInput automatically handles allowClose and inventory closing
-			new TitleInput(AuctionHouse.getInstance(), click.player, AuctionLocale.msg(null, "titles.bid increment price.title"), AuctionLocale.msg(null, "titles.bid increment price.subtitle")) {
+			new TitleInput(AuctionHouse.getInstance(), click.player, TranslationManager.string(Translations.TITLES_BID_INCREMENT_PRICE_TITLE), TranslationManager.string(Translations.TITLES_BID_INCREMENT_PRICE_SUBTITLE)) {
 
 					@Override
 					public void onExit(Player player) {
@@ -310,13 +312,13 @@ public final class GUISellAuction extends AuctionBaseGUI {
 						string = ChatColor.stripColor(string);
 
 						if (!MathUtil.isDouble(string)) {
-							AuctionLocale.tell(player, "general.notanumber", "value",string);
+							Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 							return false;
 						}
 
 						double listingAmount = Double.parseDouble(string);
 						if (Double.isNaN(listingAmount)) {
-							AuctionLocale.tell(player, "general.notanumber", "value",string);
+							Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_NOT_A_NUMBER, "value",string));
 							return false;
 						}
 
@@ -348,8 +350,8 @@ public final class GUISellAuction extends AuctionBaseGUI {
 
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_CONTINUE_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.sell auction item.items.confirm.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.sell auction item.items.confirm.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_SELL_AUCTION_CONFIRM_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_SELL_AUCTION_CONFIRM_LORE))
 				.make(), click -> {
 
 			if (!AuctionAPI.getInstance().meetsListingRequirements(click.player, this.auctionPlayer.getItemBeingListed())) return;
@@ -383,8 +385,8 @@ public final class GUISellAuction extends AuctionBaseGUI {
 
 			setItem(getRows() - 1, 2, QuickItem
 					.of(Settings.GUI_SELL_AUCTION_ITEM_ITEMS_FEE_ITEM.getString())
-					.name(AuctionLocale.msg(this.player, "gui.sell auction item.items.fee.name"))
-					.lore(Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.sell auction item.items.fee.lore"),
+					.name(TranslationManager.string(this.player, Translations.GUI_SELL_AUCTION_FEE_NAME))
+					.lore(Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_SELL_AUCTION_FEE_LORE),
 							"listing_fee", Settings.TAX_LISTING_FEE_PERCENTAGE.getBoolean() ? Settings.TAX_LISTING_FEE.getDouble() + "%" : Settings.TAX_LISTING_FEE.getDouble(),
 							"listing_fee_total", fee
 					))
@@ -397,8 +399,8 @@ public final class GUISellAuction extends AuctionBaseGUI {
 		if (Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) {
 			setButton(3, 7, QuickItem
 					.of(this.allowBuyNow ? Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_ENABLED_ITEM.getString() : Settings.GUI_SELL_AUCTION_ITEM_ITEMS_BUYOUT_DISABLED_ITEM.getString())
-					.name(this.allowBuyNow ? AuctionLocale.msg(this.player, "gui.sell auction item.items.buyout enabled.name") : AuctionLocale.msg(this.player, "gui.sell auction item.items.buyout disabled.name"))
-					.lore(this.player, this.allowBuyNow ? AuctionLocale.msgList(this.player, "gui.sell auction item.items.buyout enabled.lore") : AuctionLocale.msgList(this.player, "gui.sell auction item.items.buyout disabled.lore"))
+					.name(this.allowBuyNow ? TranslationManager.string(this.player, Translations.GUI_SELL_AUCTION_BUYOUT_ENABLED_NAME) : TranslationManager.string(this.player, Translations.GUI_SELL_AUCTION_BUYOUT_DISABLED_NAME))
+					.lore(this.player, this.allowBuyNow ? TranslationManager.list(this.player, Translations.GUI_SELL_AUCTION_BUYOUT_ENABLED_LORE) : TranslationManager.list(this.player, Translations.GUI_SELL_AUCTION_BUYOUT_DISABLED_LORE))
 					.make(), e -> {
 
 				this.allowBuyNow = !allowBuyNow;

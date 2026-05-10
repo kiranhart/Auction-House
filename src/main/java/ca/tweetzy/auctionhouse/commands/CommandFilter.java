@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
@@ -81,19 +84,19 @@ public class CommandFilter extends Command {
 
 				ItemStack held = PlayerHelper.getHeldItem(player);
 				if (held.getType() == CompMaterial.AIR.get()) {
-					AuctionLocale.tell(player, "general.filter air");
+					Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_FILTER_AIR));
 					return ReturnType.FAIL;
 				}
 
 
 				if (AuctionHouse.getFilterManager().getFilteredItem(held) != null && AuctionHouse.getFilterManager().getFilteredItem(held).getCategory() == AuctionItemCategory.valueOf(context.getArg(1, "").toUpperCase())) {
-					AuctionLocale.tell(player, "general.filteritemaddedalready");
+					Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_FILTER_ITEM_ADDED_ALREADY));
 					return ReturnType.FAIL;
 				}
 
 				AuctionFilterItem filterItem = new AuctionFilterItem(held, AuctionItemCategory.valueOf(context.getArg(1, "").toUpperCase()));
 				AuctionHouse.getFilterManager().addFilterItem(filterItem);
-				AuctionLocale.tell(player, "general.addeditemtofilterwhitelist", "item_name",AuctionAPI.getInstance().getItemName(held),"filter_category",context.getArg(1));
+				Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_ADDED_ITEM_TO_FILTER_WHITELIST, "item_name",AuctionAPI.getInstance().getItemName(held),"filter_category",context.getArg(1)));
 			}
 		}
 
@@ -107,12 +110,12 @@ public class CommandFilter extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.filter");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_FILTER);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.filter");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_FILTER);
 	}
 
 	@Override

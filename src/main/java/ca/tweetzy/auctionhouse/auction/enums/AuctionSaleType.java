@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.auction.enums;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 
 /**
@@ -47,11 +49,11 @@ public enum AuctionSaleType {
 	public String getTranslatedType() {
 		switch (this) {
 			case USED_BIDDING_SYSTEM:
-				return AuctionLocale.msg(null, "auction_filter.sale_types.biddable");
+				return TranslationManager.string(Translations.AUCTION_FILTER_SALE_TYPES_BIDDABLE);
 			case WITHOUT_BIDDING_SYSTEM:
-				return AuctionLocale.msg(null, "auction_filter.sale_types.non_biddable");
+				return TranslationManager.string(Translations.AUCTION_FILTER_SALE_TYPES_NON_BIDDABLE);
 			case BOTH:
-				return AuctionLocale.msg(null, "auction_filter.sale_types.both");
+				return TranslationManager.string(Translations.AUCTION_FILTER_SALE_TYPES_BOTH);
 		}
 		return getType();
 	}

@@ -45,7 +45,7 @@ public final class Settings extends FlightSettings {
 	public static final ConfigEntry CURRENCY_DEFAULT_SELECTED = create("economy.currency.default selection", "Vault/Vault", "The default currency selection, PluginName/CurrencyName -> Ex. Vault/Vault or UltraEconomy/Gems etc");
 	public static final ConfigEntry CURRENCY_VAULT_SYMBOL = create("economy.currency.vault symbol", "$", "When using default/vault currency, what symbol should be used.");
 	public static final ConfigEntry CURRENCY_VAULT_SYMBOL_OVERRIDES = create("economy.currency.vault symbol overrides", false, "If true, the vault symbol will override the symbol provided by the country/language combination");
-	// Optional: economy.currency.use provider symbol — intentionally not exposed (legacy comment in original tweety Settings)
+	// Optional: economy.currency.use provider symbol — intentionally not exposed (never wired into Flight Settings)
 	public static final ConfigEntry CURRENCY_BLACKLISTED = create("economy.currency.black listed", Collections.singletonList("UltraEconomy:Test"), "A list of owning plugins & the currency to be blacklisted. Ex. UltraEconomy:Test");
 	public static final ConfigEntry CURRENCY_FORMAT_LANGUAGE = create("economy.currency.format.language", "en", "An ISO 639 alpha-2 or alpha-3 language code.");
 	public static final ConfigEntry CURRENCY_FORMAT_COUNTRY = create("economy.currency.format.country", "US", "An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.");

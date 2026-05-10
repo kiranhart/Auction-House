@@ -22,9 +22,9 @@
 
     <distributionManagement>
         <repository>
-            <id>repsy</id>
-            <name>Tweetzy Maven Repo On Repsy</name>
-            <url>https://repo.repsy.io/mvn/kiran/tweetzy</url>
+            <id>hartserver</id>
+            <name>Hart Server Repo</name>
+            <url>https://nexus.hartserver.ca/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 
@@ -42,9 +42,9 @@
             <url>https://repo.codemc.org/repository/nms/</url>
         </repository>
         <repository>
-            <id>repsy</id>
-            <name>Tweetzy Maven Repo On Repsy</name>
-            <url>https://repo.repsy.io/mvn/kiran/tweetzy</url>
+            <id>hartserver</id>
+            <name>Hart Server Repo</name>
+            <url>https://nexus.hartserver.ca/repository/maven-releases/</url>
         </repository>
         <repository>
             <id>placeholderapi</id>

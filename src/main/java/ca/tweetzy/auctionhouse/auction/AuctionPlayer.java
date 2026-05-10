@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.auction;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.currency.AbstractCurrency;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
@@ -117,7 +120,7 @@ public class AuctionPlayer {
 			return true;
 		}
 
-		AuctionLocale.tell(this.player, "general.wait_to_list", "time",(this.lastListedItem - System.currentTimeMillis()) / 1000);
+		Common.tell(this.player, TranslationManager.string(this.player instanceof Player pl ? pl : null, Translations.GENERAL_WAIT_TO_LIST, "time",(this.lastListedItem - System.currentTimeMillis()) / 1000));
 		return false;
 	}
 
@@ -175,12 +178,12 @@ public class AuctionPlayer {
 
 	public boolean isAtItemLimit(Player target) {
 		if (isAtCollectionBinLimit()) {
-			AuctionLocale.tell(target, "general.collectionbinlimit");
+			Common.tell(target, TranslationManager.string(target instanceof Player pl ? pl : null, Translations.GENERAL_COLLECTION_BIN_LIMIT));
 			return true;
 		}
 
 		if (getSellLimit() - 1 < getItems(false).size()) {
-			AuctionLocale.tell(target, "general.sellinglimit");
+			Common.tell(target, TranslationManager.string(target instanceof Player pl ? pl : null, Translations.GENERAL_SELLING_LIMIT));
 			return true;
 		}
 

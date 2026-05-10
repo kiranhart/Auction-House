@@ -1,7 +1,7 @@
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
-
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.model.ConfirmLock;
@@ -24,7 +24,7 @@ public final class GUIGeneralConfirm extends AuctionBaseGUI {
 	private boolean alreadyHandled = false;
 
 	public GUIGeneralConfirm(AuctionPlayer auctionPlayer, ItemStack itemStack, Consumer<Boolean> confirmed) {
-		super(null, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.confirm general.title"), 1);
+		super(null, auctionPlayer.getPlayer(), TranslationManager.string(auctionPlayer.getPlayer(), Translations.GUI_CONFIRM_GENERAL_TITLE), 1);
 		this.auctionPlayer = auctionPlayer;
 		this.confirmed = confirmed;
 
@@ -50,8 +50,8 @@ public final class GUIGeneralConfirm extends AuctionBaseGUI {
 	private void drawNo(int slot) {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_GENERAL_NO_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.confirm general.no.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm general.no.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_CONFIRM_GENERAL_NO_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_CONFIRM_GENERAL_NO_LORE))
 				.make(), ClickType.LEFT, click -> {
 
 			if (alreadyHandled) return;
@@ -66,8 +66,8 @@ public final class GUIGeneralConfirm extends AuctionBaseGUI {
 	private void drawYes(int slot) {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_GENERAL_YES_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.confirm general.yes.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm general.yes.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_CONFIRM_GENERAL_YES_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_CONFIRM_GENERAL_YES_LORE))
 				.make(), ClickType.LEFT, click -> {
 
 			if (alreadyHandled) return;

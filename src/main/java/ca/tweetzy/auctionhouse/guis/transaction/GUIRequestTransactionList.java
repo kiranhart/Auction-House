@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.guis.transaction;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.auction.RequestTransaction;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -56,7 +58,7 @@ public class GUIRequestTransactionList extends AuctionPagedGUI<RequestTransactio
 	}
 
 	public GUIRequestTransactionList(Player player, boolean showAll) {
-		super(null, player, showAll ? AuctionLocale.msg(player, "gui.request transactions.title all") : AuctionLocale.msg(player, "gui.request transactions.title"), 6, new ArrayList<>());
+		super(null, player, showAll ? TranslationManager.string(player, Translations.GUI_REQUEST_TRANSACTIONS_TITLE_ALL) : TranslationManager.string(player, Translations.GUI_REQUEST_TRANSACTIONS_TITLE), 6, new ArrayList<>());
 		this.auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 		this.showAll = showAll;
 		setAcceptsItems(false);
@@ -113,8 +115,8 @@ public class GUIRequestTransactionList extends AuctionPagedGUI<RequestTransactio
 
 		setButton(Settings.GUI_REQUEST_TRANSACTIONS_ITEMS_FILTER_SLOT.getInt(), QuickItem
 				.of(Settings.GUI_REQUEST_TRANSACTIONS_ITEMS_FILTER_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.request transactions.items.filter.name"))
-				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.request transactions.items.filter.lore"),
+				.name(TranslationManager.string(this.player, Translations.GUI_REQUEST_TRANSACTIONS_FILTER_NAME))
+				.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_REQUEST_TRANSACTIONS_FILTER_LORE),
 						"filter_sort_order", auctionPlayer.getTransactionSortType().getTranslatedType(),
 						"filter_buy_type", auctionPlayer.getTransactionViewFilter().getTranslatedType()
 				)).make(), click -> {
@@ -134,8 +136,8 @@ public class GUIRequestTransactionList extends AuctionPagedGUI<RequestTransactio
 		if (this.player.hasPermission("auctionhouse.transactions.viewall")) {
 			setButton(Settings.GUI_REQUEST_TRANSACTIONS_ITEMS_ALL_SLOT.getInt(), QuickItem
 					.of(this.showAll ? Settings.GUI_REQUEST_TRANSACTIONS_ITEMS_ALL_ITEM_ON.getString() : Settings.GUI_REQUEST_TRANSACTIONS_ITEMS_ALL_ITEM.getString())
-					.name(AuctionLocale.msg(this.player, "gui.request transactions.items.all.name"))
-					.lore(AuctionLocale.msgList(this.player, "gui.request transactions.items.all.lore")).make(), click -> {
+					.name(TranslationManager.string(this.player, Translations.GUI_REQUEST_TRANSACTIONS_ALL_NAME))
+					.lore(TranslationManager.list(this.player, Translations.GUI_REQUEST_TRANSACTIONS_ALL_LORE)).make(), click -> {
 
 				click.manager.showGUI(click.player, new GUIRequestTransactionList(this.player, !this.showAll));
 			});
@@ -148,7 +150,7 @@ public class GUIRequestTransactionList extends AuctionPagedGUI<RequestTransactio
 
 		return QuickItem
 				.of(item)
-				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.request transactions.items.transaction.lore"),
+				.lore(this.player, Replacer.replaceVariables(TranslationManager.list(this.player, Translations.GUI_REQUEST_TRANSACTIONS_TRANSACTION_LORE),
 						"transaction_id", transaction.getId().toString(),
 						"transaction_price", AuctionHouse.getAPI().getNumberAsCurrency(transaction.getPaymentTotal()),
 						"transaction_amount", transaction.getAmountRequested(),

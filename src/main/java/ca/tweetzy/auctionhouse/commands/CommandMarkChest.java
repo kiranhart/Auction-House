@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
@@ -71,11 +74,11 @@ public final class CommandMarkChest extends Command {
 		if (chest.getPersistentDataContainer().has(key, PersistentDataType.BYTE)) {
 			chest.getPersistentDataContainer().remove(key);
 			chest.update(true);
-			AuctionLocale.tell(player, "general.unmarked chest");
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_UNMARKED_CHEST));
 		} else {
 			chest.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
 			chest.update(true);
-			AuctionLocale.tell(player, "general.marked chest");
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_MARKED_CHEST));
 		}
 
 		return ReturnType.SUCCESS;
@@ -98,11 +101,11 @@ public final class CommandMarkChest extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.markchest");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_MARKCHEST);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.markchest");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_MARKCHEST);
 	}
 }

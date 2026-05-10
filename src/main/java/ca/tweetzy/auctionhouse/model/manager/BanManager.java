@@ -1,7 +1,9 @@
 package ca.tweetzy.auctionhouse.model.manager;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.ban.Ban;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
@@ -43,18 +45,18 @@ public final class BanManager extends KeyValueManager<UUID, Ban> {
 		if (banned) {
 			if (targetedBan.isPermanent()) {
 				// oof
-				AuctionLocale.tell(player, "ban.player permanently banned");
+				Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.BAN_PLAYER_PERMANENTLY_BANNED));
 			} else {
 				if (System.currentTimeMillis() > targetedBan.getExpireDate()) {
 					targetedBan.unStore(status -> {
 						if (status == SynchronizeResult.SUCCESS)
-							AuctionLocale.tell(player, "ban.player ban expired");
+							Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.BAN_PLAYER_BAN_EXPIRED));
 					});
 
 
 					banned = false;
 				} else {
-					AuctionLocale.tell(player, "ban.player still banned", "ban_expiration",targetedBan.getReadableExpirationDate());
+					Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.BAN_PLAYER_STILL_BANNED, "ban_expiration",targetedBan.getReadableExpirationDate()));
 				}
 			}
 		}

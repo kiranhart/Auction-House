@@ -1,7 +1,8 @@
 package ca.tweetzy.auctionhouse.guis.settings;
 
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.flight.FlightPlugin;
 import ca.tweetzy.flight.config.tweetzy.TweetzyYamlConfig;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
@@ -18,7 +19,7 @@ import java.util.List;
 public final class PluginConfigGUI extends AuctionPagedGUI<Pair<String, TweetzyYamlConfig>> {
 
 	public PluginConfigGUI(Player player) {
-		super(null, player, AuctionLocale.msg(null, "general.prefix"), 3, new ArrayList<>());
+		super(null, player, TranslationManager.string(Translations.GENERAL_PREFIX), 3, new ArrayList<>());
 		draw();
 	}
 

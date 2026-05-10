@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.guis;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -253,8 +255,8 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	protected ItemStack getBackButton() {
 		return QuickItem
 				.of(Settings.GUI_BACK_BTN_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.global items.back button.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.global items.back button.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_BACK_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_BACK_LORE))
 				.make();
 	}
 
@@ -262,8 +264,8 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	protected ItemStack getExitButton() {
 		return QuickItem
 				.of(Settings.GUI_CLOSE_BTN_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.global items.close button.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.global items.close button.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_CLOSE_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_CLOSE_LORE))
 				.make();
 	}
 
@@ -271,8 +273,8 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	protected ItemStack getPreviousButton() {
 		return QuickItem
 				.of(Settings.GUI_PREV_PAGE_BTN_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.global items.previous page button.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.global items.previous page button.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_PREV_PAGE_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_PREV_PAGE_LORE))
 				.make();
 	}
 
@@ -280,16 +282,16 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	protected ItemStack getNextButton() {
 		return QuickItem
 				.of(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.global items.next page button.name"))
-				.lore(this.player, AuctionLocale.msgList(this.player, "gui.global items.next page button.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_NEXT_PAGE_NAME))
+				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_NEXT_PAGE_LORE))
 				.make();
 	}
 
 	protected ItemStack getRefreshButton() {
 		return QuickItem
 				.of(Settings.GUI_REFRESH_BTN_ITEM.getString())
-				.name(AuctionLocale.msg(this.player, "gui.global items.refresh button.name"))
-				.lore(AuctionLocale.msgList(this.player, "gui.global items.refresh button.lore"))
+				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_REFRESH_NAME))
+				.lore(TranslationManager.list(this.player, Translations.GUI_GLOBAL_REFRESH_LORE))
 				.make();
 	}
 

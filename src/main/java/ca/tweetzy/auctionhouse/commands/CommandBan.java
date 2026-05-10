@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.commands;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.guis.admin.bans.GUIBanUser;
 import ca.tweetzy.auctionhouse.guis.selector.GUIPlayerSelector;
@@ -60,7 +63,7 @@ public class CommandBan extends Command {
 			// open the player picker then redirect to the ban user menu
 			AuctionHouse.getGuiManager().showGUI(player, new GUIPlayerSelector(player, selected -> {
 				if (AuctionHouse.getBanManager().isBannedAlready(selected)) {
-					AuctionLocale.tell(player, "ban.user already banned", "player_name",selected.getName());
+					Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.BAN_USER_ALREADY_BANNED, "player_name",selected.getName()));
 					return;
 				}
 
@@ -72,12 +75,12 @@ public class CommandBan extends Command {
 		final Player target = Bukkit.getPlayerExact(context.getArg(0));
 
 		if (target == null) {
-			AuctionLocale.tell(player, "general.playernotfound", "player",context.getArg(0));
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.GENERAL_PLAYER_NOT_FOUND, "player",context.getArg(0)));
 			return ReturnType.FAIL;
 		}
 
 		if (AuctionHouse.getBanManager().isBannedAlready(target)) {
-			AuctionLocale.tell(player, "ban.user already banned", "player_name",context.getArg(0));
+			Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.BAN_USER_ALREADY_BANNED, "player_name",context.getArg(0)));
 			return ReturnType.FAIL;
 		}
 
@@ -106,11 +109,11 @@ public class CommandBan extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionLocale.msg(null, "commands.syntax.ban");
+		return TranslationManager.string(Translations.COMMANDS_SYNTAX_BAN);
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionLocale.msg(null, "commands.description.ban");
+		return TranslationManager.string(Translations.COMMANDS_DESCRIPTION_BAN);
 	}
 }

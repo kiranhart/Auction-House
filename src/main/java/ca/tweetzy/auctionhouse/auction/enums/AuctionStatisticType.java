@@ -19,7 +19,9 @@
 package ca.tweetzy.auctionhouse.auction.enums;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,17 +44,17 @@ public enum AuctionStatisticType {
 	public String getTranslatedType() {
 		switch (this) {
 			case CREATED_AUCTION:
-				return AuctionLocale.msg(null, "auction_statistic.created_auction");
+				return TranslationManager.string(Translations.AUCTION_STATISTIC_CREATED_AUCTION);
 			case CREATED_BIN:
-				return AuctionLocale.msg(null, "auction_statistic.created_bin");
+				return TranslationManager.string(Translations.AUCTION_STATISTIC_CREATED_BIN);
 			case SOLD_AUCTION:
-				return AuctionLocale.msg(null, "auction_statistic.sold_auctions");
+				return TranslationManager.string(Translations.AUCTION_STATISTIC_SOLD_AUCTIONS);
 			case SOLD_BIN:
-				return AuctionLocale.msg(null, "auction_statistic.sold_bins");
+				return TranslationManager.string(Translations.AUCTION_STATISTIC_SOLD_BINS);
 			case MONEY_SPENT:
-				return AuctionLocale.msg(null, "auction_statistic.money_spent");
+				return TranslationManager.string(Translations.AUCTION_STATISTIC_MONEY_SPENT);
 			case MONEY_EARNED:
-				return AuctionLocale.msg(null, "auction_statistic.money_earned");
+				return TranslationManager.string(Translations.AUCTION_STATISTIC_MONEY_EARNED);
 		}
 		return getType();
 	}

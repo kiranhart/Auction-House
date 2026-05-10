@@ -132,7 +132,7 @@ Auction House supports:
 
 For issues, questions, or contributions, please refer to:
 
--   Discord: https://discord.tweetzy.ca/
+-   Community Discord: https://discord.tweetzy.ca/
 -   Spigot: https://www.spigotmc.org/resources/auction-house-the-ultimate-auction-house.60325/
 
 ## License

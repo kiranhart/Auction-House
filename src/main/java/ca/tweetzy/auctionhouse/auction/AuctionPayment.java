@@ -19,7 +19,10 @@
 package ca.tweetzy.auctionhouse.auction;
 
 
-import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.settings.TranslationManager;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
@@ -60,6 +63,6 @@ public final class AuctionPayment {
 			AuctionHouse.getCurrencyManager().deposit(player, currSplit[0], currSplit[1], this.amount);
 		}
 
-		AuctionLocale.tell(player, "pricing.moneyadd", "player_balance",AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getCurrencyManager().getBalance(player)),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.amount, this.currency, this.currencyItem));
+		Common.tell(player, TranslationManager.string(player instanceof Player pl ? pl : null, Translations.PRICING_MONEY_ADD, "player_balance",AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getCurrencyManager().getBalance(player)),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.amount, this.currency, this.currencyItem)));
 	}
 }
