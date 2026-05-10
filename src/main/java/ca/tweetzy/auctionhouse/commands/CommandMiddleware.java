@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
@@ -44,12 +46,12 @@ public final class CommandMiddleware {
 		if (AuctionHouse.getCooldownManager().isInCooldown(player)) return ReturnType.FAIL;
 
 		if (Settings.BLOCKED_WORLDS.getStringList().contains(player.getWorld().getName())) {
-			instance.getLocale().getMessage("general.disabled in world").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.disabled in world");
 			return ReturnType.FAIL;
 		}
 
 		if (Settings.USE_AUCTION_CHEST_MODE.getBoolean() && !player.hasPermission("auctionhouse.auctionchestbypass")) {
-			instance.getLocale().getMessage("general.visit auction chest").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.visit auction chest");
 			return ReturnType.FAIL;
 		}
 
@@ -61,7 +63,7 @@ public final class CommandMiddleware {
 
 	public ReturnType handleAccessHours(@NonNull final Player player) {
 		if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.auction house closed").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.auction house closed");
 			return ReturnType.FAIL;
 		}
 

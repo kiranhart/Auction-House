@@ -18,6 +18,7 @@
 
 package ca.tweetzy.auctionhouse.listeners;
 
+import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
@@ -27,7 +28,6 @@ import ca.tweetzy.auctionhouse.helpers.UpdateChecker;
 import ca.tweetzy.auctionhouse.helpers.Validate;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.Common;
@@ -116,7 +116,7 @@ public class PlayerListeners implements Listener {
 
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(AuctionHouse.getInstance(), () -> {
 			if (Settings.UPDATE_CHECKER.getBoolean() && instance.getStatus() == UpdateChecker.UpdateStatus.UNRELEASED_VERSION && player.isOp()) {
-				instance.getLocale().newMessage(Common.colorize(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", instance.getDescription().getVersion()))).sendPrefixedMessage(player);
+				Common.tell(player, Common.colorize(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", instance.getDescription().getVersion())));
 			}
 		}, 20);
 
@@ -136,11 +136,7 @@ public class PlayerListeners implements Listener {
 
 			final ItemStack toGiveRaw = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).getItemBeingListed();
 //
-			if (BundleUtil.isBundledItem(toGiveRaw)) {
-				PlayerUtils.giveItem(player, BundleUtil.extractBundleItems(toGiveRaw));
-			} else {
-				PlayerUtils.giveItem(player, toGiveRaw);
-			}
+			BundleUtil.giveBundleOrSingle(player, toGiveRaw);
 
 			AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setItemBeingListed(null);
 			AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()).setPlayer(null);
@@ -213,7 +209,7 @@ public class PlayerListeners implements Listener {
 			}
 		}
 
-		PlayerUtils.giveItem(player, items);
+		BundleUtil.giveStacks(player, items);
 	}
 
 	@EventHandler

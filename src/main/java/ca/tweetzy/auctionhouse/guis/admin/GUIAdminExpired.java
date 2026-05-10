@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.admin;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
@@ -36,7 +38,7 @@ public final class GUIAdminExpired extends AuctionPagedGUI<AuctionedItem> {
 	final OfflinePlayer targetUser;
 
 	public GUIAdminExpired(Player viewer, OfflinePlayer targetUser) {
-		super(null, viewer, Settings.GUI_EXPIRED_ITEMS_ADMIN_TITLE.getString(), 6, AuctionHouse.getInstance().getAuctionItemManager().getItems().values().stream().filter(item -> item.isExpired() && item.getOwner().equals(targetUser.getUniqueId()) && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(item.getId())).collect(Collectors.toList()));
+		super(null, viewer, AuctionLocale.msg(viewer, "gui.expired items admin.title"), 6, AuctionHouse.getInstance().getAuctionItemManager().getItems().values().stream().filter(item -> item.isExpired() && item.getOwner().equals(targetUser.getUniqueId()) && !AuctionHouse.getInstance().getAuctionItemManager().getGarbageBin().containsKey(item.getId())).collect(Collectors.toList()));
 		this.targetUser = targetUser;
 		setAcceptsItems(false);
 		draw();
@@ -55,7 +57,7 @@ public final class GUIAdminExpired extends AuctionPagedGUI<AuctionedItem> {
 	@Override
 	protected ItemStack makeDisplayItem(AuctionedItem auctionedItem) {
 		final ItemStack item = auctionedItem.getItem().clone();
-		return QuickItem.of(item).lore(this.player, Settings.GUI_EXPIRED_ITEMS_ADMIN_ITEMS_LORE.getStringList()).make();
+		return QuickItem.of(item).lore(this.player, AuctionLocale.msgList(this.player, "gui.expired items admin.item lore")).make();
 	}
 
 	@Override

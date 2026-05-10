@@ -18,6 +18,10 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.ListingResult;
@@ -40,7 +44,6 @@ import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.MathUtil;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
@@ -83,7 +86,7 @@ public final class CommandSell extends Command {
 
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			Common.tell(Bukkit.getConsoleSender(), Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now."));
 			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
@@ -96,7 +99,7 @@ public final class CommandSell extends Command {
 
 		// check if player is at their selling limit
 		if (auctionPlayer.isAtItemLimit(player)) {
-//			instance.getLocale().getMessage("general.sellinglimit").sendPrefixedMessage(player);
+//			AuctionLocale.tell(player, "general.sellinglimit");
 			return ReturnType.FAIL;
 		}
 
@@ -107,7 +110,7 @@ public final class CommandSell extends Command {
 			}
 
 			if (itemToSell.getType() == CompMaterial.AIR.get() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.air");
 				return ReturnType.FAIL;
 			} else {
 				if (Settings.SELL_MENU_SKIPS_TYPE_SELECTION.getBoolean()) {
@@ -137,7 +140,7 @@ public final class CommandSell extends Command {
 		}
 
 		if (itemToSell.getType() == CompMaterial.AIR.get()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.air");
 			return ReturnType.FAIL;
 		}
 
@@ -236,7 +239,7 @@ public final class CommandSell extends Command {
 		}
 		// check buy now price null
 		if (buyNowPrice == null) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.please_enter_at_least_one_number").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.please_enter_at_least_one_number");
 			return ReturnType.FAIL;
 		}
 
@@ -245,17 +248,13 @@ public final class CommandSell extends Command {
 		// NOT USING THE BIDDING SYSTEM
 		if (!isBiddingItem) {
 			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice")
-						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMinPrice()))
-						.sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "pricing.minitemprice", "price",AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMinPrice()));
 
 				return ReturnType.FAIL;
 			}
 
 			if (AuctionAPI.getInstance().isAtMaxItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, isBiddingItem ? startingBid : 0)) {
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.maxitemprice")
-						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMaxPrice()))
-						.sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "pricing.maxitemprice", "price",AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMaxPrice()));
 
 				return ReturnType.FAIL;
 			}
@@ -266,16 +265,12 @@ public final class CommandSell extends Command {
 
 		if (isBiddingItem && startingBid != null) {
 			if (!AuctionAPI.getInstance().meetsMinItemPrice(isBundle, true, originalItem, buyNowPrice, startingBid)) {
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.minitemprice")
-						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMinPrice()))
-						.sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "pricing.minitemprice", "price",AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMinPrice()));
 				return ReturnType.FAIL;
 			}
 
 			if (AuctionAPI.getInstance().isAtMaxItemPrice(isBundle, isBiddingItem, originalItem, buyNowPrice, startingBid)) {
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.maxitemprice")
-						.processPlaceholder("price", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMaxPrice()))
-						.sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "pricing.maxitemprice", "price",AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getPriceLimitManager().getPriceLimit(originalItem).getMaxPrice()));
 
 				return ReturnType.FAIL;
 			}
@@ -284,24 +279,24 @@ public final class CommandSell extends Command {
 
 			// check the starting bid values
 			if (startingBid < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()) {
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.minstartingprice").processPlaceholder("price", Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "pricing.minstartingprice", "price",Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble());
 				return ReturnType.FAIL;
 			}
 
 			if (startingBid > Settings.MAX_AUCTION_START_PRICE.getDouble()) {
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.maxstartingprice").processPlaceholder("price", Settings.MAX_AUCTION_START_PRICE.getDouble()).sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "pricing.maxstartingprice", "price",Settings.MAX_AUCTION_START_PRICE.getDouble());
 				return ReturnType.FAIL;
 			}
 
 			// if present check the bid increment pricing
 			if (bidIncrement != null) {
 				if (bidIncrement < Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()) {
-					AuctionHouse.getInstance().getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "pricing.minbidincrementprice", "price",Settings.MIN_AUCTION_INCREMENT_PRICE.getDouble());
 					return ReturnType.FAIL;
 				}
 
 				if (bidIncrement > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
-					AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", Settings.MAX_AUCTION_START_PRICE.getDouble()).sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "pricing.maxbidincrementprice", "price",Settings.MAX_AUCTION_START_PRICE.getDouble());
 					return ReturnType.FAIL;
 				}
 			} else {
@@ -310,7 +305,7 @@ public final class CommandSell extends Command {
 
 			// check if the starting bid is not higher than the buy now
 			if (Settings.BASE_PRICE_MUST_BE_HIGHER_THAN_BID_START.getBoolean() && startingBid > buyNowPrice && !(buyNowPrice <= -1)) {
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.basepricetoolow").sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "pricing.basepricetoolow");
 				return ReturnType.FAIL;
 			}
 		}
@@ -324,7 +319,7 @@ public final class CommandSell extends Command {
 		} else {
 			if (isBundle) {
 				if (BundleUtil.isBundledItem(itemToSell)) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.cannotsellbundleditem").sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "general.cannotsellbundleditem");
 					return ReturnType.FAIL;
 				}
 
@@ -349,7 +344,7 @@ public final class CommandSell extends Command {
 		}
 
 		if (auctionPlayer.isAtBundleLimit() && isBundle) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.bundlelistlimit").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.bundlelistlimit");
 			return ReturnType.FAIL;
 		}
 
@@ -441,7 +436,7 @@ public final class CommandSell extends Command {
 					AuctionHouse.getAuctionPlayerManager().processSell(player);
 
 					player.closeInventory();
-					PlayerUtils.giveItem(player, auctionedItem.getCleanItem());
+					PlayerUtil.giveItem(player, auctionedItem.getCleanItem());
 					auctionPlayer.setItemBeingListed(null);
 					return;
 				}
@@ -459,7 +454,7 @@ public final class CommandSell extends Command {
 						AuctionHouse.getAuctionPlayerManager().processSell(player);
 
 						if (listingResult != ListingResult.SUCCESS) {
-							PlayerUtils.giveItem(player, auction.getCleanItem());
+							PlayerUtil.giveItem(player, auction.getCleanItem());
 							auctionPlayer.setItemBeingListed(null);
 							AuctionHouse.newChain().sync(player::closeInventory).execute();
 							return;
@@ -494,7 +489,7 @@ public final class CommandSell extends Command {
 				AuctionHouse.getAuctionPlayerManager().processSell(player);
 
 				if (listingResult != ListingResult.SUCCESS) {
-					PlayerUtils.giveItem(player, auction.getItem());
+					PlayerUtil.giveItem(player, auction.getItem());
 					auctionPlayer.setItemBeingListed(null);
 					return;
 				}
@@ -514,12 +509,12 @@ public final class CommandSell extends Command {
 	private boolean checkBasePrice(final Player player, final double val, boolean allowMinusOne) {
 		if (val < Settings.MIN_AUCTION_PRICE.getDouble()) {
 			if (allowMinusOne && val <= -1) return true;
-			AuctionHouse.getInstance().getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "pricing.minbaseprice", "price",Settings.MIN_AUCTION_PRICE.getDouble());
 			return false;
 		}
 
 		if (val > Settings.MAX_AUCTION_PRICE.getDouble()) {
-			AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", Settings.MAX_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "pricing.maxbaseprice", "price",Settings.MAX_AUCTION_PRICE.getDouble());
 			return false;
 		}
 		return true;
@@ -533,11 +528,11 @@ public final class CommandSell extends Command {
 	@Override
 	protected List<String> tab(CommandContext context) {
 		if (context.getArgCount() == 1)
-			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion one").getMessage().split(" "));
+			return Arrays.asList(AuctionLocale.msg(null, "commands.sell.args.suggestion one").split(" "));
 		if (context.getArgCount() == 2)
-			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion two").getMessage().split(" "));
+			return Arrays.asList(AuctionLocale.msg(null, "commands.sell.args.suggestion two").split(" "));
 		if (context.getArgCount() == 3 && Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean() && !Settings.FORCE_AUCTION_USAGE.getBoolean())
-			return Arrays.asList(AuctionHouse.getInstance().getLocale().getMessage("commands.sell.args.suggestion three").getMessage().split(" "));
+			return Arrays.asList(AuctionLocale.msg(null, "commands.sell.args.suggestion three").split(" "));
 		return null;
 	}
 
@@ -548,11 +543,11 @@ public final class CommandSell extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.sell").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.sell");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.sell").getMessage();
+		return AuctionLocale.msg(null, "commands.description.sell");
 	}
 }

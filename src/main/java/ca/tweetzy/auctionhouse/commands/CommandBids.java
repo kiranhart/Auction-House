@@ -58,7 +58,7 @@ public class CommandBids extends Command {
 		if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			Common.tell(Bukkit.getConsoleSender(), Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now."));
 			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 		AuctionHouse.getGuiManager().showGUI(player, new GUIActiveBids(AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId())));

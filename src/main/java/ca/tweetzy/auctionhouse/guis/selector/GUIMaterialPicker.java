@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.guis.selector;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -29,7 +31,7 @@ public final class GUIMaterialPicker extends AuctionPagedGUI<ItemStack> {
 	private final Consumer<ItemStack> selected;
 
 	public GUIMaterialPicker(final Gui parent, Player player, final String searchQuery, @NonNull final Consumer<ItemStack> selected) {
-		super(parent, player, Settings.GUI_MATERIAL_PICKER_TITLE.getString(), 6, new ArrayList<>());
+		super(parent, player, AuctionLocale.msg(player, "gui.material picker.title"), 6, new ArrayList<>());
 		setAcceptsItems(true);
 		setAllowClose(false);
 		this.searchQuery = searchQuery;
@@ -60,8 +62,8 @@ public final class GUIMaterialPicker extends AuctionPagedGUI<ItemStack> {
 			new TitleInput(
 					AuctionHouse.getInstance(),
 					click.player,
-					Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.material search.title").getMessage()),
-					Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("titles.material search.subtitle").getMessage())
+					Common.colorize(AuctionLocale.msg(null, "titles.material search.title")),
+					Common.colorize(AuctionLocale.msg(null, "titles.material search.subtitle"))
 			) {
 				@Override
 				public boolean onResult(String string) {
@@ -90,22 +92,22 @@ public final class GUIMaterialPicker extends AuctionPagedGUI<ItemStack> {
 		}
 		return QuickItem.of(item)
 				.name("&e&l" + ChatUtil.capitalizeFully(item.getType()))
-				.lore(this.player, Settings.GUI_MATERIAL_PICKER_ITEMS_MATERIAL_LORE.getStringList())
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.material picker.items.material.lore"))
 				.make();
 	}
 
 	protected ItemStack buildSearchButton() {
 		return QuickItem.of(CompMaterial.OAK_SIGN)
-				.name(Settings.GUI_MATERIAL_PICKER_ITEMS_SEARCH_NAME.getString())
-				.lore(this.player, Settings.GUI_MATERIAL_PICKER_ITEMS_SEARCH_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.material picker.items.search.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.material picker.items.search.lore"))
 				.make();
 	}
 
 	protected ItemStack buildResetButton() {
 		return QuickItem
 				.of(CompMaterial.LAVA_BUCKET)
-				.name(Settings.GUI_MATERIAL_PICKER_ITEMS_RESET_NAME.getString())
-				.lore(this.player, Settings.GUI_MATERIAL_PICKER_ITEMS_RESET_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.material picker.items.reset.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.material picker.items.reset.lore"))
 				.make();
 	}
 

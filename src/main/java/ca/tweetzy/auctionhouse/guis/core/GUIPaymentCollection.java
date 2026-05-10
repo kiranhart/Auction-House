@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.core;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
@@ -48,7 +50,7 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 	private Long lastClicked = null;
 
 	public GUIPaymentCollection(Gui parent, AuctionPlayer auctionPlayer) {
-		super(parent, auctionPlayer.getPlayer(), Settings.GUI_PAYMENT_COLLECTION_TITLE.getString(), 6, AuctionHouse.getPaymentsManager().getPaymentsByPlayer(auctionPlayer.getPlayer()));
+		super(parent, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.payment collection.title"), 6, AuctionHouse.getPaymentsManager().getPaymentsByPlayer(auctionPlayer.getPlayer()));
 		this.auctionPlayer = auctionPlayer;
 		draw();
 	}
@@ -67,8 +69,8 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 	protected ItemStack makeDisplayItem(AuctionPayment payment) {
 		return QuickItem
 				.of(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_ITEM.getString())
-				.name(Replacer.replaceVariables(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_NAME.getString(), "payment_amount", AuctionHouse.getAPI().getNumberAsCurrency(payment.getAmount(), false)))
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_PAYMENT_COLLECTION_PAYMENT_LORE.getStringList(),
+				.name(Replacer.replaceVariables(AuctionLocale.msg(this.player, "gui.payment collection.payment.name"), "payment_amount", AuctionHouse.getAPI().getNumberAsCurrency(payment.getAmount(), false)))
+				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.payment collection.payment.lore"),
 						"item_name", AuctionAPI.getInstance().getItemName(payment.getItem()),
 						"from_name", payment.getFromName(),
 						"payment_reason", payment.getReason().getTranslation()
@@ -98,8 +100,8 @@ public class GUIPaymentCollection extends AuctionPagedGUI<AuctionPayment> {
 		applyBackExit();
 
 		setButton(5, 1, QuickItem.of(Settings.GUI_PAYMENT_COLLECTION_ITEM.getString())
-				.name(Settings.GUI_PAYMENT_COLLECTION_NAME.getString())
-				.lore(this.player, Settings.GUI_PAYMENT_COLLECTION_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.payment collection.claim all.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.payment collection.claim all.lore"))
 				.make(), e -> {
 
 			if (this.lastClicked == null) {

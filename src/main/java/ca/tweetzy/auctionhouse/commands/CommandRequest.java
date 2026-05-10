@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
@@ -73,7 +75,7 @@ public class CommandRequest extends Command {
 		if (AuctionHouse.getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.REQUESTS)) return ReturnType.FAIL;
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			Common.tell(Bukkit.getConsoleSender(), Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now."));
 			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
@@ -83,7 +85,7 @@ public class CommandRequest extends Command {
 		final ItemStack originalItem = PlayerHelper.getHeldItem(player).clone();
 
 		if (originalItem.getType() == CompMaterial.AIR.get()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.air");
 			return ReturnType.FAIL;
 		}
 
@@ -105,7 +107,7 @@ public class CommandRequest extends Command {
 					}
 
 					if (containsItems) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.request shulker contains items").sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.request shulker contains items");
 						return ReturnType.FAIL;
 					}
 				}
@@ -120,7 +122,7 @@ public class CommandRequest extends Command {
 
 		// check if price is even a number
 		if (!MathUtil.isDouble(context.getArg(0))) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", context.getArg(0)).sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.notanumber", "value",context.getArg(0));
 			return ReturnType.FAIL;
 		}
 
@@ -129,7 +131,7 @@ public class CommandRequest extends Command {
 
 		// check if at limit
 		if (auctionPlayer.isAtItemLimit(player)) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.requestlimit").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.requestlimit");
 			return ReturnType.FAIL;
 		}
 
@@ -145,12 +147,12 @@ public class CommandRequest extends Command {
 		final double price = Double.parseDouble(context.getArg(0));
 
 		if (price < Settings.MIN_REQUEST_PRICE.getDouble()) {
-			AuctionHouse.getInstance().getLocale().getMessage("pricing.request.min price").processPlaceholder("price", Settings.MIN_REQUEST_PRICE.getDouble()).sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "pricing.request.min price", "price",Settings.MIN_REQUEST_PRICE.getDouble());
 			return ReturnType.FAIL;
 		}
 
 		if (price > Settings.MAX_REQUEST_PRICE.getDouble()) {
-			AuctionHouse.getInstance().getLocale().getMessage("pricing.request.max price").processPlaceholder("price", Settings.MAX_REQUEST_PRICE.getDouble()).sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "pricing.request.max price", "price",Settings.MAX_REQUEST_PRICE.getDouble());
 			return ReturnType.FAIL;
 		}
 
@@ -181,12 +183,12 @@ public class CommandRequest extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.request").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.request");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.request").getMessage();
+		return AuctionLocale.msg(null, "commands.description.request");
 	}
 
 	@Override

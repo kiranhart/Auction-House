@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
@@ -69,11 +71,11 @@ public final class CommandMarkChest extends Command {
 		if (chest.getPersistentDataContainer().has(key, PersistentDataType.BYTE)) {
 			chest.getPersistentDataContainer().remove(key);
 			chest.update(true);
-			instance.getLocale().getMessage("general.unmarked chest").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.unmarked chest");
 		} else {
 			chest.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
 			chest.update(true);
-			instance.getLocale().getMessage("general.marked chest").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.marked chest");
 		}
 
 		return ReturnType.SUCCESS;
@@ -96,11 +98,11 @@ public final class CommandMarkChest extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.markchest").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.markchest");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.markchest").getMessage();
+		return AuctionLocale.msg(null, "commands.description.markchest");
 	}
 }

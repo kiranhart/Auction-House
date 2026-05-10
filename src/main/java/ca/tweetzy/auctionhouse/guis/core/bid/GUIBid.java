@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.core.bid;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
@@ -53,7 +55,7 @@ public class GUIBid extends AuctionBaseGUI {
 	private final AuctionedItem auctionItem;
 
 	public GUIBid(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
-		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_BIDDING_TITLE.getString(), 3);
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.bidding.title"), 3);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_BIDDING_BG_ITEM.getString()).make()));
@@ -76,24 +78,18 @@ public class GUIBid extends AuctionBaseGUI {
 				if (watching) {
 					AuctionHouse.getWatchlistManager().remove(e.player.getUniqueId(), this.auctionItem.getId(), (err, ok) -> {
 						if (ok) {
-							AuctionHouse.getInstance().getLocale().getMessage("watchlist.removed")
-									.processPlaceholder("item", AuctionAPI.getInstance().getItemName(this.auctionItem.getItem()))
-									.sendPrefixedMessage(e.player);
+							AuctionLocale.tell(e.player, "watchlist.removed", "item",AuctionAPI.getInstance().getItemName(this.auctionItem.getItem()));
 							draw();
 						}
 					});
 				} else {
 					if (AuctionHouse.getWatchlistManager().getWatchlistCount(e.player.getUniqueId()) >= Settings.WATCHLIST_MAX_LISTINGS.getInt()) {
-						AuctionHouse.getInstance().getLocale().getMessage("watchlist.limit reached")
-								.processPlaceholder("max", String.valueOf(Settings.WATCHLIST_MAX_LISTINGS.getInt()))
-								.sendPrefixedMessage(e.player);
+						AuctionLocale.tell(e.player, "watchlist.limit reached", "max",String.valueOf(Settings.WATCHLIST_MAX_LISTINGS.getInt()));
 						return;
 					}
 					AuctionHouse.getWatchlistManager().add(e.player.getUniqueId(), this.auctionItem.getId(), (err, ok) -> {
 						if (ok) {
-							AuctionHouse.getInstance().getLocale().getMessage("watchlist.added")
-									.processPlaceholder("item", AuctionAPI.getInstance().getItemName(this.auctionItem.getItem()))
-									.sendPrefixedMessage(e.player);
+							AuctionLocale.tell(e.player, "watchlist.added", "item",AuctionAPI.getInstance().getItemName(this.auctionItem.getItem()));
 							draw();
 						}
 					});
@@ -103,11 +99,11 @@ public class GUIBid extends AuctionBaseGUI {
 
 		setButton(1, 2, QuickItem
 				.of(Settings.GUI_BIDDING_ITEMS_DEFAULT_ITEM.getString())
-				.name(Settings.GUI_BIDDING_ITEMS_DEFAULT_NAME.getString())
-				.lore(this.player, Settings.GUI_BIDDING_ITEMS_DEFAULT_LORE.getStringList()).make(), e -> {
+				.name(AuctionLocale.msg(this.player, "gui.bidding.items.default amount.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.bidding.items.default amount.lore")).make(), e -> {
 
 			if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getCurrencyManager().has(e.player, auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice())) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
+				AuctionLocale.tell(e.player, "general.notenoughmoney");
 				return;
 			}
 
@@ -120,12 +116,12 @@ public class GUIBid extends AuctionBaseGUI {
 		// TODO UPDATE BID
 		setButton(1, 6, QuickItem
 				.of(Settings.GUI_BIDDING_ITEMS_CUSTOM_ITEM.getString())
-				.name(Settings.GUI_BIDDING_ITEMS_CUSTOM_NAME.getString())
-				.lore(this.player, Settings.GUI_BIDDING_ITEMS_CUSTOM_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.bidding.items.custom amount.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.bidding.items.custom amount.lore"))
 				.make(), e -> {
 
 		// TitleInput automatically handles allowClose and inventory closing
-		new TitleInput(AuctionHouse.getInstance(), player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.subtitle").getMessage()) {
+		new TitleInput(AuctionHouse.getInstance(), player, AuctionLocale.msg(null, "titles.enter bid.title"), AuctionLocale.msg(null, "titles.enter bid.subtitle")) {
 
 				@Override
 				public void onExit(Player player) {
@@ -137,26 +133,26 @@ public class GUIBid extends AuctionBaseGUI {
 					string = ChatColor.stripColor(string);
 
 					if (!MathUtil.isDouble(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.notanumber", "value",string);
 						return false;
 					}
 
 					double value = Double.parseDouble(string);
 
 					if (value <= 0) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.cannotbezero").sendPrefixedMessage(e.player);
+						AuctionLocale.tell(e.player, "general.cannotbezero");
 						return false;
 					}
 
 					if (value > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(e.player);
+						AuctionLocale.tell(e.player, "pricing.maxbidincrementprice", "price",Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble());
 						return false;
 					}
 
 					double newBiddingAmount = 0;
 					if (Settings.USE_REALISTIC_BIDDING.getBoolean()) {
 						if (value < auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice()) {
-							AuctionHouse.getInstance().getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem())).sendPrefixedMessage(e.player);
+							AuctionLocale.tell(e.player, "pricing.minbidincrementprice", "price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice() + auctionItem.getBidIncrementPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
 							return false;
 						}
 
@@ -165,7 +161,7 @@ public class GUIBid extends AuctionBaseGUI {
 						} else {
 							if (Settings.BID_MUST_BE_HIGHER_THAN_PREVIOUS.getBoolean()) {
 								e.manager.showGUI(e.player, new GUIAuctionHouse(GUIBid.this.auctionPlayer));
-								AuctionHouse.getInstance().getLocale().getMessage("pricing.bidmusthigherthanprevious").processPlaceholder("current_bid", AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem())).sendPrefixedMessage(e.player);
+								AuctionLocale.tell(e.player, "pricing.bidmusthigherthanprevious", "current_bid",AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
 								return true;
 							}
 
@@ -173,7 +169,7 @@ public class GUIBid extends AuctionBaseGUI {
 						}
 					} else {
 						if (value < auctionItem.getBidIncrementPrice()) {
-							AuctionHouse.getInstance().getLocale().getMessage("pricing.minbidincrementprice").processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getBidIncrementPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem())).sendPrefixedMessage(e.player);
+							AuctionLocale.tell(e.player, "pricing.minbidincrementprice", "price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getBidIncrementPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
 							return false;
 						}
 
@@ -183,7 +179,7 @@ public class GUIBid extends AuctionBaseGUI {
 					newBiddingAmount = Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(newBiddingAmount) : newBiddingAmount;
 
 					if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !AuctionHouse.getCurrencyManager().has(e.player, newBiddingAmount)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
+						AuctionLocale.tell(e.player, "general.notenoughmoney");
 						return true;
 					}
 
@@ -205,7 +201,7 @@ public class GUIBid extends AuctionBaseGUI {
 						final double oldBidAmount = auctionItem.getCurrentPrice();
 
 						if (!AuctionHouse.getCurrencyManager().has(e.player, newBiddingAmount)) {
-							AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(e.player);
+							AuctionLocale.tell(e.player, "general.notenoughmoney");
 							return true;
 						}
 
@@ -219,7 +215,7 @@ public class GUIBid extends AuctionBaseGUI {
 										oldBidder.getUniqueId(),
 										oldBidAmount,
 										auctionItem.getItem(),
-										AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
+										AuctionLocale.msg(null, "general.prefix"),
 										PaymentReason.BID_RETURNED,
 										auctionItem.getCurrency(),
 										auctionItem.getCurrencyItem()
@@ -230,10 +226,7 @@ public class GUIBid extends AuctionBaseGUI {
 							String balanceStr = AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, currencyParts.length > 0 ? currencyParts[0] : "Vault", currencyParts.length > 1 ? currencyParts[1] : "Vault"), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 							String priceStr = AuctionHouse.getAPI().getFinalizedCurrencyNumber(oldBidAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 							if (oldBidder.isOnline() && oldBidder.getPlayer() != null) {
-								AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-										.processPlaceholder("player_balance", balanceStr)
-										.processPlaceholder("price", priceStr)
-										.sendPrefixedMessage(oldBidder.getPlayer());
+								AuctionLocale.tell(oldBidder.getPlayer(), "pricing.moneyadd", "player_balance",balanceStr,"price",priceStr);
 							} else {
 								HashMap<String, String> placeholders = new HashMap<>();
 								placeholders.put("player_balance", balanceStr);
@@ -243,10 +236,7 @@ public class GUIBid extends AuctionBaseGUI {
 						}
 
 						AuctionHouse.getCurrencyManager().withdraw(e.player, newBiddingAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem());
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
-								.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(e.player, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-								.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(newBiddingAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-								.sendPrefixedMessage(e.player);
+						AuctionLocale.tell(e.player, "pricing.moneyremove", "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(e.player, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(newBiddingAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
 
 					}
 
@@ -263,11 +253,7 @@ public class GUIBid extends AuctionBaseGUI {
 					}
 
 					if (oldBidder.isOnline() && oldBidder.getPlayer() != null) {
-						AuctionHouse.getInstance().getLocale().getMessage("auction.outbid")
-								.processPlaceholder("player", e.player.getName())
-								.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(e.player))
-								.processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
-								.sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionLocale.tell(oldBidder.getPlayer(), "auction.outbid", "player",e.player.getName(),"player_displayname",AuctionAPI.getInstance().getDisplayName(e.player),"item",AuctionAPI.getInstance().getItemName(itemStack));
 					} else {
 						HashMap<String, String> outbidPlaceholders = new HashMap<>();
 						outbidPlaceholders.put("player", e.player.getName());
@@ -277,12 +263,7 @@ public class GUIBid extends AuctionBaseGUI {
 					}
 
 					if (owner.isOnline() && owner.getPlayer() != null) {
-						AuctionHouse.getInstance().getLocale().getMessage("auction.placedbid")
-								.processPlaceholder("player", e.player.getName())
-								.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(e.player))
-								.processPlaceholder("amount", AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-								.processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
-								.sendPrefixedMessage(owner.getPlayer());
+						AuctionLocale.tell(owner.getPlayer(), "auction.placedbid", "player",e.player.getName(),"player_displayname",AuctionAPI.getInstance().getDisplayName(e.player),"amount",AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"item",AuctionAPI.getInstance().getItemName(itemStack));
 					} else {
 						HashMap<String, String> placedbidPlaceholders = new HashMap<>();
 						placedbidPlaceholders.put("player", e.player.getName());
@@ -293,12 +274,7 @@ public class GUIBid extends AuctionBaseGUI {
 					}
 
 					if (Settings.BROADCAST_AUCTION_BID.getBoolean()) {
-						Bukkit.getOnlinePlayers().forEach(player -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.bid")
-								.processPlaceholder("player", e.player.getName())
-								.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(e.player))
-								.processPlaceholder("amount", AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-								.processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
-								.sendPrefixedMessage(player));
+						Bukkit.getOnlinePlayers().forEach(player -> AuctionLocale.tell(player, "auction.broadcast.bid", "player",e.player.getName(),"player_displayname",AuctionAPI.getInstance().getDisplayName(e.player),"amount",AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"item",AuctionAPI.getInstance().getItemName(itemStack)));
 					}
 
 					e.manager.showGUI(e.player, new GUIAuctionHouse(GUIBid.this.auctionPlayer));

@@ -1,5 +1,9 @@
 package ca.tweetzy.auctionhouse.model.manager;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.Cart;
@@ -10,7 +14,6 @@ import ca.tweetzy.auctionhouse.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.exception.ItemNotFoundException;
 import ca.tweetzy.auctionhouse.impl.AuctionCart;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.nbtapi.NBT;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -82,7 +85,7 @@ public final class CartManager extends KeyValueManager<UUID, Cart> {
 				}
 
 				if (!Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean() && player.getInventory().firstEmpty() == -1) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.noroom").sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "general.noroom");
 					break;
 				}
 
@@ -101,7 +104,7 @@ public final class CartManager extends KeyValueManager<UUID, Cart> {
 					nbt.removeKey("AuctionDupeTracking");
 				});
 
-				PlayerUtils.giveItem(player, foundItem);
+				PlayerUtil.giveItem(player, foundItem);
 				sendMessages(player, located, false, 0, foundItem.getAmount());
 
 				// Track cart totals
@@ -119,17 +122,7 @@ public final class CartManager extends KeyValueManager<UUID, Cart> {
 				if (Settings.BROADCAST_AUCTION_SALE.getBoolean()) {
 					final OfflinePlayer seller = Bukkit.getOfflinePlayer(located.getOwner());
 
-					Bukkit.getOnlinePlayers().forEach(players -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.sold")
-							.processPlaceholder("player", player.getName())
-							.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(player))
-							.processPlaceholder("seller", located.getOwnerName())
-							.processPlaceholder("seller_displayname", AuctionAPI.getInstance().getDisplayName(seller))
-							.processPlaceholder("amount", located.getItem().getAmount())
-							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(located.getItem()))
-							.processPlaceholder("price",
-									located.getBasePrice() > located.getCurrentPrice() ? located.getFormattedBasePrice() : located.getFormattedCurrentPrice()
-							)
-							.sendPrefixedMessage(players));
+					Bukkit.getOnlinePlayers().forEach(players -> AuctionLocale.tell(players, "auction.broadcast.sold", "player",player.getName(),"player_displayname",AuctionAPI.getInstance().getDisplayName(player),"seller",located.getOwnerName(),"seller_displayname",AuctionAPI.getInstance().getDisplayName(seller),"amount",located.getItem().getAmount(),"item",AuctionAPI.getInstance().getItemName(located.getItem()),"price",located.getBasePrice() > located.getCurrentPrice() ? located.getFormattedBasePrice() : located.getFormattedCurrentPrice()));
 				}
 
 				AuctionHouse.getTransactionManager().getPrePurchasePlayers(located.getId()).forEach(players -> {
@@ -174,15 +167,9 @@ public final class CartManager extends KeyValueManager<UUID, Cart> {
 		double totalPrice = overwritePrice ? price : located.getBasePrice();
 		double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * totalPrice : 0D;
 
-		AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
-				.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(player, located.getCurrency().split("/")[0], located.getCurrency().split("/")[1]), located.getCurrency(), located.getCurrencyItem()))
-				.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice, located.getCurrency(), located.getCurrencyItem()))
-				.sendPrefixedMessage(player);
+		AuctionLocale.tell(player, "pricing.moneyremove", "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(player, located.getCurrency().split("/")[0], located.getCurrency().split("/")[1]), located.getCurrency(), located.getCurrencyItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice, located.getCurrency(), located.getCurrencyItem()));
 
-		AuctionHouse.getInstance().getLocale().getMessage("general.bought_item")
-				.processPlaceholder("amount", qtyOverride).processPlaceholder("item", AuctionAPI.getInstance().getItemName(located.getItem()))
-				.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice, located.getCurrency(), located.getCurrencyItem()))
-				.sendPrefixedMessage(player);
+		AuctionLocale.tell(player, "general.bought_item", "amount",qtyOverride,"item",AuctionAPI.getInstance().getItemName(located.getItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice, located.getCurrency(), located.getCurrencyItem()));
 
 		OfflinePlayer seller = Bukkit.getOfflinePlayer(located.getOwner());
 		String itemName = AuctionAPI.getInstance().getItemName(located.getItem());
@@ -193,17 +180,9 @@ public final class CartManager extends KeyValueManager<UUID, Cart> {
 		String sellerBalanceStr = AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(seller, currencyPlugin, currencyName), located.getCurrency(), located.getCurrencyItem());
 
 		if (seller.isOnline() && seller.getPlayer() != null) {
-			AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
-					.processPlaceholder("item", itemName)
-					.processPlaceholder("amount", String.valueOf(qtyOverride))
-					.processPlaceholder("price", priceFormatted)
-					.processPlaceholder("buyer_name", player.getName())
-					.sendPrefixedMessage(seller.getPlayer());
+			AuctionLocale.tell(seller.getPlayer(), "auction.itemsold", "item",itemName,"amount",String.valueOf(qtyOverride),"price",priceFormatted,"buyer_name",player.getName());
 
-			AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-					.processPlaceholder("player_balance", sellerBalanceStr)
-					.processPlaceholder("price", priceFormatted)
-					.sendPrefixedMessage(seller.getPlayer());
+			AuctionLocale.tell(seller.getPlayer(), "pricing.moneyadd", "player_balance",sellerBalanceStr,"price",priceFormatted);
 		} else {
 			HashMap<String, String> itemsoldPlaceholders = new HashMap<>();
 			itemsoldPlaceholders.put("item", itemName);

@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.statistics.GUIStatisticView;
@@ -59,7 +61,7 @@ public class CommandStats extends Command {
 		AuctionPlayer user = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 
 		if (user == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			Common.tell(Bukkit.getConsoleSender(), Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now."));
 			AuctionPlayer newAHPlayer = new AuctionPlayer(player);
 			user = newAHPlayer;
 			AuctionHouse.getAuctionPlayerManager().addPlayer(newAHPlayer);
@@ -73,7 +75,7 @@ public class CommandStats extends Command {
 		final Player target = Bukkit.getPlayerExact(context.getArg(0));
 
 		if (target == null) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", context.getArg(0)).sendPrefixedMessage(context.getSender());
+			AuctionLocale.tell(context.getSender(), "general.playernotfound", "player",context.getArg(0));
 			return ReturnType.FAIL;
 		}
 
@@ -90,12 +92,12 @@ public class CommandStats extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.stats").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.stats");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.stats").getMessage();
+		return AuctionLocale.msg(null, "commands.description.stats");
 	}
 
 	@Override

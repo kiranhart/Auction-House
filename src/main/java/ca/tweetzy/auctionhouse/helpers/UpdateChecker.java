@@ -18,9 +18,9 @@
 
 package ca.tweetzy.auctionhouse.helpers;
 
-import ca.tweetzy.core.TweetyPlugin;
 import ca.tweetzy.flight.utils.Common;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -44,7 +44,7 @@ public class UpdateChecker {
 	private UpdateStatus status = UpdateStatus.UNKNOWN;
 	final String API_URL = "https://api.spigotmc.org/legacy/update.php?resource=%d";
 
-	final TweetyPlugin plugin;
+	final JavaPlugin plugin;
 	final int SPIGOT_ID;
 	final CommandSender[] to;
 	private String latestVersion = "0.0.0";
@@ -105,19 +105,19 @@ public class UpdateChecker {
 		for (CommandSender sender : to) {
 			switch (status) {
 				case UP_TO_DATE:
-					plugin.getLocale().newMessage(Common.colorize("&aIs running the latest version!")).sendPrefixedMessage(sender);
+					Common.tell(sender, Common.colorize("&aIs running the latest version!"));
 					break;
 				case UPDATE_AVAILABLE:
-					plugin.getLocale().newMessage(Common.colorize("&dA new update is available for Auction House")).sendPrefixedMessage(sender);
+					Common.tell(sender, Common.colorize("&dA new update is available for Auction House"));
 					break;
 				case UNRELEASED_VERSION:
-					plugin.getLocale().newMessage(Common.colorize(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", plugin.getDescription().getVersion()))).sendPrefixedMessage(sender);
+					Common.tell(sender, Common.colorize(String.format("&dYou're running an unreleased version of Auction House &f(&c%s&f)", plugin.getDescription().getVersion())));
 					break;
 				case UNKNOWN:
-					plugin.getLocale().newMessage(Common.colorize("&cUnknown version is in use")).sendPrefixedMessage(sender);
+					Common.tell(sender, Common.colorize("&cUnknown version is in use"));
 					break;
 				case ERROR:
-					plugin.getLocale().newMessage(Common.colorize("&cAn error has occurred while trying to get the latest version")).sendPrefixedMessage(sender);
+					Common.tell(sender, Common.colorize("&cAn error has occurred while trying to get the latest version"));
 					break;
 			}
 		}
@@ -125,7 +125,7 @@ public class UpdateChecker {
 		return this;
 	}
 
-	public UpdateChecker(TweetyPlugin plugin, int spigotID, CommandSender... to) {
+	public UpdateChecker(JavaPlugin plugin, int spigotID, CommandSender... to) {
 		this.plugin = plugin;
 		this.SPIGOT_ID = spigotID;
 		this.to = to;

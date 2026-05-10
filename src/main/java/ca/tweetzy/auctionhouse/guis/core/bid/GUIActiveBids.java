@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.core.bid;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -44,7 +46,7 @@ public class GUIActiveBids extends AuctionPagedGUI<AuctionedItem> {
 	private final AuctionPlayer auctionPlayer;
 
 	public GUIActiveBids(AuctionPlayer auctionPlayer) {
-		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ACTIVE_BIDS_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getAuctionItemManager().getHighestBidItems(auctionPlayer.getPlayer())));
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.active bids.title"), 6, new ArrayList<>(AuctionHouse.getAuctionItemManager().getHighestBidItems(auctionPlayer.getPlayer())));
 		this.auctionPlayer = auctionPlayer;
 		draw();
 	}

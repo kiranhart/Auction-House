@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.transaction;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 
 public enum TransactionViewFilter {
@@ -33,11 +35,11 @@ public enum TransactionViewFilter {
 	public String getTranslatedType() {
 		switch (this) {
 			case SOLD:
-				return AuctionHouse.getInstance().getLocale().getMessage("transaction_filter.buy_type.sold").getMessage();
+				return AuctionLocale.msg(null, "transaction_filter.buy_type.sold");
 			case BOUGHT:
-				return AuctionHouse.getInstance().getLocale().getMessage("transaction_filter.buy_type.bought").getMessage();
+				return AuctionLocale.msg(null, "transaction_filter.buy_type.bought");
 			case ALL:
-				return AuctionHouse.getInstance().getLocale().getMessage("transaction_filter.buy_type.all").getMessage();
+				return AuctionLocale.msg(null, "transaction_filter.buy_type.all");
 			default:
 				return getType();
 		}

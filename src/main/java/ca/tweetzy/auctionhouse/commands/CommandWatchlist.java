@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.core.GUIWatchedListings;
@@ -57,7 +59,7 @@ public class CommandWatchlist extends Command {
 
 		AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 		if (auctionPlayer == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			Common.tell(Bukkit.getConsoleSender(), Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now."));
 			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 			auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 		}
@@ -73,12 +75,12 @@ public class CommandWatchlist extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.watchlist").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.watchlist");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.watchlist").getMessage();
+		return AuctionLocale.msg(null, "commands.description.watchlist");
 	}
 
 	@Override

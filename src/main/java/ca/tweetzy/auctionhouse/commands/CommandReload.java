@@ -18,8 +18,10 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
-import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
@@ -49,9 +51,11 @@ public class CommandReload extends Command {
 	@Override
 	protected ReturnType execute(CommandContext context) {
 		if (AuctionAPI.tellMigrationStatus(context.getSender())) return ReturnType.FAIL;
-		final AuctionHouse instance = AuctionHouse.getInstance();
-		instance.reloadConfig();
-		instance.getLocale().newMessage(Common.colorize("&aReloaded files")).sendPrefixedMessage(context.getSender());
+		Settings.init();
+		Translations.init();
+		Common.setPrefix(Common.colorize(AuctionLocale.msg(null, "general.prefix")));
+		Common.setPluginName(Common.colorize(AuctionLocale.msg(null, "general.plugin name")));
+		AuctionLocale.tell(context.getSender(), "general.reloaded");
 		return ReturnType.SUCCESS;
 	}
 
@@ -72,11 +76,11 @@ public class CommandReload extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.reload").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.reload");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.reload").getMessage();
+		return AuctionLocale.msg(null, "commands.description.reload");
 	}
 }

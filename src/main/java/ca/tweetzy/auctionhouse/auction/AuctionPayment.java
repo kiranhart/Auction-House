@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.auction;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
@@ -58,9 +60,6 @@ public final class AuctionPayment {
 			AuctionHouse.getCurrencyManager().deposit(player, currSplit[0], currSplit[1], this.amount);
 		}
 
-		AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-				.processPlaceholder("player_balance", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getCurrencyManager().getBalance(player)))
-				.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.amount, this.currency, this.currencyItem))
-				.sendPrefixedMessage(player);
+		AuctionLocale.tell(player, "pricing.moneyadd", "player_balance",AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getCurrencyManager().getBalance(player)),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.amount, this.currency, this.currencyItem));
 	}
 }

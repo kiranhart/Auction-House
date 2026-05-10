@@ -18,11 +18,14 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.CommandContext;
@@ -70,7 +73,7 @@ public class CommandTransactions extends Command {
 		}
 
 		if (context.getArgCount() == 2 && context.getArg(0, "").equalsIgnoreCase("search")) {
-			final Player target = PlayerUtils.findPlayer(context.getArg(1));
+			final Player target = PlayerLookup.findPlayer(context.getArg(1));
 
 			AuctionHouse.newChain().async(() -> {
 				OfflinePlayer offlinePlayer = null;
@@ -79,7 +82,7 @@ public class CommandTransactions extends Command {
 					// try and look for an offline player
 					offlinePlayer = Bukkit.getOfflinePlayer(context.getArg(1));
 					if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", context.getArg(1)).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.playernotfound", "player",context.getArg(1));
 						return;
 					}
 				}
@@ -101,12 +104,12 @@ public class CommandTransactions extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.transactions").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.transactions");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.transactions").getMessage();
+		return AuctionLocale.msg(null, "commands.description.transactions");
 	}
 
 	@Override

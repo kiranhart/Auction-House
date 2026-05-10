@@ -18,13 +18,16 @@
 
 package ca.tweetzy.auctionhouse.tasks;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.events.AuctionEndEvent;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.nbtapi.NBT;
 import org.bukkit.Bukkit;
@@ -88,13 +91,13 @@ public class TickAuctionsTask extends BukkitRunnable {
 				if (Settings.GARBAGE_DELETION_TIMED_MODE.getBoolean() && clock % Settings.GARBAGE_DELETION_TIMED_DELAY.getInt() == 0) {
 					AuctionHouse.getDataManager().deleteItemsAsync(AuctionHouse.getAuctionItemManager().getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
 					if (!Settings.DISABLE_CLEANUP_MSG.getBoolean())
-						AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&aCleaned a total of &e" + AuctionHouse.getAuctionItemManager().getDeletedItems().size() + "&a items.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+						Common.tell(Bukkit.getConsoleSender(), Common.colorize("&aCleaned a total of &e" + AuctionHouse.getAuctionItemManager().getDeletedItems().size() + "&a items."));
 					AuctionHouse.getAuctionItemManager().getDeletedItems().clear();
 				} else {
 					if (AuctionHouse.getAuctionItemManager().getDeletedItems().size() >= Settings.GARBAGE_DELETION_MAX_ITEMS.getInt()) {
 						AuctionHouse.getDataManager().deleteItemsAsync(AuctionHouse.getAuctionItemManager().getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
 						if (!Settings.DISABLE_CLEANUP_MSG.getBoolean())
-							AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&aCleaned a total of &e" + AuctionHouse.getAuctionItemManager().getDeletedItems().size() + "&a items.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+							Common.tell(Bukkit.getConsoleSender(), Common.colorize("&aCleaned a total of &e" + AuctionHouse.getAuctionItemManager().getDeletedItems().size() + "&a items."));
 						AuctionHouse.getAuctionItemManager().getDeletedItems().clear();
 					}
 				}
@@ -109,10 +112,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 			if (!auctionItem.isExpired()) {
 				if (Settings.BROADCAST_AUCTION_ENDING.getBoolean()) {
 					if (timeRemaining <= Settings.BROADCAST_AUCTION_ENDING_AT_TIME.getInt() && timeRemaining % 10 == 0 && timeRemaining != 0) {
-						Bukkit.getOnlinePlayers().forEach(player -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.ending")
-								.processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
-								.processPlaceholder("seconds", timeRemaining)
-								.sendPrefixedMessage(player));
+						Bukkit.getOnlinePlayers().forEach(player -> AuctionLocale.tell(player, "auction.broadcast.ending", "item",AuctionAPI.getInstance().getItemName(itemStack),"seconds",timeRemaining));
 					}
 				}
 			}
@@ -174,17 +174,8 @@ public class TickAuctionsTask extends BukkitRunnable {
 				String buyerName = Bukkit.getOfflinePlayer(auctionItem.getHighestBidder()).getName() != null ? Bukkit.getOfflinePlayer(auctionItem.getHighestBidder()).getName() : "Unknown";
 
 				if (auctionOwner.isOnline() && auctionOwner.getPlayer() != null) {
-					AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
-							.processPlaceholder("item", itemName)
-							.processPlaceholder("amount", String.valueOf(itemStack.clone().getAmount()))
-							.processPlaceholder("price", sellerPriceStr)
-							.processPlaceholder("buyer_name", buyerName)
-							.processPlaceholder("buyer_displayname", AuctionAPI.getInstance().getDisplayName(Bukkit.getOfflinePlayer(auctionItem.getHighestBidder())))
-							.sendPrefixedMessage(auctionOwner.getPlayer());
-					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-							.processPlaceholder("player_balance", AuctionHouse.getCurrencyManager().getFormattedBalance(auctionOwner, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-							.processPlaceholder("price", sellerPriceStr)
-							.sendPrefixedMessage(auctionOwner.getPlayer());
+					AuctionLocale.tell(auctionOwner.getPlayer(), "auction.itemsold", "item",itemName,"amount",String.valueOf(itemStack.clone().getAmount()),"price",sellerPriceStr,"buyer_name",buyerName,"buyer_displayname",AuctionAPI.getInstance().getDisplayName(Bukkit.getOfflinePlayer(auctionItem.getHighestBidder())));
+					AuctionLocale.tell(auctionOwner.getPlayer(), "pricing.moneyadd", "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(auctionOwner, auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",sellerPriceStr);
 				} else {
 					java.util.Map<String, String> itemsoldPlaceholders = new java.util.HashMap<>();
 					itemsoldPlaceholders.put("item", itemName);
@@ -200,17 +191,10 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 				if (auctionWinner.isOnline()) {
 					assert auctionWinner.getPlayer() != null;
-					AuctionHouse.getInstance().getLocale().getMessage("auction.bidwon")
-							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack))
-							.processPlaceholder("amount", itemStack.getAmount())
-							.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-							.sendPrefixedMessage(auctionWinner.getPlayer());
+					AuctionLocale.tell(auctionWinner.getPlayer(), "auction.bidwon", "item",AuctionAPI.getInstance().getItemName(itemStack),"amount",itemStack.getAmount(),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
 
 					if (!Settings.BIDDING_TAKES_MONEY.getBoolean())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
-								.processPlaceholder("player_balance", AuctionHouse.getCurrencyManager().getFormattedBalance(auctionWinner.getPlayer(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-								.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-								.sendPrefixedMessage(auctionWinner.getPlayer());
+						AuctionLocale.tell(auctionWinner.getPlayer(), "pricing.moneyremove", "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(auctionWinner.getPlayer(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? finalPrice + tax : finalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
 
 					// remove the dupe tracking
 					NBT.modify(itemStack, nbt -> {
@@ -219,7 +203,7 @@ public class TickAuctionsTask extends BukkitRunnable {
 
 					// handle full inventory
 					if (auctionWinner.getPlayer().getInventory().firstEmpty() != -1) {
-						Bukkit.getServer().getScheduler().runTaskLater(AuctionHouse.getInstance(), () -> PlayerUtils.giveItem(auctionWinner.getPlayer(), itemStack), 0);
+						Bukkit.getServer().getScheduler().runTaskLater(AuctionHouse.getInstance(), () -> PlayerUtil.giveItem(auctionWinner.getPlayer(), itemStack), 0);
 						// Item already marked as purchased above (race condition protection)
 						// Skip expiration logic to prevent item from appearing in collection bin
 						continue;

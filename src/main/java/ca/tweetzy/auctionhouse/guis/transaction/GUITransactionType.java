@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.transaction;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
@@ -44,7 +46,7 @@ public final class GUITransactionType extends AuctionBaseGUI {
 
 
 	public GUITransactionType(Player player) {
-		super(new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())), player, Settings.GUI_TRANSACTIONS_TYPE_TITLE.getString(), 4);
+		super(new GUIAuctionHouse(AuctionHouse.getInstance().getAuctionPlayerManager().getPlayer(player.getUniqueId())), player, AuctionLocale.msg(player, "gui.transactions type.title"), 4);
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_TRANSACTIONS_TYPE_BG_ITEM.getString()).make()));
 		draw();
 	}
@@ -57,12 +59,12 @@ public final class GUITransactionType extends AuctionBaseGUI {
 
 		setButton(11, QuickItem
 				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_ITEM.getString())
-				.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_NAME.getString())
-				.lore(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_ALL_TRANSACTIONS_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.transactions type.items.all transactions.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.transactions type.items.all transactions.lore"))
 				.make(), e -> {
 
 			if (Settings.RESTRICT_ALL_TRANSACTIONS_TO_PERM.getBoolean() && !e.player.hasPermission("auctionhouse.transactions.viewall")) {
-				instance.getLocale().getMessage("commands.no_permission").sendPrefixedMessage(e.player);
+				AuctionLocale.tell(e.player, "commands.no_permission");
 				return;
 			}
 
@@ -71,26 +73,26 @@ public final class GUITransactionType extends AuctionBaseGUI {
 
 		setButton(13, QuickItem
 				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_ITEM.getString())
-				.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_NAME.getString())
-				.lore(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_SELF_TRANSACTIONS_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.transactions type.items.self transactions.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.transactions type.items.self transactions.lore"))
 				.make(), e -> e.manager.showGUI(e.player, new GUITransactionList(e.player, false)));
 
 		setButton(15, QuickItem
 				.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_REQUEST_TRANSACTIONS_ITEM.getString())
-				.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_REQUEST_TRANSACTIONS_NAME.getString())
-				.lore(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_REQUEST_TRANSACTIONS_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.transactions type.items.requests transactions.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.transactions type.items.requests transactions.lore"))
 				.make(), e -> e.manager.showGUI(e.player, new GUIRequestTransactionList(e.player, false)));
 
 		if (player.isOp() || player.hasPermission("auctionhouse.admin")) {
 
 			setButton(3, 8, QuickItem
 					.of(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_ITEM.getString())
-					.name(Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_NAME.getString())
-					.lore(this.player, Settings.GUI_TRANSACTIONS_TYPE_ITEMS_DELETE_LORE.getStringList())
+					.name(AuctionLocale.msg(this.player, "gui.transactions type.items.delete transactions.name"))
+					.lore(this.player, AuctionLocale.msgList(this.player, "gui.transactions type.items.delete transactions.lore"))
 					.make(), e -> {
 
 			// TitleInput automatically handles allowClose and inventory closing
-			new TitleInput(AuctionHouse.getInstance(), player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter deletion range.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter deletion range.subtitle").getMessage()) {
+			new TitleInput(AuctionHouse.getInstance(), player, AuctionLocale.msg(null, "titles.enter deletion range.title"), AuctionLocale.msg(null, "titles.enter deletion range.subtitle")) {
 
 					@Override
 					public void onExit(Player player) {
@@ -103,19 +105,19 @@ public final class GUITransactionType extends AuctionBaseGUI {
 
 						final String[] parts = ChatColor.stripColor(string).split(" ");
 						if (parts.length < 2) {
-							instance.getLocale().getMessage("general.invalidrange").sendPrefixedMessage(player);
+							AuctionLocale.tell(player, "general.invalidrange");
 							return false;
 						}
 
 						if (!MathUtil.isInt(parts[0]) && Arrays.asList("second", "minute", "hour", "day", "week", "month", "year").contains(parts[1].toLowerCase())) {
-							instance.getLocale().getMessage("prompts.enter deletion range").sendPrefixedMessage(player);
+							AuctionLocale.tell(player, "prompts.enter deletion range");
 							return false;
 						}
 
 						final long ticks = AuctionAPI.toTicks(string);
 
 						AuctionHouse.newChain().async(() -> {
-							instance.getLocale().getMessage("general.transaction delete begin").sendPrefixedMessage(e.player);
+							AuctionLocale.tell(e.player, "general.transaction delete begin");
 							List<UUID> toRemove = new ArrayList<>();
 
 							Set<Map.Entry<UUID, Transaction>> entrySet = instance.getTransactionManager().getTransactions().entrySet();
@@ -132,7 +134,7 @@ public final class GUITransactionType extends AuctionBaseGUI {
 							}
 
 							instance.getDataManager().deleteTransactions(toRemove);
-							instance.getLocale().getMessage("general.deleted transactions").processPlaceholder("deleted_transactions", toRemove.size()).sendPrefixedMessage(e.player);
+							AuctionLocale.tell(e.player, "general.deleted transactions", "deleted_transactions",toRemove.size());
 						}).execute();
 						return true;
 					}

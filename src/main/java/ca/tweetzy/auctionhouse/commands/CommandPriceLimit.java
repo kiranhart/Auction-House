@@ -18,13 +18,14 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
 import ca.tweetzy.auctionhouse.guis.admin.GUIPriceLimits;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.impl.AuctionPriceLimit;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.NumberUtils;
 import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
@@ -78,14 +79,14 @@ public class CommandPriceLimit extends Command {
 			ItemStack held = PlayerHelper.getHeldItem(player);
 
 			if (held.getType() == CompMaterial.AIR.get()) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.min item price air").sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.min item price air");
 				return ReturnType.FAIL;
 			}
 
 			ListingPriceLimit listingPriceLimit = AuctionHouse.getPriceLimitManager().getPriceLimit(held.clone());
 
 			if (!isNumeric(context.getArg(2))) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", context.getArg(2)).sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.notanumber", "value",context.getArg(2));
 				return ReturnType.FAIL;
 			}
 
@@ -127,14 +128,14 @@ public class CommandPriceLimit extends Command {
 				// run store
 				listingPriceLimit.store(stored -> {
 					if (stored != null) {
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.limit.added price limit").sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "pricing.limit.added price limit");
 					}
 				});
 			} else {
 				// run update
 				listingPriceLimit.sync(success -> {
 					if (success) {
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.limit.updated price limit").sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "pricing.limit.updated price limit");
 					}
 				});
 			}
@@ -150,12 +151,12 @@ public class CommandPriceLimit extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.price limit").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.price limit");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.price limit").getMessage();
+		return AuctionLocale.msg(null, "commands.description.price limit");
 	}
 
 	@Override

@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.guis.admin.bans.GUIBanUser;
 import ca.tweetzy.auctionhouse.guis.selector.GUIPlayerSelector;
@@ -58,7 +60,7 @@ public class CommandBan extends Command {
 			// open the player picker then redirect to the ban user menu
 			AuctionHouse.getGuiManager().showGUI(player, new GUIPlayerSelector(player, selected -> {
 				if (AuctionHouse.getBanManager().isBannedAlready(selected)) {
-					AuctionHouse.getInstance().getLocale().getMessage("ban.user already banned").processPlaceholder("player_name", selected.getName()).sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "ban.user already banned", "player_name",selected.getName());
 					return;
 				}
 
@@ -70,12 +72,12 @@ public class CommandBan extends Command {
 		final Player target = Bukkit.getPlayerExact(context.getArg(0));
 
 		if (target == null) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", context.getArg(0)).sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.playernotfound", "player",context.getArg(0));
 			return ReturnType.FAIL;
 		}
 
 		if (AuctionHouse.getBanManager().isBannedAlready(target)) {
-			AuctionHouse.getInstance().getLocale().getMessage("ban.user already banned").processPlaceholder("player_name", context.getArg(0)).sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "ban.user already banned", "player_name",context.getArg(0));
 			return ReturnType.FAIL;
 		}
 
@@ -104,11 +106,11 @@ public class CommandBan extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.ban").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.ban");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.ban").getMessage();
+		return AuctionLocale.msg(null, "commands.description.ban");
 	}
 }

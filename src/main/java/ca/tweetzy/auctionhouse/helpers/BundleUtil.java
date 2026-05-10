@@ -20,11 +20,12 @@ package ca.tweetzy.auctionhouse.helpers;
 
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.nbtapi.iface.ReadableItemNBT;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -68,5 +69,21 @@ public final class BundleUtil {
 		return Arrays.stream(bundledItems)
 				.filter(item -> item != null)
 				.collect(Collectors.toList());
+	}
+
+	public void giveStacks(@NonNull Player player, @NonNull Iterable<ItemStack> stacks) {
+		for (ItemStack stack : stacks) {
+			if (stack != null && stack.getAmount() != 0 && stack.getType() != CompMaterial.AIR.get()) {
+				PlayerUtil.giveItem(player, stack);
+			}
+		}
+	}
+
+	public void giveBundleOrSingle(@NonNull Player player, @NonNull ItemStack itemStack) {
+		if (isBundledItem(itemStack)) {
+			giveStacks(player, extractBundleItems(itemStack));
+		} else {
+			PlayerUtil.giveItem(player, itemStack);
+		}
 	}
 }

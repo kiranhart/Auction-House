@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.model.discord;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.helpers.AuctionCreator;
@@ -90,8 +92,8 @@ public final class DiscordMessageCreator {
 		final DiscordWebhook hook = generateBaseHook();
 		DiscordWebhook.EmbedObject embed = generateBaseEmbed();
 
-		embed.addField(Settings.DISCORD_MSG_FIELD_SELLER_NAME.getString(), Settings.DISCORD_MSG_FIELD_SELLER_VALUE.getString().replace("%seller%", this.listing.isServerItem() ? AuctionCreator.SERVER_LISTING_NAME : this.seller.getName()), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
-		embed.addField(Settings.DISCORD_MSG_FIELD_ITEM_NAME.getString(), Settings.DISCORD_MSG_FIELD_ITEM_VALUE.getString().replace("%item_name%", "x" + this.listing.getItem().getAmount() + " " + ChatColor.stripColor(Settings.FORCE_MATERIAL_NAMES_FOR_DISCORD.getBoolean() ? ChatUtil.capitalize(this.listing.getItem().getType()) : ItemUtil.getItemName(this.listing.getItem()))), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.seller.name"), AuctionLocale.msg(null, "discord.field.seller.value").replace("%seller%", this.listing.isServerItem() ? AuctionCreator.SERVER_LISTING_NAME : this.seller.getName()), Settings.DISCORD_MSG_FIELD_SELLER_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.item.name"), AuctionLocale.msg(null, "discord.field.item.value").replace("%item_name%", "x" + this.listing.getItem().getAmount() + " " + ChatColor.stripColor(Settings.FORCE_MATERIAL_NAMES_FOR_DISCORD.getBoolean() ? ChatUtil.capitalize(this.listing.getItem().getType()) : ItemUtil.getItemName(this.listing.getItem()))), Settings.DISCORD_MSG_FIELD_ITEM_INLINE.getBoolean());
 
 		if (this.listing.getItem().getItemMeta() != null && this.listing.getItem().getItemMeta().getLore() != null) {
 			final List<String> lore = this.listing.getItem().getItemMeta().getLore();
@@ -100,7 +102,7 @@ public final class DiscordMessageCreator {
 
 			for (String s : lore) {
 				embed.addField(
-						isFirst ? Settings.DISCORD_MSG_FIELD_ITEM_LORE_NAME.getString() : "",
+						isFirst ? AuctionLocale.msg(null, "discord.field.item lore.name") : "",
 						ChatColor.stripColor(s),
 						false
 				);
@@ -134,37 +136,37 @@ public final class DiscordMessageCreator {
 
 	public DiscordWebhook.EmbedObject applyBinPurchaseInfo(DiscordWebhook.EmbedObject embed) {
 		embed = applyBinInfo(embed);
-		embed.addField(Settings.DISCORD_MSG_FIELD_BIN_BOUGHT_NAME.getString(), Settings.DISCORD_MSG_FIELD_BIN_BOUGHT_VALUE.getString().replace("%buyer%", this.buyer.getName()), Settings.DISCORD_MSG_FIELD_BIN_BOUGHT_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.bin listing bought.name"), AuctionLocale.msg(null, "discord.field.bin listing bought.value").replace("%buyer%", this.buyer.getName()), Settings.DISCORD_MSG_FIELD_BIN_BOUGHT_INLINE.getBoolean());
 		return embed;
 	}
 
 	public DiscordWebhook.EmbedObject applyBidInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_VALUE.getString().replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_BIDDER_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_BIDDER_VALUE.getString().replace("%bidder%", this.bidder.getName()), Settings.DISCORD_MSG_FIELD_AUCTION_BIDDER_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.auction start price.name"), AuctionLocale.msg(null, "discord.field.auction start price.value").replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.auction bidder.name"), AuctionLocale.msg(null, "discord.field.auction bidder.value").replace("%bidder%", this.bidder.getName()), Settings.DISCORD_MSG_FIELD_AUCTION_BIDDER_INLINE.getBoolean());
 
-		embed.addField(Settings.DISCORD_MSG_FIELD_BID_AMT_NAME.getString(), Settings.DISCORD_MSG_FIELD_BID_AMT_VALUE.getString().replace("%bid_amount%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.bidAmount, this.listing.getCurrency(), this.listing.getCurrencyItem())), Settings.DISCORD_MSG_FIELD_BID_AMT_INLINE.getBoolean());
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_VALUE.getString().replace("%current_price%", this.listing.getFormattedCurrentPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.bid amount.name"), AuctionLocale.msg(null, "discord.field.bid amount.value").replace("%bid_amount%", AuctionHouse.getAPI().getFinalizedCurrencyNumber(this.bidAmount, this.listing.getCurrency(), this.listing.getCurrencyItem())), Settings.DISCORD_MSG_FIELD_BID_AMT_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.current auction price.name"), AuctionLocale.msg(null, "discord.field.current auction price.value").replace("%current_price%", this.listing.getFormattedCurrentPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_CURRENT_PRICE_INLINE.getBoolean());
 
 		return embed;
 	}
 
 
 	public DiscordWebhook.EmbedObject applyAuctionWonInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_VALUE.getString().replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_WON_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_WON_VALUE.getString().replace("%final_price%", this.listing.getFormattedCurrentPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_WON_INLINE.getBoolean());
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_WINNER_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_WINNER_VALUE.getString().replace("%winner%", this.buyer.getName()), Settings.DISCORD_MSG_FIELD_AUCTION_WINNER_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.auction start price.name"), AuctionLocale.msg(null, "discord.field.auction start price.value").replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.auction listing won price.name"), AuctionLocale.msg(null, "discord.field.auction listing won price.value").replace("%final_price%", this.listing.getFormattedCurrentPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_WON_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.auction winner.name"), AuctionLocale.msg(null, "discord.field.auction winner.value").replace("%winner%", this.buyer.getName()), Settings.DISCORD_MSG_FIELD_AUCTION_WINNER_INLINE.getBoolean());
 		return embed;
 	}
 
 	public DiscordWebhook.EmbedObject applyBinInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_VALUE.getString().replace("%item_price%", this.listing.getFormattedBasePrice()), Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.bin listing price.name"), AuctionLocale.msg(null, "discord.field.bin listing price.value").replace("%item_price%", this.listing.getFormattedBasePrice()), Settings.DISCORD_MSG_FIELD_BIN_LISTING_PRICE_INLINE.getBoolean());
 		return embed;
 	}
 
 	public DiscordWebhook.EmbedObject applyAuctionInfo(DiscordWebhook.EmbedObject embed) {
-		embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_VALUE.getString().replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
+		embed.addField(AuctionLocale.msg(null, "discord.field.auction start price.name"), AuctionLocale.msg(null, "discord.field.auction start price.value").replace("%starting_price%", this.listing.getFormattedStartingPrice()), Settings.DISCORD_MSG_FIELD_AUCTION_START_PRICE_INLINE.getBoolean());
 		if (this.listing.getBasePrice() != -1)
-			embed.addField(Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_NAME.getString(), Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_VALUE.getString().replace("%buy_now_price%", this.listing.getFormattedBasePrice()), Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_INLINE.getBoolean());
+			embed.addField(AuctionLocale.msg(null, "discord.field.auction buyout price.name"), AuctionLocale.msg(null, "discord.field.auction buyout price.value").replace("%buy_now_price%", this.listing.getFormattedBasePrice()), Settings.DISCORD_MSG_FIELD_AUCTION_BUYOUT_PRICE_INLINE.getBoolean());
 		return embed;
 	}
 
@@ -172,8 +174,8 @@ public final class DiscordMessageCreator {
 		final DiscordWebhook hook = new DiscordWebhook(this.webhook);
 
 		// basic settings
-		hook.setUsername(Settings.DISCORD_MSG_USERNAME.getString());
-		hook.setAvatarUrl(Settings.DISCORD_MSG_PFP.getString());
+		hook.setUsername(AuctionLocale.msg(null, "discord.user.username"));
+		hook.setAvatarUrl(AuctionLocale.msg(null, "discord.user.avatar picture"));
 
 		return hook;
 	}
@@ -184,23 +186,23 @@ public final class DiscordMessageCreator {
 		// assign title
 		switch (this.messageType) {
 			case NEW_AUCTION_LISTING:
-				embed.setTitle(Settings.DISCORD_TITLE_NEW_AUCTION_LISTING.getString());
+				embed.setTitle(AuctionLocale.msg(null, "discord.titles.new auction listing"));
 				embed.setColor(extractColor(Settings.DISCORD_COLOR_NEW_AUCTION_LISTING.getString()));
 				break;
 			case NEW_BIN_LISTING:
-				embed.setTitle(Settings.DISCORD_TITLE_NEW_BIN_LISTING.getString());
+				embed.setTitle(AuctionLocale.msg(null, "discord.titles.new bin listing"));
 				embed.setColor(extractColor(Settings.DISCORD_COLOR_NEW_BIN_LISTING.getString()));
 				break;
 			case AUCTION_LISTING_WON:
-				embed.setTitle(Settings.DISCORD_TITLE_AUCTION_LISTING_WON.getString());
+				embed.setTitle(AuctionLocale.msg(null, "discord.titles.auction listing won"));
 				embed.setColor(extractColor(Settings.DISCORD_COLOR_AUCTION_LISTING_WON.getString()));
 				break;
 			case BIN_LISTING_BOUGHT:
-				embed.setTitle(Settings.DISCORD_TITLE_BIN_LISTING_BOUGHT.getString());
+				embed.setTitle(AuctionLocale.msg(null, "discord.titles.bin listing bought"));
 				embed.setColor(extractColor(Settings.DISCORD_COLOR_BIN_LISTING_BOUGHT.getString()));
 				break;
 			case BID_PLACED:
-				embed.setTitle(Settings.DISCORD_TITLE_NEW_BID.getString());
+				embed.setTitle(AuctionLocale.msg(null, "discord.titles.new bid"));
 				embed.setColor(extractColor(Settings.DISCORD_COLOR_NEW_BID.getString()));
 				break;
 		}

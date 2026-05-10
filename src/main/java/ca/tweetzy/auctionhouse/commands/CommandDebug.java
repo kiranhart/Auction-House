@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.flight.utils.Common;
@@ -52,10 +54,10 @@ public class CommandDebug extends Command {
 		AuctionHouse.setDebugMode(!AuctionHouse.isDebugMode());
 		
 		final String status = AuctionHouse.isDebugMode() ? "&aenabled" : "&cdisabled";
-		AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&7Debug mode has been " + status + "&7.")).sendPrefixedMessage(context.getSender());
+		Common.tell(context.getSender(), Common.colorize("&7Debug mode has been " + status + "&7."));
 		
 		if (AuctionHouse.isDebugMode()) {
-			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&7You will now see detailed debug messages in the console.")).sendPrefixedMessage(context.getSender());
+			Common.tell(context.getSender(), Common.colorize("&7You will now see detailed debug messages in the console."));
 		}
 		
 		return ReturnType.SUCCESS;
@@ -78,12 +80,12 @@ public class CommandDebug extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.debug").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.debug");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.debug").getMessage();
+		return AuctionLocale.msg(null, "commands.description.debug");
 	}
 }
 

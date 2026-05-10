@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.filter;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionItemCategory;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -33,7 +35,7 @@ import org.bukkit.entity.Player;
 public class GUIFilterWhitelist extends AuctionBaseGUI {
 
 	public GUIFilterWhitelist(Player player) {
-		super(null, player, Settings.GUI_FILTER_WHITELIST_TITLE.getString(), 6);
+		super(null, player, AuctionLocale.msg(player, "gui.filter whitelist.title"), 6);
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILTER_WHITELIST_BG_ITEM.getString()).make()));
 		draw();
 	}
@@ -42,41 +44,41 @@ public class GUIFilterWhitelist extends AuctionBaseGUI {
 	protected void draw() {
 		applyBackExit();
 
-		setButton(1, 1, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_BLOCKS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_BLOCKS_NAME.getString()).lore(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_BLOCKS_LORE.getStringList()).make(), e -> {
+		setButton(1, 1, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_BLOCKS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter whitelist.items.blocks.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter whitelist.items.blocks.lore")).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.BLOCKS));
 		});
 
-		setButton(1, 3, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_FOOD_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_FOOD_NAME.getString()).lore(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_FOOD_LORE.getStringList()).make(), e -> {
+		setButton(1, 3, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_FOOD_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter whitelist.items.food.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter whitelist.items.food.lore")).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.FOOD));
 		});
 
-		setButton(1, 5, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_ARMOR_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_ARMOR_NAME.getString()).lore(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_ARMOR_LORE.getStringList()).make(), e -> {
+		setButton(1, 5, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_ARMOR_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter whitelist.items.armor.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter whitelist.items.armor.lore")).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.ARMOR));
 		});
 
-		setButton(1, 7, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_TOOLS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_TOOLS_NAME.getString()).lore(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_TOOLS_LORE.getStringList()).make(), e -> {
+		setButton(1, 7, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_TOOLS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter whitelist.items.tools.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter whitelist.items.tools.lore")).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.TOOLS));
 		});
 
 		// 2ND ROW STARTS
 
-		setButton(2, 1, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_NAME.getString()).lore(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_LORE.getStringList()).make(), e -> {
+		setButton(2, 1, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_SPAWNERS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter whitelist.items.spawners.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter whitelist.items.spawners.lore")).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.SPAWNERS));
 		});
 
-		setButton(2, 3, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_NAME.getString()).lore(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_LORE.getStringList()).make(), e -> {
+		setButton(2, 3, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_ENCHANTS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter whitelist.items.enchants.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter whitelist.items.enchants.lore")).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.ENCHANTS));
 		});
 
-		setButton(2, 5, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_WEAPONS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_WEAPONS_NAME.getString()).lore(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_WEAPONS_LORE.getStringList()).make(), e -> {
+		setButton(2, 5, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_WEAPONS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter whitelist.items.weapons.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter whitelist.items.weapons.lore")).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.WEAPONS));
 		});
 
-		setButton(2, 7, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_NAME.getString()).lore(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_LORE.getStringList()).make(), e -> {
+		setButton(2, 7, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_MISC_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter whitelist.items.misc.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter whitelist.items.misc.lore")).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.MISC));
 		});
 
-		setButton(3, 1, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_ITEM.getString()).name(Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_NAME.getString()).lore(this.player, Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_LORE.getStringList()).make(), e -> {
+		setButton(3, 1, QuickItem.of(Settings.GUI_FILTER_WHITELIST_ITEMS_POTIONS_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.filter whitelist.items.potions.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.filter whitelist.items.potions.lore")).make(), e -> {
 			e.manager.showGUI(e.player, new GUIFilterWhitelistList(e.player, AuctionItemCategory.POTIONS));
 		});
 

@@ -20,13 +20,16 @@ import ca.tweetzy.auctionhouse.guis.sell.GUISellListingType;
 import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionList;
 import ca.tweetzy.auctionhouse.guis.transaction.GUITransactionType;
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.helpers.SlotHelper;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.flight.utils.input.TitleInput;
 import ca.tweetzy.auctionhouse.hooks.FloodGateHook;
 import ca.tweetzy.auctionhouse.settings.Settings;
+import ca.tweetzy.flight.FlightPlugin;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
+import ca.tweetzy.flight.config.tweetzy.TweetzyYamlConfig;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -36,16 +39,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem> {
@@ -56,35 +60,29 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 	private Long lastRefreshClick = null;
 
 	public GUIAuctionHouse(@NonNull final AuctionPlayer auctionPlayer, String searchKeywords) {
-		super(null, Bukkit.getPlayer(auctionPlayer.getUuid()), Settings.GUI_AUCTION_HOUSE_TITLE.getString(), Settings.GUI_AUCTION_HOUSE_ROWS.getInt(), 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
+		super(null, Bukkit.getPlayer(auctionPlayer.getUuid()), AuctionLocale.msg(Bukkit.getPlayer(auctionPlayer.getUuid()), "gui.auction house.title"), Settings.GUI_AUCTION_HOUSE_ROWS.getInt(), 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
 		this.auctionPlayer = auctionPlayer;
 		this.searchKeywords = searchKeywords;
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_AUCTION_HOUSE_BG_ITEM.getString()).make()));
 		setAllowShiftClick(true); // Enable shift clicking for filter button
-		setSlotClickDelay(getPreviousButtonSlot(), Settings.MAIN_AH_NAVIGATION_COOLDOWN.getLong());
-		setSlotClickDelay(getNextButtonSlot(), Settings.MAIN_AH_NAVIGATION_COOLDOWN.getLong());
+		setSlotClickDelay(getPreviousButtonSlot(), Settings.asLong(Settings.MAIN_AH_NAVIGATION_COOLDOWN));
+		setSlotClickDelay(getNextButtonSlot(), Settings.asLong(Settings.MAIN_AH_NAVIGATION_COOLDOWN));
 
 		if (Settings.USE_SEPARATE_FILTER_MENU.getBoolean() && Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_ENABLED.getBoolean()) {
-			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getString()).forEach(slot -> setSlotClickDelay(slot, Settings.MAIN_AH_FILTER_COOLDOWN.getLong()));
+			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_SLOT.getString()).forEach(slot -> setSlotClickDelay(slot, Settings.asLong(Settings.MAIN_AH_FILTER_COOLDOWN)));
 		}
 
 		if (!Settings.USE_SEPARATE_FILTER_MENU.getBoolean() && Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ENABLED.getBoolean()) {
-			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT.getString()).forEach(slot -> setSlotClickDelay(slot, Settings.MAIN_AH_FILTER_COOLDOWN.getLong()));
+			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT.getString()).forEach(slot -> setSlotClickDelay(slot, Settings.asLong(Settings.MAIN_AH_FILTER_COOLDOWN)));
 		}
 
 		setClickDelayAction((lastClicked, delay, click) -> {
 			if (click.slot == getPreviousButtonSlot() || click.slot == getNextButtonSlot()) {
-				AuctionHouse.getInstance().getLocale()
-						.getMessage("general.cooldown.navigate page")
-						.processPlaceholder("time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked))
-						.sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.cooldown.navigate page", "time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked));
 				return;
 			}
 
-			AuctionHouse.getInstance().getLocale()
-					.getMessage("general.cooldown.filter")
-					.processPlaceholder("time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked))
-					.sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.cooldown.filter", "time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked));
 
 		});
 
@@ -211,25 +209,46 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 	 * Draws custom buttons from configuration
 	 */
 	private void drawCustomButtons() {
-		final ConfigurationSection customItemSection = AuctionHouse.getInstance().getCoreConfig().getConfigurationSection("gui.auction house.custom items");
-		if (customItemSection == null) {
+		final TweetzyYamlConfig cfg = FlightPlugin.getCoreConfig();
+		final String sectionBase = "gui.auction house.custom items";
+		if (!cfg.has(sectionBase)) {
 			return;
 		}
 
-		customItemSection.getKeys(false).forEach(customItemEntry -> {
-			final ConfigurationSection customEntry = AuctionHouse.getInstance().getCoreConfig().getConfigurationSection("gui.auction house.custom items." + customItemEntry);
-			if (customEntry == null) {
-				return;
+		for (final String customItemEntry : cfg.getKeys(sectionBase)) {
+			final String prefix = sectionBase + "." + customItemEntry;
+			final Object slotValue = cfg.get(prefix + ".slot");
+			if (slotValue == null) {
+				continue;
 			}
 
-			SlotHelper.getButtonSlots(customEntry.getString("slot")).forEach(slot -> {
+			SlotHelper.getButtonSlots(slotValue.toString()).forEach(slot -> {
+				Object itemMat = cfg.get(prefix + ".item");
+				Object nameObj = cfg.get(prefix + ".name");
+				List<String> loreLines = stringList(cfg, prefix + ".lore");
+				List<String> commandLines = stringList(cfg, prefix + ".commands");
+
 				setButton(slot, QuickItem
-						.of(customEntry.getString("item"))
-						.name(customEntry.getString("name"))
-						.lore(this.player, customEntry.getStringList("lore"))
-						.make(), click -> executeCustomButtonCommands(customEntry.getStringList("commands"), click));
+						.of(Objects.toString(itemMat, "AIR"))
+						.name(Objects.toString(nameObj, ""))
+						.lore(this.player, loreLines)
+						.make(), click -> executeCustomButtonCommands(commandLines, click));
 			});
-		});
+		}
+	}
+
+	private static List<String> stringList(TweetzyYamlConfig cfg, String path) {
+		Object loreObj = cfg.get(path);
+		if (!(loreObj instanceof List<?> raw)) {
+			return Collections.emptyList();
+		}
+		List<String> out = new ArrayList<>(raw.size());
+		for (Object line : raw) {
+			if (line != null) {
+				out.add(line.toString());
+			}
+		}
+		return out;
 	}
 
 	/**
@@ -258,30 +277,24 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			try {
 				if (click.clickType == ClickType.valueOf(Settings.CLICKS_ADD_TO_WATCHLIST.getString().toUpperCase())) {
 					if (click.player.getUniqueId().equals(auctionedItem.getOwner())) {
-						AuctionHouse.getInstance().getLocale().getMessage("watchlist.cannot watch own").sendPrefixedMessage(click.player);
+						AuctionLocale.tell(click.player, "watchlist.cannot watch own");
 						return;
 					}
 					if (AuctionHouse.getWatchlistManager().isWatching(click.player.getUniqueId(), auctionedItem.getId())) {
 						AuctionHouse.getWatchlistManager().remove(click.player.getUniqueId(), auctionedItem.getId(), (err, ok) -> {
 							if (ok) {
-								AuctionHouse.getInstance().getLocale().getMessage("watchlist.removed")
-										.processPlaceholder("item", AuctionAPI.getInstance().getItemName(auctionedItem.getItem()))
-										.sendPrefixedMessage(click.player);
+								AuctionLocale.tell(click.player, "watchlist.removed", "item",AuctionAPI.getInstance().getItemName(auctionedItem.getItem()));
 							}
 							draw();
 						});
 					} else {
 						if (AuctionHouse.getWatchlistManager().getWatchlistCount(click.player.getUniqueId()) >= Settings.WATCHLIST_MAX_LISTINGS.getInt()) {
-							AuctionHouse.getInstance().getLocale().getMessage("watchlist.limit reached")
-									.processPlaceholder("max", String.valueOf(Settings.WATCHLIST_MAX_LISTINGS.getInt()))
-									.sendPrefixedMessage(click.player);
+							AuctionLocale.tell(click.player, "watchlist.limit reached", "max",String.valueOf(Settings.WATCHLIST_MAX_LISTINGS.getInt()));
 							return;
 						}
 						AuctionHouse.getWatchlistManager().add(click.player.getUniqueId(), auctionedItem.getId(), (err, ok) -> {
 							if (ok) {
-								AuctionHouse.getInstance().getLocale().getMessage("watchlist.added")
-										.processPlaceholder("item", AuctionAPI.getInstance().getItemName(auctionedItem.getItem()))
-										.sendPrefixedMessage(click.player);
+								AuctionLocale.tell(click.player, "watchlist.added", "item",AuctionAPI.getInstance().getItemName(auctionedItem.getItem()));
 							}
 							draw();
 						});
@@ -309,15 +322,12 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		// Rate limiting for item clicks to prevent spam and server lag
-		if (Settings.MAIN_AH_ITEM_CLICK_COOLDOWN.getLong() > 0) {
+		if (Settings.asLong(Settings.MAIN_AH_ITEM_CLICK_COOLDOWN) > 0) {
 			long currentTime = System.currentTimeMillis();
-			if (this.lastItemClick != null && (currentTime - this.lastItemClick) < Settings.MAIN_AH_ITEM_CLICK_COOLDOWN.getLong()) {
+			if (this.lastItemClick != null && (currentTime - this.lastItemClick) < Settings.asLong(Settings.MAIN_AH_ITEM_CLICK_COOLDOWN)) {
 				// Player is on cooldown, show message and return
-				long remainingTime = Settings.MAIN_AH_ITEM_CLICK_COOLDOWN.getLong() - (currentTime - this.lastItemClick);
-				AuctionHouse.getInstance().getLocale()
-						.getMessage("general.cooldown.item click")
-						.processPlaceholder("time", AuctionHouse.getCooldownManager().formatTime(remainingTime))
-						.sendPrefixedMessage(click.player);
+				long remainingTime = Settings.asLong(Settings.MAIN_AH_ITEM_CLICK_COOLDOWN) - (currentTime - this.lastItemClick);
+				AuctionLocale.tell(click.player, "general.cooldown.item click", "time", AuctionHouse.getCooldownManager().formatTime(remainingTime));
 				return;
 			}
 			// Update last click time
@@ -325,7 +335,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.auction house closed").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.auction house closed");
 			return;
 		}
 
@@ -340,7 +350,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 			if (click.clickType == ClickType.valueOf(Settings.CLICKS_NON_BID_ITEM_QTY_PURCHASE.getString().toUpperCase())) {
 				if (!auctionedItem.isAllowPartialBuy()) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.qtybuydisabled").processPlaceholder("item_owner", auctionedItem.getOwnerName()).sendPrefixedMessage(click.player);
+					AuctionLocale.tell(click.player, "general.qtybuydisabled", "item_owner",auctionedItem.getOwnerName());
 					return;
 				}
 
@@ -358,12 +368,12 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 				if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.BUYING)) return;
 				// add to cart
 				if (AuctionHouse.getCartManager().isItemInCart(click.player.getUniqueId(), auctionedItem)) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.cart.item already in cart").sendPrefixedMessage(click.player);
+					AuctionLocale.tell(click.player, "general.cart.item already in cart");
 					return;
 				}
 
 				AuctionHouse.getCartManager().addToCart(click.player.getUniqueId(), auctionedItem);
-				AuctionHouse.getInstance().getLocale().getMessage("general.cart.item added to cart").sendPrefixedMessage(click.player);
+				AuctionLocale.tell(click.player, "general.cart.item added to cart");
 				return;
 			}
 
@@ -373,18 +383,18 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					if (AuctionHouse.getBanManager().isStillBanned(click.player, BanType.EVERYTHING, BanType.REQUESTS)) return;
 
 					if ((!Settings.USE_NAMES_FOR_CHECKS.getBoolean() && click.player.getUniqueId().equals(auctionedItem.getOwner())) || (Settings.USE_NAMES_FOR_CHECKS.getBoolean() && click.player.getName().equalsIgnoreCase(auctionedItem.getOwnerName())) && !Settings.OWNER_CAN_FULFILL_OWN_REQUEST.getBoolean()) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(click.player);
+						AuctionLocale.tell(click.player, "general.cantbuyown");
 						return;
 					}
 
 //					if (Settings.USE_NAMES_FOR_CHECKS.getBoolean()) {
 //						if (click.player.getName().equalsIgnoreCase(auctionedItem.getOwnerName()) && !Settings.OWNER_CAN_FULFILL_OWN_REQUEST.getBoolean()) {
-//							AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(click.player);
+//							AuctionLocale.tell(click.player, "general.cantbuyown");
 //							return;
 //						}
 //					} else {
 //						if (click.player.getUniqueId().equals(auctionedItem.getOwner()) && !Settings.OWNER_CAN_FULFILL_OWN_REQUEST.getBoolean()) {
-//							AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(click.player);
+//							AuctionLocale.tell(click.player, "general.cantbuyown");
 //							return;
 //						}
 //					}
@@ -433,13 +443,13 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 	//======================================================================================================//
 	private void handleNonBidItem(AuctionedItem auctionItem, GuiClickEvent click, boolean buyingQuantity) {
 		if (click.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_PURCHASE_OWN_ITEM.getBoolean()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(click.player);
+			AuctionLocale.tell(click.player, "general.cantbuyown");
 			return;
 		}
 
 		if (!buyingQuantity) {
 			if (!auctionItem.playerHasSufficientMoney(click.player, auctionItem.getBasePrice())) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(click.player);
+				AuctionLocale.tell(click.player, "general.notenoughmoney");
 				SoundManager.getInstance().playSound(click.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString());
 				return;
 			}
@@ -479,12 +489,12 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			if (auctionItem.isBidItem()) {
 				if (!Settings.ALLOW_USAGE_OF_BUY_NOW_SYSTEM.getBoolean()) return;
 				if (auctionItem.getBasePrice() <= -1) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.buynowdisabledonitem").sendPrefixedMessage(click.player);
+					AuctionLocale.tell(click.player, "general.buynowdisabledonitem");
 					return;
 				}
 
 				if (click.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_PURCHASE_OWN_ITEM.getBoolean()) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.cantbuyown").sendPrefixedMessage(click.player);
+					AuctionLocale.tell(click.player, "general.cantbuyown");
 					return;
 				}
 
@@ -512,12 +522,12 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		}
 
 		if (click.player.getUniqueId().equals(auctionItem.getOwner()) && !Settings.OWNER_CAN_BID_OWN_ITEM.getBoolean() || Settings.BIDDING_TAKES_MONEY.getBoolean() && click.player.getUniqueId().equals(auctionItem.getOwner())) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.cantbidonown").sendPrefixedMessage(click.player);
+			AuctionLocale.tell(click.player, "general.cantbidonown");
 			return;
 		}
 
 		if (click.player.getUniqueId().equals(auctionItem.getHighestBidder()) && !Settings.ALLOW_REPEAT_BIDS.getBoolean()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.alreadyhighestbidder").sendPrefixedMessage(click.player);
+			AuctionLocale.tell(click.player, "general.alreadyhighestbidder");
 			return;
 		}
 
@@ -525,7 +535,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		if (Settings.FORCE_CUSTOM_BID_AMOUNT.getBoolean()) {
 		// TitleInput automatically handles allowClose and inventory closing
-		new TitleInput(AuctionHouse.getInstance(), player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter bid.subtitle").getMessage()) {
+		new TitleInput(AuctionHouse.getInstance(), player, AuctionLocale.msg(null, "titles.enter bid.title"), AuctionLocale.msg(null, "titles.enter bid.subtitle")) {
 
 				@Override
 				public void onExit(Player player) {
@@ -537,19 +547,19 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					string = ChatColor.stripColor(string);
 
 					if (!MathUtil.isDouble(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.notanumber", "value",string);
 						return false;
 					}
 
 					double value = Double.parseDouble(string);
 
 					if (value <= 0) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.cannotbezero").sendPrefixedMessage(click.player);
+						AuctionLocale.tell(click.player, "general.cannotbezero");
 						return false;
 					}
 
 					if (value > Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()) {
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbidincrementprice").processPlaceholder("price", Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble()).sendPrefixedMessage(click.player);
+						AuctionLocale.tell(click.player, "pricing.maxbidincrementprice", "price",Settings.MAX_AUCTION_INCREMENT_PRICE.getDouble());
 						return false;
 					}
 
@@ -560,7 +570,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 						} else {
 							if (Settings.BID_MUST_BE_HIGHER_THAN_PREVIOUS.getBoolean()) {
 								click.manager.showGUI(click.player, new GUIAuctionHouse(GUIAuctionHouse.this.auctionPlayer));
-								AuctionHouse.getInstance().getLocale().getMessage("pricing.bidmusthigherthanprevious").processPlaceholder("current_bid", AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem())).sendPrefixedMessage(click.player);
+								AuctionLocale.tell(click.player, "pricing.bidmusthigherthanprevious", "current_bid",AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
 								return true;
 							}
 
@@ -573,7 +583,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					newBiddingAmount = Settings.ROUND_ALL_PRICES.getBoolean() ? Math.round(newBiddingAmount) : newBiddingAmount;
 
 					if (Settings.PLAYER_NEEDS_TOTAL_PRICE_TO_BID.getBoolean() && !auctionItem.playerHasSufficientMoney(click.player, newBiddingAmount)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(click.player);
+						AuctionLocale.tell(click.player, "general.notenoughmoney");
 						SoundManager.getInstance().playSound(click.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString());
 						AuctionHouse.getGuiManager().showGUI(player, new GUIAuctionHouse(GUIAuctionHouse.this.auctionPlayer));
 						return true;
@@ -597,7 +607,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 						final double oldBidAmount = auctionItem.getCurrentPrice();
 
 						if (!auctionItem.playerHasSufficientMoney(click.player, newBiddingAmount)) {
-							AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(click.player);
+							AuctionLocale.tell(click.player, "general.notenoughmoney");
 							SoundManager.getInstance().playSound(click.player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString());
 							return true;
 						}
@@ -608,7 +618,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 						if (!auctionItem.getHighestBidder().equals(auctionItem.getOwner())) {
 							if (Settings.STORE_PAYMENTS_FOR_MANUAL_COLLECTION.getBoolean())
-								AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), oldBidAmount, auctionItem.getItem(), AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(), PaymentReason.BID_RETURNED, auctionItem.getCurrency(), auctionItem.getCurrencyItem()), null);
+								AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(oldBidder.getUniqueId(), oldBidAmount, auctionItem.getItem(), AuctionLocale.msg(null, "general.prefix"), PaymentReason.BID_RETURNED, auctionItem.getCurrency(), auctionItem.getCurrencyItem()), null);
 							else
 								AuctionHouse.getCurrencyManager().deposit(oldBidder, oldBidAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
@@ -616,10 +626,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 							String balanceStr = AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, currencyParts.length > 0 ? currencyParts[0] : "Vault", currencyParts.length > 1 ? currencyParts[1] : "Vault"), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 							String priceStr = AuctionHouse.getAPI().getFinalizedCurrencyNumber(oldBidAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 							if (oldBidder.isOnline() && oldBidder.getPlayer() != null) {
-								AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-										.processPlaceholder("player_balance", balanceStr)
-										.processPlaceholder("price", priceStr)
-										.sendPrefixedMessage(oldBidder.getPlayer());
+								AuctionLocale.tell(oldBidder.getPlayer(), "pricing.moneyadd", "player_balance",balanceStr,"price",priceStr);
 							} else {
 								HashMap<String, String> placeholders = new HashMap<>();
 								placeholders.put("player_balance", balanceStr);
@@ -629,10 +636,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 						}
 
 						AuctionHouse.getCurrencyManager().withdraw(click.player, newBiddingAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem());
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
-								.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(click.player, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-								.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(newBiddingAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-								.sendPrefixedMessage(click.player);
+						AuctionLocale.tell(click.player, "pricing.moneyremove", "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(click.player, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(newBiddingAmount, auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
 
 					}
 
@@ -649,7 +653,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					}
 
 					if (oldBidder.isOnline() && oldBidder.getPlayer() != null) {
-						AuctionHouse.getInstance().getLocale().getMessage("auction.outbid").processPlaceholder("player", click.player.getName()).processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(click.player)).processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack)).sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionLocale.tell(oldBidder.getPlayer(), "auction.outbid", "player",click.player.getName(),"player_displayname",AuctionAPI.getInstance().getDisplayName(click.player),"item",AuctionAPI.getInstance().getItemName(itemStack));
 					} else {
 						HashMap<String, String> outbidPlaceholders = new HashMap<>();
 						outbidPlaceholders.put("player", click.player.getName());
@@ -659,7 +663,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					}
 
 					if (owner.isOnline() && owner.getPlayer() != null) {
-						AuctionHouse.getInstance().getLocale().getMessage("auction.placedbid").processPlaceholder("player", click.player.getName()).processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(click.player)).processPlaceholder("amount", AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem())).processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack)).sendPrefixedMessage(owner.getPlayer());
+						AuctionLocale.tell(owner.getPlayer(), "auction.placedbid", "player",click.player.getName(),"player_displayname",AuctionAPI.getInstance().getDisplayName(click.player),"amount",AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"item",AuctionAPI.getInstance().getItemName(itemStack));
 					} else {
 						HashMap<String, String> placedbidPlaceholders = new HashMap<>();
 						placedbidPlaceholders.put("player", click.player.getName());
@@ -670,7 +674,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 					}
 
 					if (Settings.BROADCAST_AUCTION_BID.getBoolean()) {
-						Bukkit.getOnlinePlayers().forEach(player -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.bid").processPlaceholder("player", click.player.getName()).processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(click.player)).processPlaceholder("amount", AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem())).processPlaceholder("item", AuctionAPI.getInstance().getItemName(itemStack)).sendPrefixedMessage(player));
+						Bukkit.getOnlinePlayers().forEach(player -> AuctionLocale.tell(player, "auction.broadcast.bid", "player",click.player.getName(),"player_displayname",AuctionAPI.getInstance().getDisplayName(click.player),"amount",AuctionHouse.getAPI().getFinalizedCurrencyNumber(auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"item",AuctionAPI.getInstance().getItemName(itemStack)));
 					}
 
 					click.manager.showGUI(click.player, new GUIAuctionHouse(GUIAuctionHouse.this.auctionPlayer));
@@ -738,11 +742,11 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ENABLED.getBoolean()) {
 			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_ITEM.getString())
-					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_NAME.getString())
-					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_YOUR_AUCTIONS_LORE.getStringList(), "active_player_auctions", auctionPlayer.getItems(false).size(), "player_balance", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getCurrencyManager().getBalance(auctionPlayer.getPlayer())))).make(), e -> {
+					.name(AuctionLocale.msg(this.player, "gui.auction house.items.your auctions.name"))
+					.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.auction house.items.your auctions.lore"), "active_player_auctions", auctionPlayer.getItems(false).size(), "player_balance", AuctionHouse.getAPI().getNumberAsCurrency(AuctionHouse.getCurrencyManager().getBalance(auctionPlayer.getPlayer())))).make(), e -> {
 
 				if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.auction house closed").sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "general.auction house closed");
 					return;
 				}
 
@@ -754,8 +758,8 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ENABLED.getBoolean()) {
 			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_ITEM.getString())
-					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_NAME.getString())
-					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_COLLECTION_BIN_LORE.getStringList(), "expired_player_auctions", auctionPlayer.getItems(true).size())).make(), e -> {
+					.name(AuctionLocale.msg(this.player, "gui.auction house.items.collection bin.name"))
+					.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.auction house.items.collection bin.lore"), "expired_player_auctions", auctionPlayer.getItems(true).size())).make(), e -> {
 
 				cancelTask();
 				e.manager.showGUI(e.player, new GUIExpiredItems(this, this.auctionPlayer));
@@ -766,8 +770,8 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		if (Settings.WATCHLIST_ENABLED.getBoolean() && Settings.GUI_AUCTION_HOUSE_ITEMS_WATCHLIST_ENABLED.getBoolean()) {
 			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_WATCHLIST_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_WATCHLIST_ITEM.getString())
-					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_WATCHLIST_NAME.getString())
-					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_WATCHLIST_LORE.getStringList(), "watchlist_count", AuctionHouse.getWatchlistManager().getWatchlistCount(auctionPlayer.getUuid()))).make(), e -> {
+					.name(AuctionLocale.msg(this.player, "gui.auction house.items.watchlist.name"))
+					.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.auction house.items.watchlist.lore"), "watchlist_count", AuctionHouse.getWatchlistManager().getWatchlistCount(auctionPlayer.getUuid()))).make(), e -> {
 				cancelTask();
 				e.manager.showGUI(e.player, new GUIWatchedListings(this.auctionPlayer));
 			}));
@@ -775,8 +779,8 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ENABLED.getBoolean()) {
 			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem.of(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_ITEM.getString())
-					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_NAME.getString())
-					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_TRANSACTIONS_LORE.getStringList(),
+					.name(AuctionLocale.msg(this.player, "gui.auction house.items.transactions.name"))
+					.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.auction house.items.transactions.lore"),
 							"total_items_bought", AuctionHouse.getTransactionManager().getTotalItemsBought(auctionPlayer.getPlayer().getUniqueId()),
 							"total_items_sold", AuctionHouse.getTransactionManager().getTotalItemsSold(auctionPlayer.getPlayer().getUniqueId()))
 					).make(), e -> {
@@ -793,8 +797,8 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		if (Settings.REPLACE_GUIDE_WITH_CART_BUTTON.getBoolean()) {
 			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_ITEM.getString())
-					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_NAME.getString())
-					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_CART_LORE.getStringList(), "cart_item_count", AuctionHouse.getCartManager().getPlayerCart(this.player).getItemCount()))
+					.name(AuctionLocale.msg(this.player, "gui.auction house.items.cart.name"))
+					.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.auction house.items.cart.lore"), "cart_item_count", AuctionHouse.getCartManager().getPlayerCart(this.player).getItemCount()))
 					.make(), e -> {
 
 				cancelTask();
@@ -805,7 +809,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ENABLED.getBoolean()) {
 				SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_SLOT.getString()).forEach(slot -> setItem(slot, QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_ITEM.getString())
-						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_NAME.getString()).lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_GUIDE_LORE.getStringList())
+						.name(AuctionLocale.msg(this.player, "gui.auction house.items.guide.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.auction house.items.guide.lore"))
 						.make()));
 			}
 		}
@@ -820,12 +824,12 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ENABLED.getBoolean()) {
 				SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_ITEM.getString())
-						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_NAME.getString())
-						.lore(this.player, Settings.GUI_AUCTION_HOUSE_ITEMS_LIST_ITEM_LORE.getStringList())
+						.name(AuctionLocale.msg(this.player, "gui.auction house.items.list new item.name"))
+						.lore(this.player, AuctionLocale.msgList(this.player, "gui.auction house.items.list new item.lore"))
 						.make(), e -> {
 
 					if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.auction house closed").sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.auction house closed");
 						return;
 					}
 
@@ -833,7 +837,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 					// using this will ignore the "SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM" setting
 					if (FloodGateHook.isFloodGateUser(e.player)) {
-						AuctionHouse.getInstance().getLocale().getMessage("commands.no_permission").sendPrefixedMessage(e.player);
+						AuctionLocale.tell(e.player, "commands.no_permission");
 						return;
 					}
 
@@ -873,8 +877,8 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			if (Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ENABLED.getBoolean()) {
 				SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_SLOT.getString()).forEach(slot -> setItem(slot, QuickItem
 						.of(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_ITEM.getString())
-						.name(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_NAME.getString())
-						.lore(Settings.GUI_AUCTION_HOUSE_ITEMS_HOW_TO_SELL_LORE.getStringList())
+						.name(AuctionLocale.msg(this.player, "gui.auction house.items.how to sell.name"))
+						.lore(AuctionLocale.msgList(this.player, "gui.auction house.items.how to sell.lore"))
 						.make()));
 			}
 		}
@@ -882,14 +886,11 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		if (Settings.GUI_REFRESH_BTN_ENABLED.getBoolean()) {
 			SlotHelper.getButtonSlots(Settings.GUI_REFRESH_BTN_SLOT.getString()).forEach(slot -> setButton(slot, getRefreshButton(), ClickType.LEFT, e -> {
 				// Early return cooldown check to prevent spam clicking and server lag
-				if (Settings.MAIN_AH_REFRESH_BUTTON_COOLDOWN.getLong() > 0) {
+				if (Settings.asLong(Settings.MAIN_AH_REFRESH_BUTTON_COOLDOWN) > 0) {
 					long currentTime = System.currentTimeMillis();
-					if (this.lastRefreshClick != null && (currentTime - this.lastRefreshClick) < Settings.MAIN_AH_REFRESH_BUTTON_COOLDOWN.getLong()) {
-						long remainingTime = Settings.MAIN_AH_REFRESH_BUTTON_COOLDOWN.getLong() - (currentTime - this.lastRefreshClick);
-						AuctionHouse.getInstance().getLocale()
-								.getMessage("general.cooldown.refresh")
-								.processPlaceholder("time", AuctionHouse.getCooldownManager().formatTime(remainingTime))
-								.sendPrefixedMessage(e.player);
+					if (this.lastRefreshClick != null && (currentTime - this.lastRefreshClick) < Settings.asLong(Settings.MAIN_AH_REFRESH_BUTTON_COOLDOWN)) {
+						long remainingTime = Settings.asLong(Settings.MAIN_AH_REFRESH_BUTTON_COOLDOWN) - (currentTime - this.lastRefreshClick);
+						AuctionLocale.tell(e.player, "general.cooldown.refresh", "time", AuctionHouse.getCooldownManager().formatTime(remainingTime));
 						return; // Early return - don't process refresh
 					}
 					this.lastRefreshClick = currentTime;
@@ -949,8 +950,8 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 			ItemStack item = materialToBeUsed.equalsIgnoreCase("PLAYER_HEAD") ?
 					QuickItem
 							.of(AuctionAPI.getInstance().getPlayerHead(this.auctionPlayer.getPlayer().getName()))
-							.name(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
-							.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(),
+							.name(Replacer.replaceVariables(AuctionLocale.msg(this.player, "gui.auction house.items.filter menu.name"), "filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(), "filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(), "filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
+							.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.auction house.items.filter menu.lore"),
 									"filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(),
 									"filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(),
 									"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType(),
@@ -959,11 +960,11 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 							.hideTags(true)
 							.make() : QuickItem
 					.of(materialToBeUsed)
-					.name(Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_NAME.getString(),
+					.name(Replacer.replaceVariables(AuctionLocale.msg(this.player, "gui.auction house.items.filter menu.name"),
 							"filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(),
 							"filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(),
 							"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType()))
-					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_MENU_LORE.getStringList(),
+					.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.auction house.items.filter menu.lore"),
 							"filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(),
 							"filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(),
 							"filter_sort_order", auctionPlayer.getAuctionSortType().getTranslatedType(),
@@ -1007,8 +1008,8 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 		if (Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_ENABLED.getBoolean()) {
 			SlotHelper.getButtonSlots(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_SLOT.getString()).forEach(slot -> setButton(slot, QuickItem
 					.of(this.auctionPlayer.getSelectedFilter().getFilterIcon())
-					.name(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_NAME.getString())
-					.lore(this.player, Replacer.replaceVariables(Settings.GUI_AUCTION_HOUSE_ITEMS_FILTER_LORE.getStringList(),
+					.name(AuctionLocale.msg(this.player, "gui.auction house.items.filter.name"))
+					.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.auction house.items.filter.lore"),
 							"filter_category", auctionPlayer.getSelectedFilter().getTranslatedType(),
 							"filter_auction_type", auctionPlayer.getSelectedSaleType().getTranslatedType(),
 							"filter_currency", auctionPlayer.getSelectedCurrencyFilter().getDisplayName(),
@@ -1067,7 +1068,7 @@ public final class GUIAuctionHouse extends AuctionUpdatingPagedGUI<AuctionedItem
 
 	@Override
 	protected List<Integer> fillSlots() {
-		return Settings.GUI_AUCTION_HOUSE_FILL_SLOTS.getIntegerList();
+		return Settings.GUI_AUCTION_HOUSE_FILL_SLOTS.getIntList();
 	}
 
 	@Override

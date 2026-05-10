@@ -18,12 +18,15 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.ban.Ban;
 import ca.tweetzy.auctionhouse.api.sync.SynchronizeResult;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.CommandContext;
@@ -58,13 +61,13 @@ public class CommandUnban extends Command {
 		if (context.getArgCount() != 1) return ReturnType.INVALID_SYNTAX;
 		if (AuctionAPI.tellMigrationStatus(context.getSender())) return ReturnType.FAIL;
 
-		final Player target = PlayerUtils.findPlayer(context.getArg(0));
+		final Player target = PlayerLookup.findPlayer(context.getArg(0));
 		OfflinePlayer offlinePlayer = null;
 
 		if (target == null) {
 			offlinePlayer = Bukkit.getOfflinePlayer(context.getArg(0));
 			if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", context.getArg(0)).sendPrefixedMessage(context.getSender());
+				AuctionLocale.tell(context.getSender(), "general.playernotfound", "player",context.getArg(0));
 				return ReturnType.FAIL;
 			}
 		}
@@ -72,14 +75,14 @@ public class CommandUnban extends Command {
 		UUID toUnBan = target == null ? offlinePlayer.getUniqueId() : target.getUniqueId();
 
 		if (!AuctionHouse.getBanManager().getManagerContent().containsKey(toUnBan)) {
-			AuctionHouse.getInstance().getLocale().getMessage("ban.user not banned").processPlaceholder("player_name", context.getArg(0)).sendPrefixedMessage(context.getSender());
+			AuctionLocale.tell(context.getSender(), "ban.user not banned", "player_name",context.getArg(0));
 			return ReturnType.FAIL;
 		}
 
 		final Ban ban = AuctionHouse.getBanManager().get(toUnBan);
 		ban.unStore(result -> {
 			if (result == SynchronizeResult.SUCCESS) {
-				AuctionHouse.getInstance().getLocale().getMessage("ban.user unbanned").processPlaceholder("player_name", context.getArg(0)).sendPrefixedMessage(context.getSender());
+				AuctionLocale.tell(context.getSender(), "ban.user unbanned", "player_name",context.getArg(0));
 			}
 		});
 
@@ -105,11 +108,11 @@ public class CommandUnban extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.unban").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.unban");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.unban").getMessage();
+		return AuctionLocale.msg(null, "commands.description.unban");
 	}
 }

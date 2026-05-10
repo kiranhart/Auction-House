@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.sell;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -44,7 +46,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 	private final double price;
 
 	public GUIRequestItem(@NonNull final AuctionPlayer auctionPlayer, ItemStack itemRequested, final int amount, final double price) {
-		super(null, auctionPlayer.getPlayer(), Settings.GUI_REQUEST_TITLE.getString(), 6);
+		super(null, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.request.title"), 6);
 		this.auctionPlayer = auctionPlayer;
 		this.itemRequested = itemRequested;
 		this.amount = amount;
@@ -59,12 +61,12 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 
 		setButton(3, 2, QuickItem
 				.of(Settings.GUI_REQUEST_ITEMS_AMT_ITEM.getString())
-				.name(Settings.GUI_REQUEST_ITEMS_AMT_NAME.getString())
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_AMT_LORE.getStringList(), "request_amount", amount))
+				.name(AuctionLocale.msg(this.player, "gui.request.items.amt.name"))
+				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.request.items.amt.lore"), "request_amount", amount))
 				.make(), click -> {
 
 		// TitleInput automatically handles allowClose and inventory closing
-		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter request amount.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter request amount.subtitle").getMessage()) {
+		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionLocale.msg(null, "titles.enter request amount.title"), AuctionLocale.msg(null, "titles.enter request amount.subtitle")) {
 
 				@Override
 				public void onExit(Player player) {
@@ -76,7 +78,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 					string = ChatColor.stripColor(string);
 
 					if (!MathUtil.isInt(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.notanumber", "value",string);
 						return false;
 					}
 
@@ -85,7 +87,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 						requestAmount = GUIRequestItem.this.itemRequested.getAmount();
 
 					if (requestAmount > Settings.MAX_REQUEST_AMOUNT.getInt()) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.highrequestcount").sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.highrequestcount");
 						return false;
 					}
 
@@ -105,12 +107,12 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 
 		setButton(3, 6, QuickItem
 				.of(Settings.GUI_REQUEST_ITEMS_PRICE_ITEM.getString())
-				.name(Settings.GUI_REQUEST_ITEMS_PRICE_NAME.getString())
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_REQUEST_ITEMS_PRICE_LORE.getStringList(), "request_price", AuctionHouse.getAPI().getNumberAsCurrency(price, false)))
+				.name(AuctionLocale.msg(this.player, "gui.request.items.price.name"))
+				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.request.items.price.lore"), "request_price", AuctionHouse.getAPI().getNumberAsCurrency(price, false)))
 				.make(), click -> {
 
 		// TitleInput automatically handles allowClose and inventory closing
-		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionHouse.getInstance().getLocale().getMessage("titles.enter request price.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.enter request price.subtitle").getMessage()) {
+		new TitleInput(AuctionHouse.getInstance(), click.player, AuctionLocale.msg(null, "titles.enter request price.title"), AuctionLocale.msg(null, "titles.enter request price.subtitle")) {
 
 				@Override
 				public void onExit(Player player) {
@@ -122,29 +124,29 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 					string = ChatColor.stripColor(string);
 
 					if (!MathUtil.isDouble(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.notanumber", "value",string);
 						return false;
 					}
 
 					double newPrice = Double.parseDouble(string);
 
 					if (Double.isNaN(newPrice)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.notanumber", "value",string);
 						return false;
 					}
 
 					if (newPrice <= 0) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.cannotbezero").processPlaceholder("value", string).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.cannotbezero", "value",string);
 						return false;
 					}
 
 					if (newPrice > Settings.MAX_REQUEST_PRICE.getDouble()) {
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.request.max price").processPlaceholder("price", Settings.MAX_REQUEST_PRICE.getDouble()).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "pricing.request.max price", "price",Settings.MAX_REQUEST_PRICE.getDouble());
 						return false;
 					}
 
 					if (newPrice < Settings.MIN_REQUEST_PRICE.getDouble()) {
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.request.min price").processPlaceholder("price", Settings.MIN_REQUEST_PRICE.getDouble()).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "pricing.request.min price", "price",Settings.MIN_REQUEST_PRICE.getDouble());
 						return false;
 					}
 
@@ -163,8 +165,8 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_REQUEST_ITEMS_REQUEST_ITEM.getString())
-				.name(Settings.GUI_REQUEST_ITEMS_REQUEST_NAME.getString())
-				.lore(this.player, Settings.GUI_REQUEST_ITEMS_REQUEST_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.request.items.request.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.request.items.request.lore"))
 				.make(), click -> {
 
 			// Check for block items
@@ -172,7 +174,7 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 
 			// check if at limit
 			if (auctionPlayer.isAtItemLimit(player)) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.requestlimit").sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.requestlimit");
 				return;
 			}
 
@@ -186,12 +188,12 @@ public final class GUIRequestItem extends AuctionBaseGUI {
 
 			// check min/max prices
 			if (price < Settings.MIN_AUCTION_PRICE.getDouble()) {
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.minbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "pricing.minbaseprice", "price",Settings.MIN_AUCTION_PRICE.getDouble());
 				return;
 			}
 
 			if (price > Settings.MAX_AUCTION_PRICE.getDouble()) {
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.maxbaseprice").processPlaceholder("price", Settings.MIN_AUCTION_PRICE.getDouble()).sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "pricing.maxbaseprice", "price",Settings.MIN_AUCTION_PRICE.getDouble());
 				return;
 			}
 

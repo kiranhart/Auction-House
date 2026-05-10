@@ -48,7 +48,7 @@ public class CommandMigrate extends Command {
 
 	@Override
 	protected ReturnType execute(CommandContext context) {
-		AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cMigration support for v1 has been dropped since 2.53.0, use 2.52.0 or lower to migrate first.")).sendPrefixedMessage(context.getSender());
+		Common.tell(context.getSender(), Common.colorize("&cMigration support for v1 has been dropped since 2.53.0, use 2.52.0 or lower to migrate first."));
 		return ReturnType.SUCCESS;
 	}
 

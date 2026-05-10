@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.commands;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.Common;
@@ -57,13 +58,13 @@ public class CommandToggleListInfo extends Command {
 		final UUID playerUUID = player.getUniqueId();
 
 		if (AuctionHouse.getAuctionPlayerManager().getPlayer(playerUUID) == null) {
-			AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			Common.tell(Bukkit.getConsoleSender(), Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now."));
 			AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 		}
 
 		final AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(playerUUID);
 		auctionPlayer.setShowListingInfo(!auctionPlayer.isShowListingInfo());
-		AuctionHouse.getInstance().getLocale().getMessage("general.toggled listing." + (auctionPlayer.isShowListingInfo() ? "on" : "off")).sendPrefixedMessage(player);
+		AuctionLocale.tell(player, auctionPlayer.isShowListingInfo() ? "general.toggled listing.on" : "general.toggled listing.off");
 
 		return ReturnType.SUCCESS;
 	}
@@ -85,11 +86,11 @@ public class CommandToggleListInfo extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.togglelistinfo").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.togglelistinfo");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.togglelistinfo").getMessage();
+		return AuctionLocale.msg(null, "commands.description.togglelistinfo");
 	}
 }

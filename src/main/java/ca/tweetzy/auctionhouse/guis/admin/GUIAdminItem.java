@@ -18,6 +18,10 @@
 
 package ca.tweetzy.auctionhouse.guis.admin;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.event.AuctionAdminEvent;
 import ca.tweetzy.auctionhouse.auction.AuctionAdminLog;
@@ -29,7 +33,6 @@ import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -48,7 +51,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 	private final AuctionedItem auctionItem;
 
 	public GUIAdminItem(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
-		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_ITEM_ADMIN_TITLE.getString(), 3);
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.item admin.title"), 3);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		setAcceptsItems(false);
@@ -70,7 +73,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 	private void drawReturnButton() {
 
 		if (Settings.ADMIN_OPTION_SHOW_RETURN_ITEM.getBoolean())
-			setButton(1, 1, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_NAME.getString()).lore(this.player, Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_LORE.getStringList()).make(), click -> {
+			setButton(1, 1, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_RETURN_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.item admin.items.send to player.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.item admin.items.send to player.lore")).make(), click -> {
 
 				if (!click.player.hasPermission("auctionhouse.admin.returnitem")) return;
 
@@ -91,10 +94,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 					else AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice(), this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-								.processPlaceholder("player_balance", AuctionHouse.getCurrencyManager().getFormattedBalance(oldBidder, this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()))
-								.processPlaceholder("price", this.auctionItem.getFormattedCurrentPrice())
-								.sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionLocale.tell(oldBidder.getPlayer(), "pricing.moneyadd", "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(oldBidder, this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()),"price",this.auctionItem.getFormattedCurrentPrice());
 
 				}
 
@@ -104,7 +104,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 
 	private void drawClaimButton() {
 		if (Settings.ADMIN_OPTION_SHOW_CLAIM_ITEM.getBoolean())
-			setButton(1, 3, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_NAME.getString()).lore(this.player, Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_LORE.getStringList()).make(), click -> {
+			setButton(1, 3, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_CLAIM_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.item admin.items.claim item.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.item admin.items.claim item.lore")).make(), click -> {
 
 				if (!click.player.hasPermission("auctionhouse.admin.claimitem")) return;
 
@@ -112,7 +112,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 				Bukkit.getServer().getPluginManager().callEvent(event);
 				if (event.isCancelled()) return;
 
-				PlayerUtils.giveItem(click.player, this.auctionItem.getItem());
+				PlayerUtil.giveItem(click.player, this.auctionItem.getItem());
 
 				if (Settings.BIDDING_TAKES_MONEY.getBoolean() && !this.auctionItem.getHighestBidder().equals(this.auctionItem.getOwner())) {
 					final OfflinePlayer oldBidder = Bukkit.getOfflinePlayer(this.auctionItem.getHighestBidder());
@@ -122,10 +122,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 					else AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-								.processPlaceholder("player_balance", AuctionHouse.getCurrencyManager().getFormattedBalance(oldBidder, this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()))
-								.processPlaceholder("price", this.auctionItem.getFormattedCurrentPrice())
-								.sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionLocale.tell(oldBidder.getPlayer(), "pricing.moneyadd", "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(oldBidder, this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()),"price",this.auctionItem.getFormattedCurrentPrice());
 
 				}
 
@@ -136,7 +133,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 
 	private void drawDeleteButton() {
 		if (Settings.ADMIN_OPTION_SHOW_DELETE_ITEM.getBoolean())
-			setButton(1, 5, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_NAME.getString()).lore(this.player, Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_LORE.getStringList()).make(), click -> {
+			setButton(1, 5, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_DELETE_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.item admin.items.delete item.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.item admin.items.delete item.lore")).make(), click -> {
 
 				if (!click.player.hasPermission("auctionhouse.admin.deleteitem")) return;
 				AuctionAdminEvent event = new AuctionAdminEvent(createLog(click.player, AdminAction.DELETE_ITEM));
@@ -160,10 +157,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 						AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-								.processPlaceholder("player_balance", AuctionHouse.getCurrencyManager().getFormattedBalance(oldBidder, this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()))
-								.processPlaceholder("price", this.auctionItem.getFormattedCurrentPrice())
-								.sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionLocale.tell(oldBidder.getPlayer(), "pricing.moneyadd", "player_balance",AuctionHouse.getCurrencyManager().getFormattedBalance(oldBidder, this.auctionItem.getCurrency(), this.auctionItem.getCurrencyItem()),"price",this.auctionItem.getFormattedCurrentPrice());
 
 				}
 
@@ -174,11 +168,11 @@ public class GUIAdminItem extends AuctionBaseGUI {
 
 	private void drawCopyButton() {
 		if (Settings.ADMIN_OPTION_SHOW_COPY_ITEM.getBoolean())
-			setButton(1, 7, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_COPY_ITEM.getString()).name(Settings.GUI_ITEM_ADMIN_ITEMS_COPY_NAME.getString()).lore(this.player, Settings.GUI_ITEM_ADMIN_ITEMS_COPY_LORE.getStringList()).make(), click -> {
+			setButton(1, 7, QuickItem.of(Settings.GUI_ITEM_ADMIN_ITEMS_COPY_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.item admin.items.copy item.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.item admin.items.copy item.lore")).make(), click -> {
 
 				if (!click.player.hasPermission("auctionhouse.admin.copyitem")) return;
 				if (Settings.ITEM_COPY_REQUIRES_GMC.getBoolean() && click.player.getGameMode() != GameMode.CREATIVE) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.requires creative").sendPrefixedMessage(click.player);
+					AuctionLocale.tell(click.player, "general.requires creative");
 					return;
 				}
 
@@ -186,7 +180,7 @@ public class GUIAdminItem extends AuctionBaseGUI {
 				Bukkit.getServer().getPluginManager().callEvent(event);
 				if (event.isCancelled()) return;
 
-				PlayerUtils.giveItem(click.player, this.auctionItem.getItem());
+				PlayerUtil.giveItem(click.player, this.auctionItem.getItem());
 				click.gui.close();
 			});
 

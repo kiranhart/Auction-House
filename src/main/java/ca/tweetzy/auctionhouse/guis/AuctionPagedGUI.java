@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -213,8 +215,8 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 	protected ItemStack getBackButton() {
 		return QuickItem
 				.of(Settings.GUI_BACK_BTN_ITEM.getString())
-				.name(Settings.GUI_BACK_BTN_NAME.getString())
-				.lore(this.player, Settings.GUI_BACK_BTN_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.global items.back button.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.global items.back button.lore"))
 				.make();
 	}
 
@@ -222,8 +224,8 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 	protected ItemStack getExitButton() {
 		return QuickItem
 				.of(Settings.GUI_CLOSE_BTN_ITEM.getString())
-				.name(Settings.GUI_CLOSE_BTN_NAME.getString())
-				.lore(this.player, Settings.GUI_CLOSE_BTN_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.global items.close button.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.global items.close button.lore"))
 				.make();
 	}
 
@@ -231,8 +233,8 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 	protected ItemStack getPreviousButton() {
 		return QuickItem
 				.of(Settings.GUI_PREV_PAGE_BTN_ITEM.getString())
-				.name(Settings.GUI_PREV_PAGE_BTN_NAME.getString())
-				.lore(this.player, Settings.GUI_PREV_PAGE_BTN_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.global items.previous page button.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.global items.previous page button.lore"))
 				.make();
 	}
 
@@ -240,8 +242,8 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 	protected ItemStack getNextButton() {
 		return QuickItem
 				.of(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString())
-				.name(Settings.GUI_NEXT_PAGE_BTN_NAME.getString())
-				.lore(this.player, Settings.GUI_NEXT_PAGE_BTN_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.global items.next page button.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.global items.next page button.lore"))
 				.make();
 	}
 

@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.guis.selector;
 
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
@@ -24,7 +26,7 @@ public final class GUIPlayerSelector extends AuctionPagedGUI<OfflinePlayer> {
 	private final Consumer<OfflinePlayer> selectedPlayer;
 
 	public GUIPlayerSelector(@NonNull final Player player, @NonNull final Consumer<OfflinePlayer> selectedPlayer) {
-		super(null, player, Settings.GUI_PLAYER_SELECTOR_TITLE.getString(), 6, new ArrayList<>());
+		super(null, player, AuctionLocale.msg(player, "gui.player selector.title"), 6, new ArrayList<>());
 		setAsync(true);
 		this.selectedPlayer = selectedPlayer;
 		draw();
@@ -45,8 +47,8 @@ public final class GUIPlayerSelector extends AuctionPagedGUI<OfflinePlayer> {
 
 		QuickItem item = QuickItem
 				.of(CompMaterial.PLAYER_HEAD)
-				.name(Settings.GUI_PLAYER_SELECTOR_ITEMS_PLAYER_NAME.getString().replace("%player_name%", name))
-				.lore(this.player, Settings.GUI_PLAYER_SELECTOR_ITEMS_PLAYER_LORE.getStringList());
+				.name(AuctionLocale.msg(this.player, "gui.player selector.items.player.name").replace("%player_name%", name))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.player selector.items.player.lore"));
 
 
 		return XSkull

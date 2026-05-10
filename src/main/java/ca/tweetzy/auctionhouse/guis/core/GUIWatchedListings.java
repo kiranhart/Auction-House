@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.core;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -40,7 +42,7 @@ public class GUIWatchedListings extends AuctionPagedGUI<AuctionedItem> {
 	private final AuctionPlayer auctionPlayer;
 
 	public GUIWatchedListings(AuctionPlayer auctionPlayer) {
-		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), Settings.GUI_WATCHLIST_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getWatchlistManager().getWatchedListings(auctionPlayer.getUuid())));
+		super(new GUIAuctionHouse(auctionPlayer), auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.watchlist.title"), 6, new ArrayList<>(AuctionHouse.getWatchlistManager().getWatchedListings(auctionPlayer.getUuid())));
 		this.auctionPlayer = auctionPlayer;
 		setOnClose(close -> close.manager.showGUI(close.player, new GUIAuctionHouse(auctionPlayer)));
 		draw();
@@ -73,9 +75,7 @@ public class GUIWatchedListings extends AuctionPagedGUI<AuctionedItem> {
 		if (click.clickType == ClickType.SHIFT_LEFT || click.clickType == ClickType.SHIFT_RIGHT) {
 			AuctionHouse.getWatchlistManager().remove(click.player.getUniqueId(), current.getId(), (err, ok) -> {
 				if (ok) {
-					AuctionHouse.getInstance().getLocale().getMessage("watchlist.removed")
-							.processPlaceholder("item", AuctionAPI.getInstance().getItemName(current.getItem()))
-							.sendPrefixedMessage(click.player);
+					AuctionLocale.tell(click.player, "watchlist.removed", "item",AuctionAPI.getInstance().getItemName(current.getItem()));
 				}
 				draw();
 			});
@@ -95,14 +95,14 @@ public class GUIWatchedListings extends AuctionPagedGUI<AuctionedItem> {
 			int emptySlot = 22;
 			setItem(emptySlot, QuickItem
 					.of(Settings.GUI_WATCHLIST_EMPTY_ITEM.getString())
-					.name(Settings.GUI_WATCHLIST_EMPTY_NAME.getString())
-					.lore(this.player, Settings.GUI_WATCHLIST_EMPTY_LORE.getStringList())
+					.name(AuctionLocale.msg(this.player, "gui.watchlist.empty.name"))
+					.lore(this.player, AuctionLocale.msgList(this.player, "gui.watchlist.empty.lore"))
 					.make());
 		}
 	}
 
 	@Override
 	protected List<Integer> fillSlots() {
-		return Settings.GUI_AUCTION_HOUSE_FILL_SLOTS.getIntegerList();
+		return Settings.GUI_AUCTION_HOUSE_FILL_SLOTS.getIntList();
 	}
 }

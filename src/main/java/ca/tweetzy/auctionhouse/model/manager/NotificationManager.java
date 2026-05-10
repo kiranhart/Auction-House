@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.model.manager;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.auction.QueuedNotification;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import com.google.gson.Gson;
@@ -55,16 +56,10 @@ public final class NotificationManager {
 			Bukkit.getScheduler().runTask(AuctionHouse.getInstance(), () -> {
 				for (QueuedNotification n : toDeliver) {
 					Map<String, String> placeholders = parsePlaceholders(n.getPlaceholderDataJson());
-					var msg = AuctionHouse.getInstance().getLocale().getMessage(n.getMessageKey());
-					for (Map.Entry<String, String> e : placeholders.entrySet()) {
-						msg = msg.processPlaceholder(e.getKey(), e.getValue());
-					}
-					msg.sendPrefixedMessage(player);
+					AuctionLocale.tell(player, n.getMessageKey(), placeholders);
 				}
 				if (list.size() > MAX_DELIVER_PER_JOIN) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.offline notifications more")
-							.processPlaceholder("count", String.valueOf(list.size() - MAX_DELIVER_PER_JOIN))
-							.sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "general.offline notifications more", "count",String.valueOf(list.size() - MAX_DELIVER_PER_JOIN));
 				}
 				AuctionHouse.getDataManager().deleteNotifications(toDelete, null);
 			});

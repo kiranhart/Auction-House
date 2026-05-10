@@ -51,8 +51,8 @@ public class CommandInfo extends Command {
 		final String version = instance.getDescription().getVersion();
 		final String author = "Kiran Hart";
 		
-		instance.getLocale().newMessage(Common.colorize("&7Author: &e" + author)).sendPrefixedMessage(context.getSender());
-		instance.getLocale().newMessage(Common.colorize("&7Version: &e" + version)).sendPrefixedMessage(context.getSender());
+		Common.tell(context.getSender(), Common.colorize("&7Author: &e" + author));
+		Common.tell(context.getSender(), Common.colorize("&7Version: &e" + version));
 		
 		return ReturnType.SUCCESS;
 	}

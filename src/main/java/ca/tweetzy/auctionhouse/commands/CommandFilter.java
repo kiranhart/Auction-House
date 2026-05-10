@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionFilterItem;
@@ -79,19 +81,19 @@ public class CommandFilter extends Command {
 
 				ItemStack held = PlayerHelper.getHeldItem(player);
 				if (held.getType() == CompMaterial.AIR.get()) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.filter air").sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "general.filter air");
 					return ReturnType.FAIL;
 				}
 
 
 				if (AuctionHouse.getFilterManager().getFilteredItem(held) != null && AuctionHouse.getFilterManager().getFilteredItem(held).getCategory() == AuctionItemCategory.valueOf(context.getArg(1, "").toUpperCase())) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.filteritemaddedalready").sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "general.filteritemaddedalready");
 					return ReturnType.FAIL;
 				}
 
 				AuctionFilterItem filterItem = new AuctionFilterItem(held, AuctionItemCategory.valueOf(context.getArg(1, "").toUpperCase()));
 				AuctionHouse.getFilterManager().addFilterItem(filterItem);
-				AuctionHouse.getInstance().getLocale().getMessage("general.addeditemtofilterwhitelist").processPlaceholder("item_name", AuctionAPI.getInstance().getItemName(held)).processPlaceholder("filter_category", context.getArg(1)).sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.addeditemtofilterwhitelist", "item_name",AuctionAPI.getInstance().getItemName(held),"filter_category",context.getArg(1));
 			}
 		}
 
@@ -105,12 +107,12 @@ public class CommandFilter extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.filter").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.filter");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.filter").getMessage();
+		return AuctionLocale.msg(null, "commands.description.filter");
 	}
 
 	@Override

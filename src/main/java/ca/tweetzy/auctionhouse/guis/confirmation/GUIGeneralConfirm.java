@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.model.ConfirmLock;
@@ -22,7 +24,7 @@ public final class GUIGeneralConfirm extends AuctionBaseGUI {
 	private boolean alreadyHandled = false;
 
 	public GUIGeneralConfirm(AuctionPlayer auctionPlayer, ItemStack itemStack, Consumer<Boolean> confirmed) {
-		super(null, auctionPlayer.getPlayer(), Settings.GUI_CONFIRM_GENERAL_TITLE.getString(), 1);
+		super(null, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.confirm general.title"), 1);
 		this.auctionPlayer = auctionPlayer;
 		this.confirmed = confirmed;
 
@@ -48,8 +50,8 @@ public final class GUIGeneralConfirm extends AuctionBaseGUI {
 	private void drawNo(int slot) {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_GENERAL_NO_ITEM.getString())
-				.name(Settings.GUI_CONFIRM_GENERAL_NO_NAME.getString())
-				.lore(this.player, Settings.GUI_CONFIRM_GENERAL_NO_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.confirm general.no.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm general.no.lore"))
 				.make(), ClickType.LEFT, click -> {
 
 			if (alreadyHandled) return;
@@ -64,8 +66,8 @@ public final class GUIGeneralConfirm extends AuctionBaseGUI {
 	private void drawYes(int slot) {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_GENERAL_YES_ITEM.getString())
-				.name(Settings.GUI_CONFIRM_GENERAL_YES_NAME.getString())
-				.lore(this.player, Settings.GUI_CONFIRM_GENERAL_YES_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.confirm general.yes.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm general.yes.lore"))
 				.make(), ClickType.LEFT, click -> {
 
 			if (alreadyHandled) return;

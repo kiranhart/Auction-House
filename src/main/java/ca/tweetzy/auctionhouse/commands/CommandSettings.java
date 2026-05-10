@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.guis.settings.PluginConfigGUI;
@@ -76,11 +78,11 @@ public class CommandSettings extends Command {
 
 	@Override
 	public String getSyntax() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.syntax.settings").getMessage();
+		return AuctionLocale.msg(null, "commands.syntax.settings");
 	}
 
 	@Override
 	public String getDescription() {
-		return AuctionHouse.getInstance().getLocale().getMessage("commands.description.settings").getMessage();
+		return AuctionLocale.msg(null, "commands.description.settings");
 	}
 }

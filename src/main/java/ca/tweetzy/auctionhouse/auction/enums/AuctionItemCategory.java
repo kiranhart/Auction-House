@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.auction.enums;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 
@@ -113,29 +115,29 @@ public enum AuctionItemCategory {
 	public String getTranslatedType() {
 		switch (this) {
 			case ALL:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.all").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.all");
 			case FOOD:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.food").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.food");
 			case ARMOR:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.armor").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.armor");
 			case BLOCKS:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.blocks").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.blocks");
 			case TOOLS:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.tools").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.tools");
 			case MISC:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.misc").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.misc");
 			case ENCHANTS:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.enchants").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.enchants");
 			case SPAWNERS:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.spawners").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.spawners");
 			case WEAPONS:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.weapons").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.weapons");
 			case SELF:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.self").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.self");
 			case POTIONS:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.potions").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.potions");
 			case SEARCH:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.categories.search").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.categories.search");
 		}
 		return getType();
 	}

@@ -18,6 +18,9 @@
 
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.AuctionedItem;
@@ -26,7 +29,6 @@ import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -44,7 +46,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 	private final Set<UUID> resulted = new HashSet<>();
 
 	public GUIListingConfirm(Player player, AuctionedItem auctionedItem, Consumer<Boolean> result) {
-		super(null, player, Settings.GUI_CONFIRM_LISTING_TITLE.getString(), 1);
+		super(null, player, AuctionLocale.msg(player, "gui.confirm listing.title"), 1);
 		this.auctionedItem = auctionedItem;
 		this.result = result;
 		setAcceptsItems(false);
@@ -63,11 +65,7 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 
 			if (!this.resulted.contains(close.player.getUniqueId())) {
 				if (auctionPlayer.getItemBeingListed() != null) {
-					if (BundleUtil.isBundledItem(auctionedItem.getItem())) PlayerUtils.giveItem(close.player, BundleUtil.extractBundleItems(auctionedItem.getCleanItem()));
-					else {
-						PlayerUtils.giveItem(close.player, auctionedItem.getCleanItem());
-					}
-
+					BundleUtil.giveBundleOrSingle(close.player, auctionedItem.getCleanItem());
 					auctionPlayer.setItemBeingListed(null);
 				}
 			}
@@ -93,8 +91,8 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 	private void drawNo(int slot) {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_LISTING_NO_ITEM.getString())
-				.name(Settings.GUI_CONFIRM_LISTING_NO_NAME.getString())
-				.lore(this.player, Settings.GUI_CONFIRM_LISTING_NO_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.confirm listing.no.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm listing.no.lore"))
 				.make(), click -> {
 
 			if (resulted.contains(click.player.getUniqueId())) return;
@@ -110,8 +108,8 @@ public final class GUIListingConfirm extends AuctionBaseGUI {
 	private void drawYes(int slot) {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_LISTING_YES_ITEM.getString())
-				.name(Settings.GUI_CONFIRM_LISTING_YES_NAME.getString())
-				.lore(this.player, Settings.GUI_CONFIRM_LISTING_YES_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.confirm listing.yes.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm listing.yes.lore"))
 				.make(), click -> {
 
 			if (resulted.contains(click.player.getUniqueId())) return;

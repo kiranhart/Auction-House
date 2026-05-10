@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.statistics;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionStatisticType;
@@ -30,7 +32,7 @@ public final class GUIStatisticViewSelect extends AuctionBaseGUI {
 	private final AuctionPlayer auctionPlayer;
 
 	public GUIStatisticViewSelect(AuctionPlayer player) {
-		super(null, player.getPlayer(), Settings.GUI_STATS_VIEW_SELECT_TITLE.getString(), 3);
+		super(null, player.getPlayer(), AuctionLocale.msg(player.getPlayer(), "gui.stat view select.title"), 3);
 		this.auctionPlayer = player;
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_STATS_VIEW_SELECT_BG_ITEM.getString()).make()));
 		draw();
@@ -40,13 +42,13 @@ public final class GUIStatisticViewSelect extends AuctionBaseGUI {
 	protected void draw() {
 		// self
 		setButton(1, 2, QuickItem.of(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_USE_HEAD.getBoolean() ? AuctionAPI.getInstance().getPlayerHead(this.player.getName()) : QuickItem.of(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_ITEM.getString()).make())
-				.name(Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_NAME.getString())
-				.lore(this.player, Settings.GUI_STATS_VIEW_SELECT_ITEMS_PERSONAL_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.stat view select.items.personal.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.stat view select.items.personal.lore"))
 				.make(), click -> click.manager.showGUI(click.player, new GUIStatisticView(this.auctionPlayer, this.auctionPlayer)));
 
 		setButton(1, 6, QuickItem.of(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_ITEM.getString())
-				.name(Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_NAME.getString())
-				.lore(this.player, Settings.GUI_STATS_VIEW_SELECT_ITEMS_LEADERBOARD_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.stat view select.items.leaderboard.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.stat view select.items.leaderboard.lore"))
 				.make(), click -> click.manager.showGUI(click.player, new GUIStatisticLeaderboard(this.auctionPlayer, AuctionStatisticType.MONEY_EARNED)));
 	}
 }

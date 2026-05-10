@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.guis.admin.bans;
 
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
 import ca.tweetzy.auctionhouse.api.ban.Ban;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
@@ -20,7 +22,7 @@ public final class GUIBanTypeSelection extends AuctionPagedGUI<BanType> {
 	private final Ban ban;
 
 	public GUIBanTypeSelection(@NonNull Player player, @NonNull final Ban ban) {
-		super(null, player, Settings.GUI_BAN_TYPES_TITLE.getString(), 3, Arrays.asList(BanType.values()));
+		super(null, player, AuctionLocale.msg(player, "gui.ban types.title"), 3, Arrays.asList(BanType.values()));
 		this.ban = ban;
 
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_BAN_TYPES_BG_ITEM.getString()).make()));
@@ -37,8 +39,8 @@ public final class GUIBanTypeSelection extends AuctionPagedGUI<BanType> {
 	protected ItemStack makeDisplayItem(BanType banType) {
 		return QuickItem
 				.of(this.ban.getTypes().contains(banType) ? CompMaterial.LIME_STAINED_GLASS_PANE : CompMaterial.RED_STAINED_GLASS_PANE)
-				.name(Settings.GUI_BAN_TYPES_ITEMS_TYPE_NAME.getString().replace("%ban_type%", ChatUtil.capitalizeFully(banType)))
-				.lore(this.player, Settings.GUI_BAN_TYPES_ITEMS_TYPE_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.ban types.items.type.name").replace("%ban_type%", ChatUtil.capitalizeFully(banType)))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.ban types.items.type.lore"))
 				.make();
 	}
 

@@ -27,24 +27,20 @@ import ca.tweetzy.auctionhouse.database.migrations.v2.*;
 import ca.tweetzy.auctionhouse.helpers.UpdateChecker;
 import ca.tweetzy.auctionhouse.hooks.PlaceholderAPIHook;
 import ca.tweetzy.auctionhouse.impl.AuctionAPI;
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.listeners.*;
 import ca.tweetzy.auctionhouse.managers.*;
 import ca.tweetzy.auctionhouse.model.manager.*;
 import ca.tweetzy.auctionhouse.model.TransactionLogger;
-import ca.tweetzy.auctionhouse.settings.LocaleSettings;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.auctionhouse.settings.v3.Translations;
+import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.tasks.AutoSaveTask;
 import ca.tweetzy.auctionhouse.tasks.TickAuctionsTask;
-import ca.tweetzy.core.TweetyCore;
-import ca.tweetzy.core.TweetyPlugin;
-import ca.tweetzy.core.configuration.Config;
-import ca.tweetzy.core.utils.Metrics;
+import ca.tweetzy.flight.FlightPlugin;
+import ca.tweetzy.flight.Metrics;
 import ca.tweetzy.flight.comp.enums.ServerProject;
-import ca.tweetzy.flight.utils.Common;
 import ca.tweetzy.flight.command.CommandManager;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
-import ca.tweetzy.flight.config.tweetzy.TweetzyYamlConfig;
 import ca.tweetzy.flight.database.*;
 import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.utils.Common;
@@ -61,9 +57,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 
@@ -74,12 +69,7 @@ import java.util.stream.Collectors;
  * Usage of any code found within this class is prohibited unless given explicit permission otherwise
  */
 
-public class AuctionHouse extends TweetyPlugin {
-
-	//==========================================================================//
-	// "v3" stuff for organization
-	@Getter
-	private static TweetzyYamlConfig migrationCoreConfig;
+public class AuctionHouse extends FlightPlugin {
 
 	//==========================================================================//
 	// Debug toggle for development/research
@@ -126,15 +116,11 @@ public class AuctionHouse extends TweetyPlugin {
 	@Setter
 	private boolean migrating = false;
 
-	protected Metrics metrics;
-
 	@Getter
 	private UpdateChecker.UpdateStatus status;
 
 	@Override
-	public void onPluginEnable() {
-		TweetyCore.registerPlugin(this, 1, "CHEST");
-
+	protected void onFlight() {
 		if (ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_7)) {
 			getServer().getPluginManager().disablePlugin(this);
 			return;
@@ -142,20 +128,13 @@ public class AuctionHouse extends TweetyPlugin {
 
 		API = new AuctionAPI();
 		taskChainFactory = BukkitTaskChainFactory.create(this);
-		migrationCoreConfig = new TweetzyYamlConfig(this, "migration-config-dont-touch.yml");
 
-		// Settings & Locale
-		Settings.setup();
-		setLocale(Settings.LANG.getString());
-		LocaleSettings.setup();
-
+		Settings.init();
 		initializeBStats();
 
-		// settings / locales v3
 		Translations.init();
-		ca.tweetzy.auctionhouse.settings.v3.Settings.init();
-		Common.setPrefix(Common.colorize(getLocale().getMessage("general.prefix").getMessage()));
-		Common.setPluginName(Common.colorize(getLocale().getMessage("general.plugin name").getMessage()));
+		Common.setPrefix(Common.colorize(AuctionLocale.msg(null, "general.prefix")));
+		Common.setPluginName(Common.colorize(AuctionLocale.msg(null, "general.plugin name")));
 
 		// Setup the database if enabled
 		this.databaseConnector = Settings.DATABASE_USE.getBoolean() ? new MySQLConnector(
@@ -168,7 +147,6 @@ public class AuctionHouse extends TweetyPlugin {
 				Settings.DATABASE_CUSTOM_PARAMS.getString().equalsIgnoreCase("None") ? "" : Settings.DATABASE_CUSTOM_PARAMS.getString()
 		) : new SQLiteConnector(this);
 
-		// Use a custom table prefix if using a remote database. The default prefix setting acts exactly like if the prefix is null
 		final String tablePrefix = Settings.DATABASE_USE.getBoolean() ? Settings.DATABASE_TABLE_PREFIX.getString() : null;
 		this.dataManager = new DataManager(this.databaseConnector, this, tablePrefix);
 
@@ -195,7 +173,6 @@ public class AuctionHouse extends TweetyPlugin {
 				new _20_AuctionRequestsMigration(),
 				new _21_RequestsDynAmtMigration(),
 				new _22_BansV2Migration(),
-				//	================ BEGIN MAJOR CHANGES ================ //
 				new _23_ItemToNBTSerializationMigration(),
 				new _24_RemainingItemToNBTSerializationMigration(),
 				new _25_BidHistoryMigration(),
@@ -212,16 +189,13 @@ public class AuctionHouse extends TweetyPlugin {
 
 		dataMigrationManager.runMigrations();
 
-		// setup Vault Economy
 		if (!setupEconomy()) {
 			Bukkit.getServer().getConsoleSender().sendMessage(Common.colorize("&7[&eAuctionHouse&7] &f- &cCould not setup vault, please make sure you have an economy plugin."));
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 
-		// gui manager
 		this.guiManager.init();
-//		this.categoryManager.load();
 		this.banManager.load();
 		this.currencyManager.load();
 		this.paymentsManager.load();
@@ -230,14 +204,12 @@ public class AuctionHouse extends TweetyPlugin {
 		this.cartManager.load();
 		this.cooldownManager = new CooldownManager(this);
 
-		// Initialize transaction logger
 		if (Settings.TRANSACTION_LOGGING_ENABLED.getBoolean()) {
 			this.transactionLogger = new TransactionLogger(this);
 			this.transactionLogger.start();
 			Common.log("&aTransaction logging enabled - logs stored in plugins/AuctionHouse/logs/");
 		}
 
-		// listeners
 		Bukkit.getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new MeteorClientListeners(), this);
 		Bukkit.getServer().getPluginManager().registerEvents(new AuctionListeners(), this);
@@ -255,8 +227,7 @@ public class AuctionHouse extends TweetyPlugin {
 		this.auctionPlayerManager.loadPlayers();
 		this.watchlistManager.load();
 
-		// commands
-		this.commandManager.setSyntaxErrorMessages(Settings.CMD_ERROR_DESC.getStringList());
+		this.commandManager.setSyntaxErrorMessages(AuctionLocale.msgList(null, "command info.error information"));
 
 		this.commandManager.registerCommandDynamically(new CommandAuctionHouse()).addSubCommands(
 				new CommandSell(),
@@ -285,35 +256,24 @@ public class AuctionHouse extends TweetyPlugin {
 				new CommandRequest(),
 				new CommandPop(),
 				new CommandDebug()
-
 		);
 
-		// Placeholder API
 		final Plugin papi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 		if (papi != null && papi.isEnabled())
 			new PlaceholderAPIHook(this).register();
 
-
-		// start the auction tick task
 		TickAuctionsTask.startTask();
 
-		// auto save task
 		if (Settings.AUTO_SAVE_ENABLED.getBoolean()) {
 			AutoSaveTask.startTask();
 		}
 
-		// update check
 		if (Settings.UPDATE_CHECKER.getBoolean() && ServerProject.getServerVersion() != ServerProject.UNKNOWN)
-			getServer().getScheduler().runTaskLaterAsynchronously(this, () -> this.status = new UpdateChecker(this, 60325, getConsole()).check().getStatus(), 1L);
-
-		// metrics
-		this.metrics = new Metrics(this, 6806);
-		this.metrics.addCustomChart(new Metrics.SimplePie("using_mysql", () -> String.valueOf(Settings.DATABASE_USE.getBoolean())));
+			getServer().getScheduler().runTaskLaterAsynchronously(this, () -> this.status = new UpdateChecker(this, 60325, Bukkit.getConsoleSender()).check().getStatus(), 1L);
 
 		getServer().getScheduler().runTaskLater(this, () -> {
 			if (!ServerProject.isServer(ServerProject.SPIGOT, ServerProject.PAPER)) {
 				getLogger().warning("You're running Auction House on a non supported server jar, although small, there's a chance somethings will not work or just entirely break.");
-
 			}
 
 			final String uIDPartOne = "%%__US";
@@ -323,12 +283,12 @@ public class AuctionHouse extends TweetyPlugin {
 				getLogger().severe("Could not detect user ID, are you running a cracked / self-compiled copy of auction house?");
 			} else {
 				if (!Settings.HIDE_THANKYOU.getBoolean()) {
-					getConsole().sendMessage(Common.colorize("&e&m--------------------------------------------------------"));
-					getConsole().sendMessage(Common.colorize(""));
-					getConsole().sendMessage(Common.colorize("&aThank you for purchasing Auction House, it means a lot"));
-					getConsole().sendMessage(Common.colorize("&7 - Kiran Hart"));
-					getConsole().sendMessage(Common.colorize(""));
-					getConsole().sendMessage(Common.colorize("&e&m--------------------------------------------------------"));
+					Bukkit.getConsoleSender().sendMessage(Common.colorize("&e&m--------------------------------------------------------"));
+					Bukkit.getConsoleSender().sendMessage(Common.colorize(""));
+					Bukkit.getConsoleSender().sendMessage(Common.colorize("&aThank you for purchasing Auction House, it means a lot"));
+					Bukkit.getConsoleSender().sendMessage(Common.colorize("&7 - Kiran Hart"));
+					Bukkit.getConsoleSender().sendMessage(Common.colorize(""));
+					Bukkit.getConsoleSender().sendMessage(Common.colorize("&e&m--------------------------------------------------------"));
 				}
 			}
 		}, 1L);
@@ -350,36 +310,33 @@ public class AuctionHouse extends TweetyPlugin {
 	}
 
 	@Override
-	public void onPluginDisable() {
-		// Shutdown transaction logger
+	protected int getBStatsId() {
+		return 6806;
+	}
+
+	@Override
+	protected List<Metrics.CustomChart> getCustomMetricCharts() {
+		return Collections.singletonList(new Metrics.SimplePie("using_mysql", () -> String.valueOf(Settings.DATABASE_USE.getBoolean())));
+	}
+
+	@Override
+	protected void onSleep() {
 		if (this.transactionLogger != null) {
 			this.transactionLogger.stop();
 		}
 
 		if (this.dataManager != null) {
-			// clean up the garbage items
 			this.dataManager.deleteItems(this.auctionItemManager.getDeletedItems().values().stream().map(AuctionedItem::getId).collect(Collectors.toList()));
 
 			this.auctionItemManager.end();
 			this.filterManager.saveFilterWhitelist(false);
 
-
 			shutdownDataManager(this.dataManager, 3, 15);
 		}
 
 		getServer().getScheduler().cancelTasks(this);
-		// send out remaining webhooks
-//		this.listingManager.sendPendingDiscordWebhooks();
 	}
 
-	@Override
-	public void onConfigReload() {
-		Settings.setup();
-		setLocale(Settings.LANG.getString());
-		LocaleSettings.setup();
-	}
-
-	//========================================== Getters ==========================================
 	public static <T> TaskChain<T> newChain() {
 		return taskChainFactory.newChain();
 	}
@@ -389,11 +346,7 @@ public class AuctionHouse extends TweetyPlugin {
 	}
 
 	public static AuctionHouse getInstance() {
-		return (AuctionHouse) TweetyPlugin.getInstance();
-	}
-
-	@Override
-	public void onPluginLoad() {
+		return (AuctionHouse) FlightPlugin.getInstance();
 	}
 
 	public static AuctionHouseAPI getAPI() {
@@ -488,58 +441,8 @@ public class AuctionHouse extends TweetyPlugin {
 		return getInstance().economy;
 	}
 
-	//========================================== LEGACY ==========================================
-	@Override
-	public List<Config> getExtraConfig() {
-		return null;
-	}
-
-	String IS_SONGODA_DOWNLOAD = "%%__SONGODA__%%";
-	String SONGODA_NODE = "%%__SONGODA_NODE__%%";
-	String TIMESTAMP = "%%__TIMESTAMP__%%";
 	String USER = "%%__USER__%%";
-	String USERNAME = "%%__USERNAME__%%";
-	String RESOURCE = "%%__RESOURCE__%%";
-	String NONCE = "%%__NONCE__%%";
 
-	protected void shutdownDataManager(DataManagerAbstract dataManager) {
-		// 3 minutes is overkill, but we just want to make sure
-		shutdownDataManager(dataManager, 15, TimeUnit.MINUTES.toSeconds(3));
-	}
-
-	protected void shutdownDataManager(DataManagerAbstract dataManager, int reportInterval, long secondsUntilForceShutdown) {
-		dataManager.shutdownTaskQueue();
-
-		while (!dataManager.isTaskQueueTerminated() && secondsUntilForceShutdown > 0) {
-			long secondsToWait = Math.min(reportInterval, secondsUntilForceShutdown);
-
-			try {
-				if (dataManager.waitForShutdown(secondsToWait, TimeUnit.SECONDS)) {
-					break;
-				}
-
-				getLogger().info(String.format("A DataManager is currently working on %d tasks... " +
-								"We are giving him another %d seconds until we forcefully shut him down " +
-								"(continuing to report in %d second intervals)",
-						dataManager.getTaskQueueSize(), secondsUntilForceShutdown, reportInterval));
-			} catch (InterruptedException ignore) {
-			} finally {
-				secondsUntilForceShutdown -= secondsToWait;
-			}
-		}
-
-		if (!dataManager.isTaskQueueTerminated()) {
-			int unfinishedTasks = dataManager.forceShutdownTaskQueue().size();
-
-			if (unfinishedTasks > 0) {
-				getLogger().log(Level.WARNING,
-						String.format("A DataManager has been forcefully terminated with %d unfinished tasks - " +
-								"This can be a serious problem, please report it to us (Tweetzy)!", unfinishedTasks));
-			}
-		}
-	}
-
-	// helpers
 	private boolean setupEconomy() {
 		if (getServer().getPluginManager().getPlugin("Vault") == null) {
 			return false;

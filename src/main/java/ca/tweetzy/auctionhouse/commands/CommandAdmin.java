@@ -18,6 +18,10 @@
 
 package ca.tweetzy.auctionhouse.commands;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
@@ -35,7 +39,6 @@ import ca.tweetzy.auctionhouse.guis.sell.GUISellPlaceItem;
 import ca.tweetzy.auctionhouse.helpers.PlayerHelper;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.command.AllowedExecutor;
 import ca.tweetzy.flight.command.Command;
 import ca.tweetzy.flight.command.CommandContext;
@@ -105,7 +108,7 @@ public class CommandAdmin extends Command {
 				}
 
 				if (target == null) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.playernotfound").processPlaceholder("player", context.getArg(1)).sendPrefixedMessage(context.getSender());
+					AuctionLocale.tell(context.getSender(), "general.playernotfound", "player",context.getArg(1));
 					return ReturnType.FAIL;
 				}
 
@@ -119,7 +122,7 @@ public class CommandAdmin extends Command {
 					AuctionHouse.getAuctionItemManager().getItems().get(id).setExpired(true);
 					endedCount++;
 				}
-				AuctionHouse.getInstance().getLocale().getMessage("general.endedallauctions").sendPrefixedMessage(context.getSender());
+				AuctionLocale.tell(context.getSender(), "general.endedallauctions");
 				if (AuctionHouse.getTransactionLogger() != null) {
 					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
 					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "endall", "Ended " + endedCount + " auctions");
@@ -143,7 +146,7 @@ public class CommandAdmin extends Command {
 						relistedCount++;
 					}
 				}
-				AuctionHouse.getInstance().getLocale().getMessage("general.relisteditems").sendPrefixedMessage(context.getSender());
+				AuctionLocale.tell(context.getSender(), "general.relisteditems");
 				if (AuctionHouse.getTransactionLogger() != null) {
 					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
 					AuctionHouse.getTransactionLogger().logAdminCommand(adminName, "relistall", "Relisted " + relistedCount + " expired auctions");
@@ -163,7 +166,7 @@ public class CommandAdmin extends Command {
 				if (!context.hasArg(3)) return ReturnType.FAIL;
 				if (!context.getSender().hasPermission("auctionhouse.cmd.admin.clear")) return ReturnType.FAIL;
 
-				player = PlayerUtils.findPlayer(context.getArg(1));
+				player = PlayerLookup.findPlayer(context.getArg(1));
 				if (player == null) return ReturnType.FAIL;
 
 				final boolean returnItems = Boolean.parseBoolean(context.getArg(2));
@@ -182,13 +185,13 @@ public class CommandAdmin extends Command {
 				if (!context.hasArg(2)) return ReturnType.FAIL;
 				if (!context.getSender().hasPermission("auctionhouse.cmd.admin.clearbids")) return ReturnType.FAIL;
 
-				player = PlayerUtils.findPlayer(context.getArg(1));
+				player = PlayerLookup.findPlayer(context.getArg(1));
 				if (player == null) return ReturnType.FAIL;
 
 				returnMoney = Boolean.parseBoolean(context.getArg(2));
 
 				handleUserBidClear(player, returnMoney);
-				AuctionHouse.getInstance().getLocale().getMessage("general.admin.cleared bids").processPlaceholder("player", context.getArg(1)).sendPrefixedMessage(context.getSender());
+				AuctionLocale.tell(context.getSender(), "general.admin.cleared bids", "player",context.getArg(1));
 				
 				if (AuctionHouse.getTransactionLogger() != null) {
 					String adminName = context.isPlayer() ? context.getPlayer().getName() : "Console";
@@ -200,7 +203,7 @@ public class CommandAdmin extends Command {
 				if (!context.hasArg(1)) return ReturnType.FAIL;
 				if (!context.getSender().hasPermission("auctionhouse.cmd.admin.opensell")) return ReturnType.FAIL;
 
-				player = PlayerUtils.findPlayer(context.getArg(1));
+				player = PlayerLookup.findPlayer(context.getArg(1));
 				if (player == null) return ReturnType.FAIL;
 				if (AuctionHouse.getInstance().getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.SELL)) return ReturnType.FAIL;
 
@@ -212,7 +215,7 @@ public class CommandAdmin extends Command {
 				ItemStack itemToSell = PlayerHelper.getHeldItem(player).clone();
 
 				if (itemToSell.getType() == CompMaterial.AIR.get() && Settings.SELL_MENU_REQUIRES_USER_TO_HOLD_ITEM.getBoolean()) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.air").sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "general.air");
 					return ReturnType.FAIL;
 				} else {
 					final AuctionPlayer auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
@@ -243,13 +246,13 @@ public class CommandAdmin extends Command {
 				if (!context.hasArg(1)) return ReturnType.FAIL;
 				if (!context.getSender().hasPermission("auctionhouse.cmd.admin.open")) return ReturnType.FAIL;
 
-				player = PlayerUtils.findPlayer(context.getArg(1));
+				player = PlayerLookup.findPlayer(context.getArg(1));
 				if (player == null) return ReturnType.FAIL;
 
 				if (CommandMiddleware.handle(player) == ReturnType.FAIL) return ReturnType.FAIL;
 
 				if (AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId()) == null) {
-					AuctionHouse.getInstance().getLocale().newMessage(Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now.")).sendPrefixedMessage(Bukkit.getConsoleSender());
+					Common.tell(Bukkit.getConsoleSender(), Common.colorize("&cCould not find auction player instance for&f: &e" + player.getName() + "&c creating one now."));
 					AuctionHouse.getAuctionPlayerManager().addPlayer(new AuctionPlayer(player));
 				}
 
@@ -346,10 +349,7 @@ public class CommandAdmin extends Command {
 						AuctionHouse.getCurrencyManager().deposit(oldBidder, auctionItem.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 					if (oldBidder.isOnline())
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-								.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-								.processPlaceholder("price", auctionItem.getFormattedCurrentPrice())
-								.sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionLocale.tell(oldBidder.getPlayer(), "pricing.moneyadd", "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",auctionItem.getFormattedCurrentPrice());
 
 				}
 			}

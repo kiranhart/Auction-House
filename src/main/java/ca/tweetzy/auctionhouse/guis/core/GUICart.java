@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.guis.core;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -22,7 +24,7 @@ public final class GUICart extends AuctionUpdatingPagedGUI<AuctionedItem> {
 	private final AuctionPlayer auctionPlayer;
 
 	public GUICart(Gui parent, @NonNull final AuctionPlayer auctionPlayer) {
-		super(parent, auctionPlayer.getPlayer(), Settings.GUI_CART_TITLE.getString(), Settings.GUI_CART_ROWS.getInt(), 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
+		super(parent, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.cart.title"), Settings.GUI_CART_ROWS.getInt(), 20 * Settings.TICK_UPDATE_GUI_TIME.getInt(), new ArrayList<>());
 		this.auctionPlayer = auctionPlayer;
 
 		if (!Bukkit.getOfflinePlayer(auctionPlayer.getUuid()).isOnline()) return;
@@ -54,12 +56,12 @@ public final class GUICart extends AuctionUpdatingPagedGUI<AuctionedItem> {
 		// checkout button
 		setButton(Settings.GUI_CART_ITEMS_CHECKOUT_SLOT.getInt(), QuickItem
 				.of(Settings.GUI_CART_ITEMS_CHECKOUT_ITEM.getString())
-				.name(Settings.GUI_CART_ITEMS_CHECKOUT_NAME.getString())
-				.lore(Settings.GUI_CART_ITEMS_CHECKOUT_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.cart.items.checkout.name"))
+				.lore(AuctionLocale.msgList(this.player, "gui.cart.items.checkout.lore"))
 				.make(), click -> {
 
 			if (!AuctionHouse.getAPI().isAuctionHouseOpen()) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.auction house closed").sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.auction house closed");
 				return;
 			}
 
@@ -84,6 +86,6 @@ public final class GUICart extends AuctionUpdatingPagedGUI<AuctionedItem> {
 
 	@Override
 	protected List<Integer> fillSlots() {
-		return Settings.GUI_CART_FILL_SLOTS.getIntegerList();
+		return Settings.GUI_CART_FILL_SLOTS.getIntList();
 	}
 }

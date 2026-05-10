@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.impl.currency;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.currency.AbstractCurrency;
 import ca.tweetzy.flight.utils.Common;
@@ -10,7 +12,7 @@ public final class AllCurrency extends AbstractCurrency {
 
 	// used for filtering only
 	public AllCurrency() {
-		super("AuctionHouse", "AllCurrencies", Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("auction_filter.currency.all currencies").getMessage()));
+		super("AuctionHouse", "AllCurrencies", Common.colorize(AuctionLocale.msg(null, "auction_filter.currency.all currencies")));
 	}
 
 	public boolean has(OfflinePlayer player, double amount, ItemStack item) {

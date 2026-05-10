@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.model.manager;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import lombok.NonNull;
@@ -17,7 +19,7 @@ public final class CooldownManager {
 	}
 
 	public boolean isInCooldown(@NonNull final Player player) {
-		final long COOLDOWN_TIME = Settings.CMD_COOLDOWN.getLong();
+		final long COOLDOWN_TIME = Settings.asLong(Settings.CMD_COOLDOWN);
 		if (COOLDOWN_TIME <= 0) return false;
 
 		long cooldownEndsAt = 0;
@@ -27,7 +29,7 @@ public final class CooldownManager {
 		}
 
 		if (cooldownEndsAt > System.currentTimeMillis()) {
-			AuctionHouse.getInstance().getLocale().getMessage("general.cooldown.command").processPlaceholder("time", formatTime(cooldownEndsAt - System.currentTimeMillis())).sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.cooldown.command", "time",formatTime(cooldownEndsAt - System.currentTimeMillis()));
 			return true;
 		}
 

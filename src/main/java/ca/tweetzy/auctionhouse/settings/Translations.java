@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ca.tweetzy.auctionhouse.settings.v3;
+package ca.tweetzy.auctionhouse.settings;
 
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.flight.settings.TranslationEntry;
@@ -24,16 +24,18 @@ import ca.tweetzy.flight.settings.TranslationManager;
 import lombok.NonNull;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Locale;
+
 public final class Translations extends TranslationManager {
 
 	public Translations(@NonNull JavaPlugin plugin) {
 		super(plugin);
-		// mainLanguage is set to "en_us" by TranslationManager's super("en_us")
+		this.mainLanguage = Settings.LANG.getString().toLowerCase(Locale.ROOT).replace('-', '_');
 	}
 
 	/*
 	==============================================================
-					General (LocaleSettings)
+					General
 	==============================================================
 	 */
 	public static TranslationEntry GENERAL_PREFIX = create("general.prefix", "&8[&eAuctionHouse&8]");
@@ -94,6 +96,10 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry GENERAL_NOTHING_TO_CONFIRM = create("general.nothing to confirm", "&cYou have nothing to confirm");
 	public static TranslationEntry GENERAL_CONFIRM_TIME_LIMIT_REACHED = create("general.confirm time limit reached", "&cYou didn't confirm in time, request it again.");
 	public static TranslationEntry GENERAL_CONFIRMED_CANCELLATION = create("general.confirmed cancellation", "&aConfirmed, all your items will be sent to collection.");
+	public static TranslationEntry GENERAL_CANCELLED = create("general.cancelled", "&cCancelled.");
+	public static TranslationEntry GENERAL_ERROR = create("general.error", "&cSomething went wrong.");
+	public static TranslationEntry GENERAL_RELOADED = create("general.reloaded", "&aReloaded configuration and messages.");
+	public static TranslationEntry PROMPTS_ENTER_DELETION_RANGE = create("prompts.enter deletion range", "&fEnter deletion range in chat (&eExample&f: &a1 hour&7)");
 	public static TranslationEntry GENERAL_CART_ITEM_ALREADY_IN_CART = create("general.cart.item already in cart", "&cThat item is already in your cart");
 	public static TranslationEntry GENERAL_CART_ITEM_ADDED_TO_CART = create("general.cart.item added to cart", "&aAdded that item to your cart.");
 	public static TranslationEntry GENERAL_CANNOT_LIST_REPAIRED_ITEM = create("general.cannot list repaired item", "&cCannot list a repaired item!");

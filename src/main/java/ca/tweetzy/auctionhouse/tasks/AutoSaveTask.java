@@ -21,7 +21,6 @@ package ca.tweetzy.auctionhouse.tasks;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.utils.Common;
-import ca.tweetzy.flight.utils.Common;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -50,6 +49,6 @@ public class AutoSaveTask extends BukkitRunnable {
 		instance.getFilterManager().saveFilterWhitelist(true);
 
 		if (!Settings.DISABLE_AUTO_SAVE_MSG.getBoolean())
-			instance.getLocale().newMessage(Common.colorize("&aAuto saved auction items & transactions")).sendPrefixedMessage(Bukkit.getConsoleSender());
+			Common.tell(Bukkit.getConsoleSender(), Common.colorize("&aAuto saved auction items & transactions"));
 	}
 }

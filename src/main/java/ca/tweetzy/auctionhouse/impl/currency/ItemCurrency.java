@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.impl.currency;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.currency.AbstractCurrency;
 import ca.tweetzy.flight.utils.Common;
@@ -10,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 public final class ItemCurrency extends AbstractCurrency {
 
 	public ItemCurrency() {
-		super("AuctionHouse", "Item", Common.colorize(AuctionHouse.getInstance().getLocale().getMessage("auction_filter.currency.item currency").getMessage()));
+		super("AuctionHouse", "Item", Common.colorize(AuctionLocale.msg(null, "auction_filter.currency.item currency")));
 	}
 
 	public boolean has(OfflinePlayer player, double amount, ItemStack item) {

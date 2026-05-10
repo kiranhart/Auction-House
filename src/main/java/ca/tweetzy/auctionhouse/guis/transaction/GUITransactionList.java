@@ -26,6 +26,7 @@ import ca.tweetzy.auctionhouse.auction.enums.AuctionSaleType;
 import ca.tweetzy.auctionhouse.auction.enums.AuctionSortType;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.helpers.SlotHelper;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
@@ -64,7 +65,7 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 	}
 
 	public GUITransactionList(Player player, boolean showAll) {
-		super(null, player, showAll ? Settings.GUI_TRANSACTIONS_TITLE_ALL.getString() : Settings.GUI_TRANSACTIONS_TITLE.getString(), 6, new ArrayList<>());
+		super(null, player, showAll ? AuctionLocale.msg(player, "gui.transactions.title all") : AuctionLocale.msg(player, "gui.transactions.title"), 6, new ArrayList<>());
 		this.auctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(player.getUniqueId());
 		this.showAll = showAll;
 		applyDelay();
@@ -72,26 +73,20 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 	}
 
 	private void applyDelay() {
-		setSlotClickDelay(getPreviousButtonSlot(), Settings.TRANSACTION_NAVIGATION_COOLDOWN.getLong());
-		setSlotClickDelay(getNextButtonSlot(), Settings.TRANSACTION_NAVIGATION_COOLDOWN.getLong());
+		setSlotClickDelay(getPreviousButtonSlot(), Settings.asLong(Settings.TRANSACTION_NAVIGATION_COOLDOWN));
+		setSlotClickDelay(getNextButtonSlot(), Settings.asLong(Settings.TRANSACTION_NAVIGATION_COOLDOWN));
 
 		SlotHelper.getButtonSlots(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_SLOT.getString()).forEach(slot -> {
-			setSlotClickDelay(slot, Settings.TRANSACTION_FILTER_COOLDOWN.getLong());
+			setSlotClickDelay(slot, Settings.asLong(Settings.TRANSACTION_FILTER_COOLDOWN));
 		});
 
 		setClickDelayAction((lastClicked, delay, click) -> {
 			if (click.slot == getPreviousButtonSlot() || click.slot == getNextButtonSlot()) {
-				AuctionHouse.getInstance().getLocale()
-						.getMessage("general.cooldown.navigate page")
-						.processPlaceholder("time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked))
-						.sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.cooldown.navigate page", "time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked));
 				return;
 			}
 
-			AuctionHouse.getInstance().getLocale()
-					.getMessage("general.cooldown.filter")
-					.processPlaceholder("time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked))
-					.sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.cooldown.filter", "time", AuctionHouse.getCooldownManager().formatTime(System.currentTimeMillis() - lastClicked));
 
 		});
 	}
@@ -186,8 +181,8 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 
 		setButton(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_SLOT.getInt(), QuickItem
 				.of(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_ITEM.getString())
-				.name(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_NAME.getString())
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEMS_FILTER_LORE.getStringList(),
+				.name(AuctionLocale.msg(this.player, "gui.transactions.items.filter.name"))
+				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.transactions.items.filter.lore"),
 						"filter_category", auctionPlayer.getSelectedTransactionFilter().getTranslatedType(),
 						"filter_auction_type", auctionPlayer.getSelectedTransactionSaleType().getTranslatedType(),
 						"filter_sort_order", auctionPlayer.getTransactionSortType().getTranslatedType(),
@@ -232,12 +227,12 @@ public class GUITransactionList extends AuctionPagedGUI<Transaction> {
 	protected ItemStack makeDisplayItem(Transaction transaction) {
 		final ItemStack item = transaction.getItem().clone();
 		final OfflinePlayer seller = Bukkit.getOfflinePlayer(transaction.getSeller());
-		final String SERVER_LISTING_NAME = AuctionHouse.getInstance().getLocale().getMessage("general.server listing").getMessage();
+		final String SERVER_LISTING_NAME = AuctionLocale.msg(null, "general.server listing");
 
 		return QuickItem
 				.of(item)
-				.name(Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_NAME.getString(), "item_name", AuctionAPI.getInstance().getItemName(item), "transaction_id", transaction.getId().toString()))
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_TRANSACTIONS_ITEM_TRANSACTION_LORE.getStringList(),
+				.name(Replacer.replaceVariables(AuctionLocale.msg(this.player, "gui.transactions.items.transaction.name"), "item_name", AuctionAPI.getInstance().getItemName(item), "transaction_id", transaction.getId().toString()))
+				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.transactions.items.transaction.lore"),
 						"transaction_id", transaction.getId().toString(),
 						"seller", seller.hasPlayedBefore() ? seller.getName() : SERVER_LISTING_NAME,
 						"buyer", Bukkit.getOfflinePlayer(transaction.getBuyer()).getName(),

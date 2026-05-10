@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.auction.enums;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 
 /**
@@ -41,11 +43,11 @@ public enum AuctionSortType {
 	public String getTranslatedType() {
 		switch (this) {
 			case PRICE:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sort_order.price").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.sort_order.price");
 			case RECENT:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sort_order.recent").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.sort_order.recent");
 			case OLDEST:
-				return AuctionHouse.getInstance().getLocale().getMessage("auction_filter.sort_order.oldest").getMessage();
+				return AuctionLocale.msg(null, "auction_filter.sort_order.oldest");
 			default:
 				return getType();
 		}

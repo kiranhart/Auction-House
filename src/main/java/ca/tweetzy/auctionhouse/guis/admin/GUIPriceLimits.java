@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.admin;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
@@ -45,7 +47,7 @@ import java.util.List;
 public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 
 	public GUIPriceLimits(Player player) {
-		super(null, player, Settings.GUI_PRICE_LIMITS_TITLE.getString(), 6, AuctionHouse.getPriceLimitManager().getManagerContent());
+		super(null, player, AuctionLocale.msg(player, "gui.price limits.title"), 6, AuctionHouse.getPriceLimitManager().getManagerContent());
 		draw();
 	}
 
@@ -57,7 +59,7 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 	@Override
 	protected ItemStack makeDisplayItem(ListingPriceLimit listingPriceLimit) {
 		final List<String> lore = AuctionAPI.getInstance().getItemLore(listingPriceLimit.getItem().clone());
-		lore.addAll(Settings.GUI_PRICE_LIMITS_LORE.getStringList());
+		lore.addAll(AuctionLocale.msgList(this.player, "gui.price limits.lore"));
 
 		return QuickItem
 				.of(listingPriceLimit.getItem().clone())
@@ -73,7 +75,7 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 	protected void onClick(ListingPriceLimit listingPriceLimit, GuiClickEvent event) {
 
 	if (event.clickType == ClickType.LEFT) {
-		new TitleInput(AuctionHouse.getInstance(), event.player, AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.min.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.min.subtitle").getMessage()) {
+		new TitleInput(AuctionHouse.getInstance(), event.player, AuctionLocale.msg(null, "titles.price limit.min.title"), AuctionLocale.msg(null, "titles.price limit.min.subtitle")) {
 
 				@Override
 				public void onExit(Player player) {
@@ -85,14 +87,14 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 					string = ChatColor.stripColor(string);
 
 					if (!MathUtil.isDouble(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.notanumber", "value",string);
 						return false;
 					}
 
 					double newPrice = Double.parseDouble(string);
 
 					if (Double.isNaN(newPrice)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.notanumber", "value",string);
 						return false;
 					}
 
@@ -108,7 +110,7 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 		}
 
 	if (event.clickType == ClickType.RIGHT) {
-		new TitleInput(AuctionHouse.getInstance(), event.player, AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.max.title").getMessage(), AuctionHouse.getInstance().getLocale().getMessage("titles.price limit.max.subtitle").getMessage()) {
+		new TitleInput(AuctionHouse.getInstance(), event.player, AuctionLocale.msg(null, "titles.price limit.max.title"), AuctionLocale.msg(null, "titles.price limit.max.subtitle")) {
 
 				@Override
 				public void onExit(Player player) {
@@ -120,14 +122,14 @@ public final class GUIPriceLimits extends AuctionPagedGUI<ListingPriceLimit> {
 					string = ChatColor.stripColor(string);
 
 					if (!MathUtil.isDouble(string)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.notanumber", "value",string);
 						return false;
 					}
 
 					double newPrice = Double.parseDouble(string);
 
 					if (Double.isNaN(newPrice)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.notanumber").processPlaceholder("value", string).sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.notanumber", "value",string);
 						return false;
 					}
 

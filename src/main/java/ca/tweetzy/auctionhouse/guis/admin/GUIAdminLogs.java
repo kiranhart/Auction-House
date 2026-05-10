@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.admin;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.auction.AuctionAdminLog;
 import ca.tweetzy.auctionhouse.guis.AuctionPagedGUI;
@@ -40,7 +42,7 @@ import java.util.List;
 public final class GUIAdminLogs extends AuctionPagedGUI<AuctionAdminLog> {
 
 	public GUIAdminLogs(Player player, List<AuctionAdminLog> logs) {
-		super(null, player, Settings.GUI_LOGS_TITLE.getString(), 6, logs);
+		super(null, player, AuctionLocale.msg(player, "gui.admin logs.title"), 6, logs);
 		setAcceptsItems(false);
 		draw();
 	}
@@ -60,7 +62,7 @@ public final class GUIAdminLogs extends AuctionPagedGUI<AuctionAdminLog> {
 		return QuickItem
 				.of(log.getItem())
 				.name(AuctionAPI.getInstance().getItemName(log.getItem()))
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_LOGS_LORE.getStringList(),
+				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.admin logs.lore"),
 						"admin", log.getAdminName(),
 						"target", log.getTargetName(),
 						"admin_uuid", log.getAdmin(),

@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
@@ -43,7 +45,7 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 	final AuctionedItem auctionItem;
 
 	public GUIConfirmCancel(AuctionPlayer auctionPlayer, AuctionedItem auctionItem) {
-		super(null, auctionPlayer.getPlayer(), Settings.GUI_CONFIRM_CANCEL_TITLE.getString(), 1);
+		super(null, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.confirm cancel.title"), 1);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		setAcceptsItems(false);
@@ -65,16 +67,16 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 	private void drawNo(int slot) {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_CANCEL_NO_ITEM.getString())
-				.name(Settings.GUI_CONFIRM_CANCEL_NO_NAME.getString())
-				.lore(this.player, Settings.GUI_CONFIRM_CANCEL_NO_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.confirm cancel.no.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm cancel.no.lore"))
 				.make(), click -> click.manager.showGUI(click.player, new GUIActiveAuctions(this.auctionPlayer)));
 	}
 
 	private void drawYes(int slot) {
 		setButton(slot, QuickItem
 				.of(Settings.GUI_CONFIRM_CANCEL_YES_ITEM.getString())
-				.name(Settings.GUI_CONFIRM_CANCEL_YES_NAME.getString())
-				.lore(this.player, Settings.GUI_CONFIRM_CANCEL_YES_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.confirm cancel.yes.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm cancel.yes.lore"))
 				.make(), click -> {
 
 			// Re-select the item to ensure that it's available
@@ -94,7 +96,7 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 							oldBidder.getUniqueId(),
 							located.getCurrentPrice(),
 							auctionItem.getItem(),
-							AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
+							AuctionLocale.msg(null, "general.prefix"),
 							PaymentReason.BID_RETURNED,
 							auctionItem.getCurrency(),
 							auctionItem.getCurrencyItem()
@@ -103,10 +105,7 @@ public class GUIConfirmCancel extends AuctionBaseGUI {
 					AuctionHouse.getCurrencyManager().deposit(oldBidder, located.getCurrentPrice(), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 				if (oldBidder.isOnline())
-					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-							.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-							.processPlaceholder("price", located.getFormattedCurrentPrice())
-							.sendPrefixedMessage(oldBidder.getPlayer());
+					AuctionLocale.tell(oldBidder.getPlayer(), "pricing.moneyadd", "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",located.getFormattedCurrentPrice());
 
 			}
 

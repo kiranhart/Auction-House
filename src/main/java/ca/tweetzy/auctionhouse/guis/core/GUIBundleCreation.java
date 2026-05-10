@@ -18,6 +18,10 @@
 
 package ca.tweetzy.auctionhouse.guis.core;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.auction.ListingResult;
@@ -30,7 +34,6 @@ import ca.tweetzy.auctionhouse.helpers.BundleUtil;
 import ca.tweetzy.auctionhouse.model.MaterialCategorizer;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.utils.QuickItem;
 import org.bukkit.event.inventory.ClickType;
@@ -59,7 +62,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 	private final Double bidIncrement;
 
 	public GUIBundleCreation(AuctionPlayer auctionPlayer, int allowedTime, boolean buyNowAllow, boolean isBiddingItem, Double buyNowPrice, Double startingBid, Double bidIncrement) {
-		super(null, auctionPlayer.getPlayer(), Settings.GUI_CREATE_BUNDLE_TITLE.getString(), 6);
+		super(null, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.create bundle.title"), 6);
 		this.auctionPlayer = auctionPlayer;
 		this.allowedTime = allowedTime;
 		this.buyNowAllow = buyNowAllow;
@@ -82,7 +85,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 			for (int i = 0; i < 45; i++) {
 				final ItemStack item = getItem(i);
 				if (item == null || item.getType() == CompMaterial.AIR.get()) continue;
-				PlayerUtils.giveItem(auctionPlayer.getPlayer(), item);
+				PlayerUtil.giveItem(auctionPlayer.getPlayer(), item);
 			}
 		});
 
@@ -94,8 +97,8 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 
 		setButton(getRows() - 1, 4, QuickItem
 				.of(Settings.GUI_CREATE_BUNDLE_CONFIRM_ITEM.getString())
-				.name(Settings.GUI_CREATE_BUNDLE_CONFIRM_NAME.getString())
-				.lore(this.player, Settings.GUI_CREATE_BUNDLE_CONFIRM_LORE.getStringList())
+				.name(AuctionLocale.msg(this.player, "gui.create bundle.items.confirm.name"))
+				.lore(this.player, AuctionLocale.msgList(this.player, "gui.create bundle.items.confirm.lore"))
 				.make(), ClickType.LEFT, e -> {
 
 
@@ -129,7 +132,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 
 			// check if item contains too many bundle/shulker
 			if (totalBundleShulkers > Settings.MAX_SHULKER_IN_BUNDLE.getInt()) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.shulker bundle limit").sendPrefixedMessage(e.player);
+				AuctionLocale.tell(e.player, "general.shulker bundle limit");
 				return;
 			}
 			// are they even allowed to sell more items
@@ -138,7 +141,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 			}
 
 			if (containsBundle) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.cannotsellbundleditem").sendPrefixedMessage(e.player);
+				AuctionLocale.tell(e.player, "general.cannotsellbundleditem");
 				return;
 			}
 
@@ -174,8 +177,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 					if (!result) {
 						auctionPlayer.getPlayer().closeInventory();
 
-						if (BundleUtil.isBundledItem(auctionedItem.getItem())) PlayerUtils.giveItem(auctionPlayer.getPlayer(), BundleUtil.extractBundleItems(auctionedItem.getItem()));
-						else PlayerUtils.giveItem(auctionPlayer.getPlayer(), auctionedItem.getItem());
+						BundleUtil.giveBundleOrSingle(auctionPlayer.getPlayer(), auctionedItem.getItem());
 
 
 						auctionPlayer.setItemBeingListed(null);
@@ -184,7 +186,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 
 					AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
 						if (listingResult != ListingResult.SUCCESS) {
-							PlayerUtils.giveItem(auctionPlayer.getPlayer(), auction.getItem());
+							PlayerUtil.giveItem(auctionPlayer.getPlayer(), auction.getItem());
 							auctionPlayer.setItemBeingListed(null);
 							return;
 						}
@@ -200,7 +202,7 @@ public final class GUIBundleCreation extends AuctionBaseGUI {
 				e.gui.exit();
 				AuctionCreator.create(auctionPlayer, auctionedItem, (auction, listingResult) -> {
 					if (listingResult != ListingResult.SUCCESS) {
-						PlayerUtils.giveItem(auctionPlayer.getPlayer(), auction.getItem());
+						PlayerUtil.giveItem(auctionPlayer.getPlayer(), auction.getItem());
 						auctionPlayer.setItemBeingListed(null);
 						return;
 					}

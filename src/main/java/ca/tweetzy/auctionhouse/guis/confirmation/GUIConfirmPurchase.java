@@ -18,6 +18,10 @@
 
 package ca.tweetzy.auctionhouse.guis.confirmation;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
+import ca.tweetzy.flight.utils.PlayerUtil;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.event.AuctionRequestCompleteEvent;
@@ -35,7 +39,6 @@ import ca.tweetzy.auctionhouse.guis.core.GUIContainerInspect;
 import ca.tweetzy.auctionhouse.impl.CompletedRequest;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.core.utils.PlayerUtils;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.QuickItem;
@@ -69,7 +72,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 	double pricePerItem = 0D;
 
 	public GUIConfirmPurchase(AuctionPlayer auctionPlayer, AuctionedItem auctionItem, boolean buyingSpecificQuantity) {
-		super(null, auctionPlayer.getPlayer(), Settings.GUI_CONFIRM_BUY_TITLE.getString(), !buyingSpecificQuantity ? 1 : 5);
+		super(null, auctionPlayer.getPlayer(), AuctionLocale.msg(auctionPlayer.getPlayer(), "gui.confirm buy.title"), !buyingSpecificQuantity ? 1 : 5);
 		this.auctionPlayer = auctionPlayer;
 		this.auctionItem = auctionItem;
 		this.buyingSpecificQuantity = buyingSpecificQuantity;
@@ -120,7 +123,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 			AuctionedItem located = AuctionHouse.getAuctionItemManager().getItem(auctionItem.getId());
 
 			if (located == null || located.isExpired()) {
-				AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "auction.itemnotavailable");
 				return false;
 			}
 
@@ -146,7 +149,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 				if (itemCount < amountNeeded) {
 					// yell at fulfiller for being dumb
-					AuctionHouse.getInstance().getLocale().getMessage("general.notenoughitems").sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "general.notenoughitems");
 					return false;
 				}
 
@@ -154,7 +157,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 				// check if the requester even has money
 				if (!AuctionHouse.getCurrencyManager().has(requester, buyNowPrice)) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.requesterhasnomoney").sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "general.requesterhasnomoney");
 					return false;
 				}
 
@@ -192,16 +195,10 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 					p.closeInventory();
 				});
 
-				AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-						.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(player, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-						.processPlaceholder("price", auctionItem.getFormattedBasePrice())
-						.sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "pricing.moneyadd", "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(player, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",auctionItem.getFormattedBasePrice());
 
 				if (requester.isOnline())
-					AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
-							.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(requester, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-							.processPlaceholder("price", auctionItem.getFormattedBasePrice())
-							.sendPrefixedMessage(requester.getPlayer());
+					AuctionLocale.tell(requester.getPlayer(), "pricing.moneyremove", "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(requester, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",auctionItem.getFormattedBasePrice());
 
 				final AuctionRequestCompleteEvent requestCompleteEvent = new AuctionRequestCompleteEvent(auctionItem, new CompletedRequest(auctionItem, player, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? buyNowPrice : buyNowPrice - tax));
 				Bukkit.getServer().getPluginManager().callEvent(requestCompleteEvent);
@@ -211,14 +208,14 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 			// Check economy
 			if (!auctionItem.playerHasSufficientMoney(player, buyNowPrice + (Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? tax : 0D))) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.notenoughmoney").sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.notenoughmoney");
 				SoundManager.getInstance().playSound(player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString());
 				return false;
 			}
 
 			// Check inventory space BEFORE marking as purchased to prevent item deletion
 			if (!Settings.ALLOW_PURCHASE_IF_INVENTORY_FULL.getBoolean() && player.getInventory().firstEmpty() == -1) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.noroom").sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.noroom");
 				SoundManager.getInstance().playSound(player, Settings.SOUNDS_NOT_ENOUGH_MONEY.getString());
 				return false;
 			}
@@ -228,7 +225,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 			// If another player already purchased it, this will return false and we'll exit early
 			if (willFullyConsume && !located.isInfinite()) {
 				if (!AuctionHouse.getAuctionItemManager().tryMarkAsPurchased(located)) {
-					AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "auction.itemnotavailable");
 					return false;
 				}
 			}
@@ -236,7 +233,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 			AuctionEndEvent auctionEndEvent = new AuctionEndEvent(Bukkit.getOfflinePlayer(auctionItem.getOwner()), player, auctionItem, AuctionSaleType.WITHOUT_BIDDING_SYSTEM, tax, false);
 			Bukkit.getServer().getPluginManager().callEvent(auctionEndEvent);
 			if (auctionEndEvent.isCancelled()) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.cancelled").sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.cancelled");
 				return false;
 			}
 
@@ -264,7 +261,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 					nbt.removeKey("AuctionDupeTracking");
 				});
 
-				PlayerUtils.giveItem(player, toGive);
+				PlayerUtil.giveItem(player, toGive);
 				sendMessagesStatic(player, located, true, buyNowPrice, purchaseQuantity, auctionItem);
 
 			} else {
@@ -279,7 +276,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 								oldBidder.getUniqueId(),
 								auctionItem.getCurrentPrice(),
 								auctionItem.getItem(),
-								AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(),
+								AuctionLocale.msg(null, "general.prefix"),
 								PaymentReason.BID_RETURNED,
 								auctionItem.getCurrency(),
 								auctionItem.getCurrencyItem()
@@ -293,10 +290,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 					String balanceStr = AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(oldBidder, currencyPlugin, currencyName), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 					String priceStr = located.getFormattedCurrentPrice();
 					if (oldBidder.isOnline() && oldBidder.getName() != null) {
-						AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-								.processPlaceholder("player_balance", balanceStr)
-								.processPlaceholder("price", priceStr)
-								.sendPrefixedMessage(oldBidder.getPlayer());
+						AuctionLocale.tell(oldBidder.getPlayer(), "pricing.moneyadd", "player_balance",balanceStr,"price",priceStr);
 					} else {
 						HashMap<String, String> placeholders = new HashMap<>();
 						placeholders.put("player_balance", balanceStr);
@@ -311,7 +305,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 					nbt.removeKey("AuctionDupeTracking");
 				});
 
-				PlayerUtils.giveItem(player, foundItem);
+				PlayerUtil.giveItem(player, foundItem);
 
 				sendMessagesStatic(player, located, false, 0, deserializeItem.getAmount(), auctionItem);
 			}
@@ -319,17 +313,7 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 			if (Settings.BROADCAST_AUCTION_SALE.getBoolean()) {
 				final OfflinePlayer seller = Bukkit.getOfflinePlayer(auctionItem.getOwner());
 
-				Bukkit.getOnlinePlayers().forEach(p -> AuctionHouse.getInstance().getLocale().getMessage("auction.broadcast.sold")
-						.processPlaceholder("player", player.getName())
-						.processPlaceholder("player_displayname", AuctionAPI.getInstance().getDisplayName(player))
-						.processPlaceholder("seller", auctionItem.getOwnerName())
-						.processPlaceholder("seller_displayname", AuctionAPI.getInstance().getDisplayName(seller))
-						.processPlaceholder("amount", auctionItem.getItem().getAmount())
-						.processPlaceholder("item", AuctionAPI.getInstance().getItemName(auctionItem.getItem()))
-						.processPlaceholder("price",
-								auctionItem.getBasePrice() > auctionItem.getCurrentPrice() ? auctionItem.getFormattedBasePrice() : auctionItem.getFormattedCurrentPrice()
-						)
-						.sendPrefixedMessage(p));
+				Bukkit.getOnlinePlayers().forEach(p -> AuctionLocale.tell(p, "auction.broadcast.sold", "player",player.getName(),"player_displayname",AuctionAPI.getInstance().getDisplayName(player),"seller",auctionItem.getOwnerName(),"seller_displayname",AuctionAPI.getInstance().getDisplayName(seller),"amount",auctionItem.getItem().getAmount(),"item",AuctionAPI.getInstance().getItemName(auctionItem.getItem()),"price",auctionItem.getBasePrice() > auctionItem.getCurrentPrice() ? auctionItem.getFormattedBasePrice() : auctionItem.getFormattedCurrentPrice()));
 			}
 
 			AuctionHouse.getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(p -> {
@@ -341,12 +325,12 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 		} catch (ItemNotFoundException exception) {
 			AuctionHouse.getInstance().getLogger().info("Tried to purchase item that was bought, or does not exist");
-			AuctionHouse.getInstance().getLocale().getMessage("auction.itemnotavailable").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "auction.itemnotavailable");
 			return false;
 		} catch (Exception exception) {
 			AuctionHouse.getInstance().getLogger().severe("Error processing purchase: " + exception.getMessage());
 			exception.printStackTrace();
-			AuctionHouse.getInstance().getLocale().getMessage("general.error").sendPrefixedMessage(player);
+			AuctionLocale.tell(player, "general.error");
 			return false;
 		}
 	}
@@ -362,15 +346,9 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 		double totalPrice = overwritePrice ? price : located.getBasePrice();
 		double tax = Settings.TAX_ENABLED.getBoolean() ? (Settings.TAX_SALES_TAX_BUY_NOW_PERCENTAGE.getDouble() / 100) * totalPrice : 0D;
 
-		AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyremove")
-				.processPlaceholder("player_balance", AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(player, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-				.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-				.sendPrefixedMessage(player);
+		AuctionLocale.tell(player, "pricing.moneyremove", "player_balance",AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(player, auctionItem.getCurrency().split("/")[0], auctionItem.getCurrency().split("/")[1]), auctionItem.getCurrency(), auctionItem.getCurrencyItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
 
-		AuctionHouse.getInstance().getLocale().getMessage("general.bought_item")
-				.processPlaceholder("amount", qtyOverride).processPlaceholder("item", AuctionAPI.getInstance().getItemName(located.getItem()))
-				.processPlaceholder("price", AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()))
-				.sendPrefixedMessage(player);
+		AuctionLocale.tell(player, "general.bought_item", "amount",qtyOverride,"item",AuctionAPI.getInstance().getItemName(located.getItem()),"price",AuctionHouse.getAPI().getFinalizedCurrencyNumber(Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? totalPrice - tax : totalPrice, auctionItem.getCurrency(), auctionItem.getCurrencyItem()));
 
 		OfflinePlayer seller = Bukkit.getOfflinePlayer(located.getOwner());
 		String itemName = AuctionAPI.getInstance().getItemName(located.getItem());
@@ -381,17 +359,9 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 		String sellerBalanceStr = AuctionHouse.getAPI().getFinalizedCurrencyNumber(AuctionHouse.getCurrencyManager().getBalance(seller, currencyPlugin, currencyName), auctionItem.getCurrency(), auctionItem.getCurrencyItem());
 
 		if (seller.isOnline() && seller.getPlayer() != null) {
-			AuctionHouse.getInstance().getLocale().getMessage("auction.itemsold")
-					.processPlaceholder("item", itemName)
-					.processPlaceholder("amount", String.valueOf(qtyOverride))
-					.processPlaceholder("price", priceFormatted)
-					.processPlaceholder("buyer_name", player.getName())
-					.sendPrefixedMessage(seller.getPlayer());
+			AuctionLocale.tell(seller.getPlayer(), "auction.itemsold", "item",itemName,"amount",String.valueOf(qtyOverride),"price",priceFormatted,"buyer_name",player.getName());
 
-			AuctionHouse.getInstance().getLocale().getMessage("pricing.moneyadd")
-					.processPlaceholder("player_balance", sellerBalanceStr)
-					.processPlaceholder("price", priceFormatted)
-					.sendPrefixedMessage(seller.getPlayer());
+			AuctionLocale.tell(seller.getPlayer(), "pricing.moneyadd", "player_balance",sellerBalanceStr,"price",priceFormatted);
 
 			SoundManager.getInstance().playSound(seller.getPlayer(), Settings.SOUNDS_ITEM_SOLD.getString());
 		} else {
@@ -468,8 +438,8 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 		return QuickItem
 				.of(Settings.GUI_CONFIRM_QTY_INFO_ITEM.getString())
 				.amount(qty)
-				.name(Settings.GUI_CONFIRM_QTY_INFO_NAME.getString())
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_CONFIRM_QTY_INFO_LORE.getStringList(),
+				.name(AuctionLocale.msg(this.player, "gui.confirm buy.qty info.name"))
+				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.confirm buy.qty info.lore"),
 						"original_stack_size", maxStackSize,
 						"original_stack_price", auctionItem.getFormattedBasePrice(),
 						"price_per_item", AuctionHouse.getAPI().getFinalizedCurrencyNumber(pricePerItem, auctionItem.getCurrency(), auctionItem.getCurrencyItem()),
@@ -480,26 +450,26 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 	}
 
 	private ItemStack getIncreaseQtyButtonItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_INCREASE_QTY_ITEM.getString()).name(Settings.GUI_CONFIRM_INCREASE_QTY_NAME.getString()).lore(this.player, Settings.GUI_CONFIRM_INCREASE_QTY_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_INCREASE_QTY_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.confirm buy.increase button.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm buy.increase button.lore")).make();
 	}
 
 	private ItemStack getDecreaseQtyButtonItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_DECREASE_QTY_ITEM.getString()).name(Settings.GUI_CONFIRM_DECREASE_QTY_NAME.getString()).lore(this.player, Settings.GUI_CONFIRM_DECREASE_QTY_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_DECREASE_QTY_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.confirm buy.decrease button.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm buy.decrease button.lore")).make();
 	}
 
 	protected ItemStack getConfirmBuyYesItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_BUY_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_YES_NAME.getString()).lore(this.player, Settings.GUI_CONFIRM_BUY_YES_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_BUY_YES_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.confirm buy.yes.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm buy.yes.lore")).make();
 	}
 
 	protected ItemStack getConfirmBuyNoItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_BUY_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_BUY_NO_NAME.getString()).lore(this.player, Settings.GUI_CONFIRM_BUY_NO_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_BUY_NO_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.confirm buy.no.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm buy.no.lore")).make();
 	}
 
 	protected ItemStack getConfirmRequestYesItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_REQUEST_YES_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_YES_NAME.getString()).lore(this.player, Settings.GUI_CONFIRM_REQUEST_YES_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_REQUEST_YES_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.confirm request.yes.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm request.yes.lore")).make();
 	}
 
 	protected ItemStack getConfirmRequestNoItem() {
-		return QuickItem.of(Settings.GUI_CONFIRM_REQUEST_NO_ITEM.getString()).name(Settings.GUI_CONFIRM_REQUEST_NO_NAME.getString()).lore(this.player, Settings.GUI_CONFIRM_REQUEST_NO_LORE.getStringList()).make();
+		return QuickItem.of(Settings.GUI_CONFIRM_REQUEST_NO_ITEM.getString()).name(AuctionLocale.msg(this.player, "gui.confirm request.no.name")).lore(this.player, AuctionLocale.msgList(this.player, "gui.confirm request.no.lore")).make();
 	}
 }

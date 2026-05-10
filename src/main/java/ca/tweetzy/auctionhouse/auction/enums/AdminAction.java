@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.auction.enums;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,10 +33,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum AdminAction {
 
-	RETURN_ITEM(AuctionHouse.getInstance().getLocale().getMessage("admin action.return").getMessage()),
-	CLAIM_ITEM(AuctionHouse.getInstance().getLocale().getMessage("admin action.claim").getMessage()),
-	DELETE_ITEM(AuctionHouse.getInstance().getLocale().getMessage("admin action.delete").getMessage()),
-	COPY_ITEM(AuctionHouse.getInstance().getLocale().getMessage("admin action.copy").getMessage());
+	RETURN_ITEM(AuctionLocale.msg(null, "admin action.return")),
+	CLAIM_ITEM(AuctionLocale.msg(null, "admin action.claim")),
+	DELETE_ITEM(AuctionLocale.msg(null, "admin action.delete")),
+	COPY_ITEM(AuctionLocale.msg(null, "admin action.copy"));
 
 	@Getter
 	private final String translation;

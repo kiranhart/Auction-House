@@ -18,6 +18,8 @@
 
 package ca.tweetzy.auctionhouse.api;
 
+
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.auction.ListingPriceLimit;
 import ca.tweetzy.auctionhouse.auction.AuctionPayment;
@@ -25,9 +27,9 @@ import ca.tweetzy.auctionhouse.auction.AuctionedItem;
 import ca.tweetzy.auctionhouse.auction.enums.PaymentReason;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.flight.comp.enums.CompMaterial;
-import ca.tweetzy.flight.utils.MathUtil;
-import ca.tweetzy.flight.comp.enums.CompMaterial;
 import ca.tweetzy.flight.comp.enums.ServerVersion;
+import ca.tweetzy.flight.utils.Common;
+import ca.tweetzy.flight.utils.MathUtil;
 import ca.tweetzy.flight.nbtapi.NBT;
 import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.Replacer;
@@ -218,7 +220,7 @@ public class AuctionAPI {
 
 	public static boolean tellMigrationStatus(CommandSender commandSender) {
 		if (AuctionHouse.getInstance().isMigrating()) {
-			AuctionHouse.getInstance().getLocale().newMessage("&cAuction House is currently migrating auction items, auction usage is disabled until it's finished").sendPrefixedMessage(commandSender);
+			Common.tell(commandSender, "&cAuction House is currently migrating auction items, auction usage is disabled until it's finished");
 			return true;
 		}
 		return false;
@@ -537,8 +539,8 @@ public class AuctionAPI {
 		Objects.requireNonNull(items, "Cannot create a bundled item with no items");
 		ItemStack item = QuickItem
 				.of(Settings.ITEM_BUNDLE_ITEM.getString())
-				.name(Replacer.replaceVariables(Settings.ITEM_BUNDLE_NAME.getString(), "item_name", getItemName(baseItem)))
-				.lore(Replacer.replaceVariables(Settings.ITEM_BUNDLE_LORE.getStringList(), "item_name", getItemName(baseItem)))
+				.name(Replacer.replaceVariables(AuctionLocale.msg(null, "auction setting.bundles.name"), "item_name", getItemName(baseItem)))
+				.lore(Replacer.replaceVariables(AuctionLocale.msgList(null, "auction setting.bundles.lore"), "item_name", getItemName(baseItem)))
 				.make();
 
 		ItemMeta meta = item.getItemMeta();
@@ -791,7 +793,7 @@ public class AuctionAPI {
 			if (player.isOnline())
 				AuctionHouse.getCurrencyManager().deposit(player, auctionedItem.getCurrencyItem(), (int) amount);
 			else
-				AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, auctionedItem.getItem(), AuctionHouse.getInstance().getLocale().getMessage("general.prefix").getMessage(), PaymentReason.ITEM_SOLD, auctionedItem.getCurrency(), auctionedItem.getCurrencyItem()), null);
+				AuctionHouse.getDataManager().insertAuctionPayment(new AuctionPayment(player.getUniqueId(), amount, auctionedItem.getItem(), AuctionLocale.msg(null, "general.prefix"), PaymentReason.ITEM_SOLD, auctionedItem.getCurrency(), auctionedItem.getCurrencyItem()), null);
 
 		else {
 			final String[] currSplit = auctionedItem.getCurrency().split("/");
@@ -820,7 +822,7 @@ public class AuctionAPI {
 
 		if (Settings.MAKE_BLOCKED_ITEMS_A_WHITELIST.getBoolean()) {
 			if (!Settings.BLOCKED_ITEMS.getStringList().contains(itemStack.getType().name())) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.blockeditem", "item",itemStack.getType().name());
 				return false;
 			}
 		} else {
@@ -829,14 +831,14 @@ public class AuctionAPI {
 
 			if (split.length == 1) {
 				if (split[0].equals(itemStack.getType().name())) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "general.blockeditem", "item",itemStack.getType().name());
 					return false;
 				}
 			}
 
 			if (split.length == 2 && MathUtil.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
 				if (split[0].equals(itemStack.getType().name()) && itemStack.getItemMeta() != null && itemStack.getItemMeta().getCustomModelData() == Integer.parseInt(split[1])) {
-					AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", itemStack.getType().name()).sendPrefixedMessage(player);
+					AuctionLocale.tell(player, "general.blockeditem", "item",itemStack.getType().name());
 					return false;
 				}
 			}
@@ -846,7 +848,7 @@ public class AuctionAPI {
 		// Check NBT tags
 		for (String nbtTag : Settings.BLOCKED_NBT_TAGS.getStringList()) {
 			if (NBT.get(itemStack, nbt -> (boolean) nbt.hasTag(nbtTag))) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.blockednbttag").processPlaceholder("nbttag", nbtTag).sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.blockednbttag", "nbttag",nbtTag);
 				return false;
 			}
 		}
@@ -857,7 +859,7 @@ public class AuctionAPI {
 		// Check for blocked names and lore
 		for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
 			if (match(s, itemName)) {
-				AuctionHouse.getInstance().getLocale().getMessage("general.blockedname").sendPrefixedMessage(player);
+				AuctionLocale.tell(player, "general.blockedname");
 				meets = false;
 			}
 		}
@@ -866,7 +868,7 @@ public class AuctionAPI {
 			for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
 				for (String line : itemLore) {
 					if (match(s, line)) {
-						AuctionHouse.getInstance().getLocale().getMessage("general.blockedlore").sendPrefixedMessage(player);
+						AuctionLocale.tell(player, "general.blockedlore");
 						meets = false;
 					}
 				}
@@ -887,14 +889,14 @@ public class AuctionAPI {
 
 						if (split.length == 1) {
 							if (split[0].contains(shulkerContent.getType().name())) {
-								AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", shulkerContent.getType().name()).sendPrefixedMessage(player);
+								AuctionLocale.tell(player, "general.blockeditem", "item",shulkerContent.getType().name());
 								return false;
 							}
 						}
 
 						if (split.length == 2 && MathUtil.isInt(split[1]) && ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
 							if (split[0].contains(shulkerContent.getType().name()) && shulkerContent.getItemMeta() != null && shulkerContent.getItemMeta().getCustomModelData() == Integer.parseInt(split[1])) {
-								AuctionHouse.getInstance().getLocale().getMessage("general.blockeditem").processPlaceholder("item", shulkerContent.getType().name()).sendPrefixedMessage(player);
+								AuctionLocale.tell(player, "general.blockeditem", "item",shulkerContent.getType().name());
 								return false;
 							}
 						}
@@ -903,7 +905,7 @@ public class AuctionAPI {
 					// Check NBT tags
 					for (String nbtTag : Settings.BLOCKED_NBT_TAGS.getStringList()) {
 						if (NBT.get(itemStack, nbt -> (boolean) nbt.hasTag(nbtTag))) {
-							AuctionHouse.getInstance().getLocale().getMessage("general.blockednbttag").processPlaceholder("nbttag", nbtTag).sendPrefixedMessage(player);
+							AuctionLocale.tell(player, "general.blockednbttag", "nbttag",nbtTag);
 							return false;
 						}
 					}
@@ -914,7 +916,7 @@ public class AuctionAPI {
 					// Check for blocked names and lore
 					for (String s : Settings.BLOCKED_ITEM_NAMES.getStringList()) {
 						if (match(s, itemNameShulker)) {
-							AuctionHouse.getInstance().getLocale().getMessage("general.blockedname").sendPrefixedMessage(player);
+							AuctionLocale.tell(player, "general.blockedname");
 							meets = false;
 							break;
 						}
@@ -924,7 +926,7 @@ public class AuctionAPI {
 						for (String s : Settings.BLOCKED_ITEM_LORES.getStringList()) {
 							for (String line : itemLoreShulker) {
 								if (match(s, line)) {
-									AuctionHouse.getInstance().getLocale().getMessage("general.blockedlore").sendPrefixedMessage(player);
+									AuctionLocale.tell(player, "general.blockedlore");
 									meets = false;
 									break;
 								}

@@ -1,5 +1,7 @@
 package ca.tweetzy.auctionhouse.guis.admin.bans;
 
+import ca.tweetzy.auctionhouse.lang.AuctionLocale;
+
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.api.AuctionAPI;
 import ca.tweetzy.auctionhouse.api.ban.Ban;
@@ -19,7 +21,7 @@ import java.util.ArrayList;
 public final class GUIBans extends AuctionPagedGUI<Ban> {
 
 	public GUIBans(@NonNull Player player) {
-		super(null, player, Settings.GUI_BANS_TITLE.getString(), 6, new ArrayList<>(AuctionHouse.getBanManager().getManagerContent().values()));
+		super(null, player, AuctionLocale.msg(player, "gui.all bans.title"), 6, new ArrayList<>(AuctionHouse.getBanManager().getManagerContent().values()));
 		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_BANS_BG_ITEM.getString()).make()));
 		draw();
 	}
@@ -29,8 +31,8 @@ public final class GUIBans extends AuctionPagedGUI<Ban> {
 
 		return QuickItem
 				.of(Bukkit.getOfflinePlayer(ban.getId()))
-				.name(Settings.GUI_BANS_ITEMS_BAN_NAME.getString().replace("%player_name%", ban.locatePlayer().getName()))
-				.lore(this.player, Replacer.replaceVariables(Settings.GUI_BANS_ITEMS_BAN_LORE.getStringList(),
+				.name(AuctionLocale.msg(this.player, "gui.all bans.items.user.name").replace("%player_name%", ban.locatePlayer().getName()))
+				.lore(this.player, Replacer.replaceVariables(AuctionLocale.msgList(this.player, "gui.all bans.items.user.lore"),
 						"ban_banner", Bukkit.getOfflinePlayer(ban.getBanner()).getName(),
 						"ban_date", AuctionAPI.getInstance().convertMillisToDate(ban.getTimeCreated()),
 						"ban_expiration", ban.getReadableExpirationDate(),
