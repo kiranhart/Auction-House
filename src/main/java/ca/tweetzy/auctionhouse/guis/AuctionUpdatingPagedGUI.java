@@ -20,17 +20,13 @@ package ca.tweetzy.auctionhouse.guis;
 
 
 
-import ca.tweetzy.flight.settings.TranslationManager;
-import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.flight.comp.enums.CompSound;
 import ca.tweetzy.flight.gui.Gui;
+import ca.tweetzy.flight.gui.GuiManager;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
-import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.hooks.PlaceholderAPIHook;
-import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -44,39 +40,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
+public abstract class AuctionUpdatingPagedGUI<T> extends AuctionThemedGUI {
 
 	@Getter
-	protected final Player player;
 	protected final Gui parent;
 	protected List<T> items;
 	protected final int updateDelay;
 	protected BukkitTask task;
 
 	public AuctionUpdatingPagedGUI(final Gui parent, @NonNull final Player player, @NonNull final String title, final int rows, int updateDelay, @NonNull final List<T> items) {
-		super(parent, PlaceholderAPIHook.tryReplace(player, title), rows);
+		super(parent, player, PlaceholderAPIHook.tryReplace(player, title), rows);
 		this.parent = parent;
-		this.player = player;
-		// Only wrap in ArrayList if it's not already a mutable list
 		this.items = (items instanceof ArrayList) ? items : new ArrayList<>(items);
 		this.updateDelay = updateDelay;
-		applyDefaults();
 	}
 
 	public AuctionUpdatingPagedGUI(@NonNull final Player player, @NonNull final String title, final int rows, int updateDelay, @NonNull final List<T> items) {
 		this(null, player, title, rows, updateDelay, items);
-		applyDefaults();
 	}
 
 	@Override
 	protected void draw() {
-		// Preserve page number before reset (reset() sets page = 1)
-
 		int currentPage = this.page;
 		reset();
-		// Restore page number after reset
 		this.page = currentPage;
-		// Set up page change handler synchronously before async operations
 		setOnPage(e -> {
 			draw();
 			SoundManager.getInstance().playSound(player, Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString());
@@ -86,20 +73,15 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	}
 
 	protected void startTask() {
-		// Cancel any existing task first (safety measure)
 		if (this.task != null && !this.task.isCancelled()) {
 			this.task.cancel();
 			if (AuctionHouse.isDebugMode()) {
 				AuctionHouse.getInstance().getLogger().warning("[AuctionUpdatingPagedGUI] Cancelled existing task before starting new one for " + this.getClass().getSimpleName() + " (player: " + this.player.getName() + ")");
 			}
 		}
-		
-		this.task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), () -> {
-//			this.fillSlots().forEach(slot -> setItem(slot, getDefaultItem()));
-			 draw();
-		}, 0L, updateDelay);
-		
-		// Debug logging
+
+		this.task = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(AuctionHouse.getInstance(), this::draw, 0L, updateDelay);
+
 		if (AuctionHouse.isDebugMode()) {
 			AuctionHouse.getInstance().getLogger().info("[AuctionUpdatingPagedGUI] Started update task for " + this.getClass().getSimpleName() + " (player: " + this.player.getName() + ", task ID: " + this.task.getTaskId() + ", delay: " + this.updateDelay + " ticks)");
 		}
@@ -107,7 +89,6 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 
 	protected void applyClose() {
 		setOnClose(close -> {
-			// Debug logging
 			if (AuctionHouse.isDebugMode()) {
 				AuctionHouse.getInstance().getLogger().info("[AuctionUpdatingPagedGUI] setOnClose triggered for " + this.getClass().getSimpleName() + " (player: " + close.player.getName() + ")");
 			}
@@ -118,7 +99,6 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	protected void prePopulate() {
 	}
 
-
 	protected void drawFixed() {
 	}
 
@@ -126,13 +106,11 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		if (this.task != null && !this.task.isCancelled()) {
 			int taskId = this.task.getTaskId();
 			this.task.cancel();
-			this.task = null; // Clear reference to prevent memory leaks
-			// Debug logging
+			this.task = null;
 			if (AuctionHouse.isDebugMode()) {
 				AuctionHouse.getInstance().getLogger().info("[AuctionUpdatingPagedGUI] Cancelled update task for " + this.getClass().getSimpleName() + " (player: " + this.player.getName() + ", task ID: " + taskId + ")");
 			}
 		} else if (this.task != null) {
-			// Task was already cancelled, but reference still exists - clear it
 			this.task = null;
 			if (AuctionHouse.isDebugMode()) {
 				AuctionHouse.getInstance().getLogger().warning("[AuctionUpdatingPagedGUI] Task was already cancelled but reference still exists for " + this.getClass().getSimpleName() + " (player: " + this.player.getName() + ") - cleared reference");
@@ -140,99 +118,59 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 		}
 	}
 
-	/**
-	 * Safely transitions from this updating GUI to a new GUI.
-	 * This method handles:
-	 * - Canceling the update task
-	 * - Setting the transition flag to prevent setOnClose from running
-	 * - Properly showing the new GUI
-	 * 
-	 * @param manager The GuiManager instance
-	 * @param newGui The new GUI to transition to
-	 */
-	protected void safeTransitionTo(@NonNull ca.tweetzy.flight.gui.GuiManager manager, @NonNull ca.tweetzy.flight.gui.Gui newGui) {
-		// Cancel the update task before transitioning
+	protected void safeTransitionTo(@NonNull GuiManager manager, @NonNull Gui newGui) {
 		this.cancelTask();
-		
-		// Use the transition method which handles the flag automatically
 		this.transitionTo(manager, this.player, newGui);
 	}
 
 	private void populateItems() {
 		if (this.items != null) {
-			// Do all heavy work async, then update GUI on main thread
 			AuctionHouse.newChain().asyncFirst(() -> {
 				for (int i = 0; i < this.getRows() * 9; i++) {
 					setItem(i, getDefaultItem());
 				}
 
-				// Heavy operations on async thread:
-				// - prePopulate() might do filtering/sorting
-				// - Stream operations for pagination
 				prePopulate();
-				final List<T> paginatedItems = this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toCollection(ArrayList::new));
-				
-				// Build ItemStacks asynchronously (heavy work: string processing, lore building)
+				final List<Integer> slotCoords = this.fillSlots();
+				final int slotCount = slotCoords.size();
+				final List<T> paginatedItems = this.items.stream()
+						.skip((page - 1) * (long) slotCount)
+						.limit(slotCount)
+						.collect(Collectors.toCollection(ArrayList::new));
+
 				final Map<Integer, ItemStack> slotToItemStack = new HashMap<>();
 				final Map<Integer, T> slotToObject = new HashMap<>();
-				
-				for (int i = 0; i < this.rows * 9; i++) {
-					if (this.fillSlots().contains(i) && this.fillSlots().indexOf(i) < paginatedItems.size()) {
-						final T object = paginatedItems.get(this.fillSlots().indexOf(i));
-						if (object != null) {
-							ItemStack displayItem = this.makeDisplayItem(object);
-							if (displayItem != null) {
-								slotToItemStack.put(i, displayItem);
-								slotToObject.put(i, object);
-							}
+
+				for (int idx = 0; idx < slotCoords.size(); idx++) {
+					if (idx >= paginatedItems.size()) {
+						break;
+					}
+					final int slot = slotCoords.get(idx);
+					final T object = paginatedItems.get(idx);
+					if (object != null) {
+						ItemStack displayItem = this.makeDisplayItem(object);
+						if (displayItem != null) {
+							slotToItemStack.put(slot, displayItem);
+							slotToObject.put(slot, object);
 						}
 					}
 				}
-				
-				// Return both maps as a pair
+
 				return new Object[] { slotToItemStack, slotToObject };
 			}).asyncLast((result) -> {
 				@SuppressWarnings("unchecked")
 				final Map<Integer, ItemStack> slotToItemStack = (Map<Integer, ItemStack>) ((Object[]) result)[0];
 				@SuppressWarnings("unchecked")
 				final Map<Integer, T> slotToObject = (Map<Integer, T>) ((Object[]) result)[1];
-				
-				// All GUI operations on main thread (required for Bukkit API)
-				// Calculate pages
-				pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
-				
-				// Clear fill slots & set bg
-	
+
+				final List<Integer> slotCoords = this.fillSlots();
+				final int slotCount = slotCoords.size();
+				pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) slotCount));
+
 				this.fillSlots().forEach(slot -> setItem(slot, getEmptyFillSlotItem()));
 
-				// Set up navigation buttons
-				// Only show previous button if not on first page
-				if (this.page > 1) {
-					setButton(getPreviousButtonSlot(), getPreviousButton(), click -> {
-						prevPage();
-						draw();
-					});
-				} else {
-					// Lock slot and remove click handlers when button is hidden
-					setUnlocked(getPreviousButtonSlot(), false);
-					setConditional(getPreviousButtonSlot(), null, null);
-					setItem(getPreviousButtonSlot(), getDefaultItem());
-				}
-				
-				// Only show next button if not on last page
-				if (this.page < pages) {
-					setButton(getNextButtonSlot(), getNextButton(), click -> {
-						nextPage();
-						draw();
-					});
-				} else {
-					// Lock slot and remove click handlers when button is hidden
-					setUnlocked(getNextButtonSlot(), false);
-					setConditional(getNextButtonSlot(), null, null);
-					setItem(getNextButtonSlot(), getDefaultItem());
-				}
+				bindPagingNavButtons(this::draw);
 
-				// Set items for current page using pre-built ItemStacks
 				for (Map.Entry<Integer, ItemStack> entry : slotToItemStack.entrySet()) {
 					final int slot = entry.getKey();
 					final ItemStack itemStack = entry.getValue();
@@ -250,64 +188,4 @@ public abstract class AuctionUpdatingPagedGUI<T> extends BaseGUI {
 	protected abstract ItemStack makeDisplayItem(final T object);
 
 	protected abstract void onClick(final T object, final GuiClickEvent clickEvent);
-
-	@Override
-	protected ItemStack getBackButton() {
-		return QuickItem
-				.of(Settings.GUI_BACK_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_BACK_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_BACK_LORE))
-				.make();
-	}
-
-	@Override
-	protected ItemStack getExitButton() {
-		return QuickItem
-				.of(Settings.GUI_CLOSE_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_CLOSE_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_CLOSE_LORE))
-				.make();
-	}
-
-	@Override
-	protected ItemStack getPreviousButton() {
-		return QuickItem
-				.of(Settings.GUI_PREV_PAGE_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_PREV_PAGE_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_PREV_PAGE_LORE))
-				.make();
-	}
-
-	@Override
-	protected ItemStack getNextButton() {
-		return QuickItem
-				.of(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_NEXT_PAGE_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_NEXT_PAGE_LORE))
-				.make();
-	}
-
-	protected ItemStack getRefreshButton() {
-		return QuickItem
-				.of(Settings.GUI_REFRESH_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_REFRESH_NAME))
-				.lore(TranslationManager.list(this.player, Translations.GUI_GLOBAL_REFRESH_LORE))
-				.make();
-	}
-
-	private void applyDefaults() {
-		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILLER.getString()).make()));
-		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF));
-		setDefaultSound(CompSound.matchCompSound(Settings.SOUNDS_GUI_CLICK.getString()).orElse(CompSound.UI_BUTTON_CLICK));
-	}
-
-	@Override
-	protected int getPreviousButtonSlot() {
-		return 48;
-	}
-
-	@Override
-	protected int getNextButtonSlot() {
-		return 50;
-	}
 }

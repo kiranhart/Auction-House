@@ -20,97 +20,28 @@ package ca.tweetzy.auctionhouse.guis;
 
 
 
-import ca.tweetzy.flight.settings.TranslationManager;
-import ca.tweetzy.auctionhouse.settings.Translations;
-import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.flight.comp.enums.CompSound;
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.GuiManager;
-import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.hooks.PlaceholderAPIHook;
-import ca.tweetzy.flight.utils.QuickItem;
 import ca.tweetzy.flight.utils.input.TitleInput;
-import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-public abstract class AuctionBaseGUI extends BaseGUI {
-
-	@Getter
-	protected final Player player;
+public abstract class AuctionBaseGUI extends AuctionThemedGUI {
 
 	public AuctionBaseGUI(Gui parent, @NonNull final Player player, @NonNull String title, int rows) {
-		super(parent, title, rows);
-		this.player = player;
+		super(parent, player, title, rows);
 		setTitle(PlaceholderAPIHook.tryReplace(player, title));
-		applyDefaults();
 	}
 
 	public AuctionBaseGUI(Gui parent, @NonNull final Player player, @NonNull String title) {
-		super(parent, title, 1);
-		this.player = player;
+		super(parent, player, title);
 		setTitle(PlaceholderAPIHook.tryReplace(player, title));
-		applyDefaults();
 	}
 
 	public AuctionBaseGUI(@NonNull final Player player, @NonNull String title) {
-		super(title);
-		this.player = player;
+		super(player, title);
 		setTitle(PlaceholderAPIHook.tryReplace(player, title));
-		applyDefaults();
-	}
-
-	private void applyDefaults() {
-		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILLER.getString()).make()));
-		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF));
-		setDefaultSound(CompSound.matchCompSound(Settings.SOUNDS_GUI_CLICK.getString()).orElse(CompSound.UI_BUTTON_CLICK));
-	}
-
-	@Override
-	protected ItemStack getBackButton() {
-		return QuickItem
-				.of(Settings.GUI_BACK_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_BACK_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_BACK_LORE))
-				.make();
-	}
-
-	@Override
-	protected ItemStack getExitButton() {
-		return QuickItem
-				.of(Settings.GUI_CLOSE_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_CLOSE_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_CLOSE_LORE))
-				.make();
-	}
-
-	@Override
-	protected ItemStack getPreviousButton() {
-		return QuickItem
-				.of(Settings.GUI_PREV_PAGE_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_PREV_PAGE_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_PREV_PAGE_LORE))
-				.make();
-	}
-
-	@Override
-	protected ItemStack getNextButton() {
-		return QuickItem
-				.of(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_NEXT_PAGE_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_NEXT_PAGE_LORE))
-				.make();
-	}
-
-	@Override
-	protected int getPreviousButtonSlot() {
-		return 48;
-	}
-
-	@Override
-	protected int getNextButtonSlot() {
-		return 50;
 	}
 
 	/**
@@ -118,15 +49,14 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 	 * This method handles:
 	 * - Setting the transition flag to prevent setOnClose from running
 	 * - Properly showing the new GUI
-	 * 
+	 *
 	 * Note: For updating GUIs (AuctionUpdatingPagedGUI), use the overridden method
 	 * which also cancels update tasks.
-	 * 
+	 *
 	 * @param manager The GuiManager instance
 	 * @param newGui The new GUI to transition to
 	 */
 	protected void safeTransitionTo(@NonNull GuiManager manager, @NonNull Gui newGui) {
-		// Use the transition method which handles the flag automatically
 		this.transitionTo(manager, this.player, newGui);
 	}
 
@@ -136,13 +66,11 @@ public abstract class AuctionBaseGUI extends BaseGUI {
 	 * - Sets allowClose=true to prevent GUI from reopening
 	 * - Closes the inventory
 	 * - Preserves close handlers for item return
-	 * 
+	 *
 	 * Developers can simply create a TitleInput directly - no manual setup needed!
-	 * 
+	 *
 	 * @param titleInput The TitleInput instance to open (constructor handles everything)
 	 */
 	protected void safeOpenTitleInput(@NonNull TitleInput titleInput) {
-		// TitleInput constructor automatically handles allowClose and inventory closing
-		// No manual setup needed - just create the TitleInput!
 	}
 }

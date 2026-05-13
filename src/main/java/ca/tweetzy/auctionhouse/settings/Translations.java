@@ -1007,6 +1007,10 @@ public final class Translations extends TranslationManager {
 	public static TranslationEntry GUI_BIDDING_DEFAULT_LORE = create("gui.bidding.items.default amount.lore", "&7Click to bid default amount");
 	public static TranslationEntry GUI_BIDDING_CUSTOM_NAME = create("gui.bidding.items.custom amount.name", "&a&lCustom Amount");
 	public static TranslationEntry GUI_BIDDING_CUSTOM_LORE = create("gui.bidding.items.custom amount.lore", "&7Click to bid a custom amount");
+	public static TranslationEntry GUI_BIDDING_WATCHLIST_REMOVE_NAME = create("gui.bidding.items.watchlist.remove name", "&c&lRemove from Watchlist");
+	public static TranslationEntry GUI_BIDDING_WATCHLIST_ADD_NAME = create("gui.bidding.items.watchlist.add name", "&a&lAdd to Watchlist");
+	public static TranslationEntry GUI_BIDDING_WATCHLIST_REMOVE_LORE = create("gui.bidding.items.watchlist.remove lore", "&7Click to remove this listing from your watchlist.");
+	public static TranslationEntry GUI_BIDDING_WATCHLIST_ADD_LORE = create("gui.bidding.items.watchlist.add lore", "&7Click to add this listing to your watchlist.");
 	public static TranslationEntry GUI_CREATE_BUNDLE_TITLE = create("gui.create bundle.title", "&7Auction House - &eBundle Items");
 	public static TranslationEntry GUI_CREATE_BUNDLE_CONFIRM_NAME = create("gui.create bundle.items.confirm.name", "&a&LConfirm");
 	public static TranslationEntry GUI_CREATE_BUNDLE_CONFIRM_LORE = create("gui.create bundle.items.confirm.lore", "&7Click to confirm listing");

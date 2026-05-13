@@ -79,6 +79,6 @@ public final class AuctionBid implements Bid {
 
 	@Override
 	public void store(Consumer<Bid> storedItem) {
-		// TODO implement auction bid store
+		throw new UnsupportedOperationException("Persisting bid records is not implemented.");
 	}
 }

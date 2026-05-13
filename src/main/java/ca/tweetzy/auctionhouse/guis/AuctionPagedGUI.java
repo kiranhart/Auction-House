@@ -20,17 +20,12 @@ package ca.tweetzy.auctionhouse.guis;
 
 
 
-import ca.tweetzy.flight.settings.TranslationManager;
-import ca.tweetzy.auctionhouse.settings.Translations;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
-import ca.tweetzy.flight.comp.enums.CompSound;
 import ca.tweetzy.flight.gui.Gui;
 import ca.tweetzy.flight.gui.events.GuiClickEvent;
-import ca.tweetzy.flight.gui.template.BaseGUI;
 import ca.tweetzy.flight.hooks.PlaceholderAPIHook;
-import ca.tweetzy.flight.utils.QuickItem;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -43,10 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class AuctionPagedGUI<T> extends BaseGUI {
+public abstract class AuctionPagedGUI<T> extends AuctionThemedGUI {
 
 	@Getter
-	protected final Player player;
 	protected final Gui parent;
 	protected List<T> items;
 
@@ -54,27 +48,20 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 	protected boolean async = false;
 
 	public AuctionPagedGUI(Gui parent, @NonNull final Player player, @NonNull String title, int rows, @NonNull List<T> items) {
-		super(parent, PlaceholderAPIHook.tryReplace(player, title), rows);
+		super(parent, player, PlaceholderAPIHook.tryReplace(player, title), rows);
 		this.parent = parent;
-		this.player = player;
-		// Only wrap in ArrayList if it's not already a mutable list
 		this.items = (items instanceof ArrayList) ? items : new ArrayList<>(items);
-		applyDefaults();
 	}
 
 	public AuctionPagedGUI(@NonNull final Player player, @NonNull String title, int rows, @NonNull List<T> items) {
 		this(null, player, title, rows, items);
-		applyDefaults();
 	}
 
 	@Override
 	protected void draw() {
-		// Preserve page number before reset (reset() sets page = 1)
 		int currentPage = this.page;
 		reset();
-		// Restore page number after reset
 		this.page = currentPage;
-		// Set up page change handler synchronously before async operations
 		setOnPage(e -> {
 			draw();
 			SoundManager.getInstance().playSound(player, Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString());
@@ -94,68 +81,43 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 			if (!this.async) {
 				renderItems();
 			} else {
-				// Do all heavy work async, then update GUI on main thread
 				AuctionHouse.newChain().asyncFirst(() -> {
-					// Heavy operations on async thread:
-					// - prePopulate() might do filtering/sorting
-					// - Stream operations for pagination
 					prePopulate();
-					final List<T> paginatedItems = this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toList());
-					
-					// Build ItemStacks asynchronously (heavy work: string processing, lore building)
+					final List<Integer> slotCoords = this.fillSlots();
+					final int slotCount = slotCoords.size();
+					final List<T> paginatedItems = this.items.stream()
+							.skip((page - 1) * (long) slotCount)
+							.limit(slotCount)
+							.collect(Collectors.toList());
+
 					final Map<Integer, ItemStack> slotToItemStack = new HashMap<>();
 					final Map<Integer, T> slotToObject = new HashMap<>();
-					
-					for (int i = 0; i < this.rows * 9; i++) {
-						if (this.fillSlots().contains(i) && this.fillSlots().indexOf(i) < paginatedItems.size()) {
-							final T object = paginatedItems.get(this.fillSlots().indexOf(i));
-							slotToItemStack.put(i, this.makeDisplayItem(object));
-							slotToObject.put(i, object);
+
+					for (int idx = 0; idx < slotCoords.size(); idx++) {
+						if (idx >= paginatedItems.size()) {
+							break;
 						}
+						final int slot = slotCoords.get(idx);
+						final T object = paginatedItems.get(idx);
+						slotToItemStack.put(slot, this.makeDisplayItem(object));
+						slotToObject.put(slot, object);
 					}
-					
-					// Return both maps as a pair
+
 					return new Object[] { slotToItemStack, slotToObject };
 				}).asyncLast((result) -> {
 					@SuppressWarnings("unchecked")
 					final Map<Integer, ItemStack> slotToItemStack = (Map<Integer, ItemStack>) ((Object[]) result)[0];
 					@SuppressWarnings("unchecked")
 					final Map<Integer, T> slotToObject = (Map<Integer, T>) ((Object[]) result)[1];
-					
-					// Calculate pages
-					pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
-					
-					// Clear fill slots
+
+					final List<Integer> slotCoords = this.fillSlots();
+					final int slotCount = slotCoords.size();
+					pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) slotCount));
+
 					this.fillSlots().forEach(slot -> setItem(slot, getDefaultItem()));
 
-					// Set up navigation buttons
-					// Only show previous button if not on first page
-					if (this.page > 1) {
-						setButton(getPreviousButtonSlot(), getPreviousButton(), click -> {
-							prevPage();
-							draw();
-						});
-					} else {
-						// Lock slot and remove click handlers when button is hidden
-						setUnlocked(getPreviousButtonSlot(), false);
-						setConditional(getPreviousButtonSlot(), null, null);
-						setItem(getPreviousButtonSlot(), getDefaultItem());
-					}
-					
-					// Only show next button if not on last page
-					if (this.page < pages) {
-						setButton(getNextButtonSlot(), getNextButton(), click -> {
-							nextPage();
-							draw();
-						});
-					} else {
-						// Lock slot and remove click handlers when button is hidden
-						setUnlocked(getNextButtonSlot(), false);
-						setConditional(getNextButtonSlot(), null, null);
-						setItem(getNextButtonSlot(), getDefaultItem());
-					}
+					bindPagingNavButtons(this::draw);
 
-					// Set items for current page using pre-built ItemStacks
 					for (Map.Entry<Integer, ItemStack> entry : slotToItemStack.entrySet()) {
 						final int slot = entry.getKey();
 						final ItemStack itemStack = entry.getValue();
@@ -171,98 +133,25 @@ public abstract class AuctionPagedGUI<T> extends BaseGUI {
 		this.fillSlots().forEach(slot -> setItem(slot, getDefaultItem()));
 		prePopulate();
 
-		final List<T> itemsToFill = this.items.stream().skip((page - 1) * (long) this.fillSlots().size()).limit(this.fillSlots().size()).collect(Collectors.toList());
-		pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) this.fillSlots().size()));
+		final List<Integer> slotCoords = this.fillSlots();
+		final int slotCount = slotCoords.size();
 
-		// Only show previous button if not on first page
-		if (this.page > 1) {
-			setButton(getPreviousButtonSlot(), getPreviousButton(), click -> {
-				prevPage();
-				draw();
-			});
-		} else {
-			// Lock slot and remove click handlers when button is hidden
-			setUnlocked(getPreviousButtonSlot(), false);
-			setConditional(getPreviousButtonSlot(), null, null);
-			setItem(getPreviousButtonSlot(), getDefaultItem());
-		}
-		
-		// Only show next button if not on last page
-		if (this.page < pages) {
-			setButton(getNextButtonSlot(), getNextButton(), click -> {
-				nextPage();
-				draw();
-			});
-		} else {
-			// Lock slot and remove click handlers when button is hidden
-			setUnlocked(getNextButtonSlot(), false);
-			setConditional(getNextButtonSlot(), null, null);
-			setItem(getNextButtonSlot(), getDefaultItem());
-		}
-		// setOnPage is already set in draw() method, no need to set it again here
+		final List<T> itemsToFill = this.items.stream()
+				.skip((page - 1) * (long) slotCount)
+				.limit(slotCount)
+				.collect(Collectors.toList());
+		pages = (int) Math.max(1, Math.ceil(this.items.size() / (double) slotCount));
 
-		for (int i = 0; i < this.rows * 9; i++) {
-			if (this.fillSlots().contains(i) && this.fillSlots().indexOf(i) < itemsToFill.size()) {
-				final T object = itemsToFill.get(this.fillSlots().indexOf(i));
-				setButton(i, this.makeDisplayItem(object), click -> this.onClick(object, click));
-			}
+		bindPagingNavButtons(this::draw);
+
+		for (int idx = 0; idx < slotCoords.size() && idx < itemsToFill.size(); idx++) {
+			final int slot = slotCoords.get(idx);
+			final T object = itemsToFill.get(idx);
+			setButton(slot, this.makeDisplayItem(object), click -> this.onClick(object, click));
 		}
 	}
 
 	protected abstract ItemStack makeDisplayItem(final T object);
 
 	protected abstract void onClick(final T object, final GuiClickEvent clickEvent);
-
-	@Override
-	protected ItemStack getBackButton() {
-		return QuickItem
-				.of(Settings.GUI_BACK_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_BACK_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_BACK_LORE))
-				.make();
-	}
-
-	@Override
-	protected ItemStack getExitButton() {
-		return QuickItem
-				.of(Settings.GUI_CLOSE_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_CLOSE_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_CLOSE_LORE))
-				.make();
-	}
-
-	@Override
-	protected ItemStack getPreviousButton() {
-		return QuickItem
-				.of(Settings.GUI_PREV_PAGE_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_PREV_PAGE_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_PREV_PAGE_LORE))
-				.make();
-	}
-
-	@Override
-	protected ItemStack getNextButton() {
-		return QuickItem
-				.of(Settings.GUI_NEXT_PAGE_BTN_ITEM.getString())
-				.name(TranslationManager.string(this.player, Translations.GUI_GLOBAL_NEXT_PAGE_NAME))
-				.lore(this.player, TranslationManager.list(this.player, Translations.GUI_GLOBAL_NEXT_PAGE_LORE))
-				.make();
-	}
-
-	@Override
-	protected int getPreviousButtonSlot() {
-		return 48;
-	}
-
-	@Override
-	protected int getNextButtonSlot() {
-		return 50;
-	}
-
-	private void applyDefaults() {
-		setDefaultItem(QuickItem.bg(QuickItem.of(Settings.GUI_FILLER.getString()).make()));
-		setNavigateSound(CompSound.matchCompSound(Settings.SOUNDS_NAVIGATE_GUI_PAGES.getString()).orElse(CompSound.ENTITY_BAT_TAKEOFF));
-		setDefaultSound(CompSound.matchCompSound(Settings.SOUNDS_GUI_CLICK.getString()).orElse(CompSound.UI_BUTTON_CLICK));
-	}
-
 }

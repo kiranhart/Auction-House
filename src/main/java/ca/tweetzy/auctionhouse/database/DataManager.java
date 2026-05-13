@@ -791,7 +791,8 @@ public class DataManager extends DataManagerAbstract {
 							versionUpdateStatement.addBatch();
 							batchSize++;
 						} catch (NbtApiException e) {
-							// TODO: decide what you want here (log, skip, etc.)
+							AuctionHouse.getInstance().getLogger().warning(
+									"[transactions] Skipping serialize_version upgrade for id=" + resultSet.getString("id") + ": " + e.getMessage());
 						}
 					}
 
@@ -806,7 +807,8 @@ public class DataManager extends DataManagerAbstract {
 						itemUpdateStatement.addBatch();
 						batchSize++;
 					} catch (NbtApiException e) {
-						Bukkit.broadcastMessage("t fail");
+						AuctionHouse.getInstance().getLogger().warning(
+								"[transactions] NBT error re-serializing item for id=" + resultSet.getString("id") + ", falling back to stored raw bytes: " + e.getMessage());
 						backupFallback = true;
 					}
 

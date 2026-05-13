@@ -19,6 +19,7 @@
 package ca.tweetzy.auctionhouse.listeners;
 
 import ca.tweetzy.auctionhouse.helpers.PlayerLookup;
+import ca.tweetzy.auctionhouse.api.ban.BanType;
 import ca.tweetzy.auctionhouse.AuctionHouse;
 import ca.tweetzy.auctionhouse.auction.AuctionPlayer;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
@@ -177,9 +178,7 @@ public class PlayerListeners implements Listener {
 			e.setUseInteractedBlock(Event.Result.DENY);
 			e.setCancelled(true);
 
-//			if (instance.getAuctionBanManager().checkAndHandleBan(player)) {
-//				return;TODO CHECK BAN
-//			}
+			if (AuctionHouse.getBanManager().isStillBanned(player, BanType.EVERYTHING, BanType.BUYING)) return;
 
 			if (!player.hasPermission("auctionhouse.useauctionchest")) return;
 

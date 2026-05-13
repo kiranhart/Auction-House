@@ -75,8 +75,8 @@ public class GUIBid extends AuctionBaseGUI {
 			boolean watching = AuctionHouse.getWatchlistManager().isWatching(this.auctionPlayer.getUuid(), this.auctionItem.getId());
 			setButton(2, 4, QuickItem
 					.of(watching ? "BARRIER" : "BOOKMARK")
-					.name(watching ? "&c&lRemove from Watchlist" : "&a&lAdd to Watchlist")
-					.lore("&7Click to " + (watching ? "remove this listing from" : "add this listing to") + " your watchlist.")
+					.name(TranslationManager.string(this.player, watching ? Translations.GUI_BIDDING_WATCHLIST_REMOVE_NAME : Translations.GUI_BIDDING_WATCHLIST_ADD_NAME))
+					.lore(this.player, TranslationManager.list(this.player, watching ? Translations.GUI_BIDDING_WATCHLIST_REMOVE_LORE : Translations.GUI_BIDDING_WATCHLIST_ADD_LORE))
 					.make(), e -> {
 				if (watching) {
 					AuctionHouse.getWatchlistManager().remove(e.player.getUniqueId(), this.auctionItem.getId(), (err, ok) -> {
@@ -116,7 +116,6 @@ public class GUIBid extends AuctionBaseGUI {
 			this.safeTransitionTo(e.manager, new GUIConfirmBid(this.auctionPlayer, auctionItem, minBid));
 		});
 
-		// TODO UPDATE BID
 		setButton(1, 6, QuickItem
 				.of(Settings.GUI_BIDDING_ITEMS_CUSTOM_ITEM.getString())
 				.name(TranslationManager.string(this.player, Translations.GUI_BIDDING_CUSTOM_NAME))
