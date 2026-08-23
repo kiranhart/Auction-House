@@ -33,6 +33,7 @@ import ca.tweetzy.auctionhouse.guis.AuctionBaseGUI;
 import ca.tweetzy.auctionhouse.guis.core.GUIAuctionHouse;
 import ca.tweetzy.auctionhouse.guis.core.GUIContainerInspect;
 import ca.tweetzy.auctionhouse.impl.CompletedRequest;
+import ca.tweetzy.auctionhouse.managers.AuctionItemManager;
 import ca.tweetzy.auctionhouse.managers.SoundManager;
 import ca.tweetzy.auctionhouse.settings.Settings;
 import ca.tweetzy.core.utils.PlayerUtils;
@@ -187,6 +188,9 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 				// Item already marked as purchased above (race condition protection)
 
+				auctionItem.setExpired(true);
+				auctionItem.setExpiresAt(System.currentTimeMillis() - 1000);
+
 				AuctionHouse.getTransactionManager().getPrePurchasePlayers(auctionItem.getId()).forEach(p -> {
 					AuctionHouse.getTransactionManager().removeAllRelatedPlayers(auctionItem.getId());
 					p.closeInventory();
@@ -205,6 +209,8 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 				final AuctionRequestCompleteEvent requestCompleteEvent = new AuctionRequestCompleteEvent(auctionItem, new CompletedRequest(auctionItem, player, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? buyNowPrice : buyNowPrice - tax));
 				Bukkit.getServer().getPluginManager().callEvent(requestCompleteEvent);
+
+
 
 				return true;
 			}

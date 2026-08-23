@@ -39,6 +39,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import javax.management.remote.TargetedNotification;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
@@ -272,7 +273,14 @@ public final class AuctionCreator {
 
 				Bukkit.getOnlinePlayers().forEach(p -> {
 					if (seller != null && p.getUniqueId().equals(seller.getUniqueId())) return;
-					p.sendMessage(Common.colorize((prefix.length() == 0 ? "" : prefix + " ") + msgToAll));
+
+					final AuctionPlayer targetedAuctionPlayer = AuctionHouse.getAuctionPlayerManager().getPlayer(p.getUniqueId());
+					if (targetedAuctionPlayer != null) {
+						if (targetedAuctionPlayer.isShowGlobalListingInfo())
+							p.sendMessage(Common.colorize((prefix.length() == 0 ? "" : prefix + " ") + msgToAll));
+					} else {
+						p.sendMessage(Common.colorize((prefix.length() == 0 ? "" : prefix + " ") + msgToAll));
+					}
 				});
 			}
 			//====================================================================================

@@ -268,6 +268,7 @@ public class AuctionHouse extends TweetyPlugin {
 				new CommandSearch(),
 				new CommandSettings(),
 				new CommandToggleListInfo(),
+				new CommandToggleGlobalListInfo(),
 				new CommandMigrate(),
 				new CommandReload(),
 				new CommandInfo(),

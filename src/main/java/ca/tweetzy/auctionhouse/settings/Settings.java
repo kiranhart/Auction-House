@@ -76,6 +76,7 @@ public class Settings {
 	public static final ConfigSetting CMD_ALIAS_SUB_SELL = new ConfigSetting(config, "command aliases.subcommands.sell", Collections.singletonList("sell"), "Command aliases for the sell command");
 	public static final ConfigSetting CMD_ALIAS_SUB_STATS = new ConfigSetting(config, "command aliases.subcommands.stats", Collections.singletonList("stats"), "Command aliases for the stats command");
 	public static final ConfigSetting CMD_ALIAS_SUB_TOGGLELISTINFO = new ConfigSetting(config, "command aliases.subcommands.togglelistinfo", Collections.singletonList("togglelistinfo"), "Command aliases for the toggle list info command");
+	public static final ConfigSetting CMD_ALIAS_SUB_TOGGLE_GLOBAL_LISTINFO = new ConfigSetting(config, "command aliases.subcommands.toggle global list info", Collections.singletonList("togglegloballistinfo"), "Command aliases for the toggle global list info command");
 	public static final ConfigSetting CMD_ALIAS_SUB_TRANSACTIONS = new ConfigSetting(config, "command aliases.subcommands.transactions", Collections.singletonList("transactions"), "Command aliases for the transactions command");
 	public static final ConfigSetting CMD_ALIAS_SUB_UNBAN = new ConfigSetting(config, "command aliases.subcommands.unban", Collections.singletonList("unban"), "Command aliases for the unban command");
 	public static final ConfigSetting CMD_ALIAS_SUB_WATCHLIST = new ConfigSetting(config, "command aliases.subcommands.watchlist", Collections.singletonList("watchlist"), "Command aliases for the watchlist command");

@@ -1657,6 +1657,7 @@ public class DataManager extends DataManagerAbstract {
 				AuctionSortType.RECENT,
 				TransactionViewFilter.ALL,
 				true,
+				true,
 				resultSet.getLong("last_listed_item"),
 				null,
 				-1,

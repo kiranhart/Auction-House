@@ -62,6 +62,7 @@ public class AuctionPlayer {
 	private TransactionViewFilter transactionViewFilter;
 
 	private boolean showListingInfo;
+	private boolean showGlobalListingInfo;
 	private long lastListedItem;
 
 	private ItemStack itemBeingListed;
@@ -82,6 +83,7 @@ public class AuctionPlayer {
 				Enum.valueOf(AuctionItemCategory.class, Settings.DEFAULT_FILTER_CATEGORY.getString()),
 				Enum.valueOf(AuctionSortType.class, Settings.DEFAULT_FILTER_SORT.getString()),
 				TransactionViewFilter.ALL,
+				true,
 				true,
 				-1,
 				null,

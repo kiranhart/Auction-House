@@ -88,6 +88,10 @@ public class LocaleSettings {
 		languageNodes.put("general.something_went_wrong_while_listing", "&cSomething went wrong while listing item.");
 		languageNodes.put("general.toggled listing.on", "&aYou turned on listing messages");
 		languageNodes.put("general.toggled listing.off", "&cYou turned off listing messages");
+
+		languageNodes.put("general.toggled global listing.on", "&aYou turned on global listing messages");
+		languageNodes.put("general.toggled global listing.off", "&cYou turned off global listing messages");
+
 		languageNodes.put("general.bought_item", "&aYou bought &fx%amount% %item%&a for &a%price%");
 		languageNodes.put("general.offline notifications more", "&7You have &e%count%&7 more offline notifications.");
 		languageNodes.put("general.wait_to_list", "&cPlease wait &4%time%&cs before listing another item");
@@ -300,6 +304,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.syntax.ban", "ban [player]");
 		languageNodes.put("commands.syntax.unban", "unban <player>");
 		languageNodes.put("commands.syntax.togglelistinfo", "togglelistinfo");
+		languageNodes.put("commands.syntax.togglegloballistinfo", "togglegloballistinfo");
 		languageNodes.put("commands.syntax.markchest", "markchest");
 		languageNodes.put("commands.syntax.price limit", "pricelimit [set <min/max> <price>]");
 		languageNodes.put("commands.syntax.stats", "stats [player]");
@@ -323,6 +328,7 @@ public class LocaleSettings {
 		languageNodes.put("commands.description.ban", "Ban a player from the auction house for a set amount of time.");
 		languageNodes.put("commands.description.unban", "Unban a player from the auction house");
 		languageNodes.put("commands.description.togglelistinfo", "Toggle whether auction house should message you when you list an item");
+		languageNodes.put("commands.description.togglegloballistinfo", "Toggle whether auction house should message you when you others list an item");
 		languageNodes.put("commands.description.markchest", "Toggles whether a chest is an auction chest");
 		languageNodes.put("commands.description.price limit", "Adds a minimum sell price to an item");
 		languageNodes.put("commands.description.stats", "View yours or another players stats");
