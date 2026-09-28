@@ -165,26 +165,27 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 				// transfer items
 				AuctionAPI.getInstance().removeSpecificItemQuantityFromPlayer(player, auctionItem.getItem(), amountNeeded);
-				final AuctionedItem toGive = new AuctionedItem(
-						UUID.randomUUID(),
-						requester.getUniqueId(),
-						requester.getUniqueId(),
-						auctionItem.getOwnerName(),
-						auctionItem.getOwnerName(),
-						auctionItem.getCategory(),
-						auctionItem.getItem(),
-						0,
-						0,
-						0,
-						0,
-						false, true, System.currentTimeMillis()
-				);
 
-				toGive.setRequestAmount(amountNeeded);
-				toGive.setRequest(true);
-				toGive.setCreatedAt(System.currentTimeMillis());
+//				final AuctionedItem toGive = new AuctionedItem(
+//						UUID.randomUUID(),
+//						requester.getUniqueId(),
+//						requester.getUniqueId(),
+//						auctionItem.getOwnerName(),
+//						auctionItem.getOwnerName(),
+//						auctionItem.getCategory(),
+//						auctionItem.getItem(),
+//						0,
+//						0,
+//						0,
+//						0,
+//						false, true, System.currentTimeMillis()
+//				);
 
-				AuctionHouse.getDataManager().insertAuction(toGive, (error, inserted) -> AuctionHouse.getAuctionItemManager().addAuctionItem(toGive));
+				auctionItem.setRequestAmount(itemCount); // TODO REVERT TO amountNeeded
+				auctionItem.setRequest(true);
+				auctionItem.setCreatedAt(System.currentTimeMillis());
+
+//				AuctionHouse.getDataManager().insertAuction(toGive, (error, inserted) -> AuctionHouse.getAuctionItemManager().addAuctionItem(toGive));
 
 				// Item already marked as purchased above (race condition protection)
 
@@ -209,9 +210,6 @@ public class GUIConfirmPurchase extends AuctionBaseGUI {
 
 				final AuctionRequestCompleteEvent requestCompleteEvent = new AuctionRequestCompleteEvent(auctionItem, new CompletedRequest(auctionItem, player, Settings.TAX_CHARGE_SALES_TAX_TO_BUYER.getBoolean() ? buyNowPrice : buyNowPrice - tax));
 				Bukkit.getServer().getPluginManager().callEvent(requestCompleteEvent);
-
-
-
 				return true;
 			}
 
